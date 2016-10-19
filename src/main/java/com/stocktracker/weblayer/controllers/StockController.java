@@ -2,13 +2,12 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.StockService;
-import com.stocktracker.weblayer.dto.CustomerDTO;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -43,6 +42,7 @@ public class StockController implements MyLogger
      *
      * @return
      */
+    @CrossOrigin
     @RequestMapping( value = "/stocks",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -60,6 +60,7 @@ public class StockController implements MyLogger
      *
      * @return
      */
+    @CrossOrigin
     @RequestMapping( value = "/stocks/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
