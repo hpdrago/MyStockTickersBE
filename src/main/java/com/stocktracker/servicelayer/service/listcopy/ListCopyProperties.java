@@ -1,4 +1,4 @@
-package com.stocktracker.common;
+package com.stocktracker.servicelayer.service.listcopy;
 
 import org.springframework.beans.BeanUtils;
 
@@ -36,9 +36,20 @@ public class ListCopyProperties<S, T>
         for ( S s : src )
         {
             T t = BeanUtils.instantiateClass( targetType );
-            BeanUtils.copyProperties( s, t );
+            copyProperties( s, t );
             target.add( t );
         }
         return target;
+    }
+
+
+    /**
+     * Copy the properties from the {@code source} to the {@code target}
+     * @param source
+     * @param target
+     */
+    protected void copyProperties( S source, T target )
+    {
+        BeanUtils.copyProperties( source, target );
     }
 }

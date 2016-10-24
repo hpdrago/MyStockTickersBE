@@ -1,5 +1,6 @@
-package com.stocktracker.common;
+package com.stocktracker.servicelayer.service.listcopy;
 
+import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.entity.StockDomainEntity;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ListCopyStockDomainEntityToStockDTO extends ListCopyProperties<StockDomainEntity, StockDTO>
+    implements MyLogger
 {
     public ListCopyStockDomainEntityToStockDTO()
     {

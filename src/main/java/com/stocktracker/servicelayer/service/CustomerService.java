@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.ListCopyCustomerDomainEntityToCustomerDTO;
-import com.stocktracker.common.ListCopyCustomerEntityToCustomerDomainEntity;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerDomainEntityToCustomerDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerEntityToCustomerDomainEntity;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
 import com.stocktracker.servicelayer.entity.CustomerDomainEntity;

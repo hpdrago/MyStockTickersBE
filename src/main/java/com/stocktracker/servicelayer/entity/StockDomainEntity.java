@@ -10,6 +10,8 @@ public class StockDomainEntity
     private String tickerSymbol;
     private String companyName;
     private String exchange;
+    private int createdBy;
+    private char userEntered;
 
     public String getTickerSymbol()
     {
@@ -41,6 +43,26 @@ public class StockDomainEntity
         this.exchange = exchange;
     }
 
+    public int getCreatedBy()
+    {
+        return createdBy;
+    }
+
+    public void setCreatedBy( int createdBy )
+    {
+        this.createdBy = createdBy;
+    }
+
+    public char getUserEntered()
+    {
+        return userEntered;
+    }
+
+    public void setUserEntered( final char userEntered )
+    {
+        this.userEntered = userEntered;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -53,11 +75,8 @@ public class StockDomainEntity
             return false;
         }
         final StockDomainEntity that = (StockDomainEntity) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-            Objects.equals( companyName, that.companyName ) &&
-            Objects.equals( exchange, that.exchange );
+        return Objects.equals( tickerSymbol, that.tickerSymbol );
     }
-
     @Override
     public int hashCode()
     {
@@ -74,7 +93,10 @@ public class StockDomainEntity
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
+        sb.append( ", createdBy='" ).append( createdBy ).append( '\'' );
+        sb.append( ", userEntered='" ).append( userEntered ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
+
 }

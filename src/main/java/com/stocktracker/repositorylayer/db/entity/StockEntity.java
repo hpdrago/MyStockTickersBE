@@ -17,6 +17,8 @@ public class StockEntity
     private String tickerSymbol;
     private String companyName;
     private String exchange;
+    private int createdBy;
+    private char userEntered;
 
     @Id
     @Column( name = "ticker_symbol" )
@@ -54,6 +56,30 @@ public class StockEntity
         this.exchange = exchange;
     }
 
+    @Basic
+    @Column( name = "created_by" )
+    public int getCreatedBy()
+    {
+        return createdBy;
+    }
+
+    public void setCreatedBy( int createdBy )
+    {
+        this.createdBy = createdBy;
+    }
+
+    @Basic
+    @Column( name = "user_entered" )
+    public char getUserEntered()
+    {
+        return userEntered;
+    }
+
+    public void setUserEntered( final char downloaded )
+    {
+        this.userEntered = downloaded;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -75,5 +101,21 @@ public class StockEntity
     public int hashCode()
     {
         return Objects.hash( tickerSymbol, companyName, exchange );
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "StockEntity" );
+        sb.append( "@" );
+        sb.append( hashCode() );
+        sb.append( "{" );
+        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", exchange='" ).append( exchange ).append( '\'' );
+        sb.append( ", createdBy=" ).append( createdBy );
+        sb.append( ", downloaded=" ).append( userEntered );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

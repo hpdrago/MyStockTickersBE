@@ -16,4 +16,11 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Intege
      * @return
      */
     CustomerEntity findByEmail( final String email );
+
+    /**
+     * Finds the customer by the id number.  Id numbers are unique as well
+     * @param id
+     * @return
+     */
+    CustomerEntity findById( final int id );
 }

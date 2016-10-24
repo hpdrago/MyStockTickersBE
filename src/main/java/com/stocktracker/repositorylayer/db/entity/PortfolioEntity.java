@@ -16,9 +16,15 @@ public class PortfolioEntity
 {
     private int id;
     private String name;
+    private int customerId;
+
+    public void setId( final Integer id )
+    {
+        this.id = id;
+    }
 
     @Id
-    @Column( name = "id" )
+    @Column( name = "id", nullable = false )
     public int getId()
     {
         return id;
@@ -30,7 +36,7 @@ public class PortfolioEntity
     }
 
     @Basic
-    @Column( name = "name" )
+    @Column( name = "name", nullable = false, length = 20 )
     public String getName()
     {
         return name;
@@ -39,6 +45,18 @@ public class PortfolioEntity
     public void setName( final String name )
     {
         this.name = name;
+    }
+
+    @Basic
+    @Column( name = "customer_id", nullable = false )
+    public int getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( int customerId )
+    {
+        this.customerId = customerId;
     }
 
     @Override
@@ -53,13 +71,13 @@ public class PortfolioEntity
             return false;
         }
         final PortfolioEntity that = (PortfolioEntity) o;
-        return id == that.id &&
+        return getId() == that.getId() &&
             Objects.equals( name, that.name );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( id, name );
+        return Objects.hash( getId(), name );
     }
 }

@@ -1,8 +1,9 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.ListCopyStockDomainEntityToStockDTO;
-import com.stocktracker.common.ListCopyStockEntityToStockDomainEntity;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDomainEntityToStockDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDomainEntity;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.repositorylayer.CustomerRepository;
 import com.stocktracker.repositorylayer.StockRepository;
 import com.stocktracker.repositorylayer.db.entity.StockEntity;
 import com.stocktracker.servicelayer.entity.StockDomainEntity;
@@ -23,6 +24,7 @@ import java.util.List;
 public class StockService implements MyLogger
 {
     private StockRepository stockRepository;
+    private CustomerRepository customerRepository;
     private ListCopyStockEntityToStockDomainEntity listCopyStockEntityToStockDomainEntity;
     private ListCopyStockDomainEntityToStockDTO listCopyStockDomainEntityToStockDTO;
 
@@ -37,6 +39,19 @@ public class StockService implements MyLogger
         final String methodName = "setStockRepository";
         logDebug( methodName, "Dependency Injection of: " + stockRepository );
         this.stockRepository = stockRepository;
+    }
+
+    /**
+     * Dependency injection of the StockRepository
+     *
+     * @param customerRepository
+     */
+    @Autowired
+    public void setCustomerRepository( final CustomerRepository customerRepository )
+    {
+        final String methodName = "setStockRepository";
+        logDebug( methodName, "Dependency Injection of: " + customerRepository );
+        this.customerRepository = customerRepository;
     }
 
     @Autowired
@@ -104,7 +119,7 @@ public class StockService implements MyLogger
         /*
          * Map from Entity to DomainEntity to DTO
          */
-        StockDTO stockDTO = new StockDTO();
+        StockDTO stockDTO = StockDTO.newInstance();
         BeanUtils.copyProperties( stockEntity, stockDTO );
         logMethodEnd( methodName, stockDTO );
         return stockDTO;

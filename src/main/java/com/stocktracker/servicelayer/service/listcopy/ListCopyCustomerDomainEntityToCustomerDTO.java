@@ -1,4 +1,4 @@
-package com.stocktracker.common;
+package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.servicelayer.entity.CustomerDomainEntity;
 import com.stocktracker.weblayer.dto.CustomerDTO;
