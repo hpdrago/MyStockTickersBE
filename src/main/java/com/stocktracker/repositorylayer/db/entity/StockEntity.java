@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -19,9 +20,10 @@ public class StockEntity
     private String exchange;
     private int createdBy;
     private char userEntered;
+    private BigDecimal lastPrice;
 
     @Id
-    @Column( name = "ticker_symbol" )
+    @Column( name = "ticker_symbol", nullable = false, length = 5 )
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -33,7 +35,7 @@ public class StockEntity
     }
 
     @Basic
-    @Column( name = "company_name" )
+    @Column( name = "company_name", nullable = true, length = 70 )
     public String getCompanyName()
     {
         return companyName;
@@ -45,7 +47,7 @@ public class StockEntity
     }
 
     @Basic
-    @Column( name = "exchange" )
+    @Column( name = "exchange", nullable = true, length = 10 )
     public String getExchange()
     {
         return exchange;
@@ -69,7 +71,7 @@ public class StockEntity
     }
 
     @Basic
-    @Column( name = "user_entered" )
+    @Column( name = "user_entered", nullable = true, length = 1 )
     public char getUserEntered()
     {
         return userEntered;
@@ -103,6 +105,18 @@ public class StockEntity
         return Objects.hash( tickerSymbol, companyName, exchange );
     }
 
+    @Basic
+    @Column( name = "last_price", nullable = true, precision = 2 )
+    public BigDecimal getLastPrice()
+    {
+        return lastPrice;
+    }
+
+    public void setLastPrice( final BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
     @Override
     public String toString()
     {
@@ -115,6 +129,7 @@ public class StockEntity
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy=" ).append( createdBy );
         sb.append( ", downloaded=" ).append( userEntered );
+        sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( '}' );
         return sb.toString();
     }

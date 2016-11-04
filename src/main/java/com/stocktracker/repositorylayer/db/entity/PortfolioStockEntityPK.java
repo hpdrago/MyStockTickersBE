@@ -11,9 +11,9 @@ import java.util.Objects;
 public class PortfolioStockEntityPK implements Serializable
 {
     private int portfolioId;
-    private String stockTicker;
+    private String tickerSymbol;
 
-    @Column( name = "portfolio_id" )
+    @Column( name = "portfolio_id", nullable = false )
     @Id
     public int getPortfolioId()
     {
@@ -25,16 +25,16 @@ public class PortfolioStockEntityPK implements Serializable
         this.portfolioId = portfolioId;
     }
 
-    @Column( name = "stock_ticker" )
+    @Column( name = "ticker_symbol", nullable = false, length = 5 )
     @Id
-    public String getStockTicker()
+    public String getTickerSymbol()
     {
-        return stockTicker;
+        return tickerSymbol;
     }
 
-    public void setStockTicker( final String stockTicker )
+    public void setTickerSymbol( final String tickerSymbol )
     {
-        this.stockTicker = stockTicker;
+        this.tickerSymbol = tickerSymbol;
     }
 
     @Override
@@ -50,12 +50,12 @@ public class PortfolioStockEntityPK implements Serializable
         }
         final PortfolioStockEntityPK that = (PortfolioStockEntityPK) o;
         return portfolioId == that.portfolioId &&
-            Objects.equals( stockTicker, that.stockTicker );
+            Objects.equals( tickerSymbol, that.tickerSymbol );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( portfolioId, stockTicker );
+        return Objects.hash( portfolioId, tickerSymbol );
     }
 }

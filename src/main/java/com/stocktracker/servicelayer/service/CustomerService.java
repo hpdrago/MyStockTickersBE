@@ -1,14 +1,13 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerDomainEntityToCustomerDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerEntityToCustomerDomainEntity;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
-import com.stocktracker.servicelayer.entity.CustomerDomainEntity;
-import com.stocktracker.weblayer.dto.CustomerDTO;
+import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.exceptions.CustomerNotFoundException;
-import com.stocktracker.repositorylayer.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.stocktracker.servicelayer.entity.CustomerDomainEntity;
+import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
+import com.stocktracker.weblayer.dto.CustomerDTO;
+import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,48 +19,8 @@ import java.util.List;
  * Created by mike on 5/15/2016.
  */
 @Service
-public class CustomerService implements MyLogger
+public class CustomerService extends BaseService implements MyLogger
 {
-    private CustomerRepository customerRepository;
-    private ListCopyCustomerEntityToCustomerDomainEntity listCopyCustomerEntityToCustomerDomainEntity;
-    private ListCopyCustomerDomainEntityToCustomerDTO listCopyCustomerDomainEntityToCustomerDTO;
-
-    /**
-     * Dependency injection of the CustomerRepository
-     * @param customerRepository
-     */
-    @Autowired
-    public void setCustomerRepository( final CustomerRepository customerRepository )
-    {
-        final String methodName = "setCustomerRepository";
-        logDebug( methodName, "Dependency Injection of: " + customerRepository );
-        this.customerRepository = customerRepository;
-    }
-
-    /**
-     * Dependency injection of the ListCopyCustomerEntityToCustomerDo
-     * @param listCopyCustomerEntityToCustomerDomainEntity
-     */
-    @Autowired
-    public void setListCopyCustomerEntityToCustomerDomainEntity( final ListCopyCustomerEntityToCustomerDomainEntity listCopyCustomerEntityToCustomerDomainEntity )
-    {
-        final String methodName = "setListCopyCustomerEntityToCustomerDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyCustomerEntityToCustomerDomainEntity );
-        this.listCopyCustomerEntityToCustomerDomainEntity = listCopyCustomerEntityToCustomerDomainEntity;
-    }
-
-    /**
-     * Dependency injection of the ListCopyCustomerDoToCustomerDo
-     * @param
-     */
-    @Autowired
-    public void setListCopyCustomerDoToCustomerDo( final ListCopyCustomerDomainEntityToCustomerDTO listCopyCustomerDomainEntityToCustomerDTO )
-    {
-        final String methodName = "setListCopyCustomerDoToCustomerDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyCustomerDomainEntityToCustomerDTO );
-        this.listCopyCustomerDomainEntityToCustomerDTO = listCopyCustomerDomainEntityToCustomerDTO;
-    }
-
     /**
      * Get the customer by id request
      * @param id
@@ -71,13 +30,15 @@ public class CustomerService implements MyLogger
     {
         final String methodName = "getCustomerById";
         logMethodBegin( methodName, id );
+        /*
+         * Get the customer entity
+         */
         CustomerEntity customerEntity = customerRepository.findOne( id );
         if ( customerEntity == null )
         {
             throw new CustomerNotFoundException( id );
         }
-        CustomerDomainEntity customerDomainEntity = CustomerDomainEntity.newInstance( customerEntity );
-        CustomerDTO customerDTO = CustomerDTO.newInstance( customerDomainEntity );
+        CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
         logMethodEnd( methodName, customerDTO );
         return customerDTO;
     }
@@ -98,9 +59,27 @@ public class CustomerService implements MyLogger
         {
             throw new CustomerNotFoundException( email );
         }
+        CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
+        logMethodEnd( methodName, customerDTO );
+        return customerDTO;
+    }
+
+    /**
+     * This method loads the CustomerDTO
+     * @param customerEntity
+     * @return
+     */
+    private CustomerDTO loadCustomerDTO( final CustomerEntity customerEntity )
+    {
         CustomerDomainEntity customerDomainEntity = CustomerDomainEntity.newInstance( customerEntity );
         CustomerDTO customerDTO = CustomerDTO.newInstance( customerDomainEntity );
-        logMethodEnd( methodName, customerDTO );
+        /*
+         * Get the portfolios for the customer from the database
+         */
+        List<PortfolioEntity> customerPortfolios = portfolioRepository.findByCustomerId( customerEntity.getId() );
+        List<PortfolioDomainEntity> customerDomainPortfolios = listCopyPortfolioEntityToPortfolioDomainEntity.copy( customerPortfolios );
+        List<PortfolioDTO> customerPortfolioDTOs = listCopyPortfolioDomainEntityToPortfolioDTO.copy( customerDomainPortfolios );
+        customerDTO.setPortfolios( customerPortfolioDTOs );
         return customerDTO;
     }
 

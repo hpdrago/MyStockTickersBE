@@ -1,15 +1,10 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDomainEntityToStockDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDomainEntity;
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.CustomerRepository;
-import com.stocktracker.repositorylayer.StockRepository;
 import com.stocktracker.repositorylayer.db.entity.StockEntity;
 import com.stocktracker.servicelayer.entity.StockDomainEntity;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,53 +16,8 @@ import java.util.List;
  * Created by mike on 9/11/2016.
  */
 @Service
-public class StockService implements MyLogger
+public class StockService extends BaseService implements MyLogger
 {
-    private StockRepository stockRepository;
-    private CustomerRepository customerRepository;
-    private ListCopyStockEntityToStockDomainEntity listCopyStockEntityToStockDomainEntity;
-    private ListCopyStockDomainEntityToStockDTO listCopyStockDomainEntityToStockDTO;
-
-    /**
-     * Dependency injection of the StockRepository
-     *
-     * @param stockRepository
-     */
-    @Autowired
-    public void setStockRepository( final StockRepository stockRepository )
-    {
-        final String methodName = "setStockRepository";
-        logDebug( methodName, "Dependency Injection of: " + stockRepository );
-        this.stockRepository = stockRepository;
-    }
-
-    /**
-     * Dependency injection of the StockRepository
-     *
-     * @param customerRepository
-     */
-    @Autowired
-    public void setCustomerRepository( final CustomerRepository customerRepository )
-    {
-        final String methodName = "setStockRepository";
-        logDebug( methodName, "Dependency Injection of: " + customerRepository );
-        this.customerRepository = customerRepository;
-    }
-
-    @Autowired
-    public void setListCopyStockEntityToStockDomainEntity(
-        final ListCopyStockEntityToStockDomainEntity listCopyStockEntityToStockDomainEntity )
-    {
-        this.listCopyStockEntityToStockDomainEntity = listCopyStockEntityToStockDomainEntity;
-    }
-
-    @Autowired
-    public void setListCopyStockDomainEntityToStockDTO(
-        final ListCopyStockDomainEntityToStockDTO listCopyStockDomainEntityToStockDTO )
-    {
-        this.listCopyStockDomainEntityToStockDTO = listCopyStockDomainEntityToStockDTO;
-    }
-
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
      *

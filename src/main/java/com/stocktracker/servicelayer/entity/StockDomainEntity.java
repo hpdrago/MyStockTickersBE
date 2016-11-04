@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.entity;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -12,6 +13,7 @@ public class StockDomainEntity
     private String exchange;
     private int createdBy;
     private char userEntered;
+    private BigDecimal lastPrice;
 
     public String getTickerSymbol()
     {
@@ -83,6 +85,16 @@ public class StockDomainEntity
         return Objects.hash( tickerSymbol, companyName, exchange );
     }
 
+    public BigDecimal getLastPrice()
+    {
+        return lastPrice;
+    }
+
+    public void setLastPrice( BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
     @Override
     public String toString()
     {
@@ -95,8 +107,8 @@ public class StockDomainEntity
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy='" ).append( createdBy ).append( '\'' );
         sb.append( ", userEntered='" ).append( userEntered ).append( '\'' );
+        sb.append( ", lastPrice='" ).append( userEntered ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

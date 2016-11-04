@@ -1,8 +1,12 @@
 package com.stocktracker.repositorylayer.db.entity;
 
+import com.stocktracker.weblayer.dto.PortfolioDTO;
+import org.springframework.beans.BeanUtils;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -18,12 +22,20 @@ public class PortfolioEntity
     private String name;
     private int customerId;
 
-    public void setId( final Integer id )
+    /**
+     * Create a new instance from a PortfolioDTO
+     * @param portfolioDTO
+     * @return
+     */
+    public static PortfolioEntity newInstance( final PortfolioDTO portfolioDTO )
     {
-        this.id = id;
+        PortfolioEntity portfolioEntity = new PortfolioEntity();
+        BeanUtils.copyProperties( portfolioDTO, portfolioEntity );
+        return portfolioEntity;
     }
 
     @Id
+    @GeneratedValue
     @Column( name = "id", nullable = false )
     public int getId()
     {
@@ -79,5 +91,16 @@ public class PortfolioEntity
     public int hashCode()
     {
         return Objects.hash( getId(), name );
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "PortfolioEntity{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

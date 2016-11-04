@@ -6,12 +6,14 @@
   <session-factory>
     <property name="connection.url">jdbc:mysql://localhost:3306/stocktracker</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-    <mapping class="com.stocktracker.repositorylayer.db.entity.CustomerEntity"/>
+      <mapping class="com.stocktracker.repositorylayer.db.entity.CustomerEntity"/>
     <mapping class="com.stocktracker.repositorylayer.db.entity.CustomerPortfolioEntity"/>
     <mapping class="com.stocktracker.repositorylayer.db.entity.PortfolioEntity"/>
     <mapping class="com.stocktracker.repositorylayer.db.entity.PortfolioStockEntity"/>
     <mapping class="com.stocktracker.repositorylayer.db.entity.StockEntity"/>
-    <!-- DB schema will be updated if needed -->
+    <mapping class="com.stocktracker.repositorylayer.db.entity.CustomerStockEntity"/>
+      <mapping class="com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity"/>
+      <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>
 </hibernate-configuration>

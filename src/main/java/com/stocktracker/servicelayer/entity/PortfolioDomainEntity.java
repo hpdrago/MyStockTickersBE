@@ -4,13 +4,15 @@ import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import org.springframework.beans.BeanUtils;
 
 /**
+ * This class represents a Portfolio for a customer.  A portfolio is a set of stocks identified by the customer.
+ *
  * Created by mike on 10/23/2016.
  */
 public class PortfolioDomainEntity
 {
     private int id;
-    private String name;
     private int customerId;
+    private String name;
 
     /**
      * Create a new empty instance
@@ -65,5 +67,16 @@ public class PortfolioDomainEntity
     public void setCustomerId( int customerId )
     {
         this.customerId = customerId;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "PortfolioDomainEntity{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

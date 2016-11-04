@@ -3,14 +3,32 @@ package com.stocktracker.weblayer.dto;
 import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
 import org.springframework.beans.BeanUtils;
 
+import java.util.List;
+
 /**
  * Created by mike on 10/23/2016.
  */
 public class PortfolioDTO
 {
+    /**
+     * The portfolio id
+     */
     private int id;
-    private String name;
+
+    /**
+     * The customer id
+     */
     private int customerId;
+
+    /**
+     * The portfolio name
+     */
+    private String name;
+
+    /**
+     * The stocks for the portfolio
+     */
+    private List<StockDTO> stocks;
 
     /**
      * Creates a new instance from (@code portfolioEntity)
@@ -48,6 +66,9 @@ public class PortfolioDTO
         this.name = name;
     }
 
+    /**
+     * The customer id
+     */
     public int getCustomerId()
     {
         return customerId;
@@ -57,4 +78,17 @@ public class PortfolioDTO
     {
         this.customerId = customerId;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "PortfolioDTO{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", customerId='" ).append( customerId ).append( '\'' );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", stocks=" ).append( stocks );
+        sb.append( '}' );
+        return sb.toString();
+    }
+
 }

@@ -1,37 +1,32 @@
 package com.stocktracker.repositorylayer.db.entity;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Created by mike on 9/4/2016.
+ * Created by mike on 10/30/2016.
  */
-@Entity
-@Table( name = "portfolio_stock", schema = "stocktracker", catalog = "" )
-@IdClass( PortfolioStockEntityPK.class )
-public class PortfolioStockEntity
+public class CustomerStockEntityPK implements Serializable
 {
-    private int portfolioId;
+    private Integer customerId;
     private String tickerSymbol;
 
+    @Column( name = "customer_id", nullable = false )
     @Id
-    @Column( name = "portfolio_id", nullable = false )
-    public int getPortfolioId()
+    public Integer getCustomerId()
     {
-        return portfolioId;
+        return customerId;
     }
 
-    public void setPortfolioId( final int portfolioId )
+    public void setCustomerId( final Integer customerId )
     {
-        this.portfolioId = portfolioId;
+        this.customerId = customerId;
     }
 
-    @Id
     @Column( name = "ticker_symbol", nullable = false, length = 5 )
+    @Id
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -53,14 +48,14 @@ public class PortfolioStockEntity
         {
             return false;
         }
-        final PortfolioStockEntity that = (PortfolioStockEntity) o;
-        return portfolioId == that.portfolioId &&
+        final CustomerStockEntityPK that = (CustomerStockEntityPK) o;
+        return Objects.equals( customerId, that.customerId ) &&
             Objects.equals( tickerSymbol, that.tickerSymbol );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( portfolioId, tickerSymbol );
+        return Objects.hash( customerId, tickerSymbol );
     }
 }

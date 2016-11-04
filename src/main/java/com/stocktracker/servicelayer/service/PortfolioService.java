@@ -1,14 +1,13 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.PortfolioRepository;
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
+import com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity;
 import com.stocktracker.repositorylayer.exceptions.PortfolioNotFoundException;
+import com.stocktracker.servicelayer.entity.CustomerStockDomainEntity;
 import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioDomainEntityToPortfolioDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioEntityToPortfolioDomainEntity;
+import com.stocktracker.weblayer.dto.CustomerStockDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,49 +20,8 @@ import java.util.List;
  * Created by mike on 10/23/2016.
  */
 @Service
-public class PortfolioService implements MyLogger
+public class PortfolioService extends BaseService implements MyLogger
 {
-    private PortfolioRepository portfolioRepository;
-    private ListCopyPortfolioEntityToPortfolioDomainEntity listCopyPortfolioEntityToPortfolioDomainEntity;
-    private ListCopyPortfolioDomainEntityToPortfolioDTO listCopyPortfolioDomainEntityToPortfolioDTO;
-
-    /**
-     * Dependency injection of the PortfolioRepository
-     * @param portfolioRepository
-     */
-    @Autowired
-    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
-    {
-        final String methodName = "setPortfolioRepository";
-        logDebug( methodName, "Dependency Injection of: " + portfolioRepository );
-        this.portfolioRepository = portfolioRepository;
-    }
-
-    /**
-     * Dependency injection of the ListCopyPortfolioEntityToPortfolioDo
-     * @param listCopyPortfolioEntityToPortfolioDomainEntity
-     */
-    @Autowired
-    public void setListCopyPortfolioEntityToPortfolioDomainEntity( final ListCopyPortfolioEntityToPortfolioDomainEntity listCopyPortfolioEntityToPortfolioDomainEntity )
-    {
-        final String methodName = "setListCopyPortfolioEntityToPortfolioDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyPortfolioEntityToPortfolioDomainEntity );
-        this.listCopyPortfolioEntityToPortfolioDomainEntity = listCopyPortfolioEntityToPortfolioDomainEntity;
-    }
-
-    /**
-     * Dependency injection of the ListCopyPortfolioDoToPortfolioDo
-     * @param
-     */
-    @Autowired
-    public void setListCopyPortfolioDoToPortfolioDo(
-        final ListCopyPortfolioDomainEntityToPortfolioDTO listCopyPortfolioDomainEntityToPortfolioDTO )
-    {
-        final String methodName = "setListCopyPortfolioDoToPortfolioDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyPortfolioDomainEntityToPortfolioDTO );
-        this.listCopyPortfolioDomainEntityToPortfolioDTO = listCopyPortfolioDomainEntityToPortfolioDTO;
-    }
-
     /**
      * Get the portfolio by id request
      * @param id
@@ -106,4 +64,39 @@ public class PortfolioService implements MyLogger
         return portfolioDTOs;
     }
 
+    /**
+     * Get all of the stocks for a portfolio
+     * @param portfolioId
+     * @return
+     */
+    public List<CustomerStockDTO> getPortfolioStocks( final int portfolioId )
+    {
+        final String methodName = "getPortfolioByCustomerId";
+        logMethodBegin( methodName, portfolioId );
+        List<CustomerStockDTO> customerStockDTOs = new ArrayList<>();
+        List<VPortfolioStockEntity> stocks = vPortfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
+        if ( stocks != null )
+        {
+            List<CustomerStockDomainEntity> customerStockDomainEntities = listCopyVPortfolioStockEntityToCustomerStockDomainEntity.copy( stocks );
+            customerStockDTOs = listCopyCustomerStockDomainEntityToCustomerStockDTO.copy( customerStockDomainEntities );
+        }
+        logMethodEnd( methodName, customerStockDTOs );
+        return customerStockDTOs;
+    }
+
+    /**
+     * Add a new portfolio for the customer
+     * @param customerId
+     * @param portfolioDTO
+     * @return PortfolioEntity that was inserted
+     */
+    public PortfolioEntity addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
+    {
+        final String methodName = "addPortfolio";
+        logMethodBegin( methodName, customerId, portfolioDTO );
+        PortfolioEntity portfolioEntity = PortfolioEntity.newInstance( portfolioDTO );
+        portfolioEntity = portfolioRepository.save( portfolioEntity );
+        logMethodEnd( methodName, portfolioEntity );
+        return portfolioEntity;
+    }
 }
