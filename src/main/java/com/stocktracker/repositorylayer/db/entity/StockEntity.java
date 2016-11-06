@@ -1,5 +1,9 @@
 package com.stocktracker.repositorylayer.db.entity;
 
+import com.stocktracker.repositorylayer.common.BooleanUtils;
+import com.stocktracker.servicelayer.entity.StockDE;
+import org.springframework.beans.BeanUtils;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,8 +16,8 @@ import java.util.Objects;
  * Created by mike on 9/11/2016.
  */
 @Entity
-@Table( name = "stock", schema = "stocktracker", catalog = "" )
-public class StockEntity
+@Table( name = "stock", schema = "stocktracker")
+public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
 {
     private String tickerSymbol;
     private String companyName;
@@ -21,6 +25,41 @@ public class StockEntity
     private int createdBy;
     private char userEntered;
     private BigDecimal lastPrice;
+
+    /**
+     * Create a new stock entity instance from a stock DE
+     * @param stockDE
+     * @return
+     */
+    public static StockEntity newInstance( final StockDE stockDE )
+    {
+        StockEntity stockEntity = new StockEntity();
+        BeanUtils.copyProperties( stockDE, stockEntity );
+        return stockEntity;
+    }
+
+    /**
+     * Copies properties from {@code stockEntity} to {@code stockDE}
+     * @param stockEntity
+     * @param stockDE
+     */
+    public void fromDBEntityToDomainEntity( final StockEntity stockEntity, final StockDE stockDE )
+    {
+        stockDE.setUserEntered( BooleanUtils.fromCharToBoolean( stockEntity.userEntered ));
+        super.fromDBEntityToDomainEntity( stockEntity, stockDE );
+    }
+
+    /**
+     * Copies properties from {@code stockDE} to {@code stockEntity}
+     * @param stockDE
+     * @param stockEntity
+     */
+    @Override
+    public void fromDomainEntityToDBEntity( final StockDE stockDE, final StockEntity stockEntity )
+    {
+        stockEntity.setUserEntered( BooleanUtils.fromBooleanToChar( stockDE.isUserEntered() ));
+        super.fromDomainEntityToDBEntity( stockDE, stockEntity );
+    }
 
     @Id
     @Column( name = "ticker_symbol", nullable = false, length = 5 )

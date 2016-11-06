@@ -4,10 +4,8 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.exceptions.CustomerNotFoundException;
-import com.stocktracker.servicelayer.entity.CustomerDomainEntity;
-import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
-import com.stocktracker.weblayer.dto.CustomerDTO;
-import com.stocktracker.weblayer.dto.PortfolioDTO;
+import com.stocktracker.servicelayer.entity.CustomerDE;
+import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +24,7 @@ public class CustomerService extends BaseService implements MyLogger
      * @param id
      * @return
      */
-    public CustomerDTO getCustomerById( final int id )
+    public CustomerDE getCustomerById( final int id )
     {
         final String methodName = "getCustomerById";
         logMethodBegin( methodName, id );
@@ -38,9 +36,9 @@ public class CustomerService extends BaseService implements MyLogger
         {
             throw new CustomerNotFoundException( id );
         }
-        CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
-        logMethodEnd( methodName, customerDTO );
-        return customerDTO;
+        CustomerDE customerDE = loadCustomerDE( customerEntity );
+        logMethodEnd( methodName, customerDE );
+        return customerDE;
     }
 
     /**
@@ -49,7 +47,7 @@ public class CustomerService extends BaseService implements MyLogger
      * @return
      * @throws CustomerNotFoundException
      */
-    public CustomerDTO getCustomerByEmail( final String email )
+    public CustomerDE getCustomerByEmail( final String email )
         throws CustomerNotFoundException
     {
         final String methodName = "getCustomerByEmail";
@@ -59,9 +57,9 @@ public class CustomerService extends BaseService implements MyLogger
         {
             throw new CustomerNotFoundException( email );
         }
-        CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
-        logMethodEnd( methodName, customerDTO );
-        return customerDTO;
+        CustomerDE customerDE = loadCustomerDE( customerEntity );
+        logMethodEnd( methodName, customerDE );
+        return customerDE;
     }
 
     /**
@@ -69,25 +67,23 @@ public class CustomerService extends BaseService implements MyLogger
      * @param customerEntity
      * @return
      */
-    private CustomerDTO loadCustomerDTO( final CustomerEntity customerEntity )
+    private CustomerDE loadCustomerDE( final CustomerEntity customerEntity )
     {
-        CustomerDomainEntity customerDomainEntity = CustomerDomainEntity.newInstance( customerEntity );
-        CustomerDTO customerDTO = CustomerDTO.newInstance( customerDomainEntity );
+        CustomerDE customerDE = CustomerDE.newInstance( customerEntity );
         /*
          * Get the portfolios for the customer from the database
          */
         List<PortfolioEntity> customerPortfolios = portfolioRepository.findByCustomerId( customerEntity.getId() );
-        List<PortfolioDomainEntity> customerDomainPortfolios = listCopyPortfolioEntityToPortfolioDomainEntity.copy( customerPortfolios );
-        List<PortfolioDTO> customerPortfolioDTOs = listCopyPortfolioDomainEntityToPortfolioDTO.copy( customerDomainPortfolios );
-        customerDTO.setPortfolios( customerPortfolioDTOs );
-        return customerDTO;
+        List<PortfolioDE> customerDEPortfolios = listCopyPortfolioEntityToPortfolioDomainEntity.copy( customerPortfolios );
+        customerDE.setPortfolios( customerDEPortfolios );
+        return customerDE;
     }
 
     /**
      * Get all of the customers
      * @return
      */
-    public List<CustomerDTO> getAllCustomers()
+    public List<CustomerDE> getAllCustomers()
     {
         final String methodName = "getAllCustomers";
         logMethodBegin( methodName );
@@ -96,9 +92,8 @@ public class CustomerService extends BaseService implements MyLogger
         {
             throw new CustomerNotFoundException( "There are no customers" );
         }
-        List<CustomerDomainEntity> customerDomainEntities = listCopyCustomerEntityToCustomerDomainEntity.copy( customerEntities );
-        List<CustomerDTO> customerDTOs = listCopyCustomerDomainEntityToCustomerDTO.copy( customerDomainEntities );
-        logMethodEnd( methodName, customerDTOs );
-        return customerDTOs;
+        List<CustomerDE> customerDEs = listCopyCustomerEntityToCustomerDE.copy( customerEntities );
+        logMethodEnd( methodName, customerDEs );
+        return customerDEs;
     }
 }

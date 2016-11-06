@@ -4,9 +4,8 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity;
 import com.stocktracker.repositorylayer.exceptions.PortfolioNotFoundException;
-import com.stocktracker.servicelayer.entity.CustomerStockDomainEntity;
-import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
-import com.stocktracker.weblayer.dto.CustomerStockDTO;
+import com.stocktracker.servicelayer.entity.CustomerStockDE;
+import com.stocktracker.servicelayer.entity.PortfolioDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ public class PortfolioService extends BaseService implements MyLogger
      * @param id
      * @return
      */
-    public PortfolioDTO getPortfolioById( final int id )
+    public PortfolioDE getPortfolioById( final int id )
     {
         final String methodName = "getPortfolioById";
         logMethodBegin( methodName, id );
@@ -36,10 +35,9 @@ public class PortfolioService extends BaseService implements MyLogger
         {
             throw new PortfolioNotFoundException( id );
         }
-        PortfolioDomainEntity portfolioDomainEntity = PortfolioDomainEntity.newInstance( portfolioEntity );
-        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDomainEntity );
-        logMethodEnd( methodName, portfolioDTO );
-        return portfolioDTO;
+        PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
+        logMethodEnd( methodName, portfolioDE );
+        return portfolioDE;
     }
 
     /**
@@ -48,20 +46,19 @@ public class PortfolioService extends BaseService implements MyLogger
      * @return List of Portfolio DTO's for the customer
      * @throws PortfolioNotFoundException
      */
-    public List<PortfolioDTO> getPortfoliosByCustomerId( final int customerId )
+    public List<PortfolioDE> getPortfoliosByCustomerId( final int customerId )
         throws PortfolioNotFoundException
     {
-        final String methodName = "getPortfolioByCustomerId";
+        final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
         List<PortfolioEntity> portfolioEntities = portfolioRepository.findByCustomerId( customerId );
-        List<PortfolioDTO> portfolioDTOs = new ArrayList<>();
+        List<PortfolioDE> portfolioDomainEntities = new ArrayList<>();
         if ( portfolioEntities != null )
         {
-            List<PortfolioDomainEntity> portfolioDomainEntities = listCopyPortfolioEntityToPortfolioDomainEntity.copy( portfolioEntities );
-            portfolioDTOs = listCopyPortfolioDomainEntityToPortfolioDTO.copy( portfolioDomainEntities );
+            portfolioDomainEntities = listCopyPortfolioEntityToPortfolioDomainEntity.copy( portfolioEntities );
         }
-        logMethodEnd( methodName, portfolioDTOs );
-        return portfolioDTOs;
+        logMethodEnd( methodName, portfolioDomainEntities );
+        return portfolioDomainEntities;
     }
 
     /**
@@ -69,19 +66,18 @@ public class PortfolioService extends BaseService implements MyLogger
      * @param portfolioId
      * @return
      */
-    public List<CustomerStockDTO> getPortfolioStocks( final int portfolioId )
+    public List<CustomerStockDE> getPortfolioStocks( final int portfolioId )
     {
         final String methodName = "getPortfolioByCustomerId";
         logMethodBegin( methodName, portfolioId );
-        List<CustomerStockDTO> customerStockDTOs = new ArrayList<>();
         List<VPortfolioStockEntity> stocks = vPortfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
+        List<CustomerStockDE> customerStockDEs = new ArrayList<>();
         if ( stocks != null )
         {
-            List<CustomerStockDomainEntity> customerStockDomainEntities = listCopyVPortfolioStockEntityToCustomerStockDomainEntity.copy( stocks );
-            customerStockDTOs = listCopyCustomerStockDomainEntityToCustomerStockDTO.copy( customerStockDomainEntities );
+            customerStockDEs = listCopyVPortfolioStockEntityToCustomerStockDE.copy( stocks );
         }
-        logMethodEnd( methodName, customerStockDTOs );
-        return customerStockDTOs;
+        logMethodEnd( methodName, customerStockDEs );
+        return customerStockDEs;
     }
 
     /**
@@ -90,13 +86,30 @@ public class PortfolioService extends BaseService implements MyLogger
      * @param portfolioDTO
      * @return PortfolioEntity that was inserted
      */
-    public PortfolioEntity addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
+    public PortfolioDE addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDTO );
         PortfolioEntity portfolioEntity = PortfolioEntity.newInstance( portfolioDTO );
         portfolioEntity = portfolioRepository.save( portfolioEntity );
-        logMethodEnd( methodName, portfolioEntity );
-        return portfolioEntity;
+        PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
+        logMethodEnd( methodName, portfolioDE );
+        return portfolioDE;
+    }
+
+    /**
+     * Delete the portfolio from the database
+     * @param portfolioId The portfolio id
+     * @return The PortfolioDE for the deleted portfolio
+     */
+    public PortfolioDE deletePortfolio( final int portfolioId )
+    {
+        final String methodName = "deletePortfolio";
+        logMethodBegin( methodName, portfolioId );
+        PortfolioEntity portfolioEntity = portfolioRepository.getOne( portfolioId );
+        portfolioRepository.delete( portfolioId );
+        PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
+        logMethodEnd( methodName, portfolioDE );
+        return portfolioDE;
     }
 }

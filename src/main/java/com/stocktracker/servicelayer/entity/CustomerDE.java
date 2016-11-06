@@ -3,10 +3,12 @@ package com.stocktracker.servicelayer.entity;
 import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
 import org.springframework.beans.BeanUtils;
 
+import java.util.List;
+
 /**
  * Created by mike on 9/10/2016.
  */
-public class CustomerDomainEntity
+public class CustomerDE
 {
     private int id;
     private String email;
@@ -15,24 +17,28 @@ public class CustomerDomainEntity
      * Create a new empty instance
      * @return
      */
-    public static CustomerDomainEntity newInstance()
+    public static CustomerDE newInstance()
     {
-        return new CustomerDomainEntity();
+        return new CustomerDE();
     }
 
     /**
-     * Convert the {@code customerEntity} into a {@code CustomerDomainEntity}
+     * Convert the {@code customerEntity} into a {@code CustomerDE}
      * @param customerEntity
      * @return
      */
-    public static CustomerDomainEntity newInstance( final CustomerEntity customerEntity )
+    public static CustomerDE newInstance( final CustomerEntity customerEntity )
     {
-        CustomerDomainEntity customerDomainEntity = new CustomerDomainEntity();
-        BeanUtils.copyProperties( customerEntity, customerDomainEntity );
-        return customerDomainEntity;
+        CustomerDE customerDE = new CustomerDE();
+        BeanUtils.copyProperties( customerEntity, customerDE );
+        return customerDE;
     }
 
-    private CustomerDomainEntity()
+    public void setPortfolios( final List<PortfolioDE> customerDEPortfolios )
+    {
+    }
+
+    private CustomerDE()
     {
     }
 
@@ -59,7 +65,7 @@ public class CustomerDomainEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "CustomerDomainEntity" );
+        final StringBuilder sb = new StringBuilder( "CustomerDE" );
         sb.append( "@" );
         sb.append( hashCode() );
         sb.append( "{" );

@@ -1,19 +1,49 @@
 package com.stocktracker.servicelayer.entity;
 
+import com.stocktracker.repositorylayer.common.BooleanUtils;
+import com.stocktracker.repositorylayer.db.entity.StockEntity;
+import com.stocktracker.weblayer.dto.StockDTO;
+import org.springframework.beans.BeanUtils;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
  * Created by mike on 9/11/2016.
  */
-public class StockDomainEntity
+public class StockDE
 {
     private String tickerSymbol;
     private String companyName;
     private String exchange;
     private int createdBy;
-    private char userEntered;
+    private boolean userEntered;
     private BigDecimal lastPrice;
+
+    /**
+     * Create a new {@code StockDE} from a {@code StockEntity} instance
+     * @param stockEntity
+     * @return
+     */
+    public static StockDE newInstance( final StockEntity stockEntity )
+    {
+        StockDE stockDE = new StockDE();
+        BeanUtils.copyProperties( stockEntity, stockDE );
+        stockDE.setUserEntered( BooleanUtils.fromCharToBoolean( stockEntity.getUserEntered() ));
+        return stockDE;
+    }
+
+    /**
+     * Create a new {@code StockDE} from a {@code StockDTO} instance
+     * @param stockDto
+     * @return
+     */
+    public static StockDE newInstance( final StockDTO stockDto )
+    {
+        StockDE stockDE = new StockDE();
+        BeanUtils.copyProperties( stockDto, stockDE );
+        return stockDE;
+    }
 
     public String getTickerSymbol()
     {
@@ -55,12 +85,12 @@ public class StockDomainEntity
         this.createdBy = createdBy;
     }
 
-    public char getUserEntered()
+    public boolean isUserEntered()
     {
         return userEntered;
     }
 
-    public void setUserEntered( final char userEntered )
+    public void setUserEntered( final boolean userEntered )
     {
         this.userEntered = userEntered;
     }
@@ -76,7 +106,7 @@ public class StockDomainEntity
         {
             return false;
         }
-        final StockDomainEntity that = (StockDomainEntity) o;
+        final StockDE that = (StockDE) o;
         return Objects.equals( tickerSymbol, that.tickerSymbol );
     }
     @Override
@@ -98,7 +128,7 @@ public class StockDomainEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockDomainEntity" );
+        final StringBuilder sb = new StringBuilder( "StockDE" );
         sb.append( "@" );
         sb.append( hashCode() );
         sb.append( "{" );

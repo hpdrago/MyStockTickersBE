@@ -6,14 +6,10 @@ import com.stocktracker.repositorylayer.PortfolioRepository;
 import com.stocktracker.repositorylayer.PortfolioStockRepository;
 import com.stocktracker.repositorylayer.StockRepository;
 import com.stocktracker.repositorylayer.VPortfolioStockRepository;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerDomainEntityToCustomerDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerEntityToCustomerDomainEntity;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerStockDomainEntityToCustomerStockDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioDomainEntityToPortfolioDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerEntityToCustomerDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioEntityToPortfolioDomainEntity;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDomainEntityToStockDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDomainEntity;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyVPortfolioStockEntityToCustomerStockDomainEntity;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDE;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyVPortfolioStockEntityToCustomerStockDE;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,14 +29,10 @@ public class BaseService implements MyLogger
     /***********************************************
      *  L I S T  B E A N  C O P I E R S
      **********************************************/
-    protected ListCopyVPortfolioStockEntityToCustomerStockDomainEntity listCopyVPortfolioStockEntityToCustomerStockDomainEntity;
-    protected ListCopyCustomerStockDomainEntityToCustomerStockDTO listCopyCustomerStockDomainEntityToCustomerStockDTO;
-    protected ListCopyCustomerEntityToCustomerDomainEntity listCopyCustomerEntityToCustomerDomainEntity;
-    protected ListCopyCustomerDomainEntityToCustomerDTO listCopyCustomerDomainEntityToCustomerDTO;
+    protected ListCopyVPortfolioStockEntityToCustomerStockDE listCopyVPortfolioStockEntityToCustomerStockDE;
+    protected ListCopyCustomerEntityToCustomerDE listCopyCustomerEntityToCustomerDE;
     protected ListCopyPortfolioEntityToPortfolioDomainEntity listCopyPortfolioEntityToPortfolioDomainEntity;
-    protected ListCopyPortfolioDomainEntityToPortfolioDTO listCopyPortfolioDomainEntityToPortfolioDTO;
-    protected ListCopyStockEntityToStockDomainEntity listCopyStockEntityToStockDomainEntity;
-    protected ListCopyStockDomainEntityToStockDTO listCopyStockDomainEntityToStockDTO;
+    protected ListCopyStockEntityToStockDE listCopyStockEntityToStockDE;
 
     /**
      * Dependency injection of the StockRepository
@@ -56,17 +48,10 @@ public class BaseService implements MyLogger
     }
 
     @Autowired
-    public void setListCopyStockEntityToStockDomainEntity(
-        final ListCopyStockEntityToStockDomainEntity listCopyStockEntityToStockDomainEntity )
+    public void setListCopyStockEntityToStockDE(
+        final ListCopyStockEntityToStockDE listCopyStockEntityToStockDE )
     {
-        this.listCopyStockEntityToStockDomainEntity = listCopyStockEntityToStockDomainEntity;
-    }
-
-    @Autowired
-    public void setListCopyStockDomainEntityToStockDTO(
-        final ListCopyStockDomainEntityToStockDTO listCopyStockDomainEntityToStockDTO )
-    {
-        this.listCopyStockDomainEntityToStockDTO = listCopyStockDomainEntityToStockDTO;
+        this.listCopyStockEntityToStockDE = listCopyStockEntityToStockDE;
     }
 
     /**
@@ -95,38 +80,14 @@ public class BaseService implements MyLogger
 
     /**
      * Dependency injection of the ListCopyCustomerEntityToCustomerDo
-     * @param listCopyCustomerEntityToCustomerDomainEntity
+     * @param listCopyCustomerEntityToCustomerDE
      */
     @Autowired
-    public void setListCopyCustomerEntityToCustomerDomainEntity( final ListCopyCustomerEntityToCustomerDomainEntity listCopyCustomerEntityToCustomerDomainEntity )
+    public void setListCopyCustomerEntityToCustomerDE( final ListCopyCustomerEntityToCustomerDE listCopyCustomerEntityToCustomerDE )
     {
         final String methodName = "setListCopyCustomerEntityToCustomerDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyCustomerEntityToCustomerDomainEntity );
-        this.listCopyCustomerEntityToCustomerDomainEntity = listCopyCustomerEntityToCustomerDomainEntity;
-    }
-
-    /**
-     * Dependency injection of the ListCopyCustomerDoToCustomerDo
-     * @param
-     */
-    @Autowired
-    public void setListCopyCustomerDoToCustomerDo( final ListCopyCustomerDomainEntityToCustomerDTO listCopyCustomerDomainEntityToCustomerDTO )
-    {
-        final String methodName = "setListCopyCustomerDoToCustomerDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyCustomerDomainEntityToCustomerDTO );
-        this.listCopyCustomerDomainEntityToCustomerDTO = listCopyCustomerDomainEntityToCustomerDTO;
-    }
-
-    /**
-     * Dependency injection of the ListCopyPortfolioDoToPortfolioDo
-     * @param
-     */
-    @Autowired
-    public void setListCopyPortfolioDoToPortfolioDo( final ListCopyPortfolioDomainEntityToPortfolioDTO listCopyPortfolioDomainEntityToPortfolioDTO )
-    {
-        final String methodName = "setListCopyPortfolioDoToPortfolioDo";
-        logDebug( methodName, "Dependency Injection of: " + listCopyPortfolioDomainEntityToPortfolioDTO );
-        this.listCopyPortfolioDomainEntityToPortfolioDTO = listCopyPortfolioDomainEntityToPortfolioDTO;
+        logDebug( methodName, "Dependency Injection of: " + listCopyCustomerEntityToCustomerDE );
+        this.listCopyCustomerEntityToCustomerDE = listCopyCustomerEntityToCustomerDE;
     }
 
     /**
@@ -179,41 +140,15 @@ public class BaseService implements MyLogger
     }
 
     /**
-     * Dependency injection of the ListCopyPortfolioDoToPortfolioDo
-     * @param
-     */
-    @Autowired
-    public void setListCopyPortfolioDomainEntityToPortfolioDTO (
-        final ListCopyPortfolioDomainEntityToPortfolioDTO listCopyPortfolioDomainEntityToPortfolioDTO )
-    {
-        final String methodName = "setListCopyPortfolioDomainEntityToPortfolioDTO";
-        logDebug( methodName, "Dependency Injection of: " + listCopyPortfolioDomainEntityToPortfolioDTO );
-        this.listCopyPortfolioDomainEntityToPortfolioDTO = listCopyPortfolioDomainEntityToPortfolioDTO;
-    }
-
-    /**
      * Dependency injection of the ListCopyVPortfolioStockEntityToCustomerStockDomainEntity
      * @param
      */
     @Autowired
-    public void setListCopyVPortfolioStockEntityToCustomerStockDomainEntity(
-        ListCopyVPortfolioStockEntityToCustomerStockDomainEntity listCopyVPortfolioStockEntityToCustomerStockDomainEntity )
+    public void setListCopyVPortfolioStockEntityToCustomerStockDE(
+        ListCopyVPortfolioStockEntityToCustomerStockDE listCopyVPortfolioStockEntityToCustomerStockDE )
     {
         final String methodName = "setListCopyVPortfolioStockEntityToCustomerStockDomainEntity";
-        logDebug( methodName, "Dependency Injection of: " + listCopyVPortfolioStockEntityToCustomerStockDomainEntity );
-        this.listCopyVPortfolioStockEntityToCustomerStockDomainEntity = listCopyVPortfolioStockEntityToCustomerStockDomainEntity;
-    }
-
-    /**
-     * Dependency injection of the ListCopyCustomerStockDomainEntityToCustomerStockDTO
-     * @param
-     */
-    @Autowired
-    public void setListCopyCustomerStockDomainEntityToCustomerStockDTO(
-        ListCopyCustomerStockDomainEntityToCustomerStockDTO listCopyCustomerStockDomainEntityToCustomerStockDTO )
-    {
-        final String methodName = "setListCopyCustomerStockDomainEntityToCustomerStockDTO";
-        logDebug( methodName, "Dependency Injection of: " + listCopyCustomerStockDomainEntityToCustomerStockDTO );
-        this.listCopyCustomerStockDomainEntityToCustomerStockDTO = listCopyCustomerStockDomainEntityToCustomerStockDTO;
+        logDebug( methodName, "Dependency Injection of: " + listCopyVPortfolioStockEntityToCustomerStockDE );
+        this.listCopyVPortfolioStockEntityToCustomerStockDE = listCopyVPortfolioStockEntityToCustomerStockDE;
     }
 }

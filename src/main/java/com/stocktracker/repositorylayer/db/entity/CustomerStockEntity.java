@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.db.entity;
 
+import com.stocktracker.servicelayer.entity.CustomerStockDE;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +18,7 @@ import java.util.Objects;
 @Entity
 @Table( name = "customer_stock", schema = "stocktracker", catalog = "" )
 @IdClass( CustomerStockEntityPK.class )
-public class CustomerStockEntity
+public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, CustomerStockDE>
 {
     private Integer customerId;
     private String tickerSymbol;

@@ -1,5 +1,8 @@
 package com.stocktracker.repositorylayer.db.entity;
 
+import com.stocktracker.repositorylayer.VPortfolioStockRepository;
+import com.stocktracker.servicelayer.entity.StockDE;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "v_portfolio_stock", schema = "stocktracker", catalog = "" )
-public class VPortfolioStockEntity
+public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, StockDE>
 {
     private String rowId;
     private String tickerSymbol;

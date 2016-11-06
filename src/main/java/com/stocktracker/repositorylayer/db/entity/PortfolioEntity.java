@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.db.entity;
 
+import com.stocktracker.servicelayer.entity.PortfolioDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.beans.BeanUtils;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "portfolio", schema = "stocktracker", catalog = "" )
-public class PortfolioEntity
+public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
 {
     private int id;
     private String name;

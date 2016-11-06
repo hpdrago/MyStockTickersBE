@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
+import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -32,13 +32,13 @@ public class PortfolioDTO
 
     /**
      * Creates a new instance from (@code portfolioEntity)
-     * @param portfolioDomainEntity
+     * @param portfolioDE
      * @return
      */
-    public static final PortfolioDTO newInstance( final PortfolioDomainEntity portfolioDomainEntity )
+    public static final PortfolioDTO newInstance( final PortfolioDE portfolioDE )
     {
         PortfolioDTO portfolioDTO = new PortfolioDTO();
-        BeanUtils.copyProperties( portfolioDomainEntity, portfolioDTO );
+        BeanUtils.copyProperties( portfolioDE, portfolioDTO );
         return portfolioDTO;
     }
 

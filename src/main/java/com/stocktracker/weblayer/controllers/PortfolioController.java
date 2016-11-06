@@ -1,8 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
-import com.stocktracker.servicelayer.entity.PortfolioDomainEntity;
+import com.stocktracker.servicelayer.entity.CustomerStockDE;
+import com.stocktracker.servicelayer.entity.PortfolioDE;
 import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.weblayer.dto.CustomerStockDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -25,7 +25,7 @@ import java.util.List;
  * Created by mike on 9/11/2016.
  */
 @RestController
-public class PortfolioController implements MyLogger
+public class PortfolioController extends BaseController implements MyLogger
 {
     /**
      * Autowired service class
@@ -58,7 +58,8 @@ public class PortfolioController implements MyLogger
     {
         final String methodName = "getPortfolios";
         logMethodBegin( methodName );
-        PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
+        PortfolioDE portfolioDE = portfolioService.getPortfolioById( portfolioId );
+        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
         logMethodEnd( methodName, portfolioDTO );
         return portfolioDTO;
     }
@@ -76,13 +77,14 @@ public class PortfolioController implements MyLogger
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
-        List<PortfolioDTO> portfolioDTOs = portfolioService.getPortfoliosByCustomerId( customerId );
+        List<PortfolioDE> portfolioDEs = portfolioService.getPortfoliosByCustomerId( customerId );
+        List<PortfolioDTO> portfolioDTOs = listCopyPortfolioDEToPortfolioDTO.copy( portfolioDEs );
         logMethodEnd( methodName, portfolioDTOs );
         return portfolioDTOs;
     }
 
     /**
-     * Get a list of stocks in a customer's portoflio
+     * Get a list of stocks in a customer's portfolio
      *
      * @return
      */
@@ -94,13 +96,14 @@ public class PortfolioController implements MyLogger
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
-        List<CustomerStockDTO> customerStockDTOs = portfolioService.getPortfolioStocks( portfolioId );
+        List<CustomerStockDE> customerStockDEs = portfolioService.getPortfolioStocks( portfolioId );
+        List<CustomerStockDTO> customerStockDTOs = listCopyCustomerStockDEToCustomerStockDTO.copy( customerStockDEs);
         logMethodEnd( methodName, customerStockDTOs );
         return customerStockDTOs;
     }
 
     /**
-     * Get a list of stocks in a customer's portoflio
+     * Get a list of stocks in a customer's portfolio
      *
      * @return
      */
@@ -111,14 +114,32 @@ public class PortfolioController implements MyLogger
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDto );
-        PortfolioEntity portfolioEntity = portfolioService.addPortfolio( customerId, portfolioDto );
-        PortfolioDomainEntity portfolioDomainEntity = PortfolioDomainEntity.newInstance( portfolioEntity );
-        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDomainEntity );
+        PortfolioDE portfolioDE = portfolioService.addPortfolio( customerId, portfolioDto );
+        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                     .fromCurrentRequest().path("/{id}")
-                                    .buildAndExpand( portfolioDomainEntity ).toUri());
+                                    .buildAndExpand( portfolioDE ).toUri());
         logMethodEnd( methodName, portfolioDTO );
         return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+    }
+
+    /**
+     * Delete a portfolio by portfolio id
+     * @param portfolioId
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/portfolios/{portfolioId}", method = RequestMethod.DELETE)
+    public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) int portfolioId )
+    {
+        final String methodName = "deletePortfolio";
+        logMethodBegin( methodName, portfolioId );
+        PortfolioDE portfolioDE = portfolioService.getPortfolioById( portfolioId );
+        logDebug( methodName, "portfolio: %s", portfolioDE );
+        portfolioDE = portfolioService.deletePortfolio( portfolioId );
+        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
+        logMethodBegin( methodName, portfolioDTO );
+        return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );
     }
 }

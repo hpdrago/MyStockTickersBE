@@ -90,7 +90,7 @@ public interface MyLogger
      */
     default boolean addHashCodeToLogMessage()
     {
-        return true;
+        return false;
     }
 
     /**

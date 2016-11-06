@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.db.entity;
 
+import com.stocktracker.servicelayer.entity.CustomerDE;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +15,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "customer", schema = "stocktracker", catalog = "" )
-public class CustomerEntity
+public class CustomerEntity extends BaseDBEntity<CustomerEntity, CustomerDE>
 {
     private int id;
     private String email;

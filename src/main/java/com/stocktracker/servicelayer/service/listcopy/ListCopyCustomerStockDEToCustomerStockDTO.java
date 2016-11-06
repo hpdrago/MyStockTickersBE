@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.entity.CustomerStockDomainEntity;
+import com.stocktracker.servicelayer.entity.CustomerStockDE;
 import com.stocktracker.weblayer.dto.CustomerStockDTO;
 import org.springframework.stereotype.Service;
 
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service;
  * Created by mike on 9/10/2016.
  */
 @Service
-public class ListCopyCustomerStockDomainEntityToCustomerStockDTO extends ListCopyProperties<CustomerStockDomainEntity, CustomerStockDTO>
+public class ListCopyCustomerStockDEToCustomerStockDTO extends ListCopyProperties<CustomerStockDE, CustomerStockDTO>
     implements MyLogger
 {
-    public ListCopyCustomerStockDomainEntityToCustomerStockDTO()
+    public ListCopyCustomerStockDEToCustomerStockDTO()
     {
         super( CustomerStockDTO.class );
     }

@@ -6,10 +6,10 @@ package com.stocktracker.servicelayer.entity;
  *
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDomainEntity
+public class PortfolioStockDE
 {
     private int portfolioId;
-    private StockDomainEntity stock;
+    private StockDE stock;
 
     public int getPortfolioId()
     {
@@ -21,12 +21,12 @@ public class PortfolioStockDomainEntity
         this.portfolioId = portfolioId;
     }
 
-    public StockDomainEntity getStock()
+    public StockDE getStock()
     {
         return stock;
     }
 
-    public void setStock( StockDomainEntity stock )
+    public void setStock( StockDE stock )
     {
         this.stock = stock;
     }

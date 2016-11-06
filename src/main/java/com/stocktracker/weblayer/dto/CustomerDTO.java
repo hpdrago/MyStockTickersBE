@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.entity.CustomerDomainEntity;
+import com.stocktracker.servicelayer.entity.CustomerDE;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -17,13 +17,13 @@ public class CustomerDTO
 
     /**
      * Creates a new instance from (@code customerEntity)
-     * @param customerDomainEntity
+     * @param customerDE
      * @return
      */
-    public static final CustomerDTO newInstance( final CustomerDomainEntity customerDomainEntity )
+    public static final CustomerDTO newInstance( final CustomerDE customerDE )
     {
         CustomerDTO customerDTO = new CustomerDTO();
-        BeanUtils.copyProperties( customerDomainEntity, customerDTO );
+        BeanUtils.copyProperties( customerDE, customerDTO );
         return customerDTO;
     }
 

@@ -42,7 +42,6 @@ public class ListCopyProperties<S, T>
         return target;
     }
 
-
     /**
      * Copy the properties from the {@code source} to the {@code target}
      * @param source

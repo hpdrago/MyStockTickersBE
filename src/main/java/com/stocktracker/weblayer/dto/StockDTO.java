@@ -1,5 +1,8 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.servicelayer.entity.StockDE;
+import org.springframework.beans.BeanUtils;
+
 import java.util.Objects;
 
 /**
@@ -11,12 +14,24 @@ public class StockDTO
     private String companyName;
     private String exchange;
     private int createdBy;
-    private char userEntered;
+    private boolean userEntered;
 
     public static StockDTO newInstance(  )
     {
         StockDTO fragment = new StockDTO();
         return fragment;
+    }
+
+    /**
+     * Create a new instance from a StockDE instance
+     * @param stockDE
+     * @return
+     */
+    public static StockDTO newInstance( final StockDE stockDE )
+    {
+        StockDTO stockDTO = new StockDTO();
+        BeanUtils.copyProperties( stockDE, stockDTO );
+        return stockDTO;
     }
 
     private StockDTO()
@@ -63,12 +78,12 @@ public class StockDTO
         this.createdBy = createdBy;
     }
 
-    public char getUserEntered()
+    public boolean isUserEntered()
     {
         return userEntered;
     }
 
-    public void setUserEntered( char userEntered )
+    public void setUserEntered( boolean userEntered )
     {
         this.userEntered = userEntered;
     }

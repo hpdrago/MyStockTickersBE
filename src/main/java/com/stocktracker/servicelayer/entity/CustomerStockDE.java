@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  *
  * Created by mike on 10/30/2016.
  */
-public class CustomerStockDomainEntity
+public class CustomerStockDE
 {
     private int customerId;
     private String tickerSymbol;
