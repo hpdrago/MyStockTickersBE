@@ -136,7 +136,7 @@ public class PortfolioController extends BaseController implements MyLogger
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, portfolioId );
         PortfolioDE portfolioDE = portfolioService.getPortfolioById( portfolioId );
-        logDebug( methodName, "portfolio: %s", portfolioDE );
+        logDebug( methodName, "portfolio: %s", portfolioDE.toString() );
         portfolioDE = portfolioService.deletePortfolio( portfolioId );
         PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
         logMethodBegin( methodName, portfolioDTO );

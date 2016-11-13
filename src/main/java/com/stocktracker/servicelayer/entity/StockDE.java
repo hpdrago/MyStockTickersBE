@@ -129,8 +129,6 @@ public class StockDE
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockDE" );
-        sb.append( "@" );
-        sb.append( hashCode() );
         sb.append( "{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );

@@ -3,8 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.beans.BeanUtils;
 
-import java.util.List;
-
 /**
  * Created by mike on 10/23/2016.
  */
@@ -24,11 +22,6 @@ public class PortfolioDTO
      * The portfolio name
      */
     private String name;
-
-    /**
-     * The stocks for the portfolio
-     */
-    private List<StockDTO> stocks;
 
     /**
      * Creates a new instance from (@code portfolioEntity)
@@ -86,9 +79,7 @@ public class PortfolioDTO
         sb.append( "id=" ).append( id );
         sb.append( ", customerId='" ).append( customerId ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", stocks=" ).append( stocks );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

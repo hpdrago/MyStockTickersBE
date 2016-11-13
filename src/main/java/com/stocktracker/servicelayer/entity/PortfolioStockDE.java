@@ -30,4 +30,14 @@ public class PortfolioStockDE
     {
         this.stock = stock;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "PortfolioStockDE{" );
+        sb.append( "portfolioId=" ).append( portfolioId );
+        sb.append( ", stock=" ).append( stock );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

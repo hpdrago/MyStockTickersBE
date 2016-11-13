@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.StockEntity;
+import com.stocktracker.repositorylayer.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.entity.StockDE;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -71,8 +72,10 @@ public class StockService extends BaseService implements MyLogger
      * Gets a single stock for the {@code tickerSymbol} from the database
      * @param tickerSymbol
      * @return
+     * @throws StockNotFoundException if {@code tickerSymbol} is not found in the stock table
      */
     public StockDE getStock( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
@@ -80,9 +83,30 @@ public class StockService extends BaseService implements MyLogger
          * Get the stock from the database
          */
         StockEntity stockEntity = stockRepository.findOne( tickerSymbol );
+        if ( stockEntity == null )
+        {
+            throw new StockNotFoundException( tickerSymbol );
+        }
         StockDE stockDE = StockDE.newInstance( stockEntity );
         logMethodEnd( methodName, stockDE );
         return stockDE;
+    }
+
+    /**
+     * Determines if the {@code tickerSymbol exists}
+     * @param tickerSymbol
+     * @return
+     */
+    public boolean isStockExists( final String tickerSymbol )
+    {
+        final String methodName = "isStockExists";
+        logMethodBegin( methodName, tickerSymbol );
+        /*
+         * Get the stock from the database
+         */
+        boolean exists = stockRepository.exists( tickerSymbol );
+        logMethodEnd( methodName, exists );
+        return exists;
     }
 
     /**
@@ -92,7 +116,7 @@ public class StockService extends BaseService implements MyLogger
      */
     public StockDE addStock( final StockDE stockDE )
     {
-        final String methodName = "getStock";
+        final String methodName = "addStock";
         logMethodBegin( methodName, stockDE );
         StockEntity stockEntity = StockEntity.newInstance( stockDE );
         stockEntity = stockRepository.save( stockEntity );

@@ -66,8 +66,6 @@ public class CustomerDE
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "CustomerDE" );
-        sb.append( "@" );
-        sb.append( hashCode() );
         sb.append( "{" );
         sb.append( "id=" ).append( id );
         sb.append( ", email=" ).append( getEmail() );

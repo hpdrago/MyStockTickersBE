@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.repositorylayer.exceptions.DuplicateTickerSymbolException;
+import com.stocktracker.repositorylayer.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.entity.StockDE;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.weblayer.dto.StockDTO;
@@ -124,30 +126,38 @@ public class StockController extends BaseController implements MyLogger
     /**
      * Add a stock to the database
      *
-     * @return
+     * @return The stock that was added
      */
     @CrossOrigin
     @RequestMapping( value = "/stocks",
         method = RequestMethod.POST )
-    public ResponseEntity<Void> addStock( @RequestBody StockDTO stockDTO )
+    public ResponseEntity<StockDTO> addStock( @RequestBody StockDTO stockDTO )
     {
         final String methodName = "addStock";
         logMethodBegin( methodName, stockDTO );
+        if ( stockService.isStockExists( stockDTO.getTickerSymbol() ))
+        {
+            logError( methodName, "Duplicate stock: " + stockDTO.getTickerSymbol() );
+            throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
+        }
         StockDE stockDE = StockDE.newInstance( stockDTO );
+        logDebug( methodName, "call stockDE: %s", stockDE.toString() );
         stockDE = stockService.addStock( stockDE );
+        logDebug( methodName, "return stockDE: %s", stockDE.toString() );
         StockDTO returnStockDTO = StockDTO.newInstance( stockDE );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
                                      .buildAndExpand( stockDE ).toUri());
         logMethodEnd( methodName, returnStockDTO );
-        return new ResponseEntity<>( null, httpHeaders, HttpStatus.CREATED );
+        return new ResponseEntity<>( stockDTO, httpHeaders, HttpStatus.CREATED );
     }
 
     /**
      * Delete a stock by ticker symbol
      * @param tickerSymbol
      * @return
+     * @throws StockNotFoundException if the stock does not exist
      */
     @CrossOrigin
     @RequestMapping(value = "/stocks/{tickerSymbol}", method = RequestMethod.DELETE)
@@ -155,10 +165,17 @@ public class StockController extends BaseController implements MyLogger
     {
         final String methodName = "deleteStock";
         logMethodBegin( methodName, tickerSymbol );
-        StockDE stockDE = stockService.getStock( tickerSymbol );
-        logDebug( methodName, "stock: %s", stockDE );
-        stockService.deleteStock( stockDE );
-        logMethodBegin( methodName, stockDE );
+        if ( stockService.isStockExists( tickerSymbol ))
+        {
+            StockDE stockDE = stockService.getStock( tickerSymbol );
+            logDebug( methodName, "stock: %s", stockDE.toString() );
+            stockService.deleteStock( stockDE );
+        }
+        else
+        {
+            throw new StockNotFoundException( "Ticker symbol " + tickerSymbol + " was not found" );
+        }
+        logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
 }

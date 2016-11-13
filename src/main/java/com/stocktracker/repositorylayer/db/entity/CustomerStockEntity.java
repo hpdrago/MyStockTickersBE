@@ -23,7 +23,13 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
     private Integer customerId;
     private String tickerSymbol;
     private Integer numberOfShares;
-    private BigDecimal costBasis;
+    private Integer costBasis;
+    private Integer realizedLoss;
+    private BigDecimal stopLossPrice;
+    private Integer stopLossShares;
+    private BigDecimal profitTakingPrice;
+    private Integer profitTakingShares;
+
 
     @Id
     @Column( name = "customer_id", nullable = false )
@@ -49,6 +55,90 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
         this.tickerSymbol = tickerSymbol;
     }
 
+    @Basic
+    @Column( name = "number_of_shares", nullable = true )
+    public Integer getNumberOfShares()
+    {
+        return numberOfShares;
+    }
+
+    public void setNumberOfShares( final Integer numberOfShares )
+    {
+        this.numberOfShares = numberOfShares;
+    }
+
+    @Basic
+    @Column( name = "cost_basis", nullable = true )
+    public Integer getCostBasis()
+    {
+        return costBasis;
+    }
+
+    public void setCostBasis( final Integer costBasis )
+    {
+        this.costBasis = costBasis;
+    }
+
+    @Basic
+    @Column( name = "realized_loss", nullable = true )
+    public Integer getRealizedLoss()
+    {
+        return realizedLoss;
+    }
+
+    public void setRealizedLoss( final Integer realizedLoss )
+    {
+        this.realizedLoss = realizedLoss;
+    }
+
+    @Basic
+    @Column( name = "stop_loss_price", nullable = true, precision = 2 )
+    public BigDecimal getStopLossPrice()
+    {
+        return stopLossPrice;
+    }
+
+    public void setStopLossPrice( final BigDecimal stopLossPrice )
+    {
+        this.stopLossPrice = stopLossPrice;
+    }
+
+    @Basic
+    @Column( name = "stop_loss_shares", nullable = true )
+    public Integer getStopLossShares()
+    {
+        return stopLossShares;
+    }
+
+    public void setStopLossShares( final Integer stopLossShares )
+    {
+        this.stopLossShares = stopLossShares;
+    }
+
+    @Basic
+    @Column( name = "profit_taking_price", nullable = true )
+    public BigDecimal getProfitTakingPrice()
+    {
+        return profitTakingPrice;
+    }
+
+    public void setProfitTakingPrice( final BigDecimal profitTakingPrice )
+    {
+        this.profitTakingPrice = profitTakingPrice;
+    }
+
+    @Basic
+    @Column( name = "profit_taking_shares", nullable = true )
+    public Integer getProfitTakingShares()
+    {
+        return profitTakingShares;
+    }
+
+    public void setProfitTakingShares( final Integer profitTakingShares )
+    {
+        this.profitTakingShares = profitTakingShares;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -71,27 +161,4 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
         return Objects.hash( customerId, tickerSymbol );
     }
 
-    @Basic
-    @Column( name = "number_of_shares", nullable = true )
-    public Integer getNumberOfShares()
-    {
-        return numberOfShares;
-    }
-
-    public void setNumberOfShares( final Integer numberOfShares )
-    {
-        this.numberOfShares = numberOfShares;
-    }
-
-    @Basic
-    @Column( name = "cost_basis", nullable = true, precision = 2 )
-    public BigDecimal getCostBasis()
-    {
-        return costBasis;
-    }
-
-    public void setCostBasis( final BigDecimal costBasis )
-    {
-        this.costBasis = costBasis;
-    }
 }

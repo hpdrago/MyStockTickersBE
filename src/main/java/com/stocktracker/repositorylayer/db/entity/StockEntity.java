@@ -16,7 +16,7 @@ import java.util.Objects;
  * Created by mike on 9/11/2016.
  */
 @Entity
-@Table( name = "stock", schema = "stocktracker")
+@Table( name = "stock", schema = "stocktracker", catalog = "" )
 public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
 {
     private String tickerSymbol;
@@ -35,6 +35,7 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
     {
         StockEntity stockEntity = new StockEntity();
         BeanUtils.copyProperties( stockDE, stockEntity );
+        stockEntity.setUserEntered( BooleanUtils.fromBooleanToChar( stockDE.isUserEntered() ));
         return stockEntity;
     }
 
@@ -121,29 +122,6 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         this.userEntered = downloaded;
     }
 
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockEntity that = (StockEntity) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-            Objects.equals( companyName, that.companyName ) &&
-            Objects.equals( exchange, that.exchange );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( tickerSymbol, companyName, exchange );
-    }
-
     @Basic
     @Column( name = "last_price", nullable = true, precision = 2 )
     public BigDecimal getLastPrice()
@@ -167,9 +145,33 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy=" ).append( createdBy );
-        sb.append( ", downloaded=" ).append( userEntered );
+        sb.append( ", userEntered=" ).append( userEntered );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( '}' );
         return sb.toString();
     }
+
+    @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        final StockEntity that = (StockEntity) o;
+        return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
+            Objects.equals( companyName, that.companyName ) &&
+            Objects.equals( exchange, that.exchange );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( tickerSymbol, companyName, exchange );
+    }
+
 }

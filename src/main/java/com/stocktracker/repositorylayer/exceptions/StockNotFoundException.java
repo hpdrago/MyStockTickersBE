@@ -9,4 +9,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value= HttpStatus.NOT_FOUND, reason="Stock not found")  // 404
 public class StockNotFoundException extends RuntimeException
 {
+    public StockNotFoundException( final String tickerSymbol )
+    {
+        super( "Ticker symbol " + tickerSymbol + " was not found" ) ;
+    }
 }

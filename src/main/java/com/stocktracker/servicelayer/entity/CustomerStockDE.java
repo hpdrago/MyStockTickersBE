@@ -75,4 +75,18 @@ public class CustomerStockDE
     {
         this.companyName = companyName;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "CustomerStockDE{" );
+        sb.append( "customerId=" ).append( customerId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", numberOfShares=" ).append( numberOfShares );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

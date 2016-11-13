@@ -11,8 +11,13 @@ public class CustomerStockDTO
     private String tickerSymbol;
     private String companyName;
     private Integer numberOfShares;
-    private BigDecimal costBasis;
+    private Integer costBasis;
     private BigDecimal lastPrice;
+    private Integer realizedLoss;
+    private BigDecimal stopLossPrice;
+    private Integer stopLossShares;
+    private BigDecimal profitTakingPrice;
+    private Integer profitTakingShares;
 
     public String getTickerSymbol()
     {
@@ -34,12 +39,12 @@ public class CustomerStockDTO
         this.numberOfShares = numberOfShares;
     }
 
-    public BigDecimal getCostBasis()
+    public Integer getCostBasis()
     {
         return costBasis;
     }
 
-    public void setCostBasis( BigDecimal costBasis )
+    public void setCostBasis( Integer costBasis )
     {
         this.costBasis = costBasis;
     }
@@ -72,5 +77,74 @@ public class CustomerStockDTO
     public void setCompanyName( String companyName )
     {
         this.companyName = companyName;
+    }
+
+    public Integer getRealizedLoss()
+    {
+        return realizedLoss;
+    }
+
+    public void setRealizedLoss( Integer realizedLoss )
+    {
+        this.realizedLoss = realizedLoss;
+    }
+
+    public BigDecimal getStopLossPrice()
+    {
+        return stopLossPrice;
+    }
+
+    public void setStopLossPrice( BigDecimal stopLossPrice )
+    {
+        this.stopLossPrice = stopLossPrice;
+    }
+
+    public Integer getStopLossShares()
+    {
+        return stopLossShares;
+    }
+
+    public void setStopLossShares( Integer stopLossShares )
+    {
+        this.stopLossShares = stopLossShares;
+    }
+
+    public BigDecimal getProfitTakingPrice()
+    {
+        return profitTakingPrice;
+    }
+
+    public void setProfitTakingPrice( BigDecimal profitTakingPrice )
+    {
+        this.profitTakingPrice = profitTakingPrice;
+    }
+
+    public Integer getProfitTakingShares()
+    {
+        return profitTakingShares;
+    }
+
+    public void setProfitTakingShares( Integer profitTakingShares )
+    {
+        this.profitTakingShares = profitTakingShares;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "CustomerStockDTO{" );
+        sb.append( "customerId=" ).append( customerId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", numberOfShares=" ).append( numberOfShares );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", realizedLoss=" ).append( realizedLoss );
+        sb.append( ", stopLossPrice=" ).append( stopLossPrice );
+        sb.append( ", stopLossShares=" ).append( stopLossShares );
+        sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
+        sb.append( ", profitTakingShares=" ).append( profitTakingShares );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

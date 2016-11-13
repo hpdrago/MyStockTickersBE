@@ -113,8 +113,6 @@ public class StockDTO
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockDTO" );
-        sb.append( "@" );
-        sb.append( hashCode() );
         sb.append( "{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );

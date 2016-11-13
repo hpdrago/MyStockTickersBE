@@ -503,7 +503,8 @@ public interface MyLogger
         }
         else
         {
-            sb.append( String.format( "%s %s", methodName, MessageFormat.format( messageFormat, args ) ));
+            String message = MessageFormat.format( messageFormat, args );
+            sb.append( String.format( "%s %s", methodName, message ));
         }
         return sb.toString();
     }

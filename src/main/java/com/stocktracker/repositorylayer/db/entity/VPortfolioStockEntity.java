@@ -1,6 +1,5 @@
 package com.stocktracker.repositorylayer.db.entity;
 
-import com.stocktracker.repositorylayer.VPortfolioStockRepository;
 import com.stocktracker.servicelayer.entity.StockDE;
 
 import javax.persistence.Basic;
@@ -19,12 +18,16 @@ import java.util.Objects;
 public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, StockDE>
 {
     private String rowId;
+    private Integer portfolioId;
     private String tickerSymbol;
     private String companyName;
-    private BigDecimal lastPrice;
-    private BigDecimal costBasis;
     private Integer numberOfShares;
-    private Integer portfolioId;
+    private BigDecimal lastPrice;
+    private Integer costBasis;
+    private BigDecimal stopLossPrice;
+    private Integer stopLossShares;
+    private Integer profitTakingShares;
+    private BigDecimal profitTakingPrice;
 
     @Id
     public String getRowId()
@@ -87,12 +90,12 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
 
     @Basic
     @Column( name = "cost_basis", nullable = true, precision = 2 )
-    public BigDecimal getCostBasis()
+    public Integer getCostBasis()
     {
         return costBasis;
     }
 
-    public void setCostBasis( final BigDecimal costBasis )
+    public void setCostBasis( final Integer costBasis )
     {
         this.costBasis = costBasis;
     }
@@ -109,6 +112,73 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
         this.numberOfShares = numberOfShares;
     }
 
+    @Basic
+    @Column( name = "stop_loss_price", nullable = true, precision = 2 )
+    public BigDecimal getStopLossPrice()
+    {
+        return stopLossPrice;
+    }
+
+    public void setStopLossPrice( final BigDecimal stopLossPrice )
+    {
+        this.stopLossPrice = stopLossPrice;
+    }
+
+    @Basic
+    @Column( name = "stop_loss_shares", nullable = true )
+    public Integer getStopLossShares()
+    {
+        return stopLossShares;
+    }
+
+    public void setStopLossShares( final Integer stopLossShares )
+    {
+        this.stopLossShares = stopLossShares;
+    }
+
+    @Basic
+    @Column( name = "profit_taking_price", nullable = true )
+    public BigDecimal getProfitTakingPrice()
+    {
+        return profitTakingPrice;
+    }
+
+    public void setProfitTakingPrice( final BigDecimal profitTakingPrice )
+    {
+        this.profitTakingPrice = profitTakingPrice;
+    }
+
+    @Basic
+    @Column( name = "profit_taking_shares", nullable = true )
+    public Integer getProfitTakingShares()
+    {
+        return profitTakingShares;
+    }
+
+    public void setProfitTakingShares( final Integer profitTakingShares )
+    {
+        this.profitTakingShares = profitTakingShares;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "VPortfolioStockEntity{" );
+        sb.append( "rowId='" ).append( rowId ).append( '\'' );
+        sb.append( ", portfolioId=" ).append( portfolioId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", numberOfShares=" ).append( numberOfShares );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", stopLossPrice=" ).append( stopLossPrice );
+        sb.append( ", stopLossShares=" ).append( stopLossShares );
+        sb.append( ", profitTakingShares=" ).append( profitTakingShares );
+        sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
+        sb.append( '}' );
+        return sb.toString();
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -121,16 +191,13 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
             return false;
         }
         final VPortfolioStockEntity that = (VPortfolioStockEntity) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-            Objects.equals( companyName, that.companyName ) &&
-            Objects.equals( lastPrice, that.lastPrice ) &&
-            Objects.equals( costBasis, that.costBasis ) &&
-            Objects.equals( numberOfShares, that.numberOfShares );
+        return Objects.equals( rowId, that.rowId ) &&
+            Objects.equals( portfolioId, that.portfolioId );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( tickerSymbol, companyName, lastPrice, costBasis, numberOfShares );
+        return Objects.hash( rowId, portfolioId );
     }
 }
