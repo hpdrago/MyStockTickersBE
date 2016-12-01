@@ -3,10 +3,8 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.entity.CustomerStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
-import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.weblayer.dto.CustomerStockDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,43 +25,6 @@ import java.util.List;
 @RestController
 public class PortfolioController extends BaseController implements MyLogger
 {
-    /**
-     * Autowired service class
-     */
-    private PortfolioService portfolioService;
-
-    /**
-     * Allow DI to set the CustomerHandler
-     *
-     * @param portfolioService
-     */
-    @Autowired
-    public void setPortfolioService( final PortfolioService portfolioService )
-    {
-        final String methodName = "setPortfolioService";
-        logMethodBegin( methodName, portfolioService );
-        this.portfolioService = portfolioService;
-    }
-
-    /**
-     * Get the portfolio for the {@code portfolioId}
-     *
-     * @return
-     */
-    @CrossOrigin
-    @RequestMapping( value = "/portfolios/{portfolioId}",
-                     method = RequestMethod.GET,
-                     produces = {MediaType.APPLICATION_JSON_VALUE})
-    public PortfolioDTO getPortfolio( @PathVariable int portfolioId )
-    {
-        final String methodName = "getPortfolios";
-        logMethodBegin( methodName );
-        PortfolioDE portfolioDE = portfolioService.getPortfolioById( portfolioId );
-        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
-        logMethodEnd( methodName, portfolioDTO );
-        return portfolioDTO;
-    }
-
     /**
      * Get a list of portfolios for a single customer {@code customerId}
      *
@@ -89,7 +50,7 @@ public class PortfolioController extends BaseController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolio/{portfolioId}",
+    @RequestMapping( value = "/portfolios/{portfolioId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<CustomerStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
@@ -97,7 +58,7 @@ public class PortfolioController extends BaseController implements MyLogger
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
         List<CustomerStockDE> customerStockDEs = portfolioService.getPortfolioStocks( portfolioId );
-        List<CustomerStockDTO> customerStockDTOs = listCopyCustomerStockDEToCustomerStockDTO.copy( customerStockDEs);
+        List<CustomerStockDTO> customerStockDTOs = listCopyCustomerStockDEToCustomerStockDTO.copy( customerStockDEs ) ;
         logMethodEnd( methodName, customerStockDTOs );
         return customerStockDTOs;
     }

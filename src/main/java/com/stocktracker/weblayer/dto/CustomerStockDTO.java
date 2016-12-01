@@ -1,5 +1,8 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.servicelayer.entity.CustomerStockDE;
+import org.springframework.beans.BeanUtils;
+
 import java.math.BigDecimal;
 
 /**
@@ -11,13 +14,27 @@ public class CustomerStockDTO
     private String tickerSymbol;
     private String companyName;
     private Integer numberOfShares;
+    private Integer sectorId;
     private Integer costBasis;
     private BigDecimal lastPrice;
+    private Integer realizedGain;
     private Integer realizedLoss;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private BigDecimal profitTakingPrice;
     private Integer profitTakingShares;
+
+    /**
+     * Creates a new {@code CustomerStockDTO} from a {@code CustomerStockDE} instance
+     * @param customerStockDE
+     * @return
+     */
+    public static CustomerStockDTO newInstance( final CustomerStockDE customerStockDE )
+    {
+        CustomerStockDTO customerStockDTO = new CustomerStockDTO();
+        BeanUtils.copyProperties( customerStockDE, customerStockDTO );
+        return customerStockDTO;
+    }
 
     public String getTickerSymbol()
     {
@@ -129,6 +146,26 @@ public class CustomerStockDTO
         this.profitTakingShares = profitTakingShares;
     }
 
+    public Integer getRealizedGain()
+    {
+        return realizedGain;
+    }
+
+    public void setRealizedGain( Integer realizedGain )
+    {
+        this.realizedGain = realizedGain;
+    }
+
+    public Integer getSectorId()
+    {
+        return sectorId;
+    }
+
+    public void setSectorId( Integer sectorId )
+    {
+        this.sectorId = sectorId;
+    }
+
     @Override
     public String toString()
     {
@@ -137,8 +174,10 @@ public class CustomerStockDTO
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
+        sb.append( ", sectorId=" ).append( sectorId );
         sb.append( ", costBasis=" ).append( costBasis );
         sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", realizedGain=" ).append( realizedGain );
         sb.append( ", realizedLoss=" ).append( realizedLoss );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
         sb.append( ", stopLossShares=" ).append( stopLossShares );

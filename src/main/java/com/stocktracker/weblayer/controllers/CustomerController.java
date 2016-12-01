@@ -2,9 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.entity.CustomerDE;
-import com.stocktracker.servicelayer.service.CustomerService;
 import com.stocktracker.weblayer.dto.CustomerDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,24 +20,6 @@ import java.util.List;
 @RestController
 public class CustomerController extends BaseController implements MyLogger
 {
-    /**
-     * Autowired service
-     */
-    private CustomerService customerService;
-
-    /**
-     * Allow DI to set the CustomerHandler
-     *
-     * @param customerService
-     */
-    @Autowired
-    public void setCustomerService( final CustomerService customerService )
-    {
-        final String methodName = "setCustomerHandler";
-        logMethodBegin( methodName, customerService );
-        this.customerService = customerService;
-    }
-
     /**
      * Get all of the customers
      *

@@ -20,6 +20,14 @@ public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, Por
     private int portfolioId;
     private String tickerSymbol;
 
+    public static PortfolioStockEntity newInstance( final int portfolioId, final String tickerSymbol )
+    {
+        PortfolioStockEntity portfolioStockEntity = new PortfolioStockEntity();
+        portfolioStockEntity.setPortfolioId( portfolioId );
+        portfolioStockEntity.setTickerSymbol( tickerSymbol );
+        return portfolioStockEntity;
+    }
+
     @Id
     @Column( name = "portfolio_id", nullable = false )
     public int getPortfolioId()
@@ -64,5 +72,15 @@ public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, Por
     public int hashCode()
     {
         return Objects.hash( portfolioId, tickerSymbol );
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "PortfolioStockEntity{" );
+        sb.append( "portfolioId=" ).append( portfolioId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

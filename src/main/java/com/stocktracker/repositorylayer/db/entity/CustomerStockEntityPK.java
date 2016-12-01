@@ -13,6 +13,12 @@ public class CustomerStockEntityPK implements Serializable
     private Integer customerId;
     private String tickerSymbol;
 
+    public CustomerStockEntityPK( final int customerId, final String tickerSymbol )
+    {
+        this.customerId = customerId;
+        this.tickerSymbol = tickerSymbol;
+    }
+
     @Column( name = "customer_id", nullable = false )
     @Id
     public Integer getCustomerId()

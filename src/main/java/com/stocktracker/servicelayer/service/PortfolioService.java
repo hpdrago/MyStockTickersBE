@@ -68,7 +68,7 @@ public class PortfolioService extends BaseService implements MyLogger
      */
     public List<CustomerStockDE> getPortfolioStocks( final int portfolioId )
     {
-        final String methodName = "getPortfolioByCustomerId";
+        final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
         List<VPortfolioStockEntity> stocks = vPortfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
         List<CustomerStockDE> customerStockDEs = new ArrayList<>();

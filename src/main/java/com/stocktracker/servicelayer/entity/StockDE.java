@@ -95,26 +95,6 @@ public class StockDE
         this.userEntered = userEntered;
     }
 
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockDE that = (StockDE) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol );
-    }
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( tickerSymbol, companyName, exchange );
-    }
-
     public BigDecimal getLastPrice()
     {
         return lastPrice;
@@ -138,5 +118,25 @@ public class StockDE
         sb.append( ", lastPrice='" ).append( userEntered ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        final StockDE that = (StockDE) o;
+        return Objects.equals( tickerSymbol, that.tickerSymbol );
+    }
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( tickerSymbol, companyName, exchange );
     }
 }

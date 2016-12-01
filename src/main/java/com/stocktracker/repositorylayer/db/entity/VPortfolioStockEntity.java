@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.db.entity;
 
 import com.stocktracker.servicelayer.entity.StockDE;
+import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -14,33 +15,27 @@ import java.util.Objects;
  * Created by mike on 10/30/2016.
  */
 @Entity
+@Immutable
 @Table( name = "v_portfolio_stock", schema = "stocktracker", catalog = "" )
 public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, StockDE>
 {
-    private String rowId;
     private Integer portfolioId;
     private String tickerSymbol;
     private String companyName;
     private Integer numberOfShares;
     private BigDecimal lastPrice;
+    private Integer sectorId;
+    private Integer subSectorId;
     private Integer costBasis;
+    private Integer realizedGain;
+    private Integer realizedLoss;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private Integer profitTakingShares;
     private BigDecimal profitTakingPrice;
 
-    @Id
-    public String getRowId()
-    {
-        return rowId;
-    }
-
-    public void setRowId( String rowId )
-    {
-        this.rowId = rowId;
-    }
-
     @Basic
+    @Id
     @Column( name = "portfolio_id", nullable = false )
     public Integer getPortfolioId()
     {
@@ -137,7 +132,7 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
     }
 
     @Basic
-    @Column( name = "profit_taking_price", nullable = true )
+    @Column( name = "profit_taking_price", nullable = true, precision = 2 )
     public BigDecimal getProfitTakingPrice()
     {
         return profitTakingPrice;
@@ -160,17 +155,68 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
         this.profitTakingShares = profitTakingShares;
     }
 
+    @Basic
+    @Column( name = "realized_gain", nullable = true )
+    public Integer getRealizedGain()
+    {
+        return realizedGain;
+    }
+
+    public void setRealizedGain( Integer realizedGain )
+    {
+        this.realizedGain = realizedGain;
+    }
+
+    @Basic
+    @Column( name = "realized_loss", nullable = true )
+    public Integer getRealizedLoss()
+    {
+        return realizedLoss;
+    }
+
+    public void setRealizedLoss( Integer realizedLoss )
+    {
+        this.realizedLoss = realizedLoss;
+    }
+
+    @Basic
+    @Column( name = "sector_id", nullable = false, length = 5 )
+    public Integer getSectorId()
+    {
+        return sectorId;
+    }
+
+    public void setSectorId( Integer sectorId )
+    {
+        this.sectorId = sectorId;
+    }
+
+    @Basic
+    @Column( name = "sub_sector_id", nullable = false, length = 5 )
+    public Integer getSubSectorId()
+    {
+        return subSectorId;
+    }
+
+    public void setSubSectorId( Integer subSectorId )
+    {
+        this.subSectorId = subSectorId;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "VPortfolioStockEntity{" );
-        sb.append( "rowId='" ).append( rowId ).append( '\'' );
-        sb.append( ", portfolioId=" ).append( portfolioId );
+        sb.append( "portfolioId=" ).append( portfolioId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
         sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", sectorId=" ).append( sectorId );
+        sb.append( ", subSectorId=" ).append( subSectorId );
         sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", realizedGain=" ).append( realizedGain );
+        sb.append( ", realizedLoss=" ).append( realizedLoss );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
         sb.append( ", stopLossShares=" ).append( stopLossShares );
         sb.append( ", profitTakingShares=" ).append( profitTakingShares );
@@ -191,13 +237,23 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
             return false;
         }
         final VPortfolioStockEntity that = (VPortfolioStockEntity) o;
-        return Objects.equals( rowId, that.rowId ) &&
-            Objects.equals( portfolioId, that.portfolioId );
+        return Objects.equals( portfolioId, that.portfolioId ) &&
+            Objects.equals( tickerSymbol, that.tickerSymbol ) &&
+            Objects.equals( companyName, that.companyName ) &&
+            Objects.equals( numberOfShares, that.numberOfShares ) &&
+            Objects.equals( lastPrice, that.lastPrice ) &&
+            Objects.equals( costBasis, that.costBasis ) &&
+            Objects.equals( realizedGain, that.realizedGain ) &&
+            Objects.equals( realizedLoss, that.realizedLoss ) &&
+            Objects.equals( stopLossPrice, that.stopLossPrice ) &&
+            Objects.equals( stopLossShares, that.stopLossShares ) &&
+            Objects.equals( profitTakingShares, that.profitTakingShares ) &&
+            Objects.equals( profitTakingPrice, that.profitTakingPrice );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( rowId, portfolioId );
+        return Objects.hash( portfolioId, tickerSymbol, companyName, lastPrice, costBasis, numberOfShares, realizedGain, realizedLoss, stopLossPrice, stopLossShares, profitTakingPrice, profitTakingShares );
     }
 }

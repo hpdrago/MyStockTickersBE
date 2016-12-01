@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.db.entity;
 
 import com.stocktracker.servicelayer.entity.CustomerStockDE;
+import org.springframework.beans.BeanUtils;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,13 +24,34 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
     private Integer customerId;
     private String tickerSymbol;
     private Integer numberOfShares;
+    private Integer sectorId;
+    private Integer subSectorId;
     private Integer costBasis;
     private Integer realizedLoss;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private BigDecimal profitTakingPrice;
     private Integer profitTakingShares;
+    private Integer realizedGain;
 
+    /**
+     * Creates a new {@code CustomerStockEntity} instance from {@code CustomerStockDE} instance
+     * @param customerStockDE
+     * @return
+     */
+    public static CustomerStockEntity newInstance( final CustomerStockDE customerStockDE )
+    {
+        CustomerStockEntity customerStockEntity = new CustomerStockEntity();
+        BeanUtils.copyProperties( customerStockDE, customerStockEntity );
+        return customerStockEntity;
+    }
+
+    /**
+     * Default constructor
+     */
+    public CustomerStockEntity()
+    {
+    }
 
     @Id
     @Column( name = "customer_id", nullable = false )
@@ -116,7 +138,7 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
     }
 
     @Basic
-    @Column( name = "profit_taking_price", nullable = true )
+    @Column( name = "profit_taking_price", nullable = true, precision = 2 )
     public BigDecimal getProfitTakingPrice()
     {
         return profitTakingPrice;
@@ -139,6 +161,42 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
         this.profitTakingShares = profitTakingShares;
     }
 
+    @Basic
+    @Column( name = "realized_gain", nullable = true )
+    public Integer getRealizedGain()
+    {
+        return realizedGain;
+    }
+
+    public void setRealizedGain( final Integer realizedGain )
+    {
+        this.realizedGain = realizedGain;
+    }
+
+    @Basic
+    @Column( name = "sector_id", nullable = true )
+    public Integer getSectorId()
+    {
+        return sectorId;
+    }
+
+    public void setSectorId( final Integer sectorId )
+    {
+        this.sectorId = sectorId;
+    }
+
+    @Basic
+    @Column( name = "sub_sector_id", nullable = true )
+    public Integer getSubSectorId()
+    {
+        return sectorId;
+    }
+
+    public void setSubSectorId( final Integer subSectorId )
+    {
+        this.subSectorId = subSectorId;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -159,6 +217,26 @@ public class CustomerStockEntity extends BaseDBEntity<CustomerStockEntity, Custo
     public int hashCode()
     {
         return Objects.hash( customerId, tickerSymbol );
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "CustomerStockEntity{" );
+        sb.append( "customerId=" ).append( customerId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", numberOfShares=" ).append( numberOfShares );
+        sb.append( ", sectorId=" ).append( sectorId );
+        sb.append( ", subSectorId=" ).append( subSectorId );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", realizedLoss=" ).append( realizedLoss );
+        sb.append( ", stopLossPrice=" ).append( stopLossPrice );
+        sb.append( ", stopLossShares=" ).append( stopLossShares );
+        sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
+        sb.append( ", profitTakingShares=" ).append( profitTakingShares );
+        sb.append( ", realizedGain=" ).append( realizedGain );
+        sb.append( '}' );
+        return sb.toString();
     }
 
 }

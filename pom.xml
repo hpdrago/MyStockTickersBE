@@ -58,6 +58,11 @@
 			<artifactId>commons-logging</artifactId>
 			<version>RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>com.yahoofinance-api</groupId>
+			<artifactId>YahooFinanceAPI</artifactId>
+			<version>RELEASE</version>
+		</dependency>
     </dependencies>
 
 	<build>

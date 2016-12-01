@@ -1,5 +1,8 @@
 package com.stocktracker.servicelayer.entity;
 
+import com.stocktracker.repositorylayer.db.entity.PortfolioStockEntity;
+import org.springframework.beans.BeanUtils;
+
 /**
  * This class defines a stock that is part of a portfolio.
  * A stock can be part of more than one port folio.
@@ -10,6 +13,18 @@ public class PortfolioStockDE
 {
     private int portfolioId;
     private StockDE stock;
+
+    /**
+     * Creates a new {@code PortfolioStockInstance} from the properties in {@code portfolioStockEntity}
+     * @param portfolioStockEntity
+     * @return
+     */
+    public static PortfolioStockDE newInstance( final PortfolioStockEntity portfolioStockEntity )
+    {
+        PortfolioStockDE portfolioStockDE = new PortfolioStockDE();
+        BeanUtils.copyProperties( portfolioStockEntity, portfolioStockDE );
+        return portfolioStockDE;
+    }
 
     public int getPortfolioId()
     {
