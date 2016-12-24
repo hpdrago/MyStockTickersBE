@@ -1,4 +1,4 @@
-package com.stocktracker.repositorylayer.exceptions;
+package com.stocktracker.common.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Created by mike on 5/15/2016.
  */
-@ResponseStatus(value= HttpStatus.NOT_FOUND, reason="PortfolioDE not found")  // 404
+@ResponseStatus(value= HttpStatus.NOT_FOUND)  // 404
 public class PortfolioNotFoundException extends RuntimeException
 {
     /**

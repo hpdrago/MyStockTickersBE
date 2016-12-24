@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -19,9 +20,10 @@ import java.util.Objects;
 @Table( name = "portfolio", schema = "stocktracker", catalog = "" )
 public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
 {
-    private int id;
+    private Integer id;
     private String name;
-    private int customerId;
+    private Integer customerId;
+    private Timestamp createDate;
 
     /**
      * Create a new instance from a PortfolioDTO
@@ -38,12 +40,12 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
     @Id
     @GeneratedValue
     @Column( name = "id", nullable = false )
-    public int getId()
+    public Integer getId()
     {
         return id;
     }
 
-    public void setId( final int id )
+    public void setId( final Integer id )
     {
         this.id = id;
     }
@@ -62,14 +64,30 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
 
     @Basic
     @Column( name = "customer_id", nullable = false )
-    public int getCustomerId()
+    public Integer getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( int customerId )
+    public void setCustomerId( Integer customerId )
     {
         this.customerId = customerId;
+    }
+
+    /**
+     * Can be null as default value will be set by the DB.
+     * @return
+     */
+    @Basic
+    @Column( name = "create_date", nullable = false )
+    public Timestamp getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( final Timestamp createDate )
+    {
+        this.createDate = createDate;
     }
 
     @Override
@@ -101,6 +119,7 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
         sb.append( "id=" ).append( id );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", createDate=" ).append( createDate );
         sb.append( '}' );
         return sb.toString();
     }

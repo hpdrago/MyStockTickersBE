@@ -2,12 +2,12 @@ package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.repositorylayer.db.entity.StockEntity;
 import com.stocktracker.servicelayer.entity.StockDE;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by mike on 9/10/2016.
  */
-@Service
+@Component
 public class ListCopyStockEntityToStockDE extends ListCopyProperties<StockEntity, StockDE>
 {
     public ListCopyStockEntityToStockDE()

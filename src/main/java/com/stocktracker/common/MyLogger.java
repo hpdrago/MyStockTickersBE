@@ -497,6 +497,10 @@ public interface MyLogger
     default String getLogMessage( final String methodName, final String messageFormat, Object... args )
     {
         final StringBuilder sb = new StringBuilder();
+        /*
+         * Convert convert objects to toString() of the objects
+         */
+        //List<String> objectStrings = Arrays.stream( args ).map( Object::toString ).collect( Collectors.toList());
         if ( addHashCodeToLogMessage() )
         {
             sb.append( String.format( "%d %s %s", hashCode(), methodName, MessageFormat.format( messageFormat, args ) ));

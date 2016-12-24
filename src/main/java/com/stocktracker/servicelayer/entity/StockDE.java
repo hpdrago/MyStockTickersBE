@@ -2,10 +2,12 @@ package com.stocktracker.servicelayer.entity;
 
 import com.stocktracker.repositorylayer.common.BooleanUtils;
 import com.stocktracker.repositorylayer.db.entity.StockEntity;
+import com.stocktracker.servicelayer.service.StockTickerQuote;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -19,6 +21,8 @@ public class StockDE
     private int createdBy;
     private boolean userEntered;
     private BigDecimal lastPrice;
+    private Timestamp lastPriceChange;
+    private Timestamp lastPriceUpdate;
 
     /**
      * Create a new {@code StockDE} from a {@code StockEntity} instance
@@ -105,6 +109,33 @@ public class StockDE
         this.lastPrice = lastPrice;
     }
 
+    public Timestamp getLastPriceChange()
+    {
+        return lastPriceChange;
+    }
+
+    public void setLastPriceChange( Timestamp lastPriceUpdate )
+    {
+        this.lastPriceChange = lastPriceChange;
+    }
+
+    public Timestamp getLastPriceUpdate()
+    {
+        return lastPriceUpdate;
+    }
+
+    public void setLastPriceUpdate( Timestamp lastPriceUpdate )
+    {
+        this.lastPriceUpdate = lastPriceUpdate;
+    }
+
+    public void updateFromQuote( final StockTickerQuote stockTickerQuote )
+    {
+        this.setLastPrice( stockTickerQuote.getLastPrice() );
+        this.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
+        this.setLastPriceUpdate( stockTickerQuote.getLastPriceUpdate() );
+    }
+
     @Override
     public String toString()
     {
@@ -115,7 +146,9 @@ public class StockDE
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy='" ).append( createdBy ).append( '\'' );
         sb.append( ", userEntered='" ).append( userEntered ).append( '\'' );
-        sb.append( ", lastPrice='" ).append( userEntered ).append( '\'' );
+        sb.append( ", lastPrice='" ).append( lastPrice ).append( '\'' );
+        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
+        sb.append( ", lastPriceUpdate='" ).append( lastPriceUpdate ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

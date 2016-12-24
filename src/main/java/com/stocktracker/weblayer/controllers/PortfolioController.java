@@ -1,9 +1,9 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.entity.CustomerStockDE;
+import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
-import com.stocktracker.weblayer.dto.CustomerStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import java.util.List;
  * Created by mike on 9/11/2016.
  */
 @RestController
-public class PortfolioController extends BaseController implements MyLogger
+public class PortfolioController extends AbstractController implements MyLogger
 {
     /**
      * Get a list of portfolios for a single customer {@code customerId}
@@ -53,14 +53,14 @@ public class PortfolioController extends BaseController implements MyLogger
     @RequestMapping( value = "/portfolios/{portfolioId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<CustomerStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
-        List<CustomerStockDE> customerStockDEs = portfolioService.getPortfolioStocks( portfolioId );
-        List<CustomerStockDTO> customerStockDTOs = listCopyCustomerStockDEToCustomerStockDTO.copy( customerStockDEs ) ;
-        logMethodEnd( methodName, customerStockDTOs );
-        return customerStockDTOs;
+        List<PortfolioStockDE> portfolioStockDES = portfolioService.getPortfolioStocks( portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOS = listCopyCustomerStockDEToCustomerStockDTO.copy( portfolioStockDES ) ;
+        logMethodEnd( methodName, portfolioStockDTOS );
+        return portfolioStockDTOS;
     }
 
     /**
@@ -71,7 +71,7 @@ public class PortfolioController extends BaseController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = "/customer/{customerId}/portfolio",
         method = RequestMethod.POST )
-    public ResponseEntity<Void> addPortfolio( @PathVariable int customerId, @RequestBody PortfolioDTO portfolioDto )
+    public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable int customerId, @RequestBody PortfolioDTO portfolioDto )
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDto );
@@ -82,7 +82,7 @@ public class PortfolioController extends BaseController implements MyLogger
                                     .fromCurrentRequest().path("/{id}")
                                     .buildAndExpand( portfolioDE ).toUri());
         logMethodEnd( methodName, portfolioDTO );
-        return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>( portfolioDTO, httpHeaders, HttpStatus.CREATED);
     }
 
     /**
@@ -97,7 +97,7 @@ public class PortfolioController extends BaseController implements MyLogger
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, portfolioId );
         PortfolioDE portfolioDE = portfolioService.getPortfolioById( portfolioId );
-        logDebug( methodName, "portfolio: %s", portfolioDE.toString() );
+        logDebug( methodName, "portfolio: {0}", portfolioDE.toString() );
         portfolioDE = portfolioService.deletePortfolio( portfolioId );
         PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
         logMethodBegin( methodName, portfolioDTO );

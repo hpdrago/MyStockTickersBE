@@ -2,15 +2,15 @@ package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by mike on 9/10/2016.
  */
-@Service
-public class ListCopyPortfolioEntityToPortfolioDomainEntity extends ListCopyProperties<PortfolioEntity, PortfolioDE>
+@Component
+public class ListCopyPortfolioEntityToPortfolioDE extends ListCopyProperties<PortfolioEntity, PortfolioDE>
 {
-    public ListCopyPortfolioEntityToPortfolioDomainEntity()
+    public ListCopyPortfolioEntityToPortfolioDE()
     {
         super( PortfolioDE.class );
     }

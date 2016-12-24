@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="MySQL - stocktracker@localhost" uuid="d39fc035-1964-4ffb-9b23-efa578e062f2">
+    <data-source source="LOCAL" name="stocktracker@localhost" uuid="c8ebb4b4-cc47-4b00-81fa-73d7584b69e8">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
@@ -15,7 +15,7 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="hibernate.cfg.xml/Hibernate" uuid="7101b11e-e69d-4a74-87ed-9a254780c47c">
+    <data-source source="LOCAL" name="hibernate.cfg.xml/Hibernate" uuid="3f222875-eaea-4213-8d88-0c76f8b5a3f4">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>

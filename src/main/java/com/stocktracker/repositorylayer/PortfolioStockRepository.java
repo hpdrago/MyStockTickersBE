@@ -10,5 +10,24 @@ import java.util.List;
  */
 public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEntity, Integer>
 {
-    List<PortfolioStockEntity> findByPortfolioIdOrderByTickerSymbol( int portfolioId );
-}
+    /**
+     * Find one by the primary key
+     * @param portfolioId
+     * @return
+     */
+    List<PortfolioStockEntity> findByCustomerIdAndPortfolioIdOrderByTickerSymbol( final int customerId,
+                                                                                  final int portfolioId );
+
+    /**
+     * Find one by the secondary key
+     * @param customerId
+     * @param portfolioId
+     * @param tickerSymbol
+     * @return
+     */
+    PortfolioStockEntity findFirstByCustomerIdAndPortfolioIdAndTickerSymbol( final int customerId,
+                                                                             final int portfolioId,
+                                                                             final String tickerSymbol );
+
+
+ }

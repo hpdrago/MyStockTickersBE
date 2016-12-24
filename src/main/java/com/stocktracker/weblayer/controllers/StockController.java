@@ -1,8 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.exceptions.DuplicateTickerSymbolException;
-import com.stocktracker.repositorylayer.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.entity.StockDE;
 import com.stocktracker.servicelayer.entity.StockSectorDE;
 import com.stocktracker.servicelayer.entity.StockSubSectorDE;
@@ -29,7 +29,7 @@ import java.util.List;
  * Created by mike on 9/11/2016.
  */
 @RestController
-public class StockController extends BaseController implements MyLogger
+public class StockController extends AbstractController implements MyLogger
 {
     /**
      * Get all of the stocks within the pageRequest parameters
@@ -44,7 +44,7 @@ public class StockController extends BaseController implements MyLogger
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, pageRequest );
-        Page<StockDE> stockDEs = stockService.getPage( pageRequest,true );
+        Page<StockDE> stockDEs = stockService.getPage( pageRequest,false );
         Page<StockDTO> stockDTOs = mapStockEntityPageIntoStockDEPage( pageRequest, stockDEs );
         logMethodEnd( methodName, stockDTOs );
         return stockDTOs;
@@ -56,12 +56,12 @@ public class StockController extends BaseController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocks/companieslike/{companiesLike}",
+    @RequestMapping( value = "/stocks/companiesLike/{companiesLike}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStockCompaniesMatching( Pageable pageRequest, @PathVariable( "companiesLike" ) String companiesLike )
     {
-        final String methodName = "StockCompaniesMatching";
+        final String methodName = "getStockCompaniesMatching";
         logMethodBegin( methodName, pageRequest, companiesLike );
         if ( companiesLike == null || companiesLike.isEmpty() )
         {
@@ -125,9 +125,9 @@ public class StockController extends BaseController implements MyLogger
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
         }
         StockDE stockDE = StockDE.newInstance( stockDTO );
-        logDebug( methodName, "call stockDE: %s", stockDE.toString() );
+        logDebug( methodName, "call stockDE: {0}", stockDE );
         stockDE = stockService.addStock( stockDE );
-        logDebug( methodName, "return stockDE: %s", stockDE.toString() );
+        logDebug( methodName, "return stockDE: {0}", stockDE );
         StockDTO returnStockDTO = StockDTO.newInstance( stockDE );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
@@ -152,13 +152,12 @@ public class StockController extends BaseController implements MyLogger
         logMethodBegin( methodName, tickerSymbol );
         if ( stockService.isStockExists( tickerSymbol ))
         {
-            StockDE stockDE = stockService.getStock( tickerSymbol );
-            logDebug( methodName, "stock: %s", stockDE.toString() );
-            stockService.deleteStock( stockDE );
+            logDebug( methodName, "tickerSymbol: {0}", tickerSymbol );
+            stockService.deleteStock( tickerSymbol );
         }
         else
         {
-            throw new StockNotFoundException( "Ticker symbol " + tickerSymbol + " was not found" );
+            throw new StockNotFoundException( tickerSymbol );
         }
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -170,7 +169,7 @@ public class StockController extends BaseController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocksectors",
+    @RequestMapping( value = "/stockSectors",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public StockSectorsDTO getStockSectors()

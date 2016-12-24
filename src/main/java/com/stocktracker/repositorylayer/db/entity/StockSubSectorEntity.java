@@ -45,7 +45,7 @@ public class StockSubSectorEntity
     }
 
     @Basic
-    @Column( name = "sub_sector", nullable = true, length = 30 )
+    @Column( name = "sub_sector", nullable = false, length = 30 )
     public String getSubSector()
     {
         return subSector;

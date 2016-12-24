@@ -3,12 +3,12 @@ package com.stocktracker.servicelayer.service.listcopy;
 import com.stocktracker.repositorylayer.db.entity.StockSectorEntity;
 import com.stocktracker.servicelayer.entity.StockSectorDE;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by mike on 9/10/2016.
  */
-@Service
+@Component
 public class ListCopyStockSectorEntityToStockSectorDE extends ListCopyProperties<StockSectorEntity, StockSectorDE>
 {
     public ListCopyStockSectorEntityToStockSectorDE()

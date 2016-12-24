@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
-import com.stocktracker.repositorylayer.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.servicelayer.entity.CustomerDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.stereotype.Service;
@@ -74,7 +74,7 @@ public class CustomerService extends BaseService implements MyLogger
          * Get the portfolios for the customer from the database
          */
         List<PortfolioEntity> customerPortfolios = portfolioRepository.findByCustomerId( customerEntity.getId() );
-        List<PortfolioDE> customerDEPortfolios = listCopyPortfolioEntityToPortfolioDomainEntity.copy( customerPortfolios );
+        List<PortfolioDE> customerDEPortfolios = listCopyPortfolioEntityToPortfolioDE.copy( customerPortfolios );
         customerDE.setPortfolios( customerDEPortfolios );
         return customerDE;
     }

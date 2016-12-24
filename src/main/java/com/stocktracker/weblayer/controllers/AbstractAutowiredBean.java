@@ -2,20 +2,20 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.CustomerService;
-import com.stocktracker.servicelayer.service.CustomerStockService;
 import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerDEToCustomerDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerStockDEToCustomerStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioDEToPortfolioDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockDEToPortfolioStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDEToStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by mike on 11/3/2016.
+ * Created by mike on 12/3/2016.
  */
-public class BaseController implements MyLogger
+public class AbstractAutowiredBean implements MyLogger
 {
     /**
      * Autowired service
@@ -32,10 +32,6 @@ public class BaseController implements MyLogger
     /**
      * Autowired service class
      */
-    protected CustomerStockService customerStockService;
-    /**
-     * Autowired service class
-     */
     protected PortfolioStockService portfolioStockService;
 
 
@@ -43,19 +39,20 @@ public class BaseController implements MyLogger
     protected ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO;
     protected ListCopyPortfolioDEToPortfolioDTO listCopyPortfolioDEToPortfolioDTO;
     protected ListCopyStockDEToStockDTO listCopyStockDEToStockDTO;
+    protected ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO;
 
-    /**
-     * Allow DI to set the Customer Stock Service
-     *
-     * @param customerStockService
-     */
     @Autowired
-    public void setCustomerStockService( final CustomerStockService customerStockService )
+    public void setListCopyCustomerDEToCustomerDTO( final ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO )
     {
-        final String methodName = "setCustomerStockService";
-        logMethodBegin( methodName, customerStockService );
-        this.customerStockService = customerStockService;
+        this.listCopyCustomerDEToCustomerDTO = listCopyCustomerDEToCustomerDTO;
     }
+
+    @Autowired
+    public void setListCopyPortfolioStockDEToPortfolioStockDTO( final ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO )
+    {
+        this.listCopyPortfolioStockDEToPortfolioStockDTO = listCopyPortfolioStockDEToPortfolioStockDTO;
+    }
+
 
     /**
      * Allow DI to set the Portfolio Service
@@ -165,26 +162,5 @@ public class BaseController implements MyLogger
         logDebug( methodName, "Dependency Injection of: " + listCopyCustomerStockDEToCustomerStockDTO );
         this.listCopyCustomerStockDEToCustomerStockDTO = listCopyCustomerStockDEToCustomerStockDTO;
     }
-
-    /**
-     * Handle any exceptions
-     *
-     * @param req
-     * @param exception
-     * @return
-     */
-    // Total control - setup a model and return the view name yourself. Or consider
-    // subclassing ExceptionHandlerExceptionResolver (see below).
-  /*  @ExceptionHandler( Exception.class )
-    public ModelAndView handleError( HttpServletRequest req, Exception exception )
-    {
-        logError( "handleError", "Request: " + req.getRequestURL() + " raised " + exception, exception );
-
-        ModelAndView mav = new ModelAndView();
-        mav.addObject( "exception", exception );
-        mav.addObject( "url", req.getRequestURL() );
-        mav.setViewName( "error" );
-        return mav;
-    }*/
 
 }

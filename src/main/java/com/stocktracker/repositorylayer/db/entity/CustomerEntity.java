@@ -20,7 +20,6 @@ public class CustomerEntity extends BaseDBEntity<CustomerEntity, CustomerDE>
     private int id;
     private String email;
     private String password;
-
     public CustomerEntity()
     {
     }
@@ -31,9 +30,14 @@ public class CustomerEntity extends BaseDBEntity<CustomerEntity, CustomerDE>
         this.password = password;
     }
 
+    public void setId( final Integer id )
+    {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue
-    @Column( name = "id" )
+    @Column( name = "id", nullable = false )
     public int getId()
     {
         return id;
@@ -45,7 +49,7 @@ public class CustomerEntity extends BaseDBEntity<CustomerEntity, CustomerDE>
     }
 
     @Basic
-    @Column( name = "email" )
+    @Column( name = "email", nullable = false, length = 45 )
     public String getEmail()
     {
         return email;
@@ -57,7 +61,7 @@ public class CustomerEntity extends BaseDBEntity<CustomerEntity, CustomerDE>
     }
 
     @Basic
-    @Column( name = "password" )
+    @Column( name = "password", nullable = false, length = 45 )
     public String getPassword()
     {
         return password;

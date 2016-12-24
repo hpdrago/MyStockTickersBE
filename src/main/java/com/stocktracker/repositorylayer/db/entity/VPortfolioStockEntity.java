@@ -33,10 +33,11 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
     private Integer stopLossShares;
     private Integer profitTakingShares;
     private BigDecimal profitTakingPrice;
+    private Integer id;
 
     @Basic
     @Id
-    @Column( name = "portfolio_id", nullable = false )
+    @Column( name = "portfolio_id", nullable = true )
     public Integer getPortfolioId()
     {
         return portfolioId;
@@ -180,7 +181,7 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
     }
 
     @Basic
-    @Column( name = "sector_id", nullable = false, length = 5 )
+    @Column( name = "sector_id", nullable = true, length = 5 )
     public Integer getSectorId()
     {
         return sectorId;
@@ -192,7 +193,7 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
     }
 
     @Basic
-    @Column( name = "sub_sector_id", nullable = false, length = 5 )
+    @Column( name = "sub_sector_id", nullable = true, length = 5 )
     public Integer getSubSectorId()
     {
         return subSectorId;
@@ -255,5 +256,17 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
     public int hashCode()
     {
         return Objects.hash( portfolioId, tickerSymbol, companyName, lastPrice, costBasis, numberOfShares, realizedGain, realizedLoss, stopLossPrice, stopLossShares, profitTakingPrice, profitTakingShares );
+    }
+
+    @Basic
+    @Column( name = "id", nullable = false )
+    public Integer getId()
+    {
+        return id;
+    }
+
+    public void setId( final Integer id )
+    {
+        this.id = id;
     }
 }

@@ -18,7 +18,7 @@ import java.util.List;
  * Created by mike on 5/9/2016.
  */
 @RestController
-public class CustomerController extends BaseController implements MyLogger
+public class CustomerController extends AbstractController implements MyLogger
 {
     /**
      * Get all of the customers

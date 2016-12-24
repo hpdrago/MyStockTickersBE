@@ -4,6 +4,7 @@ import com.stocktracker.servicelayer.entity.StockDE;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -15,6 +16,8 @@ public class StockDTO
     private String companyName;
     private String exchange;
     private BigDecimal lastPrice;
+    private Timestamp lastPriceUpdate;
+    private Timestamp lastPriceChange;
     private int createdBy;
     private boolean userEntered;
 
@@ -90,6 +93,36 @@ public class StockDTO
         this.userEntered = userEntered;
     }
 
+    public BigDecimal getLastPrice()
+    {
+        return lastPrice;
+    }
+
+    public void setLastPrice( BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
+    public Timestamp getLastPriceUpdate()
+    {
+        return lastPriceUpdate;
+    }
+
+    public void setLastPriceUpdate( Timestamp lastPriceUpdate )
+    {
+        this.lastPriceUpdate = lastPriceUpdate;
+    }
+
+    public Timestamp getLastPriceChange()
+    {
+        return lastPriceChange;
+    }
+
+    public void setLastPriceChange( Timestamp lastPriceChange )
+    {
+        this.lastPriceChange = lastPriceChange;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -119,20 +152,12 @@ public class StockDTO
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice='" ).append( lastPrice ).append( '\'' );
+        sb.append( ", lastPriceUpdate='" ).append( lastPriceUpdate ).append( '\'' );
+        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy='" ).append( createdBy ).append( '\'' );
         sb.append( ", userEntered='" ).append( userEntered ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    public BigDecimal getLastPrice()
-    {
-        return lastPrice;
-    }
-
-    public void setLastPrice( BigDecimal lastPrice )
-    {
-        this.lastPrice = lastPrice;
     }
 }

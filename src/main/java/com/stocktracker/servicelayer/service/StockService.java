@@ -1,10 +1,10 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.repositorylayer.db.entity.StockEntity;
 import com.stocktracker.repositorylayer.db.entity.StockSectorEntity;
 import com.stocktracker.repositorylayer.db.entity.StockSubSectorEntity;
-import com.stocktracker.repositorylayer.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.entity.StockDE;
 import com.stocktracker.servicelayer.entity.StockSectorDE;
 import com.stocktracker.servicelayer.entity.StockSubSectorDE;
@@ -16,6 +16,7 @@ import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -64,7 +65,8 @@ public class StockService extends BaseService implements MyLogger
      */
     private void updateStockPrice( final StockDE stockDE )
     {
-        stockDE.setLastPrice( this.getStockPrice( stockDE.getTickerSymbol() ) );
+        StockTickerQuote stockTickerQuote = this.getStockPrice( stockDE.getTickerSymbol() );
+        stockDE.updateFromQuote( stockTickerQuote );
     }
 
     /**
@@ -84,7 +86,7 @@ public class StockService extends BaseService implements MyLogger
          * Map from Entity to DomainEntity
          */
         Page<StockDE> stockDEPage = mapStockEntityPageIntoStockDEPage( pageRequest, stockEntities, withStockPrices );
-        logMethodEnd( methodName, stockDEPage );
+        logMethodEnd( methodName );
         return stockDEPage;
     }
 
@@ -109,7 +111,7 @@ public class StockService extends BaseService implements MyLogger
          * Map from Entity to DomainEntity
          */
         Page<StockDE> stockDEPage = mapStockEntityPageIntoStockDEPage( pageRequest, stockEntities, withStockPrices );
-        logMethodEnd( methodName, stockDEPage );
+        logMethodEnd( methodName );
         return stockDEPage;
     }
 
@@ -147,9 +149,6 @@ public class StockService extends BaseService implements MyLogger
     {
         final String methodName = "isStockExists";
         logMethodBegin( methodName, tickerSymbol );
-        /*
-         * Get the stock from the database
-         */
         boolean exists = stockRepository.exists( tickerSymbol );
         logMethodEnd( methodName, exists );
         return exists;
@@ -173,15 +172,14 @@ public class StockService extends BaseService implements MyLogger
 
     /**
      * Delete the stock
-     * @param stockDE
+     * @param tickerSymbol
      */
-    public void deleteStock( final StockDE stockDE )
+    public void deleteStock( final String tickerSymbol )
     {
-        final String methodName = "getStock";
-        logMethodBegin( methodName, stockDE );
-        StockEntity stockEntity = StockEntity.newInstance( stockDE );
-        stockRepository.delete( stockEntity );
-        logMethodEnd( methodName, stockEntity );
+        final String methodName = "deleteStock";
+        logMethodBegin( methodName, tickerSymbol );
+        stockRepository.delete( tickerSymbol );
+        logMethodEnd( methodName );
     }
 
     /**
@@ -189,25 +187,30 @@ public class StockService extends BaseService implements MyLogger
      * @param tickerSymbol
      * @return -1 if there is an error, otherwise the last stock price will be returned
      */
-    public BigDecimal getStockPrice( final String tickerSymbol )
+    public StockTickerQuote getStockPrice( final String tickerSymbol )
     {
         final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol );
+        StockTickerQuote stockTickerQuote = new StockTickerQuote();
+        stockTickerQuote.setTickerSymbol( tickerSymbol );
         BigDecimal price = new BigDecimal( -1 );
+        stockTickerQuote.setLastPrice( price );
         try
         {
             Stock stock = YahooFinance.get( tickerSymbol );
             price = stock.getQuote().getPrice();
+            stockTickerQuote.setLastPrice( price );
+            stockTickerQuote.setLastPriceUpdate( new Timestamp( stock.getQuote().getLastTradeTime().getTimeInMillis() ));
             //BigDecimal change = stock.getQuote().getChangeInPercent();
             //BigDecimal peg = stock.getStats().getPeg();
             //BigDecimal dividend = stock.getDividend().getAnnualYieldPercent();
-            logMethodEnd( methodName, String.format( "%s %s", tickerSymbol, price ));
+            logMethodEnd( methodName, String.format( "{0} {1}", tickerSymbol, price ));
         }
         catch( Exception e )
         {
             logError( methodName, e );
         }
-        return price;
+        return stockTickerQuote;
     }
 
     /**
@@ -220,7 +223,7 @@ public class StockService extends BaseService implements MyLogger
         logMethodBegin( methodName );
         List<StockSectorEntity> stockSectorEntities = stockSectorRepository.findAll();
         List<StockSectorDE> stockSectorList = listCopyStockSectorEntityToStockSectorDE.copy( stockSectorEntities );
-        logMethodEnd( methodName, stockSectorList );
+        logMethodEnd( methodName );
         return stockSectorList;
     }
 
@@ -234,7 +237,7 @@ public class StockService extends BaseService implements MyLogger
         logMethodBegin( methodName );
         List<StockSubSectorEntity> stockSubSectorEntities = stockSubSectorRepository.findAll();
         List<StockSubSectorDE> stockSubSectorList = listCopyStockSubSectorEntityToStockSubSectorDE.copy( stockSubSectorEntities );
-        logMethodEnd( methodName, stockSubSectorList );
+        logMethodEnd( methodName );
         return stockSubSectorList;
     }
 }

@@ -3,8 +3,8 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity;
-import com.stocktracker.repositorylayer.exceptions.PortfolioNotFoundException;
-import com.stocktracker.servicelayer.entity.CustomerStockDE;
+import com.stocktracker.common.exceptions.PortfolioNotFoundException;
+import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.stereotype.Service;
@@ -55,7 +55,7 @@ public class PortfolioService extends BaseService implements MyLogger
         List<PortfolioDE> portfolioDomainEntities = new ArrayList<>();
         if ( portfolioEntities != null )
         {
-            portfolioDomainEntities = listCopyPortfolioEntityToPortfolioDomainEntity.copy( portfolioEntities );
+            portfolioDomainEntities = listCopyPortfolioEntityToPortfolioDE.copy( portfolioEntities );
         }
         logMethodEnd( methodName, portfolioDomainEntities );
         return portfolioDomainEntities;
@@ -66,18 +66,18 @@ public class PortfolioService extends BaseService implements MyLogger
      * @param portfolioId
      * @return
      */
-    public List<CustomerStockDE> getPortfolioStocks( final int portfolioId )
+    public List<PortfolioStockDE> getPortfolioStocks( final int portfolioId )
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
         List<VPortfolioStockEntity> stocks = vPortfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
-        List<CustomerStockDE> customerStockDEs = new ArrayList<>();
+        List<PortfolioStockDE> portfolioStockDES = new ArrayList<>();
         if ( stocks != null )
         {
-            customerStockDEs = listCopyVPortfolioStockEntityToCustomerStockDE.copy( stocks );
+            portfolioStockDES = listCopyVPortfolioStockEntityToCustomerStockDE.copy( stocks );
         }
-        logMethodEnd( methodName, customerStockDEs );
-        return customerStockDEs;
+        logMethodEnd( methodName, portfolioStockDES );
+        return portfolioStockDES;
     }
 
     /**

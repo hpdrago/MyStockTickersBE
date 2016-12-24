@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -22,9 +23,11 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
     private String tickerSymbol;
     private String companyName;
     private String exchange;
-    private int createdBy;
-    private char userEntered;
+    private Integer createdBy;
+    private Character userEntered;
     private BigDecimal lastPrice;
+    private Timestamp lastPriceUpdate;
+    private Timestamp lastPriceChange;
 
     /**
      * Create a new stock entity instance from a stock DE
@@ -100,24 +103,24 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
 
     @Basic
     @Column( name = "created_by" )
-    public int getCreatedBy()
+    public Integer getCreatedBy()
     {
         return createdBy;
     }
 
-    public void setCreatedBy( int createdBy )
+    public void setCreatedBy( Integer createdBy )
     {
         this.createdBy = createdBy;
     }
 
     @Basic
     @Column( name = "user_entered", nullable = true, length = 1 )
-    public char getUserEntered()
+    public Character getUserEntered()
     {
         return userEntered;
     }
 
-    public void setUserEntered( final char downloaded )
+    public void setUserEntered( final Character downloaded )
     {
         this.userEntered = downloaded;
     }
@@ -134,6 +137,36 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         this.lastPrice = lastPrice;
     }
 
+    /**
+     * The last time the lastPrice was updated in the stock table
+     */
+    @Basic
+    @Column( name = "last_price_update", nullable = true )
+    public Timestamp getLastPriceUpdate()
+    {
+        return lastPriceUpdate;
+    }
+
+    public void setLastPriceUpdate( final Timestamp createDate )
+    {
+        this.lastPriceUpdate = createDate;
+    }
+
+    /**
+     * The last time the stock price changed
+     */
+    @Basic
+    @Column( name = "last_price_change", nullable = true )
+    public Timestamp getLastPriceChange()
+    {
+        return lastPriceChange;
+    }
+
+    public void setLastPriceChange( Timestamp lastPriceChange )
+    {
+        this.lastPriceChange = lastPriceChange;
+    }
+
     @Override
     public String toString()
     {
@@ -147,6 +180,8 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         sb.append( ", createdBy=" ).append( createdBy );
         sb.append( ", userEntered=" ).append( userEntered );
         sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", lastPriceUpdate=" ).append( lastPriceUpdate );
+        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( '}' );
         return sb.toString();
     }
