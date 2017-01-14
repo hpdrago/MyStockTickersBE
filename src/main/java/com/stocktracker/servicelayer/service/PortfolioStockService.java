@@ -6,8 +6,10 @@ import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This is the service class for portfolio stock related methods.
@@ -28,6 +30,9 @@ public class PortfolioStockService extends BaseService implements MyLogger
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, tickerSymbol );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        Assert.isTrue( portfolioId > 0, "portfolioId must be > 0" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         PortfolioStockEntity portfolioStockEntity = portfolioStockRepository.
             findFirstByCustomerIdAndPortfolioIdAndTickerSymbol( customerId, portfolioId, tickerSymbol );
         if ( portfolioStockEntity == null )
@@ -49,6 +54,8 @@ public class PortfolioStockService extends BaseService implements MyLogger
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        Assert.isTrue( portfolioId > 0, "portfolioId must be > 0" );
         List<PortfolioStockEntity> portfolioStockEntities = portfolioStockRepository.
             findByCustomerIdAndPortfolioIdOrderByTickerSymbol( customerId, portfolioId );
         List<PortfolioStockDE> portfolioStockDEList = listCopyPortfolioStockEntityToPortfolioStockDE.copy( portfolioStockEntities );
@@ -64,8 +71,11 @@ public class PortfolioStockService extends BaseService implements MyLogger
      */
     public boolean isStockExists( final int customerId, final int portfolioId, final String tickerSymbol )
     {
-        final String methodName = "isStockExists";
+        final String methodName = "isStockExistsInDatabase";
         logMethodBegin( methodName, customerId, tickerSymbol );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        Assert.isTrue( portfolioId > 0, "portfolioId must be > 0" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         PortfolioStockEntity portfolioStockEntity = new PortfolioStockEntity();
         portfolioStockEntity.setCustomerId( customerId );
         portfolioStockEntity.setPortfolioId( portfolioId );
@@ -85,10 +95,38 @@ public class PortfolioStockService extends BaseService implements MyLogger
     {
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
+        Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
         PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance( portfolioStockDE );
         PortfolioStockEntity returnCustomerStockEntity = portfolioStockRepository.save( portfolioStockEntity );
         PortfolioStockDE returnPortfolioStockDE = PortfolioStockDE.newInstance( returnCustomerStockEntity );
         logMethodEnd( methodName, returnPortfolioStockDE );
         return returnPortfolioStockDE;
+    }
+
+    /**
+     * Delete the portfolio stock.
+     * @param portfolioStockId The {@code portfolioId} is the primary key -- generated int
+     */
+    public void deletePortfolioStock( final int portfolioStockId )
+    {
+        final String methodName = "deletePortfolioStock";
+        logMethodBegin( methodName, portfolioStockId );
+        Assert.isTrue( portfolioStockId > 0, "portfolioStockId must be > 0" );
+        portfolioStockRepository.delete( portfolioStockId );
+        logMethodBegin( methodName );
+    }
+
+    /**
+     * Delete a portfolio stock as defined by the {@code portfolioStockDE}
+     * @param portfolioStockDE
+     */
+    public void deletePortfolioStock( final PortfolioStockDE portfolioStockDE )
+    {
+        final String methodName = "deletePortfolioStock";
+        logMethodBegin( methodName, portfolioStockDE );
+        Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
+        PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance( portfolioStockDE );
+        this.portfolioStockRepository.delete( portfolioStockEntity );
+        logMethodBegin( methodName );
     }
 }

@@ -36,6 +36,7 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
      */
     public static StockEntity newInstance( final StockDE stockDE )
     {
+        Objects.requireNonNull( stockDE );
         StockEntity stockEntity = new StockEntity();
         BeanUtils.copyProperties( stockDE, stockEntity );
         stockEntity.setUserEntered( BooleanUtils.fromBooleanToChar( stockDE.isUserEntered() ));

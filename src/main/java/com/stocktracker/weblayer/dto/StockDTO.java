@@ -21,10 +21,10 @@ public class StockDTO
     private int createdBy;
     private boolean userEntered;
 
-    public static StockDTO newInstance(  )
+    public static StockDTO newInstance()
     {
-        StockDTO fragment = new StockDTO();
-        return fragment;
+        StockDTO stockDTO = new StockDTO();
+        return stockDTO;
     }
 
     /**
@@ -34,6 +34,7 @@ public class StockDTO
      */
     public static StockDTO newInstance( final StockDE stockDE )
     {
+        Objects.requireNonNull( stockDE );
         StockDTO stockDTO = new StockDTO();
         BeanUtils.copyProperties( stockDE, stockDTO );
         return stockDTO;

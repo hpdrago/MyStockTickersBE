@@ -63,6 +63,54 @@ public class PortfolioStockController extends AbstractController
     }
 
     /**
+     * Delete a single customer portfolio stock entry
+     *
+     * @param customerId
+     * @param portfolioId
+     * @param tickerSymbol
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
+        method = RequestMethod.DELETE,
+        produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public ResponseEntity<Void> deletePortfolioStock( @PathVariable int customerId,
+                                                      @PathVariable int portfolioId,
+                                                      @PathVariable String tickerSymbol )
+        throws PortfolioStockNotFound
+    {
+        final String methodName = "deletePortfolioStock";
+        logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
+        PortfolioStockDE portfolioStockDE = PortfolioStockDE.newInstance();
+        portfolioStockDE.setTickerSymbol( tickerSymbol );
+        portfolioStockDE.setCustomerId( customerId );
+        portfolioStockDE.setPortfolioId( portfolioId );
+        this.portfolioStockService.deletePortfolioStock( portfolioStockDE );
+        logMethodEnd( methodName );
+        return new ResponseEntity<>( HttpStatus.OK );
+    }
+
+    /**
+     * Delete a single customer portfolio stock entry
+     *
+     * @param portfolioStockId
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/portfolioStock/{portfolioStockId}",
+        method = RequestMethod.DELETE,
+        produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public ResponseEntity<Void> deletePortfolioStock( @PathVariable int portfolioStockId )
+        throws PortfolioStockNotFound
+    {
+        final String methodName = "deletePortfolioStock";
+        logMethodBegin( methodName, portfolioStockId );
+        this.portfolioStockService.deletePortfolioStock( portfolioStockId );
+        logMethodEnd( methodName );
+        return new ResponseEntity<>( HttpStatus.OK );
+    }
+
+    /**
      * Get all of the stocks for a portfolio
      *
      * @param customerId

@@ -1,14 +1,15 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
-import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.servicelayer.entity.CustomerDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This service communicates between the Web layer and Repositories using the Domain Model
@@ -52,6 +53,7 @@ public class CustomerService extends BaseService implements MyLogger
     {
         final String methodName = "getCustomerByEmail";
         logMethodBegin( methodName, email );
+        Objects.requireNonNull( email, "Email cannot be null" );
         CustomerEntity customerEntity = customerRepository.findByEmail( email );
         if ( customerEntity == null )
         {
@@ -69,6 +71,7 @@ public class CustomerService extends BaseService implements MyLogger
      */
     private CustomerDE loadCustomerDE( final CustomerEntity customerEntity )
     {
+        Objects.requireNonNull( customerEntity );
         CustomerDE customerDE = CustomerDE.newInstance( customerEntity );
         /*
          * Get the portfolios for the customer from the database

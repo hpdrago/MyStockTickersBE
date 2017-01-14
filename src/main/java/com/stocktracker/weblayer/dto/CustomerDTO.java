@@ -4,6 +4,7 @@ import com.stocktracker.servicelayer.entity.CustomerDE;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class defines the data that will be sent to the client when requesting information for a Customer
@@ -22,6 +23,7 @@ public class CustomerDTO
      */
     public static final CustomerDTO newInstance( final CustomerDE customerDE )
     {
+        Objects.requireNonNull( customerDE );
         CustomerDTO customerDTO = new CustomerDTO();
         BeanUtils.copyProperties( customerDE, customerDTO );
         return customerDTO;

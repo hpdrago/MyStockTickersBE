@@ -4,6 +4,7 @@ import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents a Portfolio for a customer.  A portfolio is a set of stocks identified by the customer.
@@ -33,6 +34,7 @@ public class PortfolioDE
      */
     public static PortfolioDE newInstance( final PortfolioEntity portfolioEntity )
     {
+        Objects.requireNonNull( portfolioEntity );
         PortfolioDE portfolioDE = new PortfolioDE();
         BeanUtils.copyProperties( portfolioEntity, portfolioDE );
         return portfolioDE;

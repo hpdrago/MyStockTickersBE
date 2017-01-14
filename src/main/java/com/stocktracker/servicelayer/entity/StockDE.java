@@ -31,6 +31,7 @@ public class StockDE
      */
     public static StockDE newInstance( final StockEntity stockEntity )
     {
+        Objects.requireNonNull( stockEntity );
         StockDE stockDE = new StockDE();
         BeanUtils.copyProperties( stockEntity, stockDE );
         stockDE.setUserEntered( BooleanUtils.fromCharToBoolean( stockEntity.getUserEntered() ));
@@ -44,9 +45,15 @@ public class StockDE
      */
     public static StockDE newInstance( final StockDTO stockDto )
     {
+        Objects.requireNonNull( stockDto );
         StockDE stockDE = new StockDE();
         BeanUtils.copyProperties( stockDto, stockDE );
         return stockDE;
+    }
+
+    public static StockDE newInstance()
+    {
+        return new StockDE();
     }
 
     public String getTickerSymbol()
@@ -131,6 +138,7 @@ public class StockDE
 
     public void updateFromQuote( final StockTickerQuote stockTickerQuote )
     {
+        Objects.requireNonNull( stockTickerQuote );
         this.setLastPrice( stockTickerQuote.getLastPrice() );
         this.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
         this.setLastPriceUpdate( stockTickerQuote.getLastPriceUpdate() );
@@ -167,6 +175,7 @@ public class StockDE
         final StockDE that = (StockDE) o;
         return Objects.equals( tickerSymbol, that.tickerSymbol );
     }
+
     @Override
     public int hashCode()
     {

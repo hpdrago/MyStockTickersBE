@@ -49,6 +49,7 @@ public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, Por
      */
     public static PortfolioStockEntity newInstance( final PortfolioStockDE portfolioStockDE )
     {
+        Objects.requireNonNull( portfolioStockDE );
         PortfolioStockEntity portfolioStockEntity = new PortfolioStockEntity();
         BeanUtils.copyProperties( portfolioStockDE, portfolioStockEntity );
         return portfolioStockEntity;

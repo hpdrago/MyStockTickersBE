@@ -2,7 +2,8 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
-import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
+import com.stocktracker.common.exceptions.StockNotFoundInExchangeException;
 import com.stocktracker.servicelayer.entity.StockDE;
 import com.stocktracker.servicelayer.entity.StockSectorDE;
 import com.stocktracker.servicelayer.entity.StockSubSectorDE;
@@ -22,7 +23,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import yahoofinance.Stock;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -101,8 +104,36 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
-        StockDE stockDE = stockService.getStock( tickerSymbol );
-        StockDTO stockDTO = StockDTO.newInstance( stockDE );
+        StockDTO stockDTO;
+        /*
+         * Search the database first
+         */
+        try
+        {
+            StockDE stockDE = stockService.getStock( tickerSymbol );
+            stockDTO = StockDTO.newInstance( stockDE );
+        }
+        catch( StockNotFoundInDatabaseException e )
+        {
+            /*
+             * Not in DB, search yahoo
+             */
+            try
+            {
+                Stock yahooStock = stockService.getStockFromYahoo( tickerSymbol );
+                logDebug( methodName, "yahooStock: {0}", yahooStock );
+                if ( yahooStock.getName() == null )
+                {
+                    throw new StockNotFoundInExchangeException( tickerSymbol );
+                }
+                StockDE stockDE = stockService.addStock( yahooStock );
+                stockDTO = StockDTO.newInstance( stockDE );
+            }
+            catch( IOException e2 )
+            {
+                throw new StockNotFoundInExchangeException( tickerSymbol, e2 );
+            }
+        }
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
     }
@@ -119,7 +150,7 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "addStock";
         logMethodBegin( methodName, stockDTO );
-        if ( stockService.isStockExists( stockDTO.getTickerSymbol() ))
+        if ( stockService.isStockExistsInDatabase( stockDTO.getTickerSymbol() ))
         {
             logError( methodName, "Duplicate stock: " + stockDTO.getTickerSymbol() );
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
@@ -141,7 +172,7 @@ public class StockController extends AbstractController implements MyLogger
      * Delete a stock by ticker symbol
      * @param tickerSymbol
      * @return
-     * @throws StockNotFoundException if the stock does not exist
+     * @throws StockNotFoundInDatabaseException if the stock does not exist
      */
     @CrossOrigin
     @RequestMapping( value = "/stocks/{tickerSymbol}",
@@ -150,14 +181,14 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "deleteStock";
         logMethodBegin( methodName, tickerSymbol );
-        if ( stockService.isStockExists( tickerSymbol ))
+        if ( stockService.isStockExistsInDatabase( tickerSymbol ))
         {
             logDebug( methodName, "tickerSymbol: {0}", tickerSymbol );
             stockService.deleteStock( tickerSymbol );
         }
         else
         {
-            throw new StockNotFoundException( tickerSymbol );
+            throw new StockNotFoundInDatabaseException( tickerSymbol );
         }
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );

@@ -8,9 +8,11 @@ import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This service communicates between the Web layer and Repositories using the Domain Model
@@ -23,17 +25,18 @@ public class PortfolioService extends BaseService implements MyLogger
 {
     /**
      * Get the portfolio by id request
-     * @param id
+     * @param portfolioId
      * @return
      */
-    public PortfolioDE getPortfolioById( final int id )
+    public PortfolioDE getPortfolioById( final int portfolioId )
     {
         final String methodName = "getPortfolioById";
-        logMethodBegin( methodName, id );
-        PortfolioEntity portfolioEntity = portfolioRepository.findOne( id );
+        logMethodBegin( methodName, portfolioId );
+        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
+        PortfolioEntity portfolioEntity = portfolioRepository.findOne( portfolioId );
         if ( portfolioEntity == null )
         {
-            throw new PortfolioNotFoundException( id );
+            throw new PortfolioNotFoundException( portfolioId );
         }
         PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
         logMethodEnd( methodName, portfolioDE );
@@ -51,6 +54,7 @@ public class PortfolioService extends BaseService implements MyLogger
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
+        Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
         List<PortfolioEntity> portfolioEntities = portfolioRepository.findByCustomerId( customerId );
         List<PortfolioDE> portfolioDomainEntities = new ArrayList<>();
         if ( portfolioEntities != null )
@@ -70,6 +74,7 @@ public class PortfolioService extends BaseService implements MyLogger
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
+        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
         List<VPortfolioStockEntity> stocks = vPortfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
         List<PortfolioStockDE> portfolioStockDES = new ArrayList<>();
         if ( stocks != null )
@@ -90,6 +95,8 @@ public class PortfolioService extends BaseService implements MyLogger
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDTO );
+        Objects.requireNonNull( portfolioDTO, "portfolioDTO cannot be null" );
+        Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
         PortfolioEntity portfolioEntity = PortfolioEntity.newInstance( portfolioDTO );
         portfolioEntity = portfolioRepository.save( portfolioEntity );
         PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
@@ -106,6 +113,7 @@ public class PortfolioService extends BaseService implements MyLogger
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, portfolioId );
+        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
         PortfolioEntity portfolioEntity = portfolioRepository.getOne( portfolioId );
         portfolioRepository.delete( portfolioId );
         PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );

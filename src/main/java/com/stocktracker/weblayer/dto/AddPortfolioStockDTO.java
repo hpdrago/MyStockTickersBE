@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This DTO is returned to the UI after a stock has been added to a portfolio.
@@ -35,6 +36,9 @@ public class AddPortfolioStockDTO
                                                     final PortfolioDTO portfolioDTO,
                                                     final List<PortfolioStockDTO> portfolioStockDTOList )
     {
+        Objects.requireNonNull( portfolioStockDTO );
+        Objects.requireNonNull( portfolioDTO );
+        Objects.requireNonNull( portfolioStockDTOList );
         AddPortfolioStockDTO addPortfolioStockDTO = new AddPortfolioStockDTO();
         addPortfolioStockDTO.setPortfolioStockDTO( portfolioStockDTO );
         addPortfolioStockDTO.setPortfolioDTO( portfolioDTO );

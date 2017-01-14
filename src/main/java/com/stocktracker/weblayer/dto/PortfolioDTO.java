@@ -3,6 +3,8 @@ package com.stocktracker.weblayer.dto;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Objects;
+
 /**
  * Created by mike on 10/23/2016.
  */
@@ -30,6 +32,7 @@ public class PortfolioDTO
      */
     public static final PortfolioDTO newInstance( final PortfolioDE portfolioDE )
     {
+        Objects.requireNonNull( portfolioDE );
         PortfolioDTO portfolioDTO = new PortfolioDTO();
         BeanUtils.copyProperties( portfolioDE, portfolioDTO );
         return portfolioDTO;

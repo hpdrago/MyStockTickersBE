@@ -4,6 +4,7 @@ import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by mike on 9/10/2016.
@@ -29,6 +30,7 @@ public class CustomerDE
      */
     public static CustomerDE newInstance( final CustomerEntity customerEntity )
     {
+        Objects.requireNonNull( customerEntity );
         CustomerDE customerDE = new CustomerDE();
         BeanUtils.copyProperties( customerEntity, customerDE );
         return customerDE;

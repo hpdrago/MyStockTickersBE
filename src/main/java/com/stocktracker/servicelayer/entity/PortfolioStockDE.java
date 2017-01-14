@@ -29,6 +29,11 @@ public class PortfolioStockDE
     private Integer profitTakingShares;
     private Integer realizedGain;
 
+    public static PortfolioStockDE newInstance()
+    {
+        return new PortfolioStockDE();
+    }
+
     /**
      * Create a new instance of {@code PortfolioStockDE} from a {@code CustomerStockEntity} instance
      * @param portfolioStockEntity

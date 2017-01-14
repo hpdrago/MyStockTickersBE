@@ -4,6 +4,7 @@ import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Created by mike on 10/30/2016.
@@ -33,6 +34,7 @@ public class PortfolioStockDTO
      */
     public static PortfolioStockDTO newInstance( final PortfolioStockDE portfolioStockDE )
     {
+        Objects.requireNonNull( portfolioStockDE );
         PortfolioStockDTO portfolioStockDTO = new PortfolioStockDTO();
         BeanUtils.copyProperties( portfolioStockDE, portfolioStockDTO );
         return portfolioStockDTO;
