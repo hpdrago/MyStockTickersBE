@@ -22,6 +22,7 @@ public class StockSectorsDTO
 
     /**
      * Create a new instance from the list of stock sector information
+     *
      * @param stockSectorDEList
      * @param stockSubSectorDEList
      * @return new StockSectorsDTO
@@ -34,6 +35,7 @@ public class StockSectorsDTO
 
     /**
      * Create a new instance from the list of stock sector information
+     *
      * @param stockSectorDEList
      * @param stockSubSectorDEList
      */
@@ -54,7 +56,7 @@ public class StockSectorsDTO
                 .stream()
                 .filter( stockSector -> stockSector.sectorId == stockSubSectorDE.getSectorId() )
                 .findAny()
-                .orElseThrow( () -> new IllegalArgumentException( String.format( "Cannot find sector " + stockSubSectorDE )) )
+                .orElseThrow( () -> new IllegalArgumentException( String.format( "Cannot find sector " + stockSubSectorDE ) ) )
                 .addSubSector( stockSubSectorDE );
         }
     }

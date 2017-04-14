@@ -12,7 +12,7 @@ public class BooleanUtils
      */
     public static boolean fromCharToBoolean( final char charValue )
     {
-        return Character.toUpperCase( charValue ) == 'Y' ? true : false;
+        return Character.toUpperCase(charValue) == 'Y';
     }
 
     /**
