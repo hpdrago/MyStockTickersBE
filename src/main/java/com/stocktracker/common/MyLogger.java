@@ -104,15 +104,22 @@ public interface MyLogger
         final Object args = null;
         if ( isDebugEnabled() )
         {
-            final StringBuilder sb = new StringBuilder();
-            if ( addHashCodeToLogMessage() )
+            try
             {
-                sb.append( hashCode() );
-                sb.append( " " );
+                final StringBuilder sb = new StringBuilder();
+                if ( addHashCodeToLogMessage() )
+                {
+                    sb.append( hashCode() );
+                    sb.append( " " );
+                }
+                sb.append( methodName );
+                sb.append( ".begin " );
+                getLogger().debug( sb.toString() );
             }
-            sb.append( methodName );
-            sb.append( ".begin " );
-            getLogger().debug( sb.toString() );
+            catch ( Exception e )
+            {
+                getLogger().error( e );
+            }
         }
     }
 
@@ -123,20 +130,27 @@ public interface MyLogger
      * @param methodName the name of the method creating the log message
      * @param args method arguments
      */
-    default void logMethodBegin( final String methodName, final Object... args )
+    default void logMethodBegin( final String methodName, final Object ... args )
     {
         if ( isDebugEnabled() )
         {
-            final StringBuilder sb = new StringBuilder();
-            if ( addHashCodeToLogMessage() )
+            try
             {
-                sb.append( hashCode() );
-                sb.append( " " );
+                final StringBuilder sb = new StringBuilder();
+                if ( addHashCodeToLogMessage() )
+                {
+                    sb.append( hashCode() );
+                    sb.append( " " );
+                }
+                sb.append( methodName );
+                sb.append( ".begin " );
+                appendArgs( sb, args );
+                getLogger().debug( sb.toString() );
             }
-            sb.append( methodName );
-            sb.append( ".begin " );
-            appendArgs( sb, args );
-            getLogger().debug( sb.toString() );
+            catch ( Exception e )
+            {
+                getLogger().error( e );
+            }
         }
     }
 
@@ -145,7 +159,7 @@ public interface MyLogger
      * @param sb
      * @param args
      */
-    default void appendArgs( final StringBuilder sb, final Object... args )
+    default void appendArgs( final StringBuilder sb, final Object ... args )
     {
         if ( args != null )
         {
@@ -166,15 +180,22 @@ public interface MyLogger
     {
         if ( isDebugEnabled() )
         {
-            final StringBuilder sb = new StringBuilder();
-            if ( addHashCodeToLogMessage() )
+            try
             {
-                sb.append( hashCode() );
-                sb.append( " " );
+                final StringBuilder sb = new StringBuilder();
+                if ( addHashCodeToLogMessage() )
+                {
+                    sb.append( hashCode() );
+                    sb.append( " " );
+                }
+                sb.append( methodName );
+                sb.append( ".end " );
+                getLogger().debug( sb.toString() );
             }
-            sb.append( methodName );
-            sb.append( ".end " );
-            getLogger().debug( sb.toString() );
+            catch ( Exception e )
+            {
+                getLogger().error( e );
+            }
         }
     }
 
@@ -189,15 +210,22 @@ public interface MyLogger
     {
         if ( isDebugEnabled() )
         {
-            final StringBuilder sb = new StringBuilder();
-            if ( addHashCodeToLogMessage() )
+            try
             {
-                sb.append( hashCode() );
-                sb.append( " " );
+                final StringBuilder sb = new StringBuilder();
+                if ( addHashCodeToLogMessage() )
+                {
+                    sb.append( hashCode() );
+                    sb.append( " " );
+                }
+                sb.append( methodName );
+                sb.append( ".end return value: " + returnValue );
+                getLogger().debug( sb.toString() );
             }
-            sb.append( methodName );
-            sb.append( ".end return value: " + returnValue );
-            getLogger().debug( sb.toString() );
+            catch ( Exception e )
+            {
+                getLogger().error( e );
+            }
         }
     }
 
@@ -222,7 +250,7 @@ public interface MyLogger
      * @param messageFormat a {@code MessageFormat} string format
      * @param args arguments to be used in the messageFormat by {@code MessageFormat}
      */
-    default void logTrace( final String methodName, final String messageFormat, final Object... args )
+    default void logTrace( final String methodName, final String messageFormat, final Object ... args )
     {
         if ( isTraceEnabled() )
         {
@@ -254,7 +282,7 @@ public interface MyLogger
      * @param args arguments to be used in the messageFormat by {@code MessageFormat}
      */
     default void logTrace( final String methodName, final String messageFormat, final Throwable throwable,
-                           final Object... args )
+                           final Object ... args )
     {
         if ( isTraceEnabled() )
         {
@@ -283,7 +311,7 @@ public interface MyLogger
      * @param messageFormat a {@code MessageFormat} string format
      * @param args arguments to be used in the messageFormat by {@code MessageFormat}
      */
-    default void logDebug( final String methodName, final String messageFormat, final Object... args )
+    default void logDebug( final String methodName, final String messageFormat, final Object ... args )
     {
         if ( isDebugEnabled() )
         {
@@ -299,7 +327,10 @@ public interface MyLogger
      */
     default void logDebug( final String methodName, final Throwable e )
     {
-        logDebug( methodName, null, e );
+        if ( isDebugEnabled() )
+        {
+            logDebug( methodName, null, e );
+        }
     }
 
     /**
@@ -335,7 +366,7 @@ public interface MyLogger
      * @param messageFormat a {@code MessageFormat} string format
      * @param args arguments to be used in the messageFormat by {@code MessageFormat}
      */
-    default void logInfo( final String methodName, final String messageFormat, final Object... args )
+    default void logInfo( final String methodName, final String messageFormat, final Object ... args )
     {
         getLogger().info( getLogMessage( methodName, messageFormat, args ) );
     }
@@ -370,7 +401,7 @@ public interface MyLogger
      * @param messageFormat a {@code MessageFormat} string format
      * @param args arguments to be used in the messageFormat by {@code MessageFormat}
      */
-    default void logError( final String methodName, final String messageFormat, final Object... args )
+    default void logError( final String methodName, final String messageFormat, final Object ... args )
     {
         getLogger().error( getLogMessage( methodName, messageFormat, args ) );
     }
@@ -381,7 +412,7 @@ public interface MyLogger
      * @param methodName the name of the method creating the log message
      * @param throwable exception to log
      */
-    default void logError( final String methodName, final Throwable throwable )
+    default void logError( final String methodName, final Throwable throwable  )
     {
         getLogger().error( getLogMessage( methodName, "Exception: " ), throwable );
     }
@@ -392,7 +423,7 @@ public interface MyLogger
      * @param logMessage the message to log
      * @param throwable exception to log
      */
-    default void logError( final String methodName, final String logMessage, final Throwable throwable )
+    default void logError( final String methodName, final String logMessage, final Throwable throwable  )
     {
         getLogger().error( getLogMessage( methodName, logMessage ), throwable );
     }
@@ -415,7 +446,7 @@ public interface MyLogger
      * @param messageFormat a {@code MessageFormat} string format
      * @param args arguments to be used in the messageFormat by {@code MessageFormat}
      */
-    default void logWarn( final String methodName, final String messageFormat, final Object args )
+    default void logWarn( final String methodName, final String messageFormat, final Object ... args )
     {
         getLogger().warn( getLogMessage( methodName, messageFormat, args ) );
     }
@@ -458,30 +489,37 @@ public interface MyLogger
      */
     default String getLogMessage( final String methodName, final String message )
     {
-        final StringBuilder sb = new StringBuilder();
-        if ( addHashCodeToLogMessage() )
+        try
         {
-            if ( message == null )
+            final StringBuilder sb = new StringBuilder();
+            if ( addHashCodeToLogMessage() )
             {
-                sb.append( String.format( "%d %s", hashCode(), methodName ) );
+                if ( message == null )
+                {
+                    sb.append( String.format( "%d %s", hashCode(), methodName ) );
+                }
+                else
+                {
+                    sb.append( String.format( "%d %s %s", hashCode(), methodName, message ) );
+                }
             }
             else
             {
-                sb.append( String.format( "%d %s %s", hashCode(), methodName, message ) );
+                if ( message == null )
+                {
+                    sb.append( String.format( "%s", methodName ) );
+                }
+                else
+                {
+                    sb.append( String.format( "%s %s", methodName, message ) );
+                }
             }
+            return sb.toString();
         }
-        else
+        catch ( Exception e )
         {
-            if ( message == null )
-            {
-                sb.append( String.format( "%s", methodName ) );
-            }
-            else
-            {
-                sb.append( String.format( "%s %s", methodName, message ) );
-            }
+            return "AWILogger -> " + e.getMessage();
         }
-        return sb.toString();
     }
 
     /**
@@ -494,22 +532,24 @@ public interface MyLogger
      * @param messageFormat message to be logged
      * @return a String formatted "[hashCode] [methodName] [message]" or without the [hashCode] value
      */
-    default String getLogMessage( final String methodName, final String messageFormat, Object... args )
+    default String getLogMessage( final String methodName, final String messageFormat, Object ... args )
     {
-        final StringBuilder sb = new StringBuilder();
-        /*
-         * Convert convert objects to toString() of the objects
-         */
-        //List<String> objectStrings = Arrays.stream( args ).map( Object::toString ).collect( Collectors.toList());
-        if ( addHashCodeToLogMessage() )
+        try
         {
-            sb.append( String.format( "%d %s %s", hashCode(), methodName, MessageFormat.format( messageFormat, args ) ));
+            final StringBuilder sb = new StringBuilder();
+            if ( addHashCodeToLogMessage() )
+            {
+                sb.append( String.format( "%d %s %s", hashCode(), methodName, MessageFormat.format( messageFormat, args ) ) );
+            }
+            else
+            {
+                sb.append( String.format( "%s %s", methodName, MessageFormat.format( messageFormat, args ) ) );
+            }
+            return sb.toString();
         }
-        else
+        catch ( Exception e )
         {
-            String message = MessageFormat.format( messageFormat, args );
-            sb.append( String.format( "%s %s", methodName, message ));
+            return "AWILogger -> " + e.getMessage();
         }
-        return sb.toString();
     }
 }

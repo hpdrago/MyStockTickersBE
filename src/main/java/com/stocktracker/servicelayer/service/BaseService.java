@@ -4,6 +4,8 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.CustomerRepository;
 import com.stocktracker.repositorylayer.PortfolioRepository;
 import com.stocktracker.repositorylayer.PortfolioStockRepository;
+import com.stocktracker.repositorylayer.StockNoteRepository;
+import com.stocktracker.repositorylayer.StockNoteSourceRepository;
 import com.stocktracker.repositorylayer.StockRepository;
 import com.stocktracker.repositorylayer.StockSectorRepository;
 import com.stocktracker.repositorylayer.StockSubSectorRepository;
@@ -12,6 +14,7 @@ import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerEntityToCu
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioEntityToPortfolioDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockEntityToPortfolioStockDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDE;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteEntityToStockNoteDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSectorEntityToStockSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSubSectorEntityToStockSubSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyVPortfolioStockEntityToCustomerStockDE;
@@ -32,6 +35,8 @@ public class BaseService implements MyLogger
     protected StockRepository stockRepository;
     protected StockSectorRepository stockSectorRepository;
     protected StockSubSectorRepository stockSubSectorRepository;
+    protected StockNoteRepository stockNoteRepository;
+    protected StockNoteSourceRepository stockNoteSourceRepository;
 
     /***********************************************
      *  L I S T  B E A N  C O P I E R S
@@ -43,6 +48,7 @@ public class BaseService implements MyLogger
     protected ListCopyStockSectorEntityToStockSectorDE listCopyStockSectorEntityToStockSectorDE;
     protected ListCopyStockSubSectorEntityToStockSubSectorDE listCopyStockSubSectorEntityToStockSubSectorDE;
     protected ListCopyPortfolioStockEntityToPortfolioStockDE listCopyPortfolioStockEntityToPortfolioStockDE;
+    protected ListCopyStockNoteEntityToStockNoteDE listCopyStockNoteEntityToStockNoteDE;
 
     /**
      * Dependency injection of the StockRepository
@@ -55,6 +61,30 @@ public class BaseService implements MyLogger
         final String methodName = "setStockRepository";
         logDebug( methodName, "Dependency Injection of: " + stockRepository );
         this.stockRepository = stockRepository;
+    }
+
+    /**
+     * Dependency injection of the StockNoteRepository
+     *
+     * @param stockNoteRepository
+     */
+    @Autowired
+    public void setStockNoteRepository( final StockNoteRepository stockNoteRepository )
+    {
+        final String methodName = "setStockNoteRepository";
+        logDebug( methodName, "Dependency Injection of: " + stockNoteRepository );
+        this.stockNoteRepository = stockNoteRepository;
+    }
+
+    /**
+     * Dependency injection
+     * @param listCopyStockNoteEntityToStockNoteDE
+     */
+    @Autowired
+    public void setListCopyStockNoteEntityToStockNoteDE(
+        final ListCopyStockNoteEntityToStockNoteDE listCopyStockNoteEntityToStockNoteDE )
+    {
+        this.listCopyStockNoteEntityToStockNoteDE = listCopyStockNoteEntityToStockNoteDE;
     }
 
     /**
@@ -202,5 +232,15 @@ public class BaseService implements MyLogger
     public void setListCopyPortfolioStockEntityToPortfolioStockDE( ListCopyPortfolioStockEntityToPortfolioStockDE listCopyPortfolioStockEntityToPortfolioStockDE )
     {
         this.listCopyPortfolioStockEntityToPortfolioStockDE = listCopyPortfolioStockEntityToPortfolioStockDE;
+    }
+
+    public StockNoteSourceRepository getStockNoteSourceRepository()
+    {
+        return stockNoteSourceRepository;
+    }
+
+    public void setStockNoteSourceRepository( StockNoteSourceRepository stockNoteSourceRepository )
+    {
+        this.stockNoteSourceRepository = stockNoteSourceRepository;
     }
 }

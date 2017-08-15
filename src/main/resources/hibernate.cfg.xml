@@ -13,5 +13,9 @@
         <mapping class="com.stocktracker.repositorylayer.db.entity.StockSectorEntity"/>
         <mapping class="com.stocktracker.repositorylayer.db.entity.StockSubSectorEntity"/>
         <mapping class="com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.db.entity.CustomerStockEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.db.entity.ExceptionEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.db.entity.StockNoteEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.db.entity.StockNoteSourceEntity"/>
     </session-factory>
 </hibernate-configuration>

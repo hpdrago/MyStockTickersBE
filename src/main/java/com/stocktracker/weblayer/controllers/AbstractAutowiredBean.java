@@ -4,12 +4,14 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.CustomerService;
 import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
+import com.stocktracker.servicelayer.service.StockNoteService;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerDEToCustomerDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerStockDEToCustomerStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioDEToPortfolioDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockDEToPortfolioStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDEToStockDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteDEToStockNoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,6 +35,10 @@ public class AbstractAutowiredBean implements MyLogger
      * Autowired service class
      */
     protected PortfolioStockService portfolioStockService;
+    /**
+     * Autowired service class
+     */
+    protected StockNoteService stockNoteService;
 
 
     protected ListCopyCustomerStockDEToCustomerStockDTO listCopyCustomerStockDEToCustomerStockDTO;
@@ -40,6 +46,13 @@ public class AbstractAutowiredBean implements MyLogger
     protected ListCopyPortfolioDEToPortfolioDTO listCopyPortfolioDEToPortfolioDTO;
     protected ListCopyStockDEToStockDTO listCopyStockDEToStockDTO;
     protected ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO;
+    protected ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO;
+
+    @Autowired
+    public void setListCopyStockNoteDEToStockNoteDTO( final ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO )
+    {
+        this.listCopyStockNoteDEToStockNoteDTO = listCopyStockNoteDEToStockNoteDTO;
+    }
 
     @Autowired
     public void setListCopyCustomerDEToCustomerDTO( final ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO )
@@ -52,7 +65,6 @@ public class AbstractAutowiredBean implements MyLogger
     {
         this.listCopyPortfolioStockDEToPortfolioStockDTO = listCopyPortfolioStockDEToPortfolioStockDTO;
     }
-
 
     /**
      * Allow DI to set the Portfolio Service
@@ -163,4 +175,16 @@ public class AbstractAutowiredBean implements MyLogger
         this.listCopyCustomerStockDEToCustomerStockDTO = listCopyCustomerStockDEToCustomerStockDTO;
     }
 
+    /**
+     * Allow DI to set the Stock Notes Service
+     *
+     * @param stockNoteService
+     */
+    @Autowired
+    public void setStockNoteService( final StockNoteService stockNoteService )
+    {
+        final String methodName = "setStockNotesService";
+        logMethodBegin( methodName, stockNoteService );
+        this.stockNoteService = stockNoteService;
+    }
 }
