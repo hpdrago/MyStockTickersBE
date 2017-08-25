@@ -12,6 +12,7 @@ import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioDEToPortf
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockDEToPortfolioStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDEToStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteDEToStockNoteDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteCountDEToStockNoteCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -47,6 +48,7 @@ public class AbstractAutowiredBean implements MyLogger
     protected ListCopyStockDEToStockDTO listCopyStockDEToStockDTO;
     protected ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO;
     protected ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO;
+    protected ListCopyStockNoteCountDEToStockNoteCountDTO listCopyStockNoteCountDEToStockNoteCountDTO;
 
     @Autowired
     public void setListCopyStockNoteDEToStockNoteDTO( final ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO )

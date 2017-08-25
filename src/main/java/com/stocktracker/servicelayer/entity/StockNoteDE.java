@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.entity;
 
 import com.stocktracker.repositorylayer.db.entity.StockNoteEntity;
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteService;
 import org.springframework.beans.BeanUtils;
 
 import java.sql.Timestamp;
@@ -25,13 +25,13 @@ public class StockNoteDE
     private Timestamp dateModified;
 
     public static StockNoteDE newInstance( final StockNoteEntity stockNoteEntity,
-                                           final StockNoteSourceService stockNoteSourceService )
+                                           final StockNoteService stockNoteService )
     {
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDE stockNoteDE = new StockNoteDE();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDE );
-        stockNoteDE.notesSource = stockNoteSourceService.getStockNoteSource( stockNoteEntity.getNotesSourceId() )
-                                                        .getNoteSource();
+        stockNoteDE.notesSource = stockNoteService.getStockNoteSource( stockNoteEntity.getNotesSourceId() )
+                                                  .getNoteSource();
         return stockNoteDE;
     }
 

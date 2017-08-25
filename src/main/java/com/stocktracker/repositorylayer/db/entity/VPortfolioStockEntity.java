@@ -35,7 +35,6 @@ public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, S
     private BigDecimal profitTakingPrice;
     private Integer id;
 
-    @Basic
     @Id
     @Column( name = "portfolio_id", nullable = true )
     public Integer getPortfolioId()

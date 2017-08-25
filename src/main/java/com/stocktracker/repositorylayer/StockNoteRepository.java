@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface StockNoteRepository extends JpaRepository<StockNoteEntity, Integer>
 {
-    List<StockNoteEntity> findByCustomerIdAndTickerSymbolOOrderByDateCreatedDesc( final int customerId,
-                                                                                  final String tickerSymbol );
+    List<StockNoteEntity> findByCustomerIdAndTickerSymbolOrderByDateCreatedDesc( final int customerId,
+                                                                                 final String tickerSymbol );
 }

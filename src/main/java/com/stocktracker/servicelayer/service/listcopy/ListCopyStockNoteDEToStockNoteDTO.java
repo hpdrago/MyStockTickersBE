@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.servicelayer.entity.StockNoteDE;
 import com.stocktracker.servicelayer.entity.StockNoteSourceDE;
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteService;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class ListCopyStockNoteDEToStockNoteDTO extends ListCopyProperties<StockNoteDE, StockNoteDTO>
 {
     @Autowired
-    private StockNoteSourceService stockNoteSourceService;
+    private StockNoteService stockNoteService;
 
     public ListCopyStockNoteDEToStockNoteDTO()
     {
@@ -25,17 +25,17 @@ public class ListCopyStockNoteDEToStockNoteDTO extends ListCopyProperties<StockN
     protected void copyProperties( final StockNoteDE source, final StockNoteDTO target )
     {
         super.copyProperties( source, target );
-        StockNoteSourceDE stockNoteSourceDE = stockNoteSourceService.getStockNoteSource( source.getNotesSourceId() );
+        StockNoteSourceDE stockNoteSourceDE = stockNoteService.getStockNoteSource( source.getNotesSourceId() );
         target.setSource( stockNoteSourceDE.getNoteSource() );
     }
 
-    public StockNoteSourceService getStockNoteSourceService()
+    public StockNoteService getStockNoteSourceService()
     {
-        return stockNoteSourceService;
+        return stockNoteService;
     }
 
-    public void setStockNoteSourceService( StockNoteSourceService stockNoteSourceService )
+    public void setStockNoteService( StockNoteService stockNoteService )
     {
-        this.stockNoteSourceService = stockNoteSourceService;
+        this.stockNoteService = stockNoteService;
     }
 }

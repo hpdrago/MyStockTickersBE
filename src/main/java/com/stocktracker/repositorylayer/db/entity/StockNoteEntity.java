@@ -135,7 +135,7 @@ public class StockNoteEntity
     }
 
     @Basic
-    @Column( name = "bull_or_bear", nullable = true, length = 1 )
+    @Column( name = "bullOrBear", nullable = true, length = 1 )
     public String getBullOrBear()
     {
         return bullOrBear;

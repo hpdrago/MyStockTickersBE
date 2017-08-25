@@ -1,8 +1,13 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.db.entity.StockNoteEntity;
+import com.stocktracker.repositorylayer.db.entity.StockNoteSourceEntity;
+import com.stocktracker.repositorylayer.db.entity.VStockNoteCountEntity;
+import com.stocktracker.servicelayer.entity.StockNoteCountDE;
 import com.stocktracker.servicelayer.entity.StockNoteDE;
+import com.stocktracker.servicelayer.entity.StockNoteSourceDE;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -29,10 +34,50 @@ public class StockNoteService extends BaseService implements MyLogger
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         List<StockNoteEntity> stockNoteEntities = stockNoteRepository.
-                                                    findByCustomerIdAndTickerSymbolOOrderByDateCreatedDesc(
+                                                    findByCustomerIdAndTickerSymbolOrderByDateCreatedDesc(
                                                         customerId, tickerSymbol );
         List<StockNoteDE> stockNoteDEs = listCopyStockNoteEntityToStockNoteDE.copy( stockNoteEntities );
         logMethodEnd( methodName, stockNoteDEs.size() );
         return stockNoteDEs;
+    }
+
+    /**
+     * Aggregates the number of notices for each stock (ticker symbol) for a customer.
+     * @param customerId The customer id.
+     * @return List of {@code StockNoteCountDE} instances.
+     */
+    public List<StockNoteCountDE> getStockNotesCount( final int customerId )
+    {
+        final String methodName = "getStockNotesCount";
+        logMethodBegin( methodName, customerId );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        List<VStockNoteCountEntity> stockNoteTickerSymbolCountEntities =
+            vStockNoteCountRepository.findByCustomerId( customerId );
+        List<StockNoteCountDE> stockNoteCountDES =
+            listCopyVStockNoteCountEntityToStockNoteCountDE.copy( stockNoteTickerSymbolCountEntities );
+        logMethodEnd( methodName, stockNoteCountDES.size() );
+        return stockNoteCountDES;
+    }
+
+    /**
+     * Get the stock note source for the stock note source id.
+     *
+     * @param stockNoteSourceId The id for the stock note source
+     * @return StockNoteSourceDE domain entity for stock note source id
+     * @throws StockNoteSourceNotFoundException If the stock source is not found
+     */
+    public StockNoteSourceDE getStockNoteSource( final int stockNoteSourceId )
+    {
+        final String methodName = "getNoteSource";
+        logMethodBegin( methodName, stockNoteSourceId );
+        Assert.isTrue( stockNoteSourceId > 0, "stockNoteId must be > 0" );
+        StockNoteSourceEntity stockNoteSourceEntity = stockNoteSourceRepository.findOne( stockNoteSourceId );
+        if ( stockNoteSourceEntity == null )
+        {
+            throw new StockNoteSourceNotFoundException( stockNoteSourceId );
+        }
+        StockNoteSourceDE stockNoteSourceDE = StockNoteSourceDE.newInstance( stockNoteSourceEntity );
+        logMethodEnd( methodName, stockNoteSourceDE );
+        return stockNoteSourceDE;
     }
 }

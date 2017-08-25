@@ -2,7 +2,9 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.entity.StockNoteDE;
+import com.stocktracker.servicelayer.entity.StockNoteCountDE;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
+import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +24,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocknotes/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = "/stockNotes/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<StockNoteDTO> getStockNotes( final @PathVariable int customerId,
@@ -31,8 +33,27 @@ public class StockNotesController extends AbstractController implements MyLogger
         final String methodName = "getStockNotes";
         logMethodBegin( methodName );
         List<StockNoteDE> stockNoteDEs = stockNoteService.getStockNotes( customerId, tickerSymbol );
-        List<StockNoteDTO> customerDTOs = listCopyStockNoteDEToStockNoteDTO.copy( stockNoteDEs );
-        logMethodEnd( methodName, customerDTOs.size() );
-        return customerDTOs;
+        List<StockNoteDTO> stockNoteDTOs = listCopyStockNoteDEToStockNoteDTO.copy( stockNoteDEs );
+        logMethodEnd( methodName, stockNoteDTOs.size() );
+        return stockNoteDTOs;
+    }
+
+    /**
+     * Get all of the ticker symbols and number of notes for each ticker
+     *
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/stockNotes/tickerSymbols/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( final @PathVariable int customerId )
+    {
+        final String methodName = "getStockNotesTickerSymbols";
+        logMethodBegin( methodName );
+        List<StockNoteCountDE> stockNoteCountDES = stockNoteService.getStockNotesCount( customerId );
+        List<StockNoteCountDTO> stockNoteCountDTOS = listCopyStockNoteCountDEToStockNoteCountDTO.copy( stockNoteCountDES );
+        logMethodEnd( methodName, stockNoteCountDTOS.size() );
+        return stockNoteCountDTOS;
     }
 }

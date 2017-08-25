@@ -6,6 +6,7 @@ import com.stocktracker.repositorylayer.PortfolioRepository;
 import com.stocktracker.repositorylayer.PortfolioStockRepository;
 import com.stocktracker.repositorylayer.StockNoteRepository;
 import com.stocktracker.repositorylayer.StockNoteSourceRepository;
+import com.stocktracker.repositorylayer.VStockNoteCountRepository;
 import com.stocktracker.repositorylayer.StockRepository;
 import com.stocktracker.repositorylayer.StockSectorRepository;
 import com.stocktracker.repositorylayer.StockSubSectorRepository;
@@ -18,6 +19,7 @@ import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteEntityToS
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSectorEntityToStockSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSubSectorEntityToStockSubSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyVPortfolioStockEntityToCustomerStockDE;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyVStockNoteCountEntityToStockNoteCountDE;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -36,6 +38,7 @@ public class BaseService implements MyLogger
     protected StockSectorRepository stockSectorRepository;
     protected StockSubSectorRepository stockSubSectorRepository;
     protected StockNoteRepository stockNoteRepository;
+    protected VStockNoteCountRepository vStockNoteCountRepository;
     protected StockNoteSourceRepository stockNoteSourceRepository;
 
     /***********************************************
@@ -49,6 +52,20 @@ public class BaseService implements MyLogger
     protected ListCopyStockSubSectorEntityToStockSubSectorDE listCopyStockSubSectorEntityToStockSubSectorDE;
     protected ListCopyPortfolioStockEntityToPortfolioStockDE listCopyPortfolioStockEntityToPortfolioStockDE;
     protected ListCopyStockNoteEntityToStockNoteDE listCopyStockNoteEntityToStockNoteDE;
+    protected ListCopyVStockNoteCountEntityToStockNoteCountDE listCopyVStockNoteCountEntityToStockNoteCountDE;
+
+    /**
+     * Dependency injection of the VStockNoteCountRepository
+     *
+     * @param
+     */
+    @Autowired
+    public void setVStockNoteTickerSymbolCountRepository( final VStockNoteCountRepository VStockNoteCountRepository )
+    {
+        final String methodName = "setVStockNoteTickerSymbolCountRepository";
+        logDebug( methodName, "Dependency Injection of: " + VStockNoteCountRepository );
+        this.vStockNoteCountRepository = VStockNoteCountRepository;
+    }
 
     /**
      * Dependency injection of the StockRepository
@@ -242,5 +259,11 @@ public class BaseService implements MyLogger
     public void setStockNoteSourceRepository( StockNoteSourceRepository stockNoteSourceRepository )
     {
         this.stockNoteSourceRepository = stockNoteSourceRepository;
+    }
+
+    @Autowired
+    public void setListCopyVStockNoteCountEntityToStockNoteCountDE( ListCopyVStockNoteCountEntityToStockNoteCountDE listCopyVStockNoteCountEntityToStockNoteCountDE )
+    {
+        this.listCopyVStockNoteCountEntityToStockNoteCountDE = listCopyVStockNoteCountEntityToStockNoteCountDE;
     }
 }
