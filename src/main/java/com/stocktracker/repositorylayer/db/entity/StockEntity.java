@@ -17,12 +17,12 @@ import java.util.Objects;
  * Created by mike on 9/11/2016.
  */
 @Entity
-@Table( name = "stock", schema = "stocktracker", catalog = "" )
+@Table( name = "stock", schema = "stocktracker" )
 public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
 {
     private String tickerSymbol;
     private String companyName;
-    private String exchange;
+    //private String exchange;
     private Integer createdBy;
     private Character userEntered;
     private BigDecimal lastPrice;
@@ -90,6 +90,7 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         this.companyName = companyName;
     }
 
+    /*
     @Basic
     @Column( name = "exchange", nullable = true, length = 10 )
     public String getExchange()
@@ -101,6 +102,7 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
     {
         this.exchange = exchange;
     }
+    */
 
     @Basic
     @Column( name = "created_by" )
@@ -177,7 +179,7 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         sb.append( "{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
-        sb.append( ", exchange='" ).append( exchange ).append( '\'' );
+   //     sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy=" ).append( createdBy );
         sb.append( ", userEntered=" ).append( userEntered );
         sb.append( ", lastPrice=" ).append( lastPrice );
@@ -200,14 +202,14 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
         }
         final StockEntity that = (StockEntity) o;
         return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-            Objects.equals( companyName, that.companyName ) &&
-            Objects.equals( exchange, that.exchange );
+            Objects.equals( companyName, that.companyName );// &&
+            //Objects.equals( exchange, that.exchange );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( tickerSymbol, companyName, exchange );
+        return Objects.hash( tickerSymbol, companyName ); //, exchange );
     }
 
 }

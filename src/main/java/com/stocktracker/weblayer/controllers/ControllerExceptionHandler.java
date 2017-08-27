@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by mike on 12/3/2016.
+ *
+ * Reference: https://spring.io/blog/2013/11/01/exception-handling-in-spring-mvc
  */
 @ControllerAdvice
 public class ControllerExceptionHandler implements MyLogger

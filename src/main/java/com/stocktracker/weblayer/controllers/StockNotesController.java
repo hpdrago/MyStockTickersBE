@@ -1,21 +1,23 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.entity.StockNoteDE;
 import com.stocktracker.servicelayer.entity.StockNoteCountDE;
-import com.stocktracker.weblayer.dto.StockNoteDTO;
+import com.stocktracker.servicelayer.entity.StockNoteDE;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
+import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 /**
  * Created by mike on 5/7/2017.
  */
+@RestController
 public class StockNotesController extends AbstractController implements MyLogger
 {
     /**
