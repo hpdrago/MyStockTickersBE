@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.entity;
 
+import com.stocktracker.common.BullOrBear;
 import com.stocktracker.repositorylayer.db.entity.StockNoteEntity;
 import com.stocktracker.servicelayer.service.StockNoteService;
 import org.springframework.beans.BeanUtils;
@@ -16,11 +17,13 @@ public class StockNoteDE
     private Integer customerId;
     private String tickerSymbol;
     private String notes;
+    private double stockPrice;
+    private Timestamp notesDate;
     private Integer notesSourceId;
     private String notesSource;
     private Integer noteRating;
     private Boolean publicInd;
-    private String bullOrBear;
+    private BullOrBear bullOrBear;
     private Timestamp dateCreated;
     private Timestamp dateModified;
 
@@ -30,6 +33,7 @@ public class StockNoteDE
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDE stockNoteDE = new StockNoteDE();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDE );
+        stockNoteDE.bullOrBear = BullOrBear.valueOf( stockNoteEntity.getBullOrBear() );
         stockNoteDE.notesSource = stockNoteService.getStockNoteSource( stockNoteEntity.getNotesSourceId() )
                                                   .getNoteSource();
         return stockNoteDE;
@@ -135,12 +139,12 @@ public class StockNoteDE
         this.customerId = customerId;
     }
 
-    public String getBullOrBear()
+    public BullOrBear getBullOrBear()
     {
         return bullOrBear;
     }
 
-    public void setBullOrBear( String bullOrBear )
+    public void setBullOrBear( BullOrBear bullOrBear )
     {
         this.bullOrBear = bullOrBear;
     }
@@ -174,6 +178,8 @@ public class StockNoteDE
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", customerId='" ).append( customerId ).append( '\'' );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
+        sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
+        sb.append( ", stockPrice='" ).append( stockPrice ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSource='" ).append( notesSource ).append( '\'' );
         sb.append( ", noteRating=" ).append( noteRating );
@@ -183,5 +189,15 @@ public class StockNoteDE
         sb.append( ", dateModified=" ).append( dateModified );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    public Timestamp getNotesDate()
+    {
+        return notesDate;
+    }
+
+    public void setNotesDate( Timestamp notesDate )
+    {
+        this.notesDate = notesDate;
     }
 }

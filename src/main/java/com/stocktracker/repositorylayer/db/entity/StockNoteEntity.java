@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -19,12 +20,14 @@ public class StockNoteEntity
     private String tickerSymbol;
     private String notes;
     private Integer notesSourceId;
+    private Timestamp notesDate;
+    private BigDecimal stockPrice;
     private Timestamp dateCreated;
     private Timestamp dateModified;
     private Integer customerId;
     private Integer noteRating;
     private String publicInd;
-    private String bullOrBear;
+    private Byte bullOrBear;
 
     @Id
     @Column( name = "id", nullable = false )
@@ -72,6 +75,30 @@ public class StockNoteEntity
     public void setNotes( final String notes )
     {
         this.notes = notes;
+    }
+
+    @Basic
+    @Column( name = "notes_date" )
+    public Timestamp getNotesDate()
+    {
+        return notesDate;
+    }
+
+    public void setNotesDate( final Timestamp notesDate )
+    {
+        this.notesDate = notesDate;
+    }
+
+    @Basic
+    @Column( name = "stock_price" )
+    public BigDecimal getStockPrice()
+    {
+        return stockPrice;
+    }
+
+    public void setStockPrice( final BigDecimal stockPrice )
+    {
+        this.stockPrice = stockPrice;
     }
 
     @Basic
@@ -135,13 +162,13 @@ public class StockNoteEntity
     }
 
     @Basic
-    @Column( name = "bullOrBear", nullable = true, length = 1 )
-    public String getBullOrBear()
+    @Column( name = "bull_or_bear", nullable = true )
+    public Byte getBullOrBear()
     {
         return bullOrBear;
     }
 
-    public void setBullOrBear( final String bullOrBear )
+    public void setBullOrBear( final Byte bullOrBear )
     {
         this.bullOrBear = bullOrBear;
     }
@@ -174,6 +201,8 @@ public class StockNoteEntity
         sb.append( "id=" ).append( id );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
+        sb.append( ", notes='" ).append( notesDate ).append( '\'' );
+        sb.append( ", stockPrice='" ).append( stockPrice ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
@@ -185,4 +214,7 @@ public class StockNoteEntity
         return sb.toString();
     }
 
+    {
+        this.stockPrice = stockPrice;
+    }
 }

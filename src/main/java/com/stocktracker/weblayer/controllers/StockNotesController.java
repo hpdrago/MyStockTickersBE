@@ -3,8 +3,10 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.entity.StockNoteCountDE;
 import com.stocktracker.servicelayer.entity.StockNoteDE;
+import com.stocktracker.servicelayer.entity.StockNoteSourceDE;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
+import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,5 +59,24 @@ public class StockNotesController extends AbstractController implements MyLogger
         List<StockNoteCountDTO> stockNoteCountDTOS = listCopyStockNoteCountDEToStockNoteCountDTO.copy( stockNoteCountDES );
         logMethodEnd( methodName, stockNoteCountDTOS.size() );
         return stockNoteCountDTOS;
+    }
+
+    /**
+     * Get all of the stocks notes sources for a customer
+     *
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/stockNotesSources/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<StockNoteSourceDTO> getStockNotesSources( final @PathVariable int customerId )
+    {
+        final String methodName = "getStockNotesSources";
+        logMethodBegin( methodName );
+        List<StockNoteSourceDE> stockNoteSourceDEs = stockNoteService.getStockNoteSources( customerId );
+        List<StockNoteSourceDTO> stockNoteSourceDTOs = listCopyStockNoteSourceDEToStockNoteSourceDTO.copy( stockNoteSourceDEs );
+        logMethodEnd( methodName, stockNoteSourceDTOs.size() );
+        return stockNoteSourceDTOs;
     }
 }

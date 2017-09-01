@@ -80,4 +80,20 @@ public class StockNoteService extends BaseService implements MyLogger
         logMethodEnd( methodName, stockNoteSourceDE );
         return stockNoteSourceDE;
     }
+
+    /**
+     * Get all of the stock notes sources for a customer
+     *
+     * @param customerId The id for the stock note source
+     */
+    public List<StockNoteSourceDE> getStockNoteSources( final int customerId )
+    {
+        final String methodName = "getNotesSources";
+        logMethodBegin( methodName, customerId );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        List<StockNoteSourceEntity> stockNoteSourceEntities = stockNoteSourceRepository.findByCustomerId( customerId );
+        List<StockNoteSourceDE> stockNoteSourceDEList = listCopyStockNoteSourceEntityToStockNoteSourceDE.copy( stockNoteSourceEntities );
+        logMethodEnd( methodName, stockNoteSourceDEList.size() + " sources found" );
+        return stockNoteSourceDEList;
+    }
 }

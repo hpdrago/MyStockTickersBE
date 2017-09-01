@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.common.BullOrBear;
 import com.stocktracker.servicelayer.entity.StockNoteDE;
 import org.springframework.beans.BeanUtils;
 
@@ -15,11 +16,13 @@ public class StockNoteDTO
     private Integer customerId;
     private String tickerSymbol;
     private String notes;
+    private Double stockPrice;
+    private Timestamp noteDate;
     private String source;
     private Integer sourceId;
     private Integer noteRating;
     private Boolean publicInd;
-    private String bullOrBear;
+    private BullOrBear bullOrBear;
     private Timestamp dateCreated;
     private Timestamp dateModified;
 
@@ -64,6 +67,16 @@ public class StockNoteDTO
     public void setNotes( String notes )
     {
         this.notes = notes;
+    }
+
+    public Timestamp getNoteDate()
+    {
+        return noteDate;
+    }
+
+    public void setNoteDate( Timestamp noteDate )
+    {
+        this.noteDate = noteDate;
     }
 
     public String getSource()
@@ -136,12 +149,12 @@ public class StockNoteDTO
         this.customerId = customerId;
     }
 
-    public String getBullOrBear()
+    public BullOrBear getBullOrBear()
     {
         return bullOrBear;
     }
 
-    public void setBullOrBear( String bullOrBear )
+    public void setBullOrBear( BullOrBear bullOrBear )
     {
         this.bullOrBear = bullOrBear;
     }
@@ -175,6 +188,8 @@ public class StockNoteDTO
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
+        sb.append( ", noteDate='" ).append( noteDate ).append( '\'' );
+        sb.append( ", stockPrice='" ).append( stockPrice ).append( '\'' );
         sb.append( ", source='" ).append( source ).append( '\'' );
         sb.append( ", sourceId=" ).append( sourceId );
         sb.append( ", noteRating=" ).append( noteRating );
@@ -184,5 +199,15 @@ public class StockNoteDTO
         sb.append( ", dateModified=" ).append( dateModified );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    public Double getStockPrice()
+    {
+        return stockPrice;
+    }
+
+    public void setStockPrice( Double stockPrice )
+    {
+        this.stockPrice = stockPrice;
     }
 }

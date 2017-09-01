@@ -16,6 +16,7 @@ import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioEntityToP
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockEntityToPortfolioStockDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteEntityToStockNoteDE;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteSourceEntityToStockNoteSourceDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSectorEntityToStockSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSubSectorEntityToStockSubSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyVPortfolioStockEntityToCustomerStockDE;
@@ -53,6 +54,7 @@ public class BaseService implements MyLogger
     protected ListCopyPortfolioStockEntityToPortfolioStockDE listCopyPortfolioStockEntityToPortfolioStockDE;
     protected ListCopyStockNoteEntityToStockNoteDE listCopyStockNoteEntityToStockNoteDE;
     protected ListCopyVStockNoteCountEntityToStockNoteCountDE listCopyVStockNoteCountEntityToStockNoteCountDE;
+    protected ListCopyStockNoteSourceEntityToStockNoteSourceDE listCopyStockNoteSourceEntityToStockNoteSourceDE;
 
     /**
      * Dependency injection of the VStockNoteCountRepository
@@ -246,24 +248,29 @@ public class BaseService implements MyLogger
     }
 
     @Autowired
-    public void setListCopyPortfolioStockEntityToPortfolioStockDE( ListCopyPortfolioStockEntityToPortfolioStockDE listCopyPortfolioStockEntityToPortfolioStockDE )
+    public void setListCopyPortfolioStockEntityToPortfolioStockDE( ListCopyPortfolioStockEntityToPortfolioStockDE
+                                                                   listCopyPortfolioStockEntityToPortfolioStockDE )
     {
         this.listCopyPortfolioStockEntityToPortfolioStockDE = listCopyPortfolioStockEntityToPortfolioStockDE;
     }
 
-    public StockNoteSourceRepository getStockNoteSourceRepository()
-    {
-        return stockNoteSourceRepository;
-    }
-
+    @Autowired
     public void setStockNoteSourceRepository( StockNoteSourceRepository stockNoteSourceRepository )
     {
         this.stockNoteSourceRepository = stockNoteSourceRepository;
     }
 
     @Autowired
-    public void setListCopyVStockNoteCountEntityToStockNoteCountDE( ListCopyVStockNoteCountEntityToStockNoteCountDE listCopyVStockNoteCountEntityToStockNoteCountDE )
+    public void setListCopyVStockNoteCountEntityToStockNoteCountDE( ListCopyVStockNoteCountEntityToStockNoteCountDE
+                                                                    listCopyVStockNoteCountEntityToStockNoteCountDE )
     {
         this.listCopyVStockNoteCountEntityToStockNoteCountDE = listCopyVStockNoteCountEntityToStockNoteCountDE;
+    }
+
+    @Autowired
+    public void setListCopyStockNoteSourceEntityToStockNoteSourceDE( ListCopyStockNoteSourceEntityToStockNoteSourceDE
+                                                                     listCopyVStockNoteCountEntityToStockNoteCountDE )
+    {
+        this.listCopyStockNoteSourceEntityToStockNoteSourceDE = listCopyVStockNoteCountEntityToStockNoteCountDE;
     }
 }

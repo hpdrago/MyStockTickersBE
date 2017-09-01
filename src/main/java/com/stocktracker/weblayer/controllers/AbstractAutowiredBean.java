@@ -13,6 +13,7 @@ import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockDETo
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDEToStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteDEToStockNoteDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteCountDEToStockNoteCountDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteSourceDEToStockNoteSourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -48,12 +49,22 @@ public class AbstractAutowiredBean implements MyLogger
     protected ListCopyStockDEToStockDTO listCopyStockDEToStockDTO;
     protected ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO;
     protected ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO;
+    protected ListCopyStockNoteSourceDEToStockNoteSourceDTO listCopyStockNoteSourceDEToStockNoteSourceDTO;
     protected ListCopyStockNoteCountDEToStockNoteCountDTO listCopyStockNoteCountDEToStockNoteCountDTO;
 
     @Autowired
     public void setListCopyStockNoteDEToStockNoteDTO( final ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO )
     {
+        logDebug( "setListCopyStockNoteDEToStockNoteDTO", "Dependency Injection of: " +
+                                                          listCopyStockNoteDEToStockNoteDTO );
         this.listCopyStockNoteDEToStockNoteDTO = listCopyStockNoteDEToStockNoteDTO;
+    }
+
+    @Autowired
+    public void setListCopyStockNoteSourceDEToStockNoteSourceDTO( final ListCopyStockNoteSourceDEToStockNoteSourceDTO
+                                                                        listCopyStockNoteSourceDEToStockNoteSourceDTO )
+    {
+        this.listCopyStockNoteSourceDEToStockNoteSourceDTO = listCopyStockNoteSourceDEToStockNoteSourceDTO;
     }
 
     @Autowired
