@@ -1,26 +1,29 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.CustomerRepository;
-import com.stocktracker.repositorylayer.PortfolioRepository;
-import com.stocktracker.repositorylayer.PortfolioStockRepository;
-import com.stocktracker.repositorylayer.StockNoteRepository;
-import com.stocktracker.repositorylayer.StockNoteSourceRepository;
-import com.stocktracker.repositorylayer.VStockNoteCountRepository;
-import com.stocktracker.repositorylayer.StockRepository;
-import com.stocktracker.repositorylayer.StockSectorRepository;
-import com.stocktracker.repositorylayer.StockSubSectorRepository;
-import com.stocktracker.repositorylayer.VPortfolioStockRepository;
+import com.stocktracker.repositorylayer.repository.CustomerRepository;
+import com.stocktracker.repositorylayer.repository.PortfolioRepository;
+import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
+import com.stocktracker.repositorylayer.repository.StockNoteRepository;
+import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
+import com.stocktracker.repositorylayer.repository.StockNoteStockRepository;
+import com.stocktracker.repositorylayer.repository.StockRepository;
+import com.stocktracker.repositorylayer.repository.StockSectorRepository;
+import com.stocktracker.repositorylayer.repository.StockSubSectorRepository;
+import com.stocktracker.repositorylayer.repository.VPortfolioStockRepository;
+import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerEntityToCustomerDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioEntityToPortfolioDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockEntityToPortfolioStockDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockEntityToStockDE;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteEntityToStockNoteDE;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteSourceEntityToStockNoteSourceDE;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteEntityToStockNoteDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteSourceEntityToStockNoteSourceDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteStockDTOToStockNoteStockEntity;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteStockEntityToStockNoteStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSectorEntityToStockSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockSubSectorEntityToStockSubSectorDE;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyVPortfolioStockEntityToCustomerStockDE;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyVStockNoteCountEntityToStockNoteCountDE;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyVStockNoteCountEntityToStockNoteCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,6 +44,7 @@ public class BaseService implements MyLogger
     protected StockNoteRepository stockNoteRepository;
     protected VStockNoteCountRepository vStockNoteCountRepository;
     protected StockNoteSourceRepository stockNoteSourceRepository;
+    protected StockNoteStockRepository stockNoteStockRepository;
 
     /***********************************************
      *  L I S T  B E A N  C O P I E R S
@@ -52,9 +56,11 @@ public class BaseService implements MyLogger
     protected ListCopyStockSectorEntityToStockSectorDE listCopyStockSectorEntityToStockSectorDE;
     protected ListCopyStockSubSectorEntityToStockSubSectorDE listCopyStockSubSectorEntityToStockSubSectorDE;
     protected ListCopyPortfolioStockEntityToPortfolioStockDE listCopyPortfolioStockEntityToPortfolioStockDE;
-    protected ListCopyStockNoteEntityToStockNoteDE listCopyStockNoteEntityToStockNoteDE;
-    protected ListCopyVStockNoteCountEntityToStockNoteCountDE listCopyVStockNoteCountEntityToStockNoteCountDE;
-    protected ListCopyStockNoteSourceEntityToStockNoteSourceDE listCopyStockNoteSourceEntityToStockNoteSourceDE;
+    protected ListCopyStockNoteEntityToStockNoteDTO listCopyStockNoteEntityToStockNoteDTO;
+    protected ListCopyStockNoteStockEntityToStockNoteStockDTO listCopyStockNoteStockEntityToStockNoteStockDTO;
+    protected ListCopyStockNoteStockDTOToStockNoteStockEntity listCopyStockNoteStockDTOToStockNoteStockEntity;
+    protected ListCopyVStockNoteCountEntityToStockNoteCountDTO listCopyVStockNoteCountEntityToStockNoteCountDTO;
+    protected ListCopyStockNoteSourceEntityToStockNoteSourceDTO listCopyStockNoteSourceEntityToStockNoteSourceDTO;
 
     /**
      * Dependency injection of the VStockNoteCountRepository
@@ -67,6 +73,19 @@ public class BaseService implements MyLogger
         final String methodName = "setVStockNoteTickerSymbolCountRepository";
         logDebug( methodName, "Dependency Injection of: " + VStockNoteCountRepository );
         this.vStockNoteCountRepository = VStockNoteCountRepository;
+    }
+
+    /**
+     * Dependency injection of the StockRepository
+     *
+     * @param stockNoteStockRepository
+     */
+    @Autowired
+    public void setStockNoteStockRepository( final StockNoteStockRepository stockNoteStockRepository )
+    {
+        final String methodName = "setStockNoteStockRepository";
+        logDebug( methodName, "Dependency Injection of: " + stockNoteStockRepository );
+        this.stockNoteStockRepository = stockNoteStockRepository;
     }
 
     /**
@@ -97,13 +116,35 @@ public class BaseService implements MyLogger
 
     /**
      * Dependency injection
-     * @param listCopyStockNoteEntityToStockNoteDE
+     * @param listCopyStockNoteEntityToStockNoteDTO
      */
     @Autowired
-    public void setListCopyStockNoteEntityToStockNoteDE(
-        final ListCopyStockNoteEntityToStockNoteDE listCopyStockNoteEntityToStockNoteDE )
+    public void setListCopyStockNoteEntityToStockNoteDTO(
+        final ListCopyStockNoteEntityToStockNoteDTO listCopyStockNoteEntityToStockNoteDTO )
     {
-        this.listCopyStockNoteEntityToStockNoteDE = listCopyStockNoteEntityToStockNoteDE;
+        this.listCopyStockNoteEntityToStockNoteDTO = listCopyStockNoteEntityToStockNoteDTO;
+    }
+
+    /**
+     * Dependency injection
+     * @param listCopyStockNoteStockEntityToStockNoteStockDTO
+     */
+    @Autowired
+    public void setListCopyStockNoteStockEntityToStockNoteStockDTO(
+        final ListCopyStockNoteStockEntityToStockNoteStockDTO listCopyStockNoteStockEntityToStockNoteStockDTO )
+    {
+        this.listCopyStockNoteStockEntityToStockNoteStockDTO = listCopyStockNoteStockEntityToStockNoteStockDTO;
+    }
+
+    /**
+     * Dependency injection
+     * @param listCopyStockNoteStockDTOToStockNoteStockEntity
+     */
+    @Autowired
+    public void setListCopyStockNoteStockDTOToStockNoteStockEntity(
+        final ListCopyStockNoteStockDTOToStockNoteStockEntity listCopyStockNoteStockDTOToStockNoteStockEntity )
+    {
+        this.listCopyStockNoteStockDTOToStockNoteStockEntity = listCopyStockNoteStockDTOToStockNoteStockEntity;
     }
 
     /**
@@ -261,16 +302,16 @@ public class BaseService implements MyLogger
     }
 
     @Autowired
-    public void setListCopyVStockNoteCountEntityToStockNoteCountDE( ListCopyVStockNoteCountEntityToStockNoteCountDE
-                                                                    listCopyVStockNoteCountEntityToStockNoteCountDE )
+    public void setListCopyVStockNoteCountEntityToStockNoteCountDTO( ListCopyVStockNoteCountEntityToStockNoteCountDTO
+                                                                         listCopyVStockNoteCountEntityToStockNoteCountDTO )
     {
-        this.listCopyVStockNoteCountEntityToStockNoteCountDE = listCopyVStockNoteCountEntityToStockNoteCountDE;
+        this.listCopyVStockNoteCountEntityToStockNoteCountDTO = listCopyVStockNoteCountEntityToStockNoteCountDTO;
     }
 
     @Autowired
-    public void setListCopyStockNoteSourceEntityToStockNoteSourceDE( ListCopyStockNoteSourceEntityToStockNoteSourceDE
+    public void setListCopyStockNoteSourceEntityToStockNoteSourceDTO( ListCopyStockNoteSourceEntityToStockNoteSourceDTO
                                                                      listCopyVStockNoteCountEntityToStockNoteCountDE )
     {
-        this.listCopyStockNoteSourceEntityToStockNoteSourceDE = listCopyVStockNoteCountEntityToStockNoteCountDE;
+        this.listCopyStockNoteSourceEntityToStockNoteSourceDTO = listCopyVStockNoteCountEntityToStockNoteCountDE;
     }
 }

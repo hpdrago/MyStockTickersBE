@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.entity.StockNoteSourceDE;
+import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -20,11 +20,10 @@ public class StockNoteSourceDTO
         this.noteSource = noteSource;
     }
 
-    public static StockNoteSourceDTO newInstance( final StockNoteSourceDE stockNoteSourceDE )
+    public static StockNoteSourceDTO newInstance( final StockNoteSourceEntity stockNoteSourceEntity )
     {
         StockNoteSourceDTO stockNoteSourceDTO = new StockNoteSourceDTO();
-        BeanUtils.copyProperties( stockNoteSourceDE, stockNoteSourceDTO );
-        stockNoteSourceDTO.setNoteSource( stockNoteSourceDE.getNoteSource() );
+        BeanUtils.copyProperties( stockNoteSourceEntity, stockNoteSourceDTO );
         return stockNoteSourceDTO;
     }
 

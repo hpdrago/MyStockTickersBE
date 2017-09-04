@@ -11,9 +11,10 @@ import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerStockDEToC
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioDEToPortfolioDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyPortfolioStockDEToPortfolioStockDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyStockDEToStockDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteDEToStockNoteDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteCountDEToStockNoteCountDTO;
-import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteSourceDEToStockNoteSourceDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteCountEntityToStockNoteCountDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteEntityToStockNoteDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteSourceEntityToStockNoteSourceDTO;
+import com.stocktracker.servicelayer.service.listcopy.ListCopyStockNoteStockEntityToStockNoteStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -48,33 +49,47 @@ public class AbstractAutowiredBean implements MyLogger
     protected ListCopyPortfolioDEToPortfolioDTO listCopyPortfolioDEToPortfolioDTO;
     protected ListCopyStockDEToStockDTO listCopyStockDEToStockDTO;
     protected ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO;
-    protected ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO;
-    protected ListCopyStockNoteSourceDEToStockNoteSourceDTO listCopyStockNoteSourceDEToStockNoteSourceDTO;
-    protected ListCopyStockNoteCountDEToStockNoteCountDTO listCopyStockNoteCountDEToStockNoteCountDTO;
+    protected ListCopyStockNoteEntityToStockNoteDTO listCopyStockNoteEntityToStockNoteDTO;
+    protected ListCopyStockNoteStockEntityToStockNoteStockDTO listCopyStockNoteStockEntityToStockNoteStockDTO;
+    protected ListCopyStockNoteCountEntityToStockNoteCountDTO listCopyStockNoteCountEntityToStockNoteCountDTO;
+    protected ListCopyStockNoteSourceEntityToStockNoteSourceDTO listCopyStockNoteSourceEntityToStockNoteSourceDTO;
 
     @Autowired
-    public void setListCopyStockNoteDEToStockNoteDTO( final ListCopyStockNoteDEToStockNoteDTO listCopyStockNoteDEToStockNoteDTO )
+    public void setListCopyStockSourceNoteEntityToStockNoteSourceDTO(
+        final ListCopyStockNoteSourceEntityToStockNoteSourceDTO listCopyStockNoteEntityToStockNoteSourceDTO )
+    {
+        logDebug( "setListCopyStockSourceNoteDEToStockNoteSourceDTO", "Dependency Injection of: " +
+                                                          listCopyStockNoteSourceEntityToStockNoteSourceDTO );
+        this.listCopyStockNoteSourceEntityToStockNoteSourceDTO = listCopyStockNoteSourceEntityToStockNoteSourceDTO;
+    }
+
+    @Autowired
+    public void setListCopyStockNoteEntityToStockNoteDTO(
+        final ListCopyStockNoteEntityToStockNoteDTO listCopyStockNoteEntityToStockNoteDTO )
     {
         logDebug( "setListCopyStockNoteDEToStockNoteDTO", "Dependency Injection of: " +
-                                                          listCopyStockNoteDEToStockNoteDTO );
-        this.listCopyStockNoteDEToStockNoteDTO = listCopyStockNoteDEToStockNoteDTO;
+                                                          listCopyStockNoteEntityToStockNoteDTO );
+        this.listCopyStockNoteEntityToStockNoteDTO = listCopyStockNoteEntityToStockNoteDTO;
     }
 
     @Autowired
-    public void setListCopyStockNoteSourceDEToStockNoteSourceDTO( final ListCopyStockNoteSourceDEToStockNoteSourceDTO
-                                                                        listCopyStockNoteSourceDEToStockNoteSourceDTO )
+    public void setListCopyStockNoteStockEntityToStockNoteStockDTO(
+        final ListCopyStockNoteStockEntityToStockNoteStockDTO listCopyStockNoteEntityToStockNoteStockDTO )
     {
-        this.listCopyStockNoteSourceDEToStockNoteSourceDTO = listCopyStockNoteSourceDEToStockNoteSourceDTO;
+        logDebug( "setListCopyStockNoteStockDEToStockNoteStockDTO", "Dependency Injection of: " +
+                                                                    listCopyStockNoteEntityToStockNoteStockDTO );
+        this.listCopyStockNoteStockEntityToStockNoteStockDTO = listCopyStockNoteEntityToStockNoteStockDTO;
     }
-
     @Autowired
-    public void setListCopyCustomerDEToCustomerDTO( final ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO )
+    public void setListCopyCustomerDEToCustomerDTO(
+        final ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO )
     {
         this.listCopyCustomerDEToCustomerDTO = listCopyCustomerDEToCustomerDTO;
     }
 
     @Autowired
-    public void setListCopyPortfolioStockDEToPortfolioStockDTO( final ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO )
+    public void setListCopyPortfolioStockDEToPortfolioStockDTO(
+        final ListCopyPortfolioStockDEToPortfolioStockDTO listCopyPortfolioStockDEToPortfolioStockDTO )
     {
         this.listCopyPortfolioStockDEToPortfolioStockDTO = listCopyPortfolioStockDEToPortfolioStockDTO;
     }
@@ -143,7 +158,8 @@ public class AbstractAutowiredBean implements MyLogger
      * @param
      */
     @Autowired
-    public void setListCopyCustomerDoToCustomerDo( final ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO )
+    public void setListCopyCustomerDoToCustomerDo(
+        final ListCopyCustomerDEToCustomerDTO listCopyCustomerDEToCustomerDTO )
     {
         final String methodName = "setListCopyCustomerDoToCustomerDo";
         logDebug( methodName, "Dependency Injection of: " + listCopyCustomerDEToCustomerDTO );
@@ -155,7 +171,8 @@ public class AbstractAutowiredBean implements MyLogger
      * @param
      */
     @Autowired
-    public void setListCopyPortfolioDoToPortfolioDo( final ListCopyPortfolioDEToPortfolioDTO listCopyPortfolioDEToPortfolioDTO )
+    public void setListCopyPortfolioDoToPortfolioDo(
+        final ListCopyPortfolioDEToPortfolioDTO listCopyPortfolioDEToPortfolioDTO )
     {
         final String methodName = "setListCopyPortfolioDoToPortfolioDo";
         logDebug( methodName, "Dependency Injection of: " + listCopyPortfolioDEToPortfolioDTO );

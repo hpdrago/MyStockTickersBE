@@ -1,10 +1,10 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.common.BullOrBear;
-import com.stocktracker.servicelayer.entity.StockNoteDE;
+import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import org.springframework.beans.BeanUtils;
 
 import java.security.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -14,28 +14,27 @@ public class StockNoteDTO
 {
     private Integer id;
     private Integer customerId;
-    private String tickerSymbol;
     private String notes;
-    private Double stockPrice;
-    private Timestamp noteDate;
+    private Timestamp notesDate;
     private String source;
     private Integer sourceId;
-    private Integer noteRating;
+    private Integer notesRating;
     private Boolean publicInd;
-    private BullOrBear bullOrBear;
+    private Byte bullOrBear;
     private Timestamp dateCreated;
     private Timestamp dateModified;
+    private List<StockNoteStockDTO> stocks;
 
     /**
      * Create a new instance from a StockNoteDE instance
-     * @param stockNoteDE
+     * @param stockNoteEntity
      * @return
      */
-    public static StockNoteDTO newInstance( final StockNoteDE stockNoteDE )
+    public static StockNoteDTO newInstance( final StockNoteEntity stockNoteEntity )
     {
-        Objects.requireNonNull( stockNoteDE );
+        Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = new StockNoteDTO();
-        BeanUtils.copyProperties( stockNoteDE, stockNoteDTO );
+        BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
         return stockNoteDTO;
     }
 
@@ -49,16 +48,6 @@ public class StockNoteDTO
         this.id = id;
     }
 
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
     public String getNotes()
     {
         return notes;
@@ -69,14 +58,14 @@ public class StockNoteDTO
         this.notes = notes;
     }
 
-    public Timestamp getNoteDate()
+    public Timestamp getNotesDate()
     {
-        return noteDate;
+        return notesDate;
     }
 
-    public void setNoteDate( Timestamp noteDate )
+    public void setNotesDate( Timestamp notesDate )
     {
-        this.noteDate = noteDate;
+        this.notesDate = notesDate;
     }
 
     public String getSource()
@@ -119,14 +108,14 @@ public class StockNoteDTO
         this.dateModified = dateModified;
     }
 
-    public Integer getNoteRating()
+    public Integer getNotesRating()
     {
-        return noteRating;
+        return notesRating;
     }
 
-    public void setNoteRating( Integer noteRating )
+    public void setNotesRating( Integer notesRating )
     {
-        this.noteRating = noteRating;
+        this.notesRating = notesRating;
     }
 
     public Boolean getPublicInd()
@@ -149,12 +138,12 @@ public class StockNoteDTO
         this.customerId = customerId;
     }
 
-    public BullOrBear getBullOrBear()
+    public Byte getBullOrBear()
     {
         return bullOrBear;
     }
 
-    public void setBullOrBear( BullOrBear bullOrBear )
+    public void setBullOrBear( Byte bullOrBear )
     {
         this.bullOrBear = bullOrBear;
     }
@@ -180,34 +169,33 @@ public class StockNoteDTO
         return Objects.hash( id );
     }
 
+    public List<StockNoteStockDTO> getStocks()
+    {
+        return stocks;
+    }
+
+    public void setStocks( List<StockNoteStockDTO> stocks )
+    {
+        this.stocks = stocks;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockNoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
-        sb.append( ", noteDate='" ).append( noteDate ).append( '\'' );
-        sb.append( ", stockPrice='" ).append( stockPrice ).append( '\'' );
+        sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
         sb.append( ", source='" ).append( source ).append( '\'' );
         sb.append( ", sourceId=" ).append( sourceId );
-        sb.append( ", noteRating=" ).append( noteRating );
+        sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd=" ).append( publicInd );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
+        sb.append( ", stocks=" ).append( stocks );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    public Double getStockPrice()
-    {
-        return stockPrice;
-    }
-
-    public void setStockPrice( Double stockPrice )
-    {
-        this.stockPrice = stockPrice;
     }
 }

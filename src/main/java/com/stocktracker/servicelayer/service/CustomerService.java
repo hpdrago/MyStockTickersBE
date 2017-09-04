@@ -2,8 +2,8 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
-import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
-import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
+import com.stocktracker.repositorylayer.entity.CustomerEntity;
+import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.servicelayer.entity.CustomerDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.stereotype.Service;

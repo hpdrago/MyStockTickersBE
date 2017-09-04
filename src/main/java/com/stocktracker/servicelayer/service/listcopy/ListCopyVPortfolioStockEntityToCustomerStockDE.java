@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service.listcopy;
 
-import com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity;
+import com.stocktracker.repositorylayer.entity.VPortfolioStockEntity;
 import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import org.springframework.stereotype.Component;
 

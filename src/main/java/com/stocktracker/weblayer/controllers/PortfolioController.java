@@ -1,14 +1,16 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +25,8 @@ import java.util.List;
  * Created by mike on 9/11/2016.
  */
 @RestController
+@Transactional( propagation = Propagation.REQUIRES_NEW )
+@CrossOrigin
 public class PortfolioController extends AbstractController implements MyLogger
 {
     /**

@@ -4,6 +4,9 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.entity.CustomerDE;
 import com.stocktracker.weblayer.dto.CustomerDTO;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +21,8 @@ import java.util.List;
  * Created by mike on 5/9/2016.
  */
 @RestController
+@Transactional( propagation = Propagation.REQUIRES_NEW )
+@CrossOrigin
 public class CustomerController extends AbstractController implements MyLogger
 {
     /**

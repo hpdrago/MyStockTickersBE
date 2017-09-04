@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.db.entity.PortfolioStockEntity;
+import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import org.springframework.data.domain.Example;

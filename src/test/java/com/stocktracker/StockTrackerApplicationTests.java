@@ -1,7 +1,7 @@
 package com.stocktracker;
 
-import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
-import com.stocktracker.repositorylayer.CustomerRepository;
+import com.stocktracker.repositorylayer.entity.CustomerEntity;
+import com.stocktracker.repositorylayer.repository.CustomerRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

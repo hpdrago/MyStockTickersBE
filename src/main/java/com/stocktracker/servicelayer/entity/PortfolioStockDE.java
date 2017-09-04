@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.entity;
 
-import com.stocktracker.repositorylayer.db.entity.PortfolioStockEntity;
+import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.BeanUtils;
 

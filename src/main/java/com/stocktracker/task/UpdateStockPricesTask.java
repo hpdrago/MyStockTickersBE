@@ -1,8 +1,8 @@
 package com.stocktracker.task;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.StockRepository;
-import com.stocktracker.repositorylayer.db.entity.StockEntity;
+import com.stocktracker.repositorylayer.repository.StockRepository;
+import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.StockTickerQuote;
 import org.springframework.beans.factory.annotation.Autowired;

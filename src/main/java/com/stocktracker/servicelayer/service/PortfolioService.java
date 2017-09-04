@@ -1,8 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.db.entity.PortfolioEntity;
-import com.stocktracker.repositorylayer.db.entity.VPortfolioStockEntity;
+import com.stocktracker.repositorylayer.entity.PortfolioEntity;
+import com.stocktracker.repositorylayer.entity.VPortfolioStockEntity;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
 import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;

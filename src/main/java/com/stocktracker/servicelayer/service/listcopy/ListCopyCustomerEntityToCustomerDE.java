@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service.listcopy;
 
-import com.stocktracker.repositorylayer.db.entity.CustomerEntity;
+import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.servicelayer.entity.CustomerDE;
 import org.springframework.stereotype.Component;
 

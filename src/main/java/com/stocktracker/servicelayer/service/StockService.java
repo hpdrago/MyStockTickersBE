@@ -2,9 +2,9 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
-import com.stocktracker.repositorylayer.db.entity.StockEntity;
-import com.stocktracker.repositorylayer.db.entity.StockSectorEntity;
-import com.stocktracker.repositorylayer.db.entity.StockSubSectorEntity;
+import com.stocktracker.repositorylayer.entity.StockEntity;
+import com.stocktracker.repositorylayer.entity.StockSectorEntity;
+import com.stocktracker.repositorylayer.entity.StockSubSectorEntity;
 import com.stocktracker.servicelayer.entity.StockDE;
 import com.stocktracker.servicelayer.entity.StockSectorDE;
 import com.stocktracker.servicelayer.entity.StockSubSectorDE;

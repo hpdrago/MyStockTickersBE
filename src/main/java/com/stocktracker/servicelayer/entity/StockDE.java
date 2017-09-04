@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.entity;
 
 import com.stocktracker.repositorylayer.common.BooleanUtils;
-import com.stocktracker.repositorylayer.db.entity.StockEntity;
+import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.servicelayer.service.StockTickerQuote;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.springframework.beans.BeanUtils;
