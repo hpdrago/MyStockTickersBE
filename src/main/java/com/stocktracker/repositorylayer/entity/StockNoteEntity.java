@@ -1,7 +1,10 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -45,6 +50,14 @@ public class StockNoteEntity
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = new StockNoteEntity();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
+        try
+        {
+            stockNoteEntity.notesDate = JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() );
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( "Error converting notesDate to timestamp", e );
+        }
         return stockNoteEntity;
     }
 
@@ -85,7 +98,7 @@ public class StockNoteEntity
     }
 
     @Basic
-    @Column( name = "notes_date", nullable = false, insertable = false )
+    @Column( name = "notes_date", nullable = false )
     public Timestamp getNotesDate()
     {
         return notesDate;

@@ -34,7 +34,6 @@ import java.util.List;
  * Created by mike on 9/11/2016.
  */
 @RestController
-@Transactional( propagation = Propagation.REQUIRES_NEW )
 @CrossOrigin
 public class StockController extends AbstractController implements MyLogger
 {

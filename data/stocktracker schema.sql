@@ -88,7 +88,7 @@ create table stock
 (
   ticker_symbol varchar(5) not null,
   company_name varchar(70) null,
-  stock_exchange varchar(10) default 'OTHER' null,
+  exchange varchar(10) default 'OTHER' null,
   created_by int default '1' null,
   user_entered char default 'Y' null,
   last_price decimal(7,2) null,
@@ -130,7 +130,7 @@ create table stock_note
   notes varchar(4000) not null,
   notes_source_id int null,
   notes_rating int(1) null,
-  notes_date datetime null,
+  notes_date datetime not null,
   bull_or_bear tinyint(1) null,
   public_ind varchar(1) null,
   date_created datetime default CURRENT_TIMESTAMP not null,
@@ -146,10 +146,6 @@ create index FK_STOCK_NOTES_STOCK_NOTES_SOURCE_idx
 
 create index IDX_CUSTOMER
   on stock_note (customer_id)
-;
-
-create index IDX_NOTES
-  on stock_note (notes)
 ;
 
 create table stock_note_source
@@ -226,4 +222,13 @@ create view v_portfolio_stock as
     `s`.`last_price`            AS `last_price`
   FROM (`stocktracker`.`portfolio_stock` `ps`
     JOIN `stocktracker`.`stock` `s` ON ((`s`.`ticker_symbol` = `ps`.`ticker_symbol`)));
+
+create view v_stock_note_count as
+  SELECT
+    `stocktracker`.`stock_note`.`customer_id`   AS `customer_id`,
+    `stocktracker`.`stock_note`.`ticker_symbol` AS `ticker_symbol`,
+    count(0)                                    AS `note_count`
+  FROM `stocktracker`.`stock_note`
+  GROUP BY `stocktracker`.`stock_note`.`customer_id`, `stocktracker`.`stock_note`.`ticker_symbol`
+  ORDER BY `stocktracker`.`stock_note`.`ticker_symbol`;
 

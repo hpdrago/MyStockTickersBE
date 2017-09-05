@@ -55,8 +55,8 @@ public class AbstractAutowiredBean implements MyLogger
     protected ListCopyStockNoteSourceEntityToStockNoteSourceDTO listCopyStockNoteSourceEntityToStockNoteSourceDTO;
 
     @Autowired
-    public void setListCopyStockSourceNoteEntityToStockNoteSourceDTO(
-        final ListCopyStockNoteSourceEntityToStockNoteSourceDTO listCopyStockNoteEntityToStockNoteSourceDTO )
+    public void setListCopyStockNoteSourceEntityToStockNoteSourceDTO(
+        final ListCopyStockNoteSourceEntityToStockNoteSourceDTO listCopyStockNoteSourceEntityToStockNoteSourceDTO )
     {
         logDebug( "setListCopyStockSourceNoteDEToStockNoteSourceDTO", "Dependency Injection of: " +
                                                           listCopyStockNoteSourceEntityToStockNoteSourceDTO );

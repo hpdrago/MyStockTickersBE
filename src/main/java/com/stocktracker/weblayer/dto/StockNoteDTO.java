@@ -1,9 +1,10 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import org.springframework.beans.BeanUtils;
 
-import java.security.Timestamp;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,14 +16,14 @@ public class StockNoteDTO
     private Integer id;
     private Integer customerId;
     private String notes;
-    private Timestamp notesDate;
+    private String notesDate;
     private String source;
     private Integer sourceId;
     private Integer notesRating;
     private Boolean publicInd;
     private Byte bullOrBear;
-    private Timestamp dateCreated;
-    private Timestamp dateModified;
+    private String dateCreated;
+    private String dateModified;
     private List<StockNoteStockDTO> stocks;
 
     /**
@@ -35,6 +36,14 @@ public class StockNoteDTO
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = new StockNoteDTO();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
+        try
+        {
+            stockNoteDTO.notesDate = JSONDateConverter.toString( stockNoteEntity.getNotesDate() );
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( "Error converting UTC notes date to a string", e );
+        }
         return stockNoteDTO;
     }
 
@@ -58,12 +67,12 @@ public class StockNoteDTO
         this.notes = notes;
     }
 
-    public Timestamp getNotesDate()
+    public String getNotesDate()
     {
         return notesDate;
     }
 
-    public void setNotesDate( Timestamp notesDate )
+    public void setNotesDate( String notesDate )
     {
         this.notesDate = notesDate;
     }
@@ -88,22 +97,22 @@ public class StockNoteDTO
         this.sourceId = sourceId;
     }
 
-    public Timestamp getDateCreated()
+    public String getDateCreated()
     {
         return dateCreated;
     }
 
-    public void setDateCreated( Timestamp dateCreated )
+    public void setDateCreated( String dateCreated )
     {
         this.dateCreated = dateCreated;
     }
 
-    public Timestamp getDateModified()
+    public String getDateModified()
     {
         return dateModified;
     }
 
-    public void setDateModified( Timestamp dateModified )
+    public void setDateModified( String dateModified )
     {
         this.dateModified = dateModified;
     }
