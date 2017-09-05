@@ -19,6 +19,17 @@ import java.util.Objects;
 @Service
 public class StockNoteService extends BaseService
 {
+    public List<StockNoteEntity> getStockNotes( final int customerId )
+    {
+        final String methodName = "getStockNotes";
+        logMethodBegin( methodName, customerId );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        List<StockNoteEntity> stockNoteEntities =
+            stockNoteRepository.findByCustomerIdOrderByDateCreatedDesc( customerId );
+        logMethodEnd( methodName, stockNoteEntities.size() );
+        return stockNoteEntities;
+    }
+
     /**
      * Get the stock notes for the customer and the ticker symbol.
      *

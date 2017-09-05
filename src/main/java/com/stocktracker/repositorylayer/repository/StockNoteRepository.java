@@ -10,5 +10,10 @@ import java.util.List;
  */
 public interface StockNoteRepository extends JpaRepository<StockNoteEntity, Integer>
 {
-    List<StockNoteEntity> findByCustomerIdOrderByDateCreatedDesc( final int customerId );
+    /**
+     * Get all of the stock notes for the customer and order by descending notes date
+     * @param customerId
+     * @return
+     */
+    List<StockNoteEntity> findByCustomerIdOrderByNotesDateDesc( final int customerId );
 }

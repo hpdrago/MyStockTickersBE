@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
@@ -52,6 +53,26 @@ public class StockNotesController extends AbstractController implements MyLogger
     }
 
     /**
+     * Get all of the stocks notes for a customer order by
+     *
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/stockNotes/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE})
+    public List<StockNoteDTO> getStockNotes( final @PathVariable int customerId )
+    {
+        final String methodName = "getStockNotes";
+        logMethodBegin( methodName );
+        List<StockNoteEntity> stockNoteEntities = stockNoteService.getStockNotes( customerId );
+        List<StockNoteDTO> stockNoteDTOs =
+            this.listCopyStockNoteEntityToStockNoteDTO.copy( stockNoteEntities );
+        logMethodEnd( methodName, stockNoteDTOs.size() );
+        return stockNoteDTOs;
+    }
+
+    /**
      * Get all of the stocks notes for a customer and ticker symbol
      *
      * @return
@@ -60,8 +81,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stockNotes/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteStockDTO> getStockNoteStocks( final @PathVariable int customerId,
-                                                       final @PathVariable String tickerSymbol )
+    public List<StockNoteStockDTO> getStockNotes( final @PathVariable int customerId,
+                                                  final @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockNoteStocks";
         logMethodBegin( methodName );
