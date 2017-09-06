@@ -24,7 +24,7 @@ public class StockNoteDTO
     private Byte bullOrBear;
     private String dateCreated;
     private String dateModified;
-    private List<StockNoteStockDTO> stocks;
+    private List<StockNoteStockDTO> stockNotesStocks;
 
     /**
      * Create a new instance from a StockNoteDE instance
@@ -178,14 +178,14 @@ public class StockNoteDTO
         return Objects.hash( id );
     }
 
-    public List<StockNoteStockDTO> getStocks()
+    public List<StockNoteStockDTO> getStockNotesStocks()
     {
-        return stocks;
+        return stockNotesStocks;
     }
 
-    public void setStocks( List<StockNoteStockDTO> stocks )
+    public void setStockNotesStocks( List<StockNoteStockDTO> stockNotesStocks )
     {
-        this.stocks = stocks;
+        this.stockNotesStocks = stockNotesStocks;
     }
 
     @Override
@@ -203,7 +203,7 @@ public class StockNoteDTO
         sb.append( ", bullOrBear=" ).append( bullOrBear );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
-        sb.append( ", stocks=" ).append( stocks );
+        sb.append( ", stockNotesStocks=" ).append( stockNotesStocks );
         sb.append( '}' );
         return sb.toString();
     }

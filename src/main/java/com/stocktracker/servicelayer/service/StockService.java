@@ -16,6 +16,7 @@ import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
@@ -216,6 +217,26 @@ public class StockService extends BaseService implements MyLogger
             logError( methodName, e );
         }
         return stockTickerQuote;
+    }
+
+    /**
+     * Get the last price for the stock
+     * @param tickerSymbol
+     * @return Null if there are any exceptions
+     */
+    public BigDecimal getStockPrice( final String tickerSymbol )
+    {
+        final String methodName = "getStockQuote";
+        logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        StockTickerQuote stockTickerQuote = getStockQuote( tickerSymbol );
+        BigDecimal stockPrice = null;
+        if ( stockTickerQuote != null )
+        {
+            stockPrice = stockTickerQuote.getLastPrice();
+        }
+        logMethodBegin( methodName, stockPrice );
+        return stockPrice;
     }
 
     /**

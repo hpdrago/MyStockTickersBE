@@ -169,11 +169,11 @@ foreign key (notes_source_id) references stock_note_source (id)
 
 create table stock_note_stock
 (
-  customer_id int not null
-    primary key,
+  customer_id int not null,
   stock_note_id int not null,
   ticker_symbol varchar(5) not null,
   stock_price decimal(7,2) not null,
+  primary key (customer_id, stock_note_id, ticker_symbol),
   constraint FK_STOCK_NOTE_STOCKS_CUSTOMER
   foreign key (customer_id) references customer (id)
     on delete cascade,

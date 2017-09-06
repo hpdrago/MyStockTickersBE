@@ -6,10 +6,10 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +19,24 @@ import java.util.Objects;
 @Service
 public class StockNoteService extends BaseService
 {
+    /**
+     * Autowired service class
+     */
+    private StockService stockService;
+
+    /**
+     * Allow DI to set the StockService
+     *
+     * @param stockService
+     */
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        final String methodName = "setStockService";
+        logMethodBegin( methodName, stockService );
+        this.stockService = stockService;
+    }
+
     /**
      * Get all of the notes for a customer.
      * @param customerId
@@ -44,7 +62,7 @@ public class StockNoteService extends BaseService
      */
     public List<StockNoteStockEntity> getStockNoteStocks( final int customerId, final String tickerSymbol )
     {
-        final String methodName = "getStockNoteStocks";
+        final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, customerId, tickerSymbol );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
@@ -120,13 +138,20 @@ public class StockNoteService extends BaseService
         logDebug( methodName, "stockNoteEntity {0}", stockNoteEntity );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         logDebug( methodName, "after insert stockNoteEntity {0}", stockNoteEntity );
-        if ( stockNoteDTO.getStocks() != null )
+
+        List<StockNoteStockEntity> stockNoteStockEntities =
+            this.listCopyStockNoteStockDTOToStockNoteStockEntity.copy( stockNoteDTO.getStockNotesStocks() );
+        /*
+         * Need to set the stock note id that was just created in the stocks
+         */
+        for ( StockNoteStockEntity stockNoteStockEntity: stockNoteStockEntities )
         {
-            List<StockNoteStockEntity> stockNoteStockEntities =
-                this.listCopyStockNoteStockDTOToStockNoteStockEntity.copy( stockNoteDTO.getStocks() );
-            logDebug( methodName, "stockNoteStockEntities {0}", stockNoteStockEntities );
-            stockNoteStockRepository.save( stockNoteStockEntities );
+            stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
+            stockNoteStockEntity.setStockNoteId( stockNoteEntity.getId() );
+            stockNoteStockEntity.setStockPrice( stockService.getStockPrice( stockNoteStockEntity.getTickerSymbol() ));
         }
+        logDebug( methodName, "stockNoteStockEntities {0}", stockNoteStockEntities );
+        stockNoteStockRepository.save( stockNoteStockEntities );
         StockNoteDTO returnStockNoteDTO = StockNoteDTO.newInstance( stockNoteEntity );
         logMethodEnd( methodName );
         return returnStockNoteDTO;

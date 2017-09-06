@@ -42,6 +42,10 @@ public class StockNotesController extends AbstractController implements MyLogger
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, stockNoteDTO );
+        if ( stockNoteDTO.getStockNotesStocks().isEmpty() )
+        {
+            throw new IllegalArgumentException( "No stocks were specified" );
+        }
         StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNoteDTO );
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -85,7 +89,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     public List<StockNoteStockDTO> getStockNotes( final @PathVariable int customerId,
                                                   final @PathVariable String tickerSymbol )
     {
-        final String methodName = "getStockNoteStocks";
+        final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName );
         List<StockNoteStockEntity> stockNoteStockEntities = stockNoteService.getStockNoteStocks( customerId, tickerSymbol );
         List<StockNoteStockDTO> stockNoteStockDTOs =

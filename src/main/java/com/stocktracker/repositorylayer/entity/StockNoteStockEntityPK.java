@@ -2,25 +2,30 @@ package com.stocktracker.repositorylayer.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
-import java.math.BigDecimal;
+import java.io.Serializable;
 
-@Entity
-@Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
-@IdClass( StockNoteStockEntityPK.class )
-public class StockNoteStockEntity
+public class StockNoteStockEntityPK implements Serializable
 {
     private Integer customerId;
     private Integer stockNoteId;
     private String tickerSymbol;
-    private BigDecimal stockPrice;
 
+    @Column( name = "customer_id" )
     @Id
-    @Basic
+    public Integer getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( final Integer customerId )
+    {
+        this.customerId = customerId;
+    }
+
     @Column( name = "stock_note_id", nullable = false )
+    @Basic
+    @Id
     public Integer getStockNoteId()
     {
         return stockNoteId;
@@ -31,9 +36,9 @@ public class StockNoteStockEntity
         this.stockNoteId = stockNoteId;
     }
 
-    @Id
-    @Basic
     @Column( name = "ticker_symbol", nullable = false, length = 5 )
+    @Basic
+    @Id
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -42,30 +47,6 @@ public class StockNoteStockEntity
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
-    }
-
-    @Basic
-    @Column( name = "stock_price", nullable = false, precision = 2 )
-    public BigDecimal getStockPrice()
-    {
-        return stockPrice;
-    }
-
-    public void setStockPrice( final BigDecimal stockPrice )
-    {
-        this.stockPrice = stockPrice;
-    }
-
-    @Id
-    @Column( name = "customer_id" )
-    public Integer getCustomerId()
-    {
-        return customerId;
-    }
-
-    public void setCustomerId( final Integer customerId )
-    {
-        this.customerId = customerId;
     }
 
     @Override
@@ -80,8 +61,14 @@ public class StockNoteStockEntity
             return false;
         }
 
-        final StockNoteStockEntity that = (StockNoteStockEntity) o;
+        final StockNoteStockEntityPK that = (StockNoteStockEntityPK) o;
 
+        if ( customerId != null
+             ? !customerId.equals( that.customerId )
+             : that.customerId != null )
+        {
+            return false;
+        }
         if ( stockNoteId != null
              ? !stockNoteId.equals( that.stockNoteId )
              : that.stockNoteId != null )
@@ -91,18 +78,6 @@ public class StockNoteStockEntity
         if ( tickerSymbol != null
              ? !tickerSymbol.equals( that.tickerSymbol )
              : that.tickerSymbol != null )
-        {
-            return false;
-        }
-        if ( stockPrice != null
-             ? !stockPrice.equals( that.stockPrice )
-             : that.stockPrice != null )
-        {
-            return false;
-        }
-        if ( customerId != null
-             ? !customerId.equals( that.customerId )
-             : that.customerId != null )
         {
             return false;
         }
@@ -122,20 +97,6 @@ public class StockNoteStockEntity
         result = 31 * result + (tickerSymbol != null
                                 ? tickerSymbol.hashCode()
                                 : 0);
-        result = 31 * result + (stockPrice != null
-                                ? stockPrice.hashCode()
-                                : 0);
         return result;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "StockNoteStockEntity{" +
-               "stockNoteId=" + stockNoteId +
-               ", tickerSymbol='" + tickerSymbol + '\'' +
-               ", stockPrice=" + stockPrice +
-               ", customerId=" + customerId +
-               '}';
     }
 }

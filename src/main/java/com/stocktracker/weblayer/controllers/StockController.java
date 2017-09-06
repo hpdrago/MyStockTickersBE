@@ -48,7 +48,7 @@ public class StockController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStocks( Pageable pageRequest )
     {
-        final String methodName = "getStocks";
+        final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, pageRequest );
         Page<StockDE> stockDEs = stockService.getPage( pageRequest,false );
         Page<StockDTO> stockDTOs = mapStockEntityPageIntoStockDEPage( pageRequest, stockDEs );
