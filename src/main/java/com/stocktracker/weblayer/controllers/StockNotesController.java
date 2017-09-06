@@ -38,7 +38,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = "/stockNotes/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockNoteDTO> addStock( @RequestBody StockNoteDTO stockNoteDTO )
+    public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody StockNoteDTO stockNoteDTO )
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, stockNoteDTO );
@@ -68,6 +68,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         List<StockNoteEntity> stockNoteEntities = stockNoteService.getStockNotes( customerId );
         List<StockNoteDTO> stockNoteDTOs =
             this.listCopyStockNoteEntityToStockNoteDTO.copy( stockNoteEntities );
+        logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.size() );
         return stockNoteDTOs;
     }

@@ -19,13 +19,18 @@ import java.util.Objects;
 @Service
 public class StockNoteService extends BaseService
 {
+    /**
+     * Get all of the notes for a customer.
+     * @param customerId
+     * @return
+     */
     public List<StockNoteEntity> getStockNotes( final int customerId )
     {
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities =
-            stockNoteRepository.findByCustomerIdOrderByDateCreatedDesc( customerId );
+            stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
         logMethodEnd( methodName, stockNoteEntities.size() );
         return stockNoteEntities;
     }
