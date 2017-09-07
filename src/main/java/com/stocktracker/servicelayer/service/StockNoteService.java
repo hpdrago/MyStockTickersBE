@@ -4,39 +4,28 @@ import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
+import com.stocktracker.repositorylayer.entity.StockNoteStockEntityPK;
 import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
+import com.stocktracker.weblayer.dto.StockNoteStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
+ * This is the service class for the StockNotesEntity
+ *
  * Created by mike on 5/7/2017.
  */
 @Service
+@Transactional
 public class StockNoteService extends BaseService
 {
-    /**
-     * Autowired service class
-     */
-    private StockService stockService;
-
-    /**
-     * Allow DI to set the StockService
-     *
-     * @param stockService
-     */
-    @Autowired
-    public void setStockService( final StockService stockService )
-    {
-        final String methodName = "setStockService";
-        logMethodBegin( methodName, stockService );
-        this.stockService = stockService;
-    }
-
     /**
      * Get all of the notes for a customer.
      * @param customerId
@@ -66,10 +55,10 @@ public class StockNoteService extends BaseService
         logMethodBegin( methodName, customerId, tickerSymbol );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        List<StockNoteStockEntity> stockNoteStockEntities =
-            stockNoteStockRepository.findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        logMethodEnd( methodName, stockNoteStockEntities.size() );
-        return stockNoteStockEntities;
+        //List<StockNoteStockEntity> stockNoteStockEntities =
+        //    stockNoteStockRepository.findStockNoteStockEntitiesByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
+        //logMethodEnd( methodName, stockNoteStockEntities.size() );
+        return null;// stockNoteStockEntities;
     }
 
     /**
@@ -97,7 +86,7 @@ public class StockNoteService extends BaseService
      */
     public StockNoteSourceEntity getStockNoteSource( final int stockNoteSourceId )
     {
-        final String methodName = "getNoteSource";
+        final String methodName = "getStockNoteSource";
         logMethodBegin( methodName, stockNoteSourceId );
         Assert.isTrue( stockNoteSourceId > 0, "stockNoteId must be > 0" );
         StockNoteSourceEntity stockNoteSourceEntity = stockNoteSourceRepository.findOne( stockNoteSourceId );
@@ -116,7 +105,7 @@ public class StockNoteService extends BaseService
      */
     public List<StockNoteSourceEntity> getStockNoteSources( final int customerId )
     {
-        final String methodName = "getNotesSources";
+        final String methodName = "getStockNoteSources";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteSourceEntity> stockNoteSourceEntities = stockNoteSourceRepository.findByCustomerId( customerId );
@@ -131,28 +120,36 @@ public class StockNoteService extends BaseService
      */
     public StockNoteDTO createStockNote( final StockNoteDTO stockNoteDTO )
     {
-        final String methodName = "getNotesSources";
+        final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance( stockNoteDTO );
         logDebug( methodName, "stockNoteEntity {0}", stockNoteEntity );
+        /*
+         * Save the stock notes
+         */
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         logDebug( methodName, "after insert stockNoteEntity {0}", stockNoteEntity );
 
-        List<StockNoteStockEntity> stockNoteStockEntities =
-            this.listCopyStockNoteStockDTOToStockNoteStockEntity.copy( stockNoteDTO.getStockNotesStocks() );
         /*
-         * Need to set the stock note id that was just created in the stocks
+         * Now that the parent is inserted, we can insert the child note stocks.
          */
-        for ( StockNoteStockEntity stockNoteStockEntity: stockNoteStockEntities )
-        {
-            stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
-            stockNoteStockEntity.setStockNoteId( stockNoteEntity.getId() );
-            stockNoteStockEntity.setStockPrice( stockService.getStockPrice( stockNoteStockEntity.getTickerSymbol() ));
-        }
+        List<StockNoteStockEntity> stockNoteStockEntities = this.listCopyStockNoteStockDTOToStockNoteStockEntity
+            .copy( stockNoteEntity, stockNoteDTO.getStockNotesStocks() );
+
+        /*
+         * Save the stock not stocks
+         */
         logDebug( methodName, "stockNoteStockEntities {0}", stockNoteStockEntities );
-        stockNoteStockRepository.save( stockNoteStockEntities );
+        stockNoteStockEntities = stockNoteStockRepository.save( stockNoteStockEntities );
+
+        /*
+         * Convert back into a DTO to be sent back to the caller so that they have the updated information
+         */
         StockNoteDTO returnStockNoteDTO = StockNoteDTO.newInstance( stockNoteEntity );
+        List<StockNoteStockDTO> stockNoteStockDTOS = new ArrayList<>();
+        this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities, stockNoteStockDTOS );
+        returnStockNoteDTO.setStockNotesStocks( stockNoteStockDTOS );
         logMethodEnd( methodName );
         return returnStockNoteDTO;
     }

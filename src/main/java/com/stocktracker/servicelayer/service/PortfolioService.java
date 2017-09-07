@@ -8,6 +8,7 @@ import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Objects;
  * Created by mike on 10/23/2016.
  */
 @Service
+@Transactional
 public class PortfolioService extends BaseService implements MyLogger
 {
     /**

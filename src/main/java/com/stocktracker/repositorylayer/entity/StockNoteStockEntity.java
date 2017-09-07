@@ -2,46 +2,57 @@ package com.stocktracker.repositorylayer.entity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
-@IdClass( StockNoteStockEntityPK.class )
 public class StockNoteStockEntity
 {
+    @EmbeddedId
+    private StockNoteStockEntityPK id;
     private Integer customerId;
-    private Integer stockNoteId;
-    private String tickerSymbol;
     private BigDecimal stockPrice;
 
-    @Id
-    @Basic
-    @Column( name = "stock_note_id", nullable = false )
+    /**
+     * Creates a new primary key id.
+     * @param id
+     * @param tickerSymbol
+     */
+    public void setId( final Integer id, final String tickerSymbol )
+    {
+        this.id = new StockNoteStockEntityPK( id, tickerSymbol );
+    }
+
+    public StockNoteStockEntityPK getId()
+    {
+        return id;
+    }
+
+    public void setId( StockNoteStockEntityPK id )
+    {
+        this.id = id;
+    }
+
     public Integer getStockNoteId()
     {
-        return stockNoteId;
+        return id == null ? null : id.getStockNoteId();
     }
 
-    public void setStockNoteId( final Integer stockNoteId )
-    {
-        this.stockNoteId = stockNoteId;
-    }
-
-    @Id
-    @Basic
-    @Column( name = "ticker_symbol", nullable = false, length = 5 )
     public String getTickerSymbol()
     {
-        return tickerSymbol;
+        return id == null ? null : id.getTickerSymbol();
     }
 
-    public void setTickerSymbol( final String tickerSymbol )
+    private void checkPrimaryKey()
     {
-        this.tickerSymbol = tickerSymbol;
+        if ( id == null )
+        {
+            id = new StockNoteStockEntityPK();
+        }
     }
 
     @Basic
@@ -56,7 +67,7 @@ public class StockNoteStockEntity
         this.stockPrice = stockPrice;
     }
 
-    @Id
+    @Basic
     @Column( name = "customer_id" )
     public Integer getCustomerId()
     {
@@ -82,46 +93,24 @@ public class StockNoteStockEntity
 
         final StockNoteStockEntity that = (StockNoteStockEntity) o;
 
-        if ( stockNoteId != null
-             ? !stockNoteId.equals( that.stockNoteId )
-             : that.stockNoteId != null )
+        if ( !id.equals( that.id ) )
         {
             return false;
         }
-        if ( tickerSymbol != null
-             ? !tickerSymbol.equals( that.tickerSymbol )
-             : that.tickerSymbol != null )
+        if ( !customerId.equals( that.customerId ) )
         {
             return false;
         }
-        if ( stockPrice != null
-             ? !stockPrice.equals( that.stockPrice )
-             : that.stockPrice != null )
-        {
-            return false;
-        }
-        if ( customerId != null
-             ? !customerId.equals( that.customerId )
-             : that.customerId != null )
-        {
-            return false;
-        }
-
-        return true;
+        return stockPrice != null
+               ? stockPrice.equals( that.stockPrice )
+               : that.stockPrice == null;
     }
 
     @Override
     public int hashCode()
     {
-        int result = customerId != null
-                     ? customerId.hashCode()
-                     : 0;
-        result = 31 * result + (stockNoteId != null
-                                ? stockNoteId.hashCode()
-                                : 0);
-        result = 31 * result + (tickerSymbol != null
-                                ? tickerSymbol.hashCode()
-                                : 0);
+        int result = id.hashCode();
+        result = 31 * result + customerId.hashCode();
         result = 31 * result + (stockPrice != null
                                 ? stockPrice.hashCode()
                                 : 0);
@@ -132,10 +121,9 @@ public class StockNoteStockEntity
     public String toString()
     {
         return "StockNoteStockEntity{" +
-               "stockNoteId=" + stockNoteId +
-               ", tickerSymbol='" + tickerSymbol + '\'' +
-               ", stockPrice=" + stockPrice +
+               "id=" + id +
                ", customerId=" + customerId +
+               ", stockPrice=" + stockPrice +
                '}';
     }
 }

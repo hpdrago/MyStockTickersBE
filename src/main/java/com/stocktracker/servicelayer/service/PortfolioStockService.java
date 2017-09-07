@@ -6,6 +6,7 @@ import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Objects;
  * Created by mike on 11/26/2016.
  */
 @Service
+@Transactional
 public class PortfolioStockService extends BaseService implements MyLogger
 {
     /**

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
@@ -25,6 +26,7 @@ import java.util.Objects;
  * Created by mike on 9/11/2016.
  */
 @Service
+@Transactional
 public class StockService extends BaseService implements MyLogger
 {
     /**

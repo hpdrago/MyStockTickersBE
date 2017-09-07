@@ -7,6 +7,7 @@ import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.servicelayer.entity.CustomerDE;
 import com.stocktracker.servicelayer.entity.PortfolioDE;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import java.util.Objects;
  * Created by mike on 5/15/2016.
  */
 @Service
+@Transactional
 public class CustomerService extends BaseService implements MyLogger
 {
     /**

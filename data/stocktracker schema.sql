@@ -169,22 +169,30 @@ foreign key (notes_source_id) references stock_note_source (id)
 
 create table stock_note_stock
 (
-  customer_id int not null,
   stock_note_id int not null,
   ticker_symbol varchar(5) not null,
-  stock_price decimal(7,2) not null,
-  primary key (customer_id, stock_note_id, ticker_symbol),
-  constraint FK_STOCK_NOTE_STOCKS_CUSTOMER
-  foreign key (customer_id) references customer (id)
-    on delete cascade,
+  customer_id int not null,
+  stock_price decimal(7,2) null,
+  primary key (stock_note_id, ticker_symbol),
   constraint FK_STOCK_NOTE_STOCK_STOCK_NOTE
   foreign key (stock_note_id) references stock_note (id)
+    on delete cascade,
+  constraint FK_STOCK_NOTE_STOCK_CUSTOMER
+  foreign key (customer_id) references customer (id)
     on delete cascade
 )
 ;
 
 create index FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx
   on stock_note_stock (stock_note_id)
+;
+
+create index FK_STOCK_NOTE_STOCK_CUSTOMER_idx
+  on stock_note_stock (customer_id)
+;
+
+create index IDX_CUSTOMER_ID_TICKER_SYMBOL
+  on stock_note_stock (customer_id, ticker_symbol)
 ;
 
 create table stock_sector

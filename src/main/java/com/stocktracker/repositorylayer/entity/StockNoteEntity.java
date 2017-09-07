@@ -1,10 +1,8 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,7 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -74,6 +71,18 @@ public class StockNoteEntity
     public void setId( final Integer id )
     {
         this.id = id;
+    }
+
+    @Basic
+    @Column( name = "customer_id", nullable = false )
+    public Integer getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( final Integer customerId )
+    {
+        this.customerId = customerId;
     }
 
     @Basic
@@ -134,18 +143,6 @@ public class StockNoteEntity
     public void setDateModified( final Timestamp dateModified )
     {
         this.dateModified = dateModified;
-    }
-
-    @Basic
-    @Column( name = "customer_id", nullable = false )
-    public Integer getCustomerId()
-    {
-        return customerId;
-    }
-
-    public void setCustomerId( final Integer customerId )
-    {
-        this.customerId = customerId;
     }
 
     @Basic
