@@ -21,7 +21,6 @@ import java.util.List;
  * Created by mike on 5/9/2016.
  */
 @RestController
-@Transactional( propagation = Propagation.REQUIRES_NEW )
 @CrossOrigin
 public class CustomerController extends AbstractController implements MyLogger
 {
