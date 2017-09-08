@@ -10,6 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
+/**
+ * STOCK_NOTE_STOCK Table Entity
+ */
 @Entity( name = "stock_note_stock" )
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
 public class StockNoteStockEntity

@@ -42,7 +42,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, stockNoteDTO );
-        if ( stockNoteDTO.getStockNotesStocks().isEmpty() )
+        if ( stockNoteDTO.getStocks().isEmpty() )
         {
             throw new IllegalArgumentException( "No stocks were specified" );
         }
@@ -70,9 +70,10 @@ public class StockNotesController extends AbstractController implements MyLogger
         final String methodName = "getStockNotes";
         logMethodBegin( methodName );
         List<StockNoteEntity> stockNoteEntities = stockNoteService.getStockNotes( customerId );
+        //logDebug( methodName, "stockNoteEntities: {0}", stockNoteEntities );
         List<StockNoteDTO> stockNoteDTOs =
             this.listCopyStockNoteEntityToStockNoteDTO.copy( stockNoteEntities );
-        logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
+        //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.size() );
         return stockNoteDTOs;
     }
@@ -89,7 +90,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     public List<StockNoteStockDTO> getStockNotes( final @PathVariable int customerId,
                                                   final @PathVariable String tickerSymbol )
     {
-        final String methodName = "getStockNotesStocks";
+        final String methodName = "getStocks";
         logMethodBegin( methodName );
         List<StockNoteStockEntity> stockNoteStockEntities = stockNoteService.getStockNoteStocks( customerId, tickerSymbol );
         List<StockNoteStockDTO> stockNoteStockDTOs =

@@ -25,7 +25,12 @@ public class StockNoteDTO
     private Byte bullOrBear;
     private String dateCreated;
     private String dateModified;
-    private List<StockNoteStockDTO> stockNotesStocks;
+    /**
+     * The list of stocks for the notes 1 to M relationship.
+     * Name of the methods for this cannot be the same as the StockNoteEntity or copy properties classes will
+     * copy the StockNoteStockEntity instance into this list -- they are the wrong type!!!
+     */
+    private List<StockNoteStockDTO> stocks;
 
     /**
      * Create a new instance from a StockNoteDE instance
@@ -179,18 +184,18 @@ public class StockNoteDTO
         return Objects.hash( id );
     }
 
-    public List<StockNoteStockDTO> getStockNotesStocks()
+    public List<StockNoteStockDTO> getStocks()
     {
-        if ( stockNotesStocks == null )
+        if ( stocks == null )
         {
-            stockNotesStocks = new ArrayList<>();
+            stocks = new ArrayList<>();
         }
-        return stockNotesStocks;
+        return stocks;
     }
 
-    public void setStockNotesStocks( List<StockNoteStockDTO> stockNotesStocks )
+    public void setStocks( List<StockNoteStockDTO> stocks )
     {
-        this.stockNotesStocks = stockNotesStocks;
+        this.stocks = stocks;
     }
 
     @Override
@@ -208,7 +213,7 @@ public class StockNoteDTO
         sb.append( ", bullOrBear=" ).append( bullOrBear );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
-        sb.append( ", stockNotesStocks=" ).append( stockNotesStocks );
+        sb.append( ", stocks=" ).append( stocks );
         sb.append( '}' );
         return sb.toString();
     }

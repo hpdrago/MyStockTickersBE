@@ -29,6 +29,8 @@ public class ListCopyStockNoteStockEntityToStockNoteStockDTO
     {
         Objects.requireNonNull( stockNoteStockEntities, "stockNoteStockEntities cannot be null" );
         Objects.requireNonNull( stockNoteStockDTOs, "stockNoteStockDTOs cannot be null" );
+        //logDebug( "copy", "stockNoteStockEntities: {0}", stockNoteStockEntities );
+        //logDebug( "copy", "stockNoteStockDTOs: {0}", stockNoteStockDTOs );
         for ( StockNoteStockEntity stockNoteStockEntity: stockNoteStockEntities )
         {
             StockNoteStockDTO stockNoteStockDTO = StockNoteStockDTO.newInstance( stockNoteStockEntity );

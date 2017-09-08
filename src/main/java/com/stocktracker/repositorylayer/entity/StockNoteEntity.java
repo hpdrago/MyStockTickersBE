@@ -42,11 +42,6 @@ public class StockNoteEntity
     private StockNoteSourceEntity stockNoteSource;
     private List<StockNoteStockEntity> stockNoteStocks;
 
-    public StockNoteEntity()
-    {
-        this.stockNoteStocks = new ArrayList<>();
-    }
-
     /**
      * Create a new StockNoteEntity instance from a StockNoteDE instance.
      * @param stockNoteDTO
@@ -206,10 +201,6 @@ public class StockNoteEntity
                 orphanRemoval = true )
     public List<StockNoteStockEntity> getStockNoteStocks()
     {
-        if ( stockNoteStocks == null )
-        {
-            stockNoteStocks = new ArrayList<>();
-        }
         return stockNoteStocks;
     }
 

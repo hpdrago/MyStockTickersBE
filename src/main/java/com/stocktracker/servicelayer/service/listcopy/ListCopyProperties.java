@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service.listcopy;
 
+import com.stocktracker.common.MyLogger;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * Created by mike on 9/10/2016.
  */
-public class ListCopyProperties<S, T>
+public class ListCopyProperties<S, T> implements MyLogger
 {
     private Class<T> targetType;
 

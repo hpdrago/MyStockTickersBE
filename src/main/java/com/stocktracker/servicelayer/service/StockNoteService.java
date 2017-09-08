@@ -4,11 +4,9 @@ import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteStockEntityPK;
 import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import com.stocktracker.weblayer.dto.StockNoteStockDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -38,35 +36,8 @@ public class StockNoteService extends BaseService
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities =
             this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
-        loadStockNoteStocks( stockNoteEntities );
         logMethodEnd( methodName, stockNoteEntities.size() );
         return stockNoteEntities;
-    }
-
-    /**
-     * Load the {@code StockNoteStockEntity} instances for each {@code StockNoteEntity} in {@code stockNoteEntities}.
-     * The {@code StockNoteStockEntity} insteads are not load automatically by Hibernate -- which is good -- so that
-     * we can load them when we need to.
-     * @param stockNoteEntities
-     */
-    private void loadStockNoteStocks( final List<StockNoteEntity> stockNoteEntities )
-    {
-        final String methodName = "loadStockNoteStocks";
-        logMethodBegin( methodName, stockNoteEntities );
-        for ( StockNoteEntity stockNoteEntity: stockNoteEntities )
-        {
-            /*
-             * Make the call to the database to load the StockNoteStocks
-             */
-            List<StockNoteStockEntity> stockNoteStockEntities =
-                this.stockNoteStockRepository.findStockNoteStockEntitiesById_StockNoteId( stockNoteEntity.getId() );
-            logDebug( methodName, "stockNoteStockEntities: {0}", stockNoteStockEntities );
-            for ( StockNoteStockEntity stockNoteStockEntity: stockNoteStockEntities )
-            {
-                stockNoteEntity.addStockNoteStock( stockNoteStockEntity );
-            }
-        }
-        logMethodEnd( methodName );
     }
 
     /**
@@ -78,7 +49,7 @@ public class StockNoteService extends BaseService
      */
     public List<StockNoteStockEntity> getStockNoteStocks( final int customerId, final String tickerSymbol )
     {
-        final String methodName = "getStockNotesStocks";
+        final String methodName = "getStocks";
         logMethodBegin( methodName, customerId, tickerSymbol );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
@@ -162,7 +133,7 @@ public class StockNoteService extends BaseService
          * Now that the parent is inserted, we can insert the child note stocks.
          */
         List<StockNoteStockEntity> stockNoteStockEntities = this.listCopyStockNoteStockDTOToStockNoteStockEntity
-            .copy( stockNoteEntity, stockNoteDTO.getStockNotesStocks() );
+            .copy( stockNoteEntity, stockNoteDTO.getStocks() );
 
         /*
          * Save the stock not stocks
@@ -176,7 +147,7 @@ public class StockNoteService extends BaseService
         StockNoteDTO returnStockNoteDTO = StockNoteDTO.newInstance( stockNoteEntity );
         List<StockNoteStockDTO> stockNoteStockDTOS = new ArrayList<>();
         this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities, stockNoteStockDTOS );
-        returnStockNoteDTO.setStockNotesStocks( stockNoteStockDTOS );
+        returnStockNoteDTO.setStocks( stockNoteStockDTOS );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
     }
