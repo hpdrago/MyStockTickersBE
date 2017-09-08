@@ -53,7 +53,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                                      .fromCurrentRequest().path( "" )
                                      .buildAndExpand( stockNoteDTO ).toUri());
         logMethodEnd( methodName, returnStockDTO );
-        return new ResponseEntity<>( stockNoteDTO, httpHeaders, HttpStatus.CREATED );
+        return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
     }
 
     /**

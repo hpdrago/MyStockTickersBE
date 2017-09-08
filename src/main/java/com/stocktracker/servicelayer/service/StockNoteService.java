@@ -37,9 +37,36 @@ public class StockNoteService extends BaseService
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities =
-            stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
+            this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
+        loadStockNoteStocks( stockNoteEntities );
         logMethodEnd( methodName, stockNoteEntities.size() );
         return stockNoteEntities;
+    }
+
+    /**
+     * Load the {@code StockNoteStockEntity} instances for each {@code StockNoteEntity} in {@code stockNoteEntities}.
+     * The {@code StockNoteStockEntity} insteads are not load automatically by Hibernate -- which is good -- so that
+     * we can load them when we need to.
+     * @param stockNoteEntities
+     */
+    private void loadStockNoteStocks( final List<StockNoteEntity> stockNoteEntities )
+    {
+        final String methodName = "loadStockNoteStocks";
+        logMethodBegin( methodName, stockNoteEntities );
+        for ( StockNoteEntity stockNoteEntity: stockNoteEntities )
+        {
+            /*
+             * Make the call to the database to load the StockNoteStocks
+             */
+            List<StockNoteStockEntity> stockNoteStockEntities =
+                this.stockNoteStockRepository.findStockNoteStockEntitiesById_StockNoteId( stockNoteEntity.getId() );
+            logDebug( methodName, "stockNoteStockEntities: {0}", stockNoteStockEntities );
+            for ( StockNoteStockEntity stockNoteStockEntity: stockNoteStockEntities )
+            {
+                stockNoteEntity.addStockNoteStock( stockNoteStockEntity );
+            }
+        }
+        logMethodEnd( methodName );
     }
 
     /**
@@ -72,7 +99,7 @@ public class StockNoteService extends BaseService
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<VStockNoteCountEntity> stockNoteTickerSymbolCountEntities =
-            vStockNoteCountRepository.findByCustomerId( customerId );
+            this.vStockNoteCountRepository.findByCustomerId( customerId );
         logMethodEnd( methodName, stockNoteTickerSymbolCountEntities.size() );
         return stockNoteTickerSymbolCountEntities;
     }
@@ -124,12 +151,12 @@ public class StockNoteService extends BaseService
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance( stockNoteDTO );
-        logDebug( methodName, "stockNoteEntity {0}", stockNoteEntity );
+        logDebug( methodName, "saving stockNoteEntity: {0}", stockNoteEntity );
         /*
          * Save the stock notes
          */
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
-        logDebug( methodName, "after insert stockNoteEntity {0}", stockNoteEntity );
+        logDebug( methodName, "after saving stockNoteEntity: {0}", stockNoteEntity );
 
         /*
          * Now that the parent is inserted, we can insert the child note stocks.
@@ -140,7 +167,7 @@ public class StockNoteService extends BaseService
         /*
          * Save the stock not stocks
          */
-        logDebug( methodName, "stockNoteStockEntities {0}", stockNoteStockEntities );
+        logDebug( methodName, "saving stockNoteStockEntities: {0}", stockNoteStockEntities );
         stockNoteStockEntities = stockNoteStockRepository.save( stockNoteStockEntities );
 
         /*
@@ -150,7 +177,7 @@ public class StockNoteService extends BaseService
         List<StockNoteStockDTO> stockNoteStockDTOS = new ArrayList<>();
         this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities, stockNoteStockDTOS );
         returnStockNoteDTO.setStockNotesStocks( stockNoteStockDTOS );
-        logMethodEnd( methodName );
+        logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
     }
 }

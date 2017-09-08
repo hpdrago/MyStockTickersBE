@@ -4,11 +4,13 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
-import java.util.Objects;
 
-@Entity
+@Entity( name = "stock_note_stock" )
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
 public class StockNoteStockEntity
 {
@@ -16,6 +18,10 @@ public class StockNoteStockEntity
     private StockNoteStockEntityPK id;
     private Integer customerId;
     private BigDecimal stockPrice;
+
+    @ManyToOne( fetch = FetchType.LAZY )
+    @JoinColumn( name = "stock_note_id", insertable = false, updatable = false )
+    private StockNoteEntity stockNoteEntity;
 
     /**
      * Creates a new primary key id.
@@ -77,6 +83,16 @@ public class StockNoteStockEntity
     public void setCustomerId( final Integer customerId )
     {
         this.customerId = customerId;
+    }
+
+    public StockNoteEntity getStockNoteEntity()
+    {
+        return stockNoteEntity;
+    }
+
+    public void setStockNoteEntity( StockNoteEntity stockNoteEntity )
+    {
+        this.stockNoteEntity = stockNoteEntity;
     }
 
     @Override

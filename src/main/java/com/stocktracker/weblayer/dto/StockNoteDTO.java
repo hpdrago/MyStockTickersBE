@@ -5,6 +5,7 @@ import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import org.springframework.beans.BeanUtils;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -180,6 +181,10 @@ public class StockNoteDTO
 
     public List<StockNoteStockDTO> getStockNotesStocks()
     {
+        if ( stockNotesStocks == null )
+        {
+            stockNotesStocks = new ArrayList<>();
+        }
         return stockNotesStocks;
     }
 

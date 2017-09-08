@@ -14,4 +14,6 @@ public interface StockNoteStockRepository extends JpaRepository<StockNoteStockEn
     /*
     List<StockNoteStockEntity> findStockNoteStockEntitiesByCustomerIdAndTickerSymbol( final int customerId,
                                                                                       final String tickerSymbol );*/
+
+    List<StockNoteStockEntity> findStockNoteStockEntitiesById_StockNoteId( final int stockNoteId );
 }

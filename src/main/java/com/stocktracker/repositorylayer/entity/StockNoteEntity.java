@@ -5,6 +5,7 @@ import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,13 +17,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * Created by mike on 5/7/2017.
  */
-@Entity
+@Entity( name = "stock_note" )
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
 public class StockNoteEntity
 {
@@ -37,7 +40,12 @@ public class StockNoteEntity
     private String publicInd;
     private Byte bullOrBear;
     private StockNoteSourceEntity stockNoteSource;
-    private Collection<StockNoteStockEntity> stockNoteStocks;
+    private List<StockNoteStockEntity> stockNoteStocks;
+
+    public StockNoteEntity()
+    {
+        this.stockNoteStocks = new ArrayList<>();
+    }
 
     /**
      * Create a new StockNoteEntity instance from a StockNoteDE instance.
@@ -193,16 +201,27 @@ public class StockNoteEntity
         this.stockNoteSource = stockNoteSourceByNotesSourceId;
     }
 
-    @OneToMany
-    @JoinColumn( name = "stock_note_id", referencedColumnName = "id" )
-    public Collection<StockNoteStockEntity> getStockNoteStocks()
+    @OneToMany( mappedBy = "stockNoteEntity",
+                cascade = CascadeType.ALL,
+                orphanRemoval = true )
+    public List<StockNoteStockEntity> getStockNoteStocks()
     {
+        if ( stockNoteStocks == null )
+        {
+            stockNoteStocks = new ArrayList<>();
+        }
         return stockNoteStocks;
     }
 
-    public void setStockNoteStocks( final Collection<StockNoteStockEntity> stockNoteStocksById )
+    public void setStockNoteStocks( final List<StockNoteStockEntity> stockNoteStocks )
     {
-        this.stockNoteStocks = stockNoteStocksById;
+        this.stockNoteStocks = stockNoteStocks;
+    }
+
+    public void addStockNoteStock( final StockNoteStockEntity stockNoteStockEntity )
+    {
+        this.stockNoteStocks.add( stockNoteStockEntity );
+        stockNoteStockEntity.setStockNoteEntity( this );
     }
 
     @Override
@@ -240,8 +259,8 @@ public class StockNoteEntity
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSource );
-        sb.append( ", stockNoteStocksById=" ).append( stockNoteStocks );
+        sb.append( ", stockNoteSource=" ).append( stockNoteSource );
+        sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
         sb.append( '}' );
         return sb.toString();
     }
