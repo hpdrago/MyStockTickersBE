@@ -25,13 +25,12 @@ import java.util.Objects;
 /**
  * Created by mike on 5/7/2017.
  */
-@Entity( name = "stock_note" )
+@Entity
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
 public class StockNoteEntity
 {
     private Integer id;
     private String notes;
-    private Integer notesSourceId;
     private Timestamp notesDate;
     private Timestamp dateCreated;
     private Timestamp dateModified;
@@ -39,8 +38,8 @@ public class StockNoteEntity
     private Integer notesRating;
     private String publicInd;
     private Byte bullOrBear;
-    private StockNoteSourceEntity stockNoteSource;
     private List<StockNoteStockEntity> stockNoteStocks;
+    private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
 
     /**
      * Create a new StockNoteEntity instance from a StockNoteDE instance.
@@ -89,18 +88,6 @@ public class StockNoteEntity
     }
 
     @Basic
-    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false)
-    public Integer getNotesSourceId()
-    {
-        return notesSourceId;
-    }
-
-    public void setNotesSourceId( final Integer notesSourceId )
-    {
-        this.notesSourceId = notesSourceId;
-    }
-
-    @Basic
     @Column( name = "notes", nullable = false, length = 4000 )
     public String getNotes()
     {
@@ -113,7 +100,7 @@ public class StockNoteEntity
     }
 
     @Basic
-    @Column( name = "notes_date", nullable = false )
+    @Column( name = "notes_date", nullable = true )
     public Timestamp getNotesDate()
     {
         return notesDate;
@@ -186,14 +173,14 @@ public class StockNoteEntity
 
     @ManyToOne
     @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
-    public StockNoteSourceEntity getStockNoteSource()
+    public StockNoteSourceEntity getStockNoteSourceByNotesSourceId()
     {
-        return stockNoteSource;
+        return stockNoteSourceByNotesSourceId;
     }
 
-    public void setStockNoteSource( final StockNoteSourceEntity stockNoteSourceByNotesSourceId )
+    public void setStockNoteSourceByNotesSourceId( final StockNoteSourceEntity stockNoteSourceByNotesSourceId )
     {
-        this.stockNoteSource = stockNoteSourceByNotesSourceId;
+        this.stockNoteSourceByNotesSourceId = stockNoteSourceByNotesSourceId;
     }
 
     @OneToMany( mappedBy = "stockNoteEntity",
@@ -242,7 +229,6 @@ public class StockNoteEntity
         final StringBuilder sb = new StringBuilder( "StockNoteEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
-        sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesDate=" ).append( notesDate );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
@@ -250,7 +236,7 @@ public class StockNoteEntity
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", stockNoteSource=" ).append( stockNoteSource );
+        sb.append( ", stockNoteSource=" ).append( stockNoteSourceByNotesSourceId );
         sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
         sb.append( '}' );
         return sb.toString();

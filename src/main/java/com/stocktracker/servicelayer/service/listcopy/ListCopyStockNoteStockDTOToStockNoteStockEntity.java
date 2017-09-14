@@ -64,7 +64,9 @@ public class ListCopyStockNoteStockDTOToStockNoteStockEntity
             StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
             stockNoteStockEntity.setId( stockNoteEntity.getId(), stockNoteStockDTO.getTickerSymbol() );
             stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
-            stockNoteStockEntity.setStockPrice( stockService.getStockPrice( stockNoteStockEntity.getTickerSymbol() ));
+            stockNoteStockEntity.setStockPrice( stockService.getStockPrice(
+                stockNoteStockEntity.getId()
+                                    .getTickerSymbol() ));
             entities.add( stockNoteStockEntity );
         }
         logMethodEnd( "copy", entities );

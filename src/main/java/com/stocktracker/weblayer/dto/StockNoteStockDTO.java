@@ -15,7 +15,7 @@ public class StockNoteStockDTO
     {
         StockNoteStockDTO stockNoteStockDTO = new StockNoteStockDTO();
         stockNoteStockDTO.setStockNotesId( stockNoteStockEntity.getStockNoteId() );
-        stockNoteStockDTO.setTickerSymbol( stockNoteStockEntity.getTickerSymbol() );
+        stockNoteStockDTO.setTickerSymbol( stockNoteStockEntity.getId().getTickerSymbol() );
         stockNoteStockDTO.setCustomerId( stockNoteStockEntity.getCustomerId() );
         stockNoteStockDTO.setStockPrice( stockNoteStockEntity.getStockPrice() );
         return stockNoteStockDTO;

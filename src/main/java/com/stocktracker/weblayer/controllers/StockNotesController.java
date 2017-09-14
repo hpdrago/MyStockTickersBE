@@ -2,17 +2,16 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
-import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import com.stocktracker.weblayer.dto.StockNoteStockDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by mike on 5/7/2017.
@@ -36,7 +36,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/stockNotes/{customerId}",
+    @RequestMapping( value = "/stockNotes",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody StockNoteDTO stockNoteDTO )
     {
@@ -46,6 +46,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         {
             throw new IllegalArgumentException( "No stocks were specified" );
         }
+        validateStockNoteDTOPostArgument( stockNoteDTO );
         StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNoteDTO );
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -54,6 +55,16 @@ public class StockNotesController extends AbstractController implements MyLogger
                                      .buildAndExpand( stockNoteDTO ).toUri());
         logMethodEnd( methodName, returnStockDTO );
         return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
+    }
+
+    private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNoteDTO )
+    {
+        Objects.requireNonNull( stockNoteDTO.getCustomerId(), "customer id cannot be null" );
+        Assert.isTrue( stockNoteDTO.getCustomerId() > 0, "customer id must be > 0" );
+        Objects.requireNonNull( stockNoteDTO.getNotes(),"notes cannote be null" );
+        Assert.isTrue( stockNoteDTO.getNotes().length() > 0, "customer id must be > 0" );
+        Objects.requireNonNull( stockNoteDTO.getStocks(), "stock notes cannot be null" );
+        Assert.isTrue( stockNoteDTO.getStocks().size() > 0, "stocks cannot be empty" );
     }
 
     /**
@@ -68,7 +79,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     public List<StockNoteDTO> getStockNotes( final @PathVariable int customerId )
     {
         final String methodName = "getStockNotes";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, customerId );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities = stockNoteService.getStockNotes( customerId );
         //logDebug( methodName, "stockNoteEntities: {0}", stockNoteEntities );
         List<StockNoteDTO> stockNoteDTOs =
@@ -91,7 +103,9 @@ public class StockNotesController extends AbstractController implements MyLogger
                                                   final @PathVariable String tickerSymbol )
     {
         final String methodName = "getStocks";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteStockEntity> stockNoteStockEntities = stockNoteService.getStockNoteStocks( customerId, tickerSymbol );
         List<StockNoteStockDTO> stockNoteStockDTOs =
             this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities );
@@ -111,7 +125,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( final @PathVariable int customerId )
     {
         final String methodName = "getStockNotesTickerSymbols";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, customerId );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<VStockNoteCountEntity> stockNoteCountDES = stockNoteService.getStockNotesCount( customerId );
         List<StockNoteCountDTO> stockNoteCountDTOS = listCopyStockNoteCountEntityToStockNoteCountDTO
             .copy( stockNoteCountDES );
@@ -119,23 +134,4 @@ public class StockNotesController extends AbstractController implements MyLogger
         return stockNoteCountDTOS;
     }
 
-    /**
-     * Get all of the stocks notes sources for a customer
-     *
-     * @return
-     */
-    @CrossOrigin
-    @RequestMapping( value = "/stockNotesSources/{customerId}",
-                     method = RequestMethod.GET,
-                     produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteSourceDTO> getStockNotesSources( final @PathVariable int customerId )
-    {
-        final String methodName = "getStockNotesSources";
-        logMethodBegin( methodName );
-        List<StockNoteSourceEntity> stockNoteSourceEntities = stockNoteService.getStockNoteSources( customerId );
-        List<StockNoteSourceDTO> stockNoteSourceDTOs =
-            this.listCopyStockNoteSourceEntityToStockNoteSourceDTO.copy( stockNoteSourceEntities );
-        logMethodEnd( methodName, stockNoteSourceDTOs.size() );
-        return stockNoteSourceDTOs;
-    }
 }

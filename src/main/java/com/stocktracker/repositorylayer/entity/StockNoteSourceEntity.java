@@ -1,8 +1,13 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
+import org.springframework.beans.BeanUtils;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -20,9 +25,19 @@ public class StockNoteSourceEntity
     private Integer id;
     private String name;
     private Integer customerId;
+    private Integer timesUsed;
     private Timestamp dateCreated;
+    private Collection<StockNoteEntity> stockNotesById;
+
+    public static StockNoteSourceEntity newInstance( final StockNoteSourceDTO stockNoteSourceDTO )
+    {
+        StockNoteSourceEntity stockNoteSourceEntity = new StockNoteSourceEntity();
+        BeanUtils.copyProperties( stockNoteSourceDTO, stockNoteSourceEntity );
+        return stockNoteSourceEntity;
+    }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column( name = "id", nullable = false )
     public Integer getId()
     {
@@ -59,6 +74,18 @@ public class StockNoteSourceEntity
     }
 
     @Basic
+    @Column( name = "times_used", nullable = false )
+    public Integer getTimesUsed()
+    {
+        return timesUsed;
+    }
+
+    public void setTimesUsed( final Integer timesUsed )
+    {
+        this.timesUsed = timesUsed;
+    }
+
+    @Basic
     @Column( name = "date_created", nullable = false )
     public Timestamp getDateCreated()
     {
@@ -68,6 +95,17 @@ public class StockNoteSourceEntity
     public void setDateCreated( final Timestamp dateCreated )
     {
         this.dateCreated = dateCreated;
+    }
+
+    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceId" )
+    public Collection<StockNoteEntity> getStockNotesById()
+    {
+        return stockNotesById;
+    }
+
+    public void setStockNotesById( final Collection<StockNoteEntity> stockNotesById )
+    {
+        this.stockNotesById = stockNotesById;
     }
 
     @Override
@@ -101,6 +139,7 @@ public class StockNoteSourceEntity
         sb.append( "id=" ).append( id );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", timesUsed=" ).append( timesUsed );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( '}' );
         return sb.toString();

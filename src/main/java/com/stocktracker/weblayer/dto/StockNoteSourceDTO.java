@@ -4,21 +4,13 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import org.springframework.beans.BeanUtils;
 
 /**
- * Created by mike on 5/13/2017.
+ * Created by mike on 9/10/2017.
  */
 public class StockNoteSourceDTO
 {
-    private String noteSource;
-
-    public String getNoteSource()
-    {
-        return noteSource;
-    }
-
-    public void setNoteSource( String noteSource )
-    {
-        this.noteSource = noteSource;
-    }
+    private Integer id;
+    private String name;
+    private Integer customerId;
 
     public static StockNoteSourceDTO newInstance( final StockNoteSourceEntity stockNoteSourceEntity )
     {
@@ -27,11 +19,43 @@ public class StockNoteSourceDTO
         return stockNoteSourceDTO;
     }
 
+    public Integer getId()
+    {
+        return id;
+    }
+
+    public void setId( final Integer id )
+    {
+        this.id = id;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName( final String name )
+    {
+        this.name = name;
+    }
+
+    public Integer getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( final Integer customerId )
+    {
+        this.customerId = customerId;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockNoteSourceDTO{" );
-        sb.append( "noteSource='" ).append( noteSource ).append( '\'' );
+        sb.append( "id=" ).append( id );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", customerId=" ).append( customerId );
         sb.append( '}' );
         return sb.toString();
     }

@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 /**
  * STOCK_NOTE_STOCK Table Entity
  */
-@Entity( name = "stock_note_stock" )
+@Entity
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
 public class StockNoteStockEntity
 {
@@ -51,11 +52,6 @@ public class StockNoteStockEntity
         return id == null ? null : id.getStockNoteId();
     }
 
-    public String getTickerSymbol()
-    {
-        return id == null ? null : id.getTickerSymbol();
-    }
-
     private void checkPrimaryKey()
     {
         if ( id == null )
@@ -77,7 +73,7 @@ public class StockNoteStockEntity
     }
 
     @Basic
-    @Column( name = "customer_id" )
+    @Column( name = "customer_id", nullable = false )
     public Integer getCustomerId()
     {
         return customerId;

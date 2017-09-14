@@ -5,6 +5,7 @@ import com.stocktracker.servicelayer.service.CustomerService;
 import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.servicelayer.service.StockNoteService;
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerDEToCustomerDTO;
 import com.stocktracker.servicelayer.service.listcopy.ListCopyCustomerStockDEToCustomerStockDTO;
@@ -42,6 +43,10 @@ public class AbstractAutowiredBean implements MyLogger
      * Autowired service class
      */
     protected StockNoteService stockNoteService;
+    /**
+     * Autowired service class
+     */
+    protected StockNoteSourceService stockNoteSourceService;
 
 
     protected ListCopyCustomerStockDEToCustomerStockDTO listCopyCustomerStockDEToCustomerStockDTO;
@@ -216,5 +221,18 @@ public class AbstractAutowiredBean implements MyLogger
         final String methodName = "setStockNotesService";
         logMethodBegin( methodName, stockNoteService );
         this.stockNoteService = stockNoteService;
+    }
+
+    /**
+     * Allow DI to set the Stock Notes Source Service
+     *
+     * @param stockNoteSourceService
+     */
+    @Autowired
+    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    {
+        final String methodName = "setStockNotesSourceService";
+        logMethodBegin( methodName, stockNoteSourceService );
+        this.stockNoteSourceService = stockNoteSourceService;
     }
 }
