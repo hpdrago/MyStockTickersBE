@@ -88,7 +88,7 @@ create table stock
 (
   ticker_symbol varchar(5) not null,
   company_name varchar(70) null,
-  exchange varchar(10) default 'OTHER' null,
+  stock_exchange varchar(10) default 'OTHER' null,
   created_by int default '1' null,
   user_entered char default 'Y' null,
   last_price decimal(7,2) null,
@@ -148,23 +148,43 @@ create index IDX_CUSTOMER
   on stock_note (customer_id)
 ;
 
+create trigger stock_note_AFTER_INSERT
+after INSERT on stock_note
+for each row
+  BEGIN
+    UPDATE stock_note_source
+    SET times_used = times_used + 1
+    WHERE id = note_source_id;
+  END;
+
+create trigger stock_note_BEFORE_UPDATE
+before UPDATE on stock_note
+for each row
+  BEGIN
+    IF NEW.notes_source_id <> OLD.notes_source_id THEN
+      UPDATE stock_note_source
+      SET used_count = used_count - 1
+      WHERE id = OLD.notes_source_id;
+
+      UPDATE stock_note_source
+      SET used_count = used_count + 1
+      WHERE id = NEW.notes_source_id;
+    END IF;
+  END;
+
 create table stock_note_source
 (
   id int not null
     primary key,
   name varchar(20) not null,
   customer_id int not null,
+  times_used int default '0' not null,
   date_created datetime default CURRENT_TIMESTAMP not null
 )
 ;
 
 create index IDX_CUSTOMER_ID
   on stock_note_source (customer_id, name)
-;
-
-alter table stock_note
-  add constraint FK_STOCK_NOTES_STOCK_NOTES_SOURCE
-foreign key (notes_source_id) references stock_note_source (id)
 ;
 
 create table stock_note_stock
@@ -183,12 +203,12 @@ create table stock_note_stock
 )
 ;
 
-create index FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx
-  on stock_note_stock (stock_note_id)
-;
-
 create index FK_STOCK_NOTE_STOCK_CUSTOMER_idx
   on stock_note_stock (customer_id)
+;
+
+create index FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx
+  on stock_note_stock (stock_note_id)
 ;
 
 create index IDX_CUSTOMER_ID_TICKER_SYMBOL
@@ -230,13 +250,4 @@ create view v_portfolio_stock as
     `s`.`last_price`            AS `last_price`
   FROM (`stocktracker`.`portfolio_stock` `ps`
     JOIN `stocktracker`.`stock` `s` ON ((`s`.`ticker_symbol` = `ps`.`ticker_symbol`)));
-
-create view v_stock_note_count as
-  SELECT
-    `stocktracker`.`stock_note`.`customer_id`   AS `customer_id`,
-    `stocktracker`.`stock_note`.`ticker_symbol` AS `ticker_symbol`,
-    count(0)                                    AS `note_count`
-  FROM `stocktracker`.`stock_note`
-  GROUP BY `stocktracker`.`stock_note`.`customer_id`, `stocktracker`.`stock_note`.`ticker_symbol`
-  ORDER BY `stocktracker`.`stock_note`.`ticker_symbol`;
 
