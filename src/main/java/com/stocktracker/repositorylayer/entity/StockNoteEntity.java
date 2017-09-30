@@ -51,13 +51,16 @@ public class StockNoteEntity
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = new StockNoteEntity();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
-        try
+        if ( stockNoteDTO.getNotesDate() != null )
         {
-            stockNoteEntity.notesDate = JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() );
-        }
-        catch ( ParseException e )
-        {
-            throw new IllegalArgumentException( "Error converting notesDate to timestamp", e );
+            try
+            {
+                stockNoteEntity.notesDate = JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() );
+            }
+            catch ( ParseException e )
+            {
+                throw new IllegalArgumentException( "Error converting notesDate to timestamp", e );
+            }
         }
         return stockNoteEntity;
     }

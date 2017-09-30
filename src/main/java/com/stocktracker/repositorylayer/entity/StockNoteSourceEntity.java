@@ -74,7 +74,7 @@ public class StockNoteSourceEntity
     }
 
     @Basic
-    @Column( name = "times_used", nullable = false )
+    @Column( name = "times_used", nullable = false, insertable = false, updatable = false )
     public Integer getTimesUsed()
     {
         return timesUsed;
@@ -86,7 +86,7 @@ public class StockNoteSourceEntity
     }
 
     @Basic
-    @Column( name = "date_created", nullable = false )
+    @Column( name = "date_created", nullable = false, insertable = false, updatable = false )
     public Timestamp getDateCreated()
     {
         return dateCreated;

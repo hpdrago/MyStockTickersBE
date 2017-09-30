@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
+import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
@@ -85,6 +86,7 @@ public class StockNoteService extends BaseService
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance( stockNoteDTO );
         logDebug( methodName, "saving stockNoteEntity: {0}", stockNoteEntity );
+        checkForNewSource( stockNoteEntity, stockNoteDTO );
         /*
          * Save the stock notes
          */
@@ -112,5 +114,47 @@ public class StockNoteService extends BaseService
         returnStockNoteDTO.setStocks( stockNoteStockDTOS );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
+    }
+
+    /**
+     * Check {@code stockNoteDTO} to see if the user entered a new note source.
+     * If a new source is detected, a new source will be added to the database for the customer.
+     * @param stockNoteEntity
+     * @param stockNoteDTO
+     */
+    private void checkForNewSource( final StockNoteEntity stockNoteEntity, final StockNoteDTO stockNoteDTO )
+    {
+        final String methodName = "checkForNewSource";
+        logMethodEnd( methodName );
+        if ( stockNoteDTO.getNotesSourceId() == 0 &&
+             stockNoteDTO.getNotesSourceName() != null &&
+             stockNoteDTO.getNotesSourceName().length() > 0 )
+        {
+            /*
+             * Make sure it doesn't already exist
+             */
+            StockNoteSourceEntity stockNoteSourceEntity =
+                this.stockNoteSourceRepository.findByCustomerIdAndAndName( stockNoteDTO.getCustomerId(),
+                                                                           stockNoteDTO.getNotesSourceName() ) ;
+            logDebug( methodName, "stockNoteSourceEntity: {0}", stockNoteSourceEntity );
+            if ( stockNoteSourceEntity != null )
+            {
+                logDebug( methodName, "The source already exists, doing nothing" );
+            }
+            else
+            {
+                logDebug( methodName, "Saving stock note source entity" );
+                stockNoteSourceEntity = new StockNoteSourceEntity();
+                stockNoteSourceEntity.setCustomerId( stockNoteDTO.getCustomerId() );
+                stockNoteSourceEntity.setName( stockNoteDTO.getNotesSourceName() );
+                stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
+                logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
+                /*
+                 * update the reference in the stock note
+                 */
+                stockNoteEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
+            }
+        }
+        logMethodEnd( methodName );
     }
 }

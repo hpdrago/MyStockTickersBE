@@ -18,8 +18,8 @@ public class StockNoteDTO
     private Integer customerId;
     private String notes;
     private String notesDate;
-    private String source;
-    private Integer sourceId;
+    private String notesSourceName;
+    private Integer notesSourceId;
     private Integer notesRating;
     private Boolean publicInd;
     private Byte bullOrBear;
@@ -83,24 +83,24 @@ public class StockNoteDTO
         this.notesDate = notesDate;
     }
 
-    public String getSource()
+    public String getNotesSourceName()
     {
-        return source;
+        return notesSourceName;
     }
 
-    public void setSource( String source )
+    public void setNotesSourceName( String notesSourceName )
     {
-        this.source = source;
+        this.notesSourceName = notesSourceName;
     }
 
-    public Integer getSourceId()
+    public Integer getNotesSourceId()
     {
-        return sourceId;
+        return notesSourceId;
     }
 
-    public void setSourceId( Integer sourceId )
+    public void setNotesSourceId( Integer notesSourceId )
     {
-        this.sourceId = sourceId;
+        this.notesSourceId = notesSourceId;
     }
 
     public String getDateCreated()
@@ -206,8 +206,8 @@ public class StockNoteDTO
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
         sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
-        sb.append( ", source='" ).append( source ).append( '\'' );
-        sb.append( ", sourceId=" ).append( sourceId );
+        sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
+        sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd=" ).append( publicInd );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
