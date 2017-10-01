@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,33 +39,80 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = "/stockNotes",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody StockNoteDTO stockNoteDTO )
+    public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO )
     {
         final String methodName = "addStockNote";
-        logMethodBegin( methodName, stockNoteDTO );
-        if ( stockNoteDTO.getStocks().isEmpty() )
+        logMethodBegin( methodName, stockNotesDTO );
+        if ( stockNotesDTO.getStocks().isEmpty() )
         {
             throw new IllegalArgumentException( "No stocks were specified" );
         }
-        validateStockNoteDTOPostArgument( stockNoteDTO );
-        StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNoteDTO );
+        validateStockNoteDTOPostArgument( stockNotesDTO );
+        StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNotesDTO );
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
-                                     .buildAndExpand( stockNoteDTO ).toUri());
+                                     .buildAndExpand( stockNotesDTO ).toUri());
         logMethodEnd( methodName, returnStockDTO );
         return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
     }
 
-    private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNoteDTO )
+    /**
+     * Add a stock to the database
+     *
+     * @return The stock that was added
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/stockNotes/{stockNotesId}",
+                     method = RequestMethod.PUT )
+    public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
+                                                         @PathVariable( "stockNotesId" ) final int stockNotesId )
     {
-        Objects.requireNonNull( stockNoteDTO.getCustomerId(), "customer id cannot be null" );
-        Assert.isTrue( stockNoteDTO.getCustomerId() > 0, "customer id must be > 0" );
-        Objects.requireNonNull( stockNoteDTO.getNotes(),"notes cannot be null" );
-        Assert.isTrue( stockNoteDTO.getNotes().length() > 0, "customer id must be > 0" );
-        Objects.requireNonNull( stockNoteDTO.getStocks(), "stock notes cannot be null" );
-        Assert.isTrue( stockNoteDTO.getStocks().size() > 0, "stocks cannot be empty" );
+        final String methodName = "updateStockNote";
+        logMethodBegin( methodName, stockNotesId, stockNotesDTO );
+        if ( stockNotesDTO.getStocks().isEmpty() )
+        {
+            throw new IllegalArgumentException( "No stocks were specified" );
+        }
+        validateStockNoteDTOPostArgument( stockNotesDTO );
+        StockNoteDTO returnStockDTO = null;
+        try
+        {
+            returnStockDTO = this.stockNoteService.updateStockNote( stockNotesDTO );
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( e );
+        }
+        /*
+        try
+        {
+            Thread.sleep( 5000 );
+        }
+        catch ( InterruptedException e )
+        {
+            e.printStackTrace();
+        }
+        */
+        logDebug( methodName, "returnStockDTO: ", returnStockDTO );
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()
+                                                            .path( "" )
+                                                            .buildAndExpand( stockNotesDTO )
+                                                            .toUri());
+        logMethodEnd( methodName, returnStockDTO );
+        return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
+    }
+
+    private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNotesDTO )
+    {
+        Objects.requireNonNull( stockNotesDTO.getCustomerId(), "customer id cannot be null" );
+        Assert.isTrue( stockNotesDTO.getCustomerId() > 0, "customer id must be > 0" );
+        Objects.requireNonNull( stockNotesDTO.getNotes(),"notes cannot be null" );
+        Assert.isTrue( stockNotesDTO.getNotes().length() > 0, "customer id must be > 0" );
+        Objects.requireNonNull( stockNotesDTO.getStocks(), "stock notes cannot be null" );
+        Assert.isTrue( stockNotesDTO.getStocks().size() > 0, "stocks cannot be empty" );
     }
 
     /**
@@ -76,7 +124,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stockNotes/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteDTO> getStockNotes( final @PathVariable int customerId )
+    public List<StockNoteDTO> getStockNotes( @PathVariable final int customerId )
     {
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, customerId );
@@ -99,8 +147,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stockNotes/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteStockDTO> getStockNotes( final @PathVariable int customerId,
-                                                  final @PathVariable String tickerSymbol )
+    public List<StockNoteStockDTO> getStockNotes( @PathVariable final int customerId,
+                                                  @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, customerId, tickerSymbol );
@@ -122,7 +170,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stockNotes/tickerSymbols/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( final @PathVariable int customerId )
+    public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( @PathVariable final int customerId )
     {
         final String methodName = "getStockNotesTickerSymbols";
         logMethodBegin( methodName, customerId );

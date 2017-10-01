@@ -1,8 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.weblayer.dto.StockNoteDTO;
-import org.springframework.beans.BeanUtils;
+import com.stocktracker.common.MyLogger;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -16,9 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,7 +22,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
-public class StockNoteEntity
+public class StockNoteEntity implements MyLogger
 {
     private Integer id;
     private String notes;
@@ -40,30 +35,6 @@ public class StockNoteEntity
     private Byte bullOrBear;
     private List<StockNoteStockEntity> stockNoteStocks;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
-
-    /**
-     * Create a new StockNoteEntity instance from a StockNoteDE instance.
-     * @param stockNoteDTO
-     * @return
-     */
-    public static StockNoteEntity newInstance( final StockNoteDTO stockNoteDTO )
-    {
-        Objects.requireNonNull( stockNoteDTO );
-        StockNoteEntity stockNoteEntity = new StockNoteEntity();
-        BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
-        if ( stockNoteDTO.getNotesDate() != null )
-        {
-            try
-            {
-                stockNoteEntity.notesDate = JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() );
-            }
-            catch ( ParseException e )
-            {
-                throw new IllegalArgumentException( "Error converting notesDate to timestamp", e );
-            }
-        }
-        return stockNoteEntity;
-    }
 
     @Id
     @Column( name = "id", nullable = false )

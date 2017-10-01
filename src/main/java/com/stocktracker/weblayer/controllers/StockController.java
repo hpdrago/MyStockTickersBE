@@ -16,8 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +44,7 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stocks",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockDTO> getStocks( Pageable pageRequest )
+    public Page<StockDTO> getStocks( final Pageable pageRequest )
     {
         final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, pageRequest );
@@ -65,7 +63,8 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stocks/companiesLike/{companiesLike}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockDTO> getStockCompaniesMatching( Pageable pageRequest, @PathVariable( "companiesLike" ) String companiesLike )
+    public Page<StockDTO> getStockCompaniesMatching( final Pageable pageRequest,
+                                                     final @PathVariable( "companiesLike" ) String companiesLike )
     {
         final String methodName = "getStockCompaniesMatching";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -88,7 +87,8 @@ public class StockController extends AbstractController implements MyLogger
      * @param source      The {@code Page<ENTITY>} object.
      * @return The created {@code Page<DTO>} object.
      */
-    private Page<StockDTO> mapStockEntityPageIntoStockDEPage( Pageable pageRequest, Page<StockDE> source )
+    private Page<StockDTO> mapStockEntityPageIntoStockDEPage( final Pageable pageRequest,
+                                                              final Page<StockDE> source )
     {
         List<StockDTO> stockDTOs = listCopyStockDEToStockDTO.copy( source.getContent() );
         return new PageImpl<>( stockDTOs, pageRequest, source.getTotalElements() );
@@ -103,7 +103,7 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stocks/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public StockDTO getStock( @PathVariable String tickerSymbol )
+    public StockDTO getStock( @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
@@ -149,7 +149,7 @@ public class StockController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = "/stocks",
                       method = RequestMethod.POST )
-    public ResponseEntity<StockDTO> addStock( @RequestBody StockDTO stockDTO )
+    public ResponseEntity<StockDTO> addStock( @RequestBody final StockDTO stockDTO )
     {
         final String methodName = "addStock";
         logMethodBegin( methodName, stockDTO );
@@ -180,7 +180,7 @@ public class StockController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = "/stocks/{tickerSymbol}",
                      method = RequestMethod.DELETE )
-    public ResponseEntity<Void> deleteStock( @PathVariable( "tickerSymbol" ) String tickerSymbol )
+    public ResponseEntity<Void> deleteStock( @PathVariable( "tickerSymbol" ) final String tickerSymbol )
     {
         final String methodName = "deleteStock";
         logMethodBegin( methodName, tickerSymbol );

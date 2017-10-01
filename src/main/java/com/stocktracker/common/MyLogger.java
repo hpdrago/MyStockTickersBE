@@ -1,7 +1,7 @@
 package com.stocktracker.common;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 
@@ -76,9 +76,9 @@ public interface MyLogger
      * method to use a different logger
      * @return
      */
-    default Log getLogger()
+    default Logger getLogger()
     {
-        return LogFactory.getLog( getClass() );
+        return LoggerFactory.getLogger( getClass() );
     }
 
     /**
@@ -118,7 +118,7 @@ public interface MyLogger
             }
             catch ( Exception e )
             {
-                getLogger().error( e );
+                getLogger().error( "MyLogger Exception", e );
             }
         }
     }
@@ -149,7 +149,7 @@ public interface MyLogger
             }
             catch ( Exception e )
             {
-                getLogger().error( e );
+                getLogger().error( "MyLogger Exception", e );
             }
         }
     }
@@ -194,7 +194,7 @@ public interface MyLogger
             }
             catch ( Exception e )
             {
-                getLogger().error( e );
+                getLogger().error( "MyLogger Exception", e );
             }
         }
     }
@@ -224,7 +224,7 @@ public interface MyLogger
             }
             catch ( Exception e )
             {
-                getLogger().error( e );
+                getLogger().error( "MyLogger Exception", e );
             }
         }
     }

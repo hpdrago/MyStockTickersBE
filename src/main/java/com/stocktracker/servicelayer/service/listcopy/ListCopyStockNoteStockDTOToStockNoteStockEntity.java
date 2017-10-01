@@ -1,10 +1,10 @@
 package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntityPK;
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.weblayer.dto.StockNoteDTO;
 import com.stocktracker.weblayer.dto.StockNoteStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,23 +47,21 @@ public class ListCopyStockNoteStockDTOToStockNoteStockEntity
 
     /**
      * Creates a list of StockNoteStockEntity instances from the {@code dtos} and the {@code stockNoteEntity}
-     * @param stockNoteEntity The parent class of the StockNoteStockEntity
-     * @param dtos This list of DTO's to be converted
+     * @param stockNoteDTO
      * @return
      */
-    public List<StockNoteStockEntity> copy( final StockNoteEntity stockNoteEntity,
-                                            final List<StockNoteStockDTO> dtos )
+    public List<StockNoteStockEntity> copy( final StockNoteDTO stockNoteDTO )
     {
-        logMethodBegin( "copy", stockNoteEntity, dtos );
-        List<StockNoteStockEntity> entities = new ArrayList<>( dtos.size() );
+        logMethodBegin( "copy", stockNoteDTO );
+        List<StockNoteStockEntity> entities = new ArrayList<>( stockNoteDTO.getStocks().size() );
         /*
          * Need to set the stock note id that was just created in the stocks
          */
-        for ( StockNoteStockDTO stockNoteStockDTO: dtos )
+        for ( StockNoteStockDTO stockNoteStockDTO: stockNoteDTO.getStocks() )
         {
             StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
-            stockNoteStockEntity.setId( stockNoteEntity.getId(), stockNoteStockDTO.getTickerSymbol() );
-            stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
+            stockNoteStockEntity.setId( stockNoteDTO.getId(), stockNoteStockDTO.getTickerSymbol() );
+            stockNoteStockEntity.setCustomerId( stockNoteDTO.getCustomerId() );
             stockNoteStockEntity.setStockPrice( stockService.getStockPrice(
                 stockNoteStockEntity.getId()
                                     .getTickerSymbol() ));
