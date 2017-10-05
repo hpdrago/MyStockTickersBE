@@ -32,9 +32,9 @@ import java.util.Objects;
 public class StockNotesController extends AbstractController implements MyLogger
 {
     /**
-     * Add a stock to the database
+     * Add a stock note to the database
      *
-     * @return The stock that was added
+     * @return The stock note that was added
      */
     @CrossOrigin
     @RequestMapping( value = "/stockNotes",
@@ -85,16 +85,14 @@ public class StockNotesController extends AbstractController implements MyLogger
         {
             throw new IllegalArgumentException( e );
         }
-        /*
-        try
+        /*try
         {
             Thread.sleep( 5000 );
         }
         catch ( InterruptedException e )
         {
             e.printStackTrace();
-        }
-        */
+        }*/
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()
@@ -103,6 +101,28 @@ public class StockNotesController extends AbstractController implements MyLogger
                                                             .toUri());
         logMethodEnd( methodName, returnStockDTO );
         return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
+    }
+
+    /**
+     * Delete a stock note
+     *
+     * @return The stock that was added
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/stockNotes/{stockNotesId}",
+                     method = RequestMethod.DELETE )
+    public ResponseEntity<StockNoteDTO> deleteStockNote( @PathVariable( "stockNotesId" ) final int stockNotesId )
+    {
+        final String methodName = "updateStockNote";
+        logMethodBegin( methodName, stockNotesId );
+        StockNoteDTO stockNotesDTO = this.stockNoteService.delete( stockNotesId );
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()
+                                                            .path( "" )
+                                                            .buildAndExpand( stockNotesDTO )
+                                                            .toUri() );
+        logMethodEnd( methodName, stockNotesDTO );
+        return new ResponseEntity<>( stockNotesDTO, httpHeaders, HttpStatus.CREATED );
     }
 
     private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNotesDTO )

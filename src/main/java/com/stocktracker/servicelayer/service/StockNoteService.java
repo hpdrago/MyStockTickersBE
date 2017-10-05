@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.google.common.collect.Sets;
 import com.stocktracker.common.JSONDateConverter;
+import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
@@ -366,5 +367,25 @@ public class StockNoteService extends BaseService
             }
         }
         logMethodEnd( methodName );
+    }
+
+    /**
+     * Delete a stock note
+     * @param stockNotesId
+     * @return
+     */
+    public StockNoteDTO delete( final int stockNotesId )
+    {
+        final String methodName = "updateStockNoteStocks";
+        logMethodBegin( methodName, stockNotesId );
+        StockNoteEntity stockNoteEntity = this.stockNoteRepository.findOne( stockNotesId );
+        if ( stockNoteEntity == null )
+        {
+            throw new StockNoteNotFoundException( stockNotesId ) ;
+        }
+        this.stockNoteRepository.delete( stockNoteEntity );
+        StockNoteDTO stockNoteDTO = this.copyPropertiesEntityToDTO( stockNoteEntity );
+        logMethodEnd( methodName, stockNoteDTO );
+        return stockNoteDTO;
     }
 }
