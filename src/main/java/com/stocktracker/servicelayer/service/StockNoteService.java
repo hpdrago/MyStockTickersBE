@@ -109,7 +109,7 @@ public class StockNoteService extends BaseService
         final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
-        StockNoteEntity stockNoteEntity = copyPropertiesDTOtoEntity( stockNoteDTO );
+        StockNoteEntity stockNoteEntity = createStockNoteEntity( stockNoteDTO );
         logDebug( methodName, "saving stockNoteEntity: {0}", stockNoteEntity );
         checkForNewSource( stockNoteEntity, stockNoteDTO );
         /*
@@ -122,7 +122,7 @@ public class StockNoteService extends BaseService
          * Now that the parent is inserted, we can insert the child note stocks.
          */
         List<StockNoteStockEntity> stockNoteStockEntities = this.listCopyStockNoteStockDTOToStockNoteStockEntity
-                                                                .copy( stockNoteDTO );
+                                                                .copy( stockNoteEntity, stockNoteDTO );
 
         /*
          * Save the stock not stocks
@@ -133,7 +133,7 @@ public class StockNoteService extends BaseService
         /*
          * Convert back into a DTO to be sent back to the caller so that they have the updated information
          */
-        StockNoteDTO returnStockNoteDTO = StockNoteDTO.newInstance( stockNoteEntity );
+        StockNoteDTO returnStockNoteDTO = createStockNoteDTO( stockNoteEntity );
         List<StockNoteStockDTO> stockNoteStockDTOS = new ArrayList<>();
         this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities, stockNoteStockDTOS );
         returnStockNoteDTO.setStocks( stockNoteStockDTOS );
@@ -179,22 +179,9 @@ public class StockNoteService extends BaseService
         /*
          * Convert back into a DTO to be sent back to the caller so that they have the updated information
          */
-        StockNoteDTO returnStockNoteDTO = this.copyPropertiesEntityToDTO( dbStockNoteEntity );
+        StockNoteDTO returnStockNoteDTO = this.createStockNoteDTO( dbStockNoteEntity );
 
         logMethodEnd( methodName, returnStockNoteDTO );
-        return returnStockNoteDTO;
-    }
-
-    /**
-     * Creates a copy of {@code stockNoteEntity} to a DTO
-     * @param stockNoteEntity
-     * @return
-     */
-    private StockNoteDTO copyPropertiesEntityToDTO( final StockNoteEntity stockNoteEntity )
-    {
-        StockNoteDTO returnStockNoteDTO = StockNoteDTO.newInstance( stockNoteEntity );
-        this.listCopyStockNoteStockEntityToStockNoteStockDTO
-            .copy( stockNoteEntity.getStockNoteStocks(), returnStockNoteDTO.getStocks() );
         return returnStockNoteDTO;
     }
 
@@ -203,16 +190,39 @@ public class StockNoteService extends BaseService
      * @param stockNoteDTO
      * @return
      */
-    private StockNoteEntity copyPropertiesDTOtoEntity( final StockNoteDTO stockNoteDTO )
+    private StockNoteEntity createStockNoteEntity( final StockNoteDTO stockNoteDTO )
     {
-        final String methodName = "copyPropertiesDTOtoEntity";
+        final String methodName = "createStockNoteEntity";
         logMethodBegin( methodName, stockNoteDTO );
         StockNoteEntity stockNoteEntity = newStockNoteEntity( stockNoteDTO );
         List<StockNoteStockEntity> stockNoteStockEntities = this.listCopyStockNoteStockDTOToStockNoteStockEntity
-                                                                .copy( stockNoteDTO );
+                                                                .copy( stockNoteEntity, stockNoteDTO );
         stockNoteEntity.setStockNoteStocks( stockNoteStockEntities );
         logMethodEnd( methodName, stockNoteEntity );
         return stockNoteEntity;
+    }
+
+    /**
+     * Create a new instance from a StockNoteDE instance
+     * @param stockNoteEntity
+     * @return
+     */
+    public StockNoteDTO createStockNoteDTO( final StockNoteEntity stockNoteEntity )
+    {
+        Objects.requireNonNull( stockNoteEntity );
+        StockNoteDTO stockNoteDTO = new StockNoteDTO();
+        BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
+        try
+        {
+            stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( "Error converting UTC notes date to a string", e );
+        }
+        this.listCopyStockNoteStockEntityToStockNoteStockDTO
+            .copy( stockNoteEntity.getStockNoteStocks(), stockNoteDTO.getStocks() );
+        return stockNoteDTO;
     }
 
     /**
@@ -384,7 +394,7 @@ public class StockNoteService extends BaseService
             throw new StockNoteNotFoundException( stockNotesId ) ;
         }
         this.stockNoteRepository.delete( stockNoteEntity );
-        StockNoteDTO stockNoteDTO = this.copyPropertiesEntityToDTO( stockNoteEntity );
+        StockNoteDTO stockNoteDTO = this.createStockNoteDTO( stockNoteEntity );
         logMethodEnd( methodName, stockNoteDTO );
         return stockNoteDTO;
     }

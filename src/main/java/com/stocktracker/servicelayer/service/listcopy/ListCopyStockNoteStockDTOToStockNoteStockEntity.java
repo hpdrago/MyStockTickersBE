@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.listcopy;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntityPK;
 import com.stocktracker.servicelayer.service.StockService;
@@ -50,9 +51,9 @@ public class ListCopyStockNoteStockDTOToStockNoteStockEntity
      * @param stockNoteDTO
      * @return
      */
-    public List<StockNoteStockEntity> copy( final StockNoteDTO stockNoteDTO )
+    public List<StockNoteStockEntity> copy( final StockNoteEntity stockNoteEntity, final StockNoteDTO stockNoteDTO )
     {
-        logMethodBegin( "copy", stockNoteDTO );
+        logMethodBegin( "copy", stockNoteEntity, stockNoteDTO );
         List<StockNoteStockEntity> entities = new ArrayList<>( stockNoteDTO.getStocks().size() );
         /*
          * Need to set the stock note id that was just created in the stocks
@@ -60,8 +61,8 @@ public class ListCopyStockNoteStockDTOToStockNoteStockEntity
         for ( StockNoteStockDTO stockNoteStockDTO: stockNoteDTO.getStocks() )
         {
             StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
-            stockNoteStockEntity.setId( stockNoteDTO.getId(), stockNoteStockDTO.getTickerSymbol() );
-            stockNoteStockEntity.setCustomerId( stockNoteDTO.getCustomerId() );
+            stockNoteStockEntity.setId( stockNoteEntity.getId(), stockNoteStockDTO.getTickerSymbol() );
+            stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
             stockNoteStockEntity.setStockPrice( stockService.getStockPrice(
                 stockNoteStockEntity.getId()
                                     .getTickerSymbol() ));

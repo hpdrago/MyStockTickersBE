@@ -32,27 +32,6 @@ public class StockNoteDTO
      */
     private List<StockNoteStockDTO> stocks;
 
-    /**
-     * Create a new instance from a StockNoteDE instance
-     * @param stockNoteEntity
-     * @return
-     */
-    public static StockNoteDTO newInstance( final StockNoteEntity stockNoteEntity )
-    {
-        Objects.requireNonNull( stockNoteEntity );
-        StockNoteDTO stockNoteDTO = new StockNoteDTO();
-        BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
-        try
-        {
-            stockNoteDTO.notesDate = JSONDateConverter.toString( stockNoteEntity.getNotesDate() );
-        }
-        catch ( ParseException e )
-        {
-            throw new IllegalArgumentException( "Error converting UTC notes date to a string", e );
-        }
-        return stockNoteDTO;
-    }
-
     public Integer getId()
     {
         return id;

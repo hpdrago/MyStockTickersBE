@@ -1,1 +1,6 @@
+# backup
 mysqldump -u root -p stocktracker > stocktracker.dump.sql
+
+# restore
+C:\"Program Files"\MySQL\"MySQL Server 5.7"\bin\mysqldump -u root -p stocktracker < data\stocktracker.dump.sql
+
