@@ -39,6 +39,16 @@ public class StockNoteStockEntityPK implements Serializable
         return tickerSymbol;
     }
 
+    public void setStockNoteId( Integer stockNoteId )
+    {
+        this.stockNoteId = stockNoteId;
+    }
+
+    public void setTickerSymbol( String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
     @Override
     public boolean equals( final Object o )
     {

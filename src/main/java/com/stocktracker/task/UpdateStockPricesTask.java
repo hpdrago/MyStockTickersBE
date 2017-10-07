@@ -5,6 +5,7 @@ import com.stocktracker.repositorylayer.repository.StockRepository;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.StockTickerQuote;
+import com.stocktracker.servicelayer.service.YahooStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ public class UpdateStockPricesTask implements MyLogger
     private boolean updateStockPrices = false;
     private StockRepository stockRepository;
     private StockService stockService;
+    private YahooStockService yahooStockService;
 
     @Scheduled( initialDelay = 0, fixedRate = ONE_HOUR_MILLIS )
     public void updateStockPricesTask()
@@ -39,7 +41,7 @@ public class UpdateStockPricesTask implements MyLogger
                     stockEntity.getLastPriceUpdate().before( yesterday );
                 if ( updateNeeded )
                 {
-                    StockTickerQuote stockTickerQuote = this.stockService.getStockQuote( stockEntity.getTickerSymbol() );
+                    StockTickerQuote stockTickerQuote = this.yahooStockService.getStockQuote( stockEntity.getTickerSymbol() );
                     logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
                               stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceUpdate() );
                     stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
@@ -73,5 +75,12 @@ public class UpdateStockPricesTask implements MyLogger
     {
         this.stockService = stockService;
         logDebug( "setStockService", "Dependency Injection of: " + stockRepository );
+    }
+
+    @Autowired
+    public void setYahooStockService( final YahooStockService yahooStockService )
+    {
+        this.yahooStockService = yahooStockService;
+        logDebug( "setYahooStockService", "Dependency Injection of: " + yahooStockService );
     }
 }

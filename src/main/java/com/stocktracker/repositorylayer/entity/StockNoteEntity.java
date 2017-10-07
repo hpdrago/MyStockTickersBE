@@ -1,11 +1,13 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
+import org.springframework.util.Assert;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -158,21 +161,45 @@ public class StockNoteEntity implements MyLogger
     }
 
     @OneToMany( mappedBy = "stockNoteEntity",
-                cascade = CascadeType.ALL,
+                cascade = { CascadeType.ALL },
+                fetch = FetchType.EAGER,
                 orphanRemoval = true )
     public List<StockNoteStockEntity> getStockNoteStocks()
     {
         return stockNoteStocks;
     }
 
+    /**
+     * Adds all of the {@code StockNoteStock} instances to the stock note.  Sets the stock_note_id and customer_id on the
+     * StockNoteStock instance so that the integrity is preserved.
+     * @param stockNoteStocks
+     */
     public void setStockNoteStocks( final List<StockNoteStockEntity> stockNoteStocks )
     {
-        this.stockNoteStocks = stockNoteStocks;
+        stockNoteStocks.forEach( stockNoteStockEntity -> this.addStockNoteStock( stockNoteStockEntity ));
     }
 
+    /**
+     * Adds a {@code StockNoteStock} instance to the stock note.  Sets the stock_note_id and customer_id on the
+     * StockNoteStock instance so that the integrity is preserved.
+     * @param stockNoteStockEntity
+     */
     public void addStockNoteStock( final StockNoteStockEntity stockNoteStockEntity )
     {
+        /*
+         * We assume that the StockNoteStockEntity has the ticker symbol set but not the actual stock_note_id
+         * so we set that here
+         */
+        stockNoteStockEntity.getId().setStockNoteId( this.getId() );
+        stockNoteStockEntity.setCustomerId( this.getCustomerId() );
+        if ( this.stockNoteStocks == null )
+        {
+            this.stockNoteStocks = new ArrayList<>();
+        }
         this.stockNoteStocks.add( stockNoteStockEntity );
+        /*
+         * Set the bi-directional relationship
+         */
         stockNoteStockEntity.setStockNoteEntity( this );
     }
 

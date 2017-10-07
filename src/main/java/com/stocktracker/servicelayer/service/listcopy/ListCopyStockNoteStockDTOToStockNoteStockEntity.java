@@ -9,6 +9,7 @@ import com.stocktracker.weblayer.dto.StockNoteDTO;
 import com.stocktracker.weblayer.dto.StockNoteStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,32 +45,6 @@ public class ListCopyStockNoteStockDTOToStockNoteStockEntity
     public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
-    }
-
-    /**
-     * Creates a list of StockNoteStockEntity instances from the {@code dtos} and the {@code stockNoteEntity}
-     * @param stockNoteDTO
-     * @return
-     */
-    public List<StockNoteStockEntity> copy( final StockNoteEntity stockNoteEntity, final StockNoteDTO stockNoteDTO )
-    {
-        logMethodBegin( "copy", stockNoteEntity, stockNoteDTO );
-        List<StockNoteStockEntity> entities = new ArrayList<>( stockNoteDTO.getStocks().size() );
-        /*
-         * Need to set the stock note id that was just created in the stocks
-         */
-        for ( StockNoteStockDTO stockNoteStockDTO: stockNoteDTO.getStocks() )
-        {
-            StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
-            stockNoteStockEntity.setId( stockNoteEntity.getId(), stockNoteStockDTO.getTickerSymbol() );
-            stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
-            stockNoteStockEntity.setStockPrice( stockService.getStockPrice(
-                stockNoteStockEntity.getId()
-                                    .getTickerSymbol() ));
-            entities.add( stockNoteStockEntity );
-        }
-        logMethodEnd( "copy", entities );
-        return entities;
     }
 
     @Override

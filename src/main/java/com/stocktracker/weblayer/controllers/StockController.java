@@ -48,7 +48,7 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, pageRequest );
-        Page<StockDE> stockDEs = stockService.getPage( pageRequest,false );
+        Page<StockDE> stockDEs = this.stockService.getPage( pageRequest,false );
         Page<StockDTO> stockDTOs = mapStockEntityPageIntoStockDEPage( pageRequest, stockDEs );
         logMethodEnd( methodName, stockDTOs );
         return stockDTOs;
@@ -72,7 +72,7 @@ public class StockController extends AbstractController implements MyLogger
         {
             throw new IllegalArgumentException( "companiesLike cannot be null or empty" );
         }
-        Page<StockDE> stockDEs = stockService.getCompaniesLike( pageRequest,
+        Page<StockDE> stockDEs = this.stockService.getCompaniesLike( pageRequest,
                                                                 companiesLike,
                                                                 false );
         Page<StockDTO> stockDTOs = mapStockEntityPageIntoStockDEPage( pageRequest, stockDEs );
@@ -113,7 +113,7 @@ public class StockController extends AbstractController implements MyLogger
          */
         try
         {
-            StockDE stockDE = stockService.getStock( tickerSymbol );
+            StockDE stockDE = this.stockService.getStock( tickerSymbol );
             stockDTO = StockDTO.newInstance( stockDE );
         }
         catch( StockNotFoundInDatabaseException e )
@@ -123,13 +123,13 @@ public class StockController extends AbstractController implements MyLogger
              */
             try
             {
-                Stock yahooStock = stockService.getStockFromYahoo( tickerSymbol );
+                Stock yahooStock = this.yahooStockService.getStockFromYahoo( tickerSymbol );
                 logDebug( methodName, "yahooStock: {0}", yahooStock );
                 if ( yahooStock.getName() == null )
                 {
                     throw new StockNotFoundInExchangeException( tickerSymbol );
                 }
-                StockDE stockDE = stockService.addStock( yahooStock );
+                StockDE stockDE = this.stockService.addStock( yahooStock );
                 stockDTO = StockDTO.newInstance( stockDE );
             }
             catch( IOException e2 )
@@ -153,14 +153,14 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "addStock";
         logMethodBegin( methodName, stockDTO );
-        if ( stockService.isStockExistsInDatabase( stockDTO.getTickerSymbol() ))
+        if ( this.stockService.isStockExistsInDatabase( stockDTO.getTickerSymbol() ))
         {
             logError( methodName, "Duplicate stock: " + stockDTO.getTickerSymbol() );
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
         }
         StockDE stockDE = StockDE.newInstance( stockDTO );
         logDebug( methodName, "call stockDE: {0}", stockDE );
-        stockDE = stockService.addStock( stockDE );
+        stockDE = this.stockService.addStock( stockDE );
         logDebug( methodName, "return stockDE: {0}", stockDE );
         StockDTO returnStockDTO = StockDTO.newInstance( stockDE );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -184,10 +184,10 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "deleteStock";
         logMethodBegin( methodName, tickerSymbol );
-        if ( stockService.isStockExistsInDatabase( tickerSymbol ))
+        if ( this.stockService.isStockExistsInDatabase( tickerSymbol ))
         {
             logDebug( methodName, "tickerSymbol: {0}", tickerSymbol );
-            stockService.deleteStock( tickerSymbol );
+            this.stockService.deleteStock( tickerSymbol );
         }
         else
         {
@@ -210,8 +210,8 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStockSectors";
         logMethodBegin( methodName );
-        List<StockSectorDE> stockSectorDEList = stockService.getStockSectors();
-        List<StockSubSectorDE> stockSubSectorDEList = stockService.getStockSubSectors();
+        List<StockSectorDE> stockSectorDEList = this.stockService.getStockSectors();
+        List<StockSubSectorDE> stockSubSectorDEList = this.stockService.getStockSubSectors();
         StockSectorsDTO stockSectorsDTO = StockSectorsDTO.newInstance( stockSectorDEList, stockSubSectorDEList );
         logMethodEnd( methodName, stockSectorsDTO );
         return stockSectorsDTO;

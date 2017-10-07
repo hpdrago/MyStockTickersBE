@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.YahooStockService;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -16,7 +18,7 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
-public class StockNoteStockEntity
+public class StockNoteStockEntity implements YahooStockService.YahooStockContainer
 {
     @EmbeddedId
     private StockNoteStockEntityPK id;
@@ -67,9 +69,20 @@ public class StockNoteStockEntity
         return stockPrice;
     }
 
+    @Override
+    public String getTickerSymbol()
+    {
+        return id.getTickerSymbol();
+    }
+
     public void setStockPrice( final BigDecimal stockPrice )
     {
         this.stockPrice = stockPrice;
+    }
+
+    @Override
+    public void setCompanyName( final String companyName )
+    {
     }
 
     @Basic

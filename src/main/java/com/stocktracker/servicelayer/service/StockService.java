@@ -8,17 +8,15 @@ import com.stocktracker.repositorylayer.entity.StockSubSectorEntity;
 import com.stocktracker.servicelayer.entity.StockDE;
 import com.stocktracker.servicelayer.entity.StockSectorDE;
 import com.stocktracker.servicelayer.entity.StockSubSectorDE;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yahoofinance.Stock;
-import yahoofinance.YahooFinance;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +27,14 @@ import java.util.Objects;
 @Transactional
 public class StockService extends BaseService implements MyLogger
 {
+    private YahooStockService yahooStockService;
+
+    @Autowired
+    public void setYahooStockService( final YahooStockService yahooStockService )
+    {
+        this.yahooStockService = yahooStockService;
+    }
+
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
      *
@@ -73,7 +79,8 @@ public class StockService extends BaseService implements MyLogger
     private void updateStockPrice( final StockDE stockDE )
     {
         Objects.requireNonNull( stockDE, "stockDE cannot be null" );
-        StockTickerQuote stockTickerQuote = this.getStockQuote( stockDE.getTickerSymbol() );
+        Objects.requireNonNull( this.yahooStockService, "yahooStockService cannot be null" );
+        StockTickerQuote stockTickerQuote = this.yahooStockService.getStockQuote( stockDE.getTickerSymbol() );
         stockDE.updateFromQuote( stockTickerQuote );
     }
 
@@ -198,30 +205,6 @@ public class StockService extends BaseService implements MyLogger
     }
 
     /**
-     * Get the stock price for the {@code tickerSymbol}
-     * @param tickerSymbol
-     * @return -1 if there is an error, otherwise the last stock price will be returned
-     */
-    public StockTickerQuote getStockQuote( final String tickerSymbol )
-    {
-        final String methodName = "getStockQuote";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        StockTickerQuote stockTickerQuote = null;
-        try
-        {
-            Stock stock = getStockFromYahoo( tickerSymbol );
-            stockTickerQuote = createStockTickerQuote( stock );
-            logMethodEnd( methodName, String.format( "{0} {1}", tickerSymbol, stockTickerQuote.getLastPrice() ));
-        }
-        catch( Exception e )
-        {
-            logError( methodName, e );
-        }
-        return stockTickerQuote;
-    }
-
-    /**
      * Get the last price for the stock
      * @param tickerSymbol
      * @return Null if there are any exceptions
@@ -231,7 +214,8 @@ public class StockService extends BaseService implements MyLogger
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        StockTickerQuote stockTickerQuote = getStockQuote( tickerSymbol );
+        Objects.requireNonNull( this.yahooStockService, "yahooStockService cannot be null" );
+        StockTickerQuote stockTickerQuote = this.yahooStockService.getStockQuote( tickerSymbol );
         BigDecimal stockPrice = null;
         if ( stockTickerQuote != null )
         {
@@ -239,23 +223,6 @@ public class StockService extends BaseService implements MyLogger
         }
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
-    }
-
-    /**
-     * Create a {@code StockTickerQuote} from a {@code Stock} Yahoo stock instance
-     * @param stock
-     * @return
-     */
-    private StockTickerQuote createStockTickerQuote( final Stock stock )
-    {
-        StockTickerQuote stockTickerQuote = new StockTickerQuote();
-        stockTickerQuote.setTickerSymbol( stock.getSymbol() );
-        stockTickerQuote.setLastPrice( stock.getQuote().getPrice() );
-        if ( stock.getQuote().getLastTradeTime() != null )
-        {
-            stockTickerQuote.setLastPriceUpdate( new Timestamp( stock.getQuote().getLastTradeTime().getTimeInMillis() ) );
-        }
-        return stockTickerQuote;
     }
 
     /**
@@ -273,26 +240,13 @@ public class StockService extends BaseService implements MyLogger
         stockDE.setCompanyName( yahooStock.getName() );
         stockDE.setUserEntered( false );
         stockDE.setExchange( yahooStock.getStockExchange() );
-        StockTickerQuote stockTickerQuote = createStockTickerQuote( yahooStock );
+        StockTickerQuote stockTickerQuote = this.yahooStockService.getStockTickerQuote( yahooStock );
         stockDE.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
         stockDE.setLastPrice( yahooStock.getQuote().getPrice() );
         stockDE.setCreatedBy( 1 );
         this.addStock( stockDE );
         logMethodEnd( methodName, stockDE );
         return stockDE;
-    }
-
-    /**
-     * Get the stock information from Yahoo
-     * @param tickerSymbol
-     * @return
-     * @throws IOException
-     */
-    public Stock getStockFromYahoo( final String tickerSymbol )
-        throws IOException
-    {
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        return YahooFinance.get( tickerSymbol );
     }
 
     /**
@@ -322,5 +276,4 @@ public class StockService extends BaseService implements MyLogger
         logMethodEnd( methodName );
         return stockSubSectorList;
     }
-
 }

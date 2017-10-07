@@ -48,6 +48,18 @@ public class StockNoteService extends BaseService
     {
         this.stockService = stockService;
     }
+
+    /**
+     * Autowired service class
+     */
+    private YahooStockService yahooStockService;
+
+    @Autowired
+    public void setYahooStockService( final YahooStockService yahooStockService )
+    {
+        this.yahooStockService = yahooStockService;
+    }
+
     /**
      * Get all of the notes for a customer.
      * @param customerId
@@ -109,7 +121,7 @@ public class StockNoteService extends BaseService
         final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
-        StockNoteEntity stockNoteEntity = createStockNoteEntity( stockNoteDTO );
+        StockNoteEntity stockNoteEntity = this.createStockNoteEntity( stockNoteDTO );
         logDebug( methodName, "saving stockNoteEntity: {0}", stockNoteEntity );
         checkForNewSource( stockNoteEntity, stockNoteDTO );
         /*
@@ -121,22 +133,26 @@ public class StockNoteService extends BaseService
         /*
          * Now that the parent is inserted, we can insert the child note stocks.
          */
-        List<StockNoteStockEntity> stockNoteStockEntities = this.listCopyStockNoteStockDTOToStockNoteStockEntity
-                                                                .copy( stockNoteEntity, stockNoteDTO );
-
+        //List<StockNoteStockEntity> stockNoteStockEntities = this.copyStockNoteStocks( stockNoteDTO );
+        /*
+        stockNoteEntity.setStockNoteStocks( stockNoteStockEntities );
+        logDebug( methodName, "before saving stockNoteEntity with stocks: {0}", stockNoteEntity );
+        stockNoteStockEntity.setStockPrice( stockService.getStockPrice(
+            stockNoteStockEntity.getId()
+                                .getTickerSymbol() ));
+        StockNoteEntity completeStockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
+        logDebug( methodName, "after saving completeStockNoteEntity: {0}", completeStockNoteEntity );
+        */
         /*
          * Save the stock not stocks
          */
-        logDebug( methodName, "saving stockNoteStockEntities: {0}", stockNoteStockEntities );
-        stockNoteStockEntities = stockNoteStockRepository.save( stockNoteStockEntities );
+        //logDebug( methodName, "saving stockNoteStockEntities: {0}", stockNoteStockEntities );
+        //stockNoteStockEntities = stockNoteStockRepository.save( stockNoteStockEntities );
 
         /*
          * Convert back into a DTO to be sent back to the caller so that they have the updated information
          */
         StockNoteDTO returnStockNoteDTO = createStockNoteDTO( stockNoteEntity );
-        List<StockNoteStockDTO> stockNoteStockDTOS = new ArrayList<>();
-        this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities, stockNoteStockDTOS );
-        returnStockNoteDTO.setStocks( stockNoteStockDTOS );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
     }
@@ -195,11 +211,31 @@ public class StockNoteService extends BaseService
         final String methodName = "createStockNoteEntity";
         logMethodBegin( methodName, stockNoteDTO );
         StockNoteEntity stockNoteEntity = newStockNoteEntity( stockNoteDTO );
-        List<StockNoteStockEntity> stockNoteStockEntities = this.listCopyStockNoteStockDTOToStockNoteStockEntity
-                                                                .copy( stockNoteEntity, stockNoteDTO );
-        stockNoteEntity.setStockNoteStocks( stockNoteStockEntities );
+        for ( final StockNoteStockDTO stockNoteStockDTO: stockNoteDTO.getStocks() )
+        {
+            StockNoteStockEntity stockNoteStockEntity = createStockNoteStockEntity( stockNoteEntity, stockNoteStockDTO );
+            this.yahooStockService.setStockInformation( stockNoteStockEntity );
+            stockNoteEntity.addStockNoteStock( stockNoteStockEntity );
+        }
         logMethodEnd( methodName, stockNoteEntity );
         return stockNoteEntity;
+    }
+
+    /**
+     * Creates a {@code StockNoteStockEntity} from an instance of a {@code StockNoteStockDTO}
+     *
+     * @param stockNoteEntity
+     * @param stockNoteStockDTO
+     * @return
+     */
+    private StockNoteStockEntity createStockNoteStockEntity( final StockNoteEntity stockNoteEntity,
+                                                             final StockNoteStockDTO stockNoteStockDTO )
+    {
+        StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
+        stockNoteStockEntity.setId( stockNoteEntity.getId(), stockNoteStockDTO.getTickerSymbol() );
+        stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
+        stockNoteStockEntity.setStockPrice( stockNoteStockDTO.getStockPrice() );
+        return stockNoteStockEntity;
     }
 
     /**
