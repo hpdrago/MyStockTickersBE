@@ -11,7 +11,7 @@ import java.util.Objects;
 @Embeddable
 public class StockNoteStockEntityPK implements Serializable
 {
-    @Column( name = "stock_note_id", nullable = false )
+    @Column( name = "stock_note_id" )
     private Integer stockNoteId;
 
     @Column( name = "ticker_symbol", nullable = false, length = 5 )
@@ -25,7 +25,6 @@ public class StockNoteStockEntityPK implements Serializable
     {
         Objects.requireNonNull( stockNoteId, "stockNoteId cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        this.stockNoteId = stockNoteId;
         this.tickerSymbol = tickerSymbol;
     }
 

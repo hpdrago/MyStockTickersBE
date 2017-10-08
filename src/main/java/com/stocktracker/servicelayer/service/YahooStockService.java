@@ -75,8 +75,13 @@ public class YahooStockService implements MyLogger
      * @param container
      */
     public void setStockInformation( final YahooStockContainer container )
+        throws IOException
     {
-
+        Stock stock = getStockFromYahoo( container.getTickerSymbol() ) ;
+        container.setCompanyName( stock.getName() );
+        StockTickerQuote stockTickerQuote = this.getStockTickerQuote( stock );
+        container.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
+        container.setLastPrice( stockTickerQuote.getLastPrice() );
     }
 
     /**
@@ -85,7 +90,8 @@ public class YahooStockService implements MyLogger
     public interface YahooStockContainer
     {
         String getTickerSymbol();
-        void setStockPrice( final BigDecimal stockPrice );
+        void setLastPrice( final BigDecimal stockPrice );
+        void setLastPriceChange( final Timestamp lastPriceChange );
         void setCompanyName( final String companyName );
     }
 }

@@ -1,17 +1,19 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.servicelayer.service.YahooStockService;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 /**
  * STOCK_NOTE_STOCK Table Entity
@@ -25,8 +27,9 @@ public class StockNoteStockEntity implements YahooStockService.YahooStockContain
     private Integer customerId;
     private BigDecimal stockPrice;
 
-    @ManyToOne( fetch = FetchType.LAZY )
-    @JoinColumn( name = "stock_note_id", insertable = false, updatable = false )
+    @ManyToOne( fetch = FetchType.EAGER )
+    @NotFound( action = NotFoundAction.IGNORE )
+    @JoinColumn( name = "stock_note_id", nullable = false, updatable = false, insertable = false )
     private StockNoteEntity stockNoteEntity;
 
     /**
@@ -42,6 +45,11 @@ public class StockNoteStockEntity implements YahooStockService.YahooStockContain
     public StockNoteStockEntityPK getId()
     {
         return id;
+    }
+
+    public void setStockNoteId( final Integer stockNoteId )
+    {
+        this.id.setStockNoteId( stockNoteId );
     }
 
     public void setId( StockNoteStockEntityPK id )
@@ -73,6 +81,17 @@ public class StockNoteStockEntity implements YahooStockService.YahooStockContain
     public String getTickerSymbol()
     {
         return id.getTickerSymbol();
+    }
+
+    @Override
+    public void setLastPrice( final BigDecimal stockPrice )
+    {
+        this.stockPrice = stockPrice;
+    }
+
+    @Override
+    public void setLastPriceChange( final Timestamp lastPriceChange )
+    {
     }
 
     public void setStockPrice( final BigDecimal stockPrice )

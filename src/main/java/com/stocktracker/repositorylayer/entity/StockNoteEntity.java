@@ -161,8 +161,7 @@ public class StockNoteEntity implements MyLogger
     }
 
     @OneToMany( mappedBy = "stockNoteEntity",
-                cascade = { CascadeType.ALL },
-                fetch = FetchType.EAGER,
+                cascade = CascadeType.ALL,
                 orphanRemoval = true )
     public List<StockNoteStockEntity> getStockNoteStocks()
     {
@@ -176,7 +175,14 @@ public class StockNoteEntity implements MyLogger
      */
     public void setStockNoteStocks( final List<StockNoteStockEntity> stockNoteStocks )
     {
-        stockNoteStocks.forEach( stockNoteStockEntity -> this.addStockNoteStock( stockNoteStockEntity ));
+        /*
+         * Copy the stock note id over to the children
+         */
+        if ( stockNoteStocks != null )
+        {
+            stockNoteStocks.forEach( stockNoteStockEntity -> stockNoteStockEntity.setStockNoteId( this.getId()) );
+        }
+        this.stockNoteStocks = stockNoteStocks;
     }
 
     /**
@@ -190,7 +196,10 @@ public class StockNoteEntity implements MyLogger
          * We assume that the StockNoteStockEntity has the ticker symbol set but not the actual stock_note_id
          * so we set that here
          */
-        stockNoteStockEntity.getId().setStockNoteId( this.getId() );
+        if ( this.getId() != null && this.getId() != 0 )
+        {
+            stockNoteStockEntity.getId().setStockNoteId( this.getId() );
+        }
         stockNoteStockEntity.setCustomerId( this.getCustomerId() );
         if ( this.stockNoteStocks == null )
         {

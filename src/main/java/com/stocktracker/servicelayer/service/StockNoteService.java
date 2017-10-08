@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -126,28 +126,14 @@ public class StockNoteService extends BaseService
         checkForNewSource( stockNoteEntity, stockNoteDTO );
         /*
          * Save the stock notes
+         * However, cannot insert the stock note stocks without a stock_note_id so we'll save these stock notes
+         * now, and then insert them after the save of the StockNoteEnitty
          */
+        List<StockNoteStockEntity> stockNoteStocks = stockNoteEntity.getStockNoteStocks();
+        stockNoteEntity.setStockNoteStocks( null );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
+        stockNoteEntity.setStockNoteStocks( stockNoteStocks );
         logDebug( methodName, "after saving stockNoteEntity: {0}", stockNoteEntity );
-
-        /*
-         * Now that the parent is inserted, we can insert the child note stocks.
-         */
-        //List<StockNoteStockEntity> stockNoteStockEntities = this.copyStockNoteStocks( stockNoteDTO );
-        /*
-        stockNoteEntity.setStockNoteStocks( stockNoteStockEntities );
-        logDebug( methodName, "before saving stockNoteEntity with stocks: {0}", stockNoteEntity );
-        stockNoteStockEntity.setStockPrice( stockService.getStockPrice(
-            stockNoteStockEntity.getId()
-                                .getTickerSymbol() ));
-        StockNoteEntity completeStockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
-        logDebug( methodName, "after saving completeStockNoteEntity: {0}", completeStockNoteEntity );
-        */
-        /*
-         * Save the stock not stocks
-         */
-        //logDebug( methodName, "saving stockNoteStockEntities: {0}", stockNoteStockEntities );
-        //stockNoteStockEntities = stockNoteStockRepository.save( stockNoteStockEntities );
 
         /*
          * Convert back into a DTO to be sent back to the caller so that they have the updated information
@@ -214,7 +200,14 @@ public class StockNoteService extends BaseService
         for ( final StockNoteStockDTO stockNoteStockDTO: stockNoteDTO.getStocks() )
         {
             StockNoteStockEntity stockNoteStockEntity = createStockNoteStockEntity( stockNoteEntity, stockNoteStockDTO );
-            this.yahooStockService.setStockInformation( stockNoteStockEntity );
+            try
+            {
+                this.yahooStockService.setStockInformation( stockNoteStockEntity );
+            }
+            catch ( IOException e )
+            {
+                logError( methodName, "Error getting stock information", e );
+            }
             stockNoteEntity.addStockNoteStock( stockNoteStockEntity );
         }
         logMethodEnd( methodName, stockNoteEntity );
