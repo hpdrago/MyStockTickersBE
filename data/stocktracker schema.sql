@@ -1,253 +1,109 @@
-create table customer
-(
-  id int auto_increment
-    primary key,
-  email varchar(45) not null,
-  password varchar(45) not null,
-  create_date timestamp default CURRENT_TIMESTAMP not null,
-  constraint id_UNIQUE
-  unique (id),
-  constraint idx_customer_email
-  unique (email)
-)
-;
+CREATE TABLE `customer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_customer_email` (`email`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-create table exception
-(
-  id int not null
-    primary key,
-  class_name varchar(45) not null,
-  method_name varchar(45) not null,
-  arguments varchar(255) not null,
-  stack_trace varchar(4096) not null,
-  datetime datetime not null
-)
-;
+CREATE TABLE `exception` (
+  `id` int(11) NOT NULL,
+  `class_name` varchar(45) NOT NULL,
+  `method_name` varchar(45) NOT NULL,
+  `arguments` varchar(255) NOT NULL,
+  `stack_trace` varchar(4096) NOT NULL,
+  `datetime` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table portfolio
-(
-  id int auto_increment
-    primary key,
-  name varchar(20) not null,
-  customer_id int not null,
-  create_date timestamp default CURRENT_TIMESTAMP not null,
-  constraint id_UNIQUE
-  unique (id),
-  constraint FK_PORTFOLIO_CUSTOMER
-  foreign key (customer_id) references customer (id)
-    on delete cascade
-)
-;
+CREATE TABLE `portfolio` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `idx_portfolio_customer_id` (`customer_id`),
+  CONSTRAINT `FK_PORTFOLIO_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create index idx_portfolio_customer_id
-  on portfolio (customer_id)
-;
+CREATE TABLE `portfolio_stock` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `portfolio_id` int(11) DEFAULT NULL,
+  `ticker_symbol` varchar(5) NOT NULL,
+  `number_of_shares` int(11) DEFAULT NULL,
+  `cost_basis` int(11) DEFAULT NULL,
+  `realized_gain` int(11) DEFAULT NULL,
+  `realized_loss` int(11) DEFAULT NULL,
+  `stop_loss_price` decimal(7,2) DEFAULT NULL,
+  `stop_loss_shares` int(11) DEFAULT NULL,
+  `profit_taking_price` decimal(7,2) DEFAULT NULL,
+  `profit_taking_shares` int(11) DEFAULT NULL,
+  `sector_id` int(11) DEFAULT NULL,
+  `sub_sector_id` int(11) DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `idx_portfolio_stock_customer_id` (`customer_id`),
+  KEY `idx_portfolio_stock_portfolio_id` (`portfolio_id`),
+  KEY `FK_PORTFOLIO_STOCK_STOCK_idx` (`ticker_symbol`),
+  CONSTRAINT `FK_PORTFOLIO_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `FK_PORTFOLIO_STOCK_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table portfolio_stock
-(
-  id int auto_increment
-    primary key,
-  customer_id int not null,
-  portfolio_id int null,
-  ticker_symbol varchar(5) not null,
-  number_of_shares int null,
-  cost_basis int null,
-  realized_gain int null,
-  realized_loss int null,
-  stop_loss_price decimal(7,2) null,
-  stop_loss_shares int null,
-  profit_taking_price decimal(7,2) null,
-  profit_taking_shares int null,
-  sector_id int null,
-  sub_sector_id int null,
-  create_date timestamp default CURRENT_TIMESTAMP not null,
-  constraint id_UNIQUE
-  unique (id),
-  constraint FK_PORTFOLIO_STOCK_CUSTOMER
-  foreign key (customer_id) references customer (id)
-    on delete cascade,
-  constraint FK_PORTFOLIO_STOCK_PORTFOLIO
-  foreign key (portfolio_id) references portfolio (id)
-    on delete set null
-)
-;
+CREATE TABLE `stock` (
+  `ticker_symbol` varchar(5) NOT NULL,
+  `company_name` varchar(70) DEFAULT NULL,
+  `exchange` varchar(10) DEFAULT 'OTHER',
+  `created_by` int(11) DEFAULT '1',
+  `user_entered` char(1) DEFAULT 'Y',
+  `last_price` decimal(7,2) DEFAULT NULL,
+  `last_price_update` datetime DEFAULT NULL,
+  `last_price_change` datetime DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `quote_url` varchar(120) DEFAULT NULL,
+  `sector` varchar(45) DEFAULT NULL,
+  `industry` varchar(45) DEFAULT NULL,
+  UNIQUE KEY `ticker_symbol_UNIQUE` (`ticker_symbol`),
+  KEY `FK_CUSTOMER_STOCK_idx` (`created_by`),
+  FULLTEXT KEY `idx_stock_ticker_symbol` (`ticker_symbol`),
+  FULLTEXT KEY `idx_stock_company_name` (`company_name`),
+  CONSTRAINT `FK_CUSTOMER_STOCK` FOREIGN KEY (`created_by`) REFERENCES `customer` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create index FK_PORTFOLIO_STOCK_STOCK_idx
-  on portfolio_stock (ticker_symbol)
-;
+CREATE TABLE `stock_note` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `notes` varchar(4000) NOT NULL,
+  `notes_source_id` int(11) DEFAULT NULL,
+  `notes_rating` int(1) DEFAULT NULL,
+  `notes_date` datetime NOT NULL,
+  `bull_or_bear` tinyint(1) DEFAULT NULL,
+  `public_ind` varchar(1) DEFAULT NULL,
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_modified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_STOCK_NOTES_STOCK_NOTES_SOURCE_idx` (`notes_source_id`),
+  KEY `IDX_CUSTOMER` (`customer_id`),
+  CONSTRAINT `FK_STOCK_NOTES_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
-create index idx_portfolio_stock_customer_id
-  on portfolio_stock (customer_id)
-;
+CREATE TABLE `stock_sector` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sector` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create index idx_portfolio_stock_portfolio_id
-  on portfolio_stock (portfolio_id)
-;
+CREATE TABLE `stock_sub_sector` (
+  `sector_id` int(11) NOT NULL,
+  `sub_sector_id` int(11) NOT NULL,
+  `sub_sector` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table stock
-(
-  ticker_symbol varchar(5) not null,
-  company_name varchar(70) null,
-  stock_exchange varchar(10) default 'OTHER' null,
-  created_by int default '1' null,
-  user_entered char default 'Y' null,
-  last_price decimal(7,2) null,
-  last_price_update datetime null,
-  last_price_change datetime null,
-  create_date timestamp default CURRENT_TIMESTAMP not null,
-  quote_url varchar(120) null,
-  sector varchar(45) null,
-  industry varchar(45) null,
-  constraint ticker_symbol_UNIQUE
-  unique (ticker_symbol),
-  constraint FK_CUSTOMER_STOCK
-  foreign key (created_by) references customer (id)
-)
-;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v_portfolio_stock` AS select `ps`.`id` AS `id`,`ps`.`portfolio_id` AS `portfolio_id`,`ps`.`cost_basis` AS `cost_basis`,`ps`.`number_of_shares` AS `number_of_shares`,`ps`.`sector_id` AS `sector_id`,`ps`.`sub_sector_id` AS `sub_sector_id`,`ps`.`realized_gain` AS `realized_gain`,`ps`.`realized_loss` AS `realized_loss`,`ps`.`stop_loss_price` AS `stop_loss_price`,`ps`.`stop_loss_shares` AS `stop_loss_shares`,`ps`.`profit_taking_price` AS `profit_taking_price`,`ps`.`profit_taking_shares` AS `profit_taking_shares`,`s`.`ticker_symbol` AS `ticker_symbol`,`s`.`company_name` AS `company_name`,`s`.`last_price` AS `last_price` from (`portfolio_stock` `ps` join `stock` `s` on((`s`.`ticker_symbol` = `ps`.`ticker_symbol`)));
 
-create index FK_CUSTOMER_STOCK_idx
-  on stock (created_by)
-;
-
-create index idx_stock_company_name
-  on stock (company_name)
-;
-
-create index idx_stock_ticker_symbol
-  on stock (ticker_symbol)
-;
-
-alter table portfolio_stock
-  add constraint FK_PORTFOLIO_STOCK_STOCK
-foreign key (ticker_symbol) references stock (ticker_symbol)
-;
-
-create table stock_note
-(
-  id int auto_increment
-    primary key,
-  customer_id int not null,
-  notes varchar(4000) not null,
-  notes_source_id int null,
-  notes_rating int(1) null,
-  notes_date datetime not null,
-  bull_or_bear tinyint(1) null,
-  public_ind varchar(1) null,
-  date_created datetime default CURRENT_TIMESTAMP not null,
-  date_modified datetime null,
-  constraint FK_STOCK_NOTES_CUSTOMER
-  foreign key (customer_id) references customer (id)
-)
-;
-
-create index FK_STOCK_NOTES_STOCK_NOTES_SOURCE_idx
-  on stock_note (notes_source_id)
-;
-
-create index IDX_CUSTOMER
-  on stock_note (customer_id)
-;
-
-create trigger stock_note_AFTER_INSERT
-after INSERT on stock_note
-for each row
-  BEGIN
-    UPDATE stock_note_source
-    SET times_used = times_used + 1
-    WHERE id = note_source_id;
-  END;
-
-create trigger stock_note_BEFORE_UPDATE
-before UPDATE on stock_note
-for each row
-  BEGIN
-    IF NEW.notes_source_id <> OLD.notes_source_id THEN
-      UPDATE stock_note_source
-      SET used_count = used_count - 1
-      WHERE id = OLD.notes_source_id;
-
-      UPDATE stock_note_source
-      SET used_count = used_count + 1
-      WHERE id = NEW.notes_source_id;
-    END IF;
-  END;
-
-create table stock_note_source
-(
-  id int not null
-    primary key,
-  name varchar(20) not null,
-  customer_id int not null,
-  times_used int default '0' not null,
-  date_created datetime default CURRENT_TIMESTAMP not null
-)
-;
-
-create index IDX_CUSTOMER_ID
-  on stock_note_source (customer_id, name)
-;
-
-create table stock_note_stock
-(
-  stock_note_id int not null,
-  ticker_symbol varchar(5) not null,
-  customer_id int not null,
-  stock_price decimal(7,2) null,
-  primary key (stock_note_id, ticker_symbol),
-  constraint FK_STOCK_NOTE_STOCK_STOCK_NOTE
-  foreign key (stock_note_id) references stock_note (id)
-    on delete cascade,
-  constraint FK_STOCK_NOTE_STOCK_CUSTOMER
-  foreign key (customer_id) references customer (id)
-    on delete cascade
-)
-;
-
-create index FK_STOCK_NOTE_STOCK_CUSTOMER_idx
-  on stock_note_stock (customer_id)
-;
-
-create index FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx
-  on stock_note_stock (stock_note_id)
-;
-
-create index IDX_CUSTOMER_ID_TICKER_SYMBOL
-  on stock_note_stock (customer_id, ticker_symbol)
-;
-
-create table stock_sector
-(
-  id int auto_increment
-    primary key,
-  sector varchar(30) null
-)
-;
-
-create table stock_sub_sector
-(
-  sector_id int not null,
-  sub_sector_id int not null,
-  sub_sector varchar(30) not null
-)
-;
-
-create view v_portfolio_stock as
-  SELECT
-    `ps`.`id`                   AS `id`,
-    `ps`.`portfolio_id`         AS `portfolio_id`,
-    `ps`.`cost_basis`           AS `cost_basis`,
-    `ps`.`number_of_shares`     AS `number_of_shares`,
-    `ps`.`sector_id`            AS `sector_id`,
-    `ps`.`sub_sector_id`        AS `sub_sector_id`,
-    `ps`.`realized_gain`        AS `realized_gain`,
-    `ps`.`realized_loss`        AS `realized_loss`,
-    `ps`.`stop_loss_price`      AS `stop_loss_price`,
-    `ps`.`stop_loss_shares`     AS `stop_loss_shares`,
-    `ps`.`profit_taking_price`  AS `profit_taking_price`,
-    `ps`.`profit_taking_shares` AS `profit_taking_shares`,
-    `s`.`ticker_symbol`         AS `ticker_symbol`,
-    `s`.`company_name`          AS `company_name`,
-    `s`.`last_price`            AS `last_price`
-  FROM (`stocktracker`.`portfolio_stock` `ps`
-    JOIN `stocktracker`.`stock` `s` ON ((`s`.`ticker_symbol` = `ps`.`ticker_symbol`)));
-
+CREATE ALGORITHM=UNDEFINED DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER VIEW `v_stock_note_count` AS select `sns`.`customer_id` AS `customer_id`,`sns`.`ticker_symbol` AS `ticker_symbol`,count(0) AS `note_count` from `stock_note_stock` `sns` group by `sns`.`customer_id`,`sns`.`ticker_symbol` order by `sns`.`customer_id`,`sns`.`ticker_symbol`;
