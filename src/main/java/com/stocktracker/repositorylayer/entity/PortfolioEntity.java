@@ -28,7 +28,7 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
     private String name;
     private Integer customerId;
     private Timestamp createDate;
-    private Collection<PortfolioStockEntity> portfolioStocksById;
+    //private Collection<PortfolioStockEntity> portfolioStocksById;
 
     /**
      * Create a new instance from a PortfolioDTO
@@ -95,6 +95,7 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
         this.createDate = createDate;
     }
 
+    /*
     @OneToMany
     @JoinColumn( name = "portfolio_id", referencedColumnName = "id", nullable = false )
     public Collection<PortfolioStockEntity> getPortfolioStocksById()
@@ -106,6 +107,7 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
     {
         this.portfolioStocksById = portfolioStocksById;
     }
+    */
 
     @Override
     public boolean equals( final Object o )
@@ -137,7 +139,7 @@ public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", portfolioStocksById=" ).append( portfolioStocksById );
+        //sb.append( ", portfolioStocksById=" ).append( portfolioStocksById );
         sb.append( '}' );
         return sb.toString();
     }

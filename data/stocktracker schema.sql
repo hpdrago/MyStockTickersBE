@@ -32,7 +32,7 @@ CREATE TABLE `portfolio` (
 CREATE TABLE `portfolio_stock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
-  `portfolio_id` int(11) DEFAULT NULL,
+  `portfolio_id` int(11) NOT NULL,
   `ticker_symbol` varchar(5) NOT NULL,
   `number_of_shares` int(11) DEFAULT NULL,
   `cost_basis` int(11) DEFAULT NULL,
@@ -51,9 +51,10 @@ CREATE TABLE `portfolio_stock` (
   KEY `idx_portfolio_stock_portfolio_id` (`portfolio_id`),
   KEY `FK_PORTFOLIO_STOCK_STOCK_idx` (`ticker_symbol`),
   CONSTRAINT `FK_PORTFOLIO_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_PORTFOLIO_STOCK_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE `stock` (
   `ticker_symbol` varchar(5) NOT NULL,

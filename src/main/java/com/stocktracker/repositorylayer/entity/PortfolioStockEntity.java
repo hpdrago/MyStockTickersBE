@@ -46,19 +46,6 @@ public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, Por
     {
     }
 
-    /**
-     * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioStockDE} instance
-     * @param portfolioStockDE
-     * @return
-     */
-    public static PortfolioStockEntity newInstance( final PortfolioStockDE portfolioStockDE )
-    {
-        Objects.requireNonNull( portfolioStockDE );
-        PortfolioStockEntity portfolioStockEntity = new PortfolioStockEntity();
-        BeanUtils.copyProperties( portfolioStockDE, portfolioStockEntity );
-        return portfolioStockEntity;
-    }
-
     @Id
     @GeneratedValue
     @Column( name = "id", nullable = false )
@@ -73,7 +60,7 @@ public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, Por
     }
 
     @Basic
-    @Column( name = "portfolio_id", nullable = true, insertable = false, updatable = false)
+    @Column( name = "portfolio_id", nullable = false )
     public Integer getPortfolioId()
     {
         return portfolioId;

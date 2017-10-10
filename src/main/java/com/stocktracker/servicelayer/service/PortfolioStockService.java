@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.servicelayer.entity.PortfolioStockDE;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,8 +99,9 @@ public class PortfolioStockService extends BaseService implements MyLogger
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
         Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
-        PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance( portfolioStockDE );
-        PortfolioStockEntity returnCustomerStockEntity = portfolioStockRepository.save( portfolioStockEntity );
+        PortfolioStockEntity portfolioStockEntity = this.createPortfolioStockEntity( portfolioStockDE );
+        logDebug( methodName, "inserting: {0}", portfolioStockEntity );
+        PortfolioStockEntity returnCustomerStockEntity = this.portfolioStockRepository.save( portfolioStockEntity );
         PortfolioStockDE returnPortfolioStockDE = PortfolioStockDE.newInstance( returnCustomerStockEntity );
         logMethodEnd( methodName, returnPortfolioStockDE );
         return returnPortfolioStockDE;
@@ -127,8 +129,26 @@ public class PortfolioStockService extends BaseService implements MyLogger
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
         Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
-        PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance( portfolioStockDE );
+        PortfolioStockEntity portfolioStockEntity = createPortfolioStockEntity( portfolioStockDE );
         this.portfolioStockRepository.delete( portfolioStockEntity );
         logMethodBegin( methodName );
     }
+
+    /**
+     * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioStockDE} instance
+     * @param portfolioStockDE
+     * @return
+     */
+    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDE portfolioStockDE )
+    {
+        final String methodName = "createPortfolioStockEntity";
+        logMethodBegin( methodName, portfolioStockDE );
+        Objects.requireNonNull( portfolioStockDE );
+        PortfolioStockEntity portfolioStockEntity = new PortfolioStockEntity();
+        portfolioStockEntity.setPortfolioId( portfolioStockDE.getPortfolioId() );
+        BeanUtils.copyProperties( portfolioStockDE, portfolioStockEntity );
+        logMethodEnd( methodName, portfolioStockEntity );
+        return portfolioStockEntity;
+    }
+
 }
