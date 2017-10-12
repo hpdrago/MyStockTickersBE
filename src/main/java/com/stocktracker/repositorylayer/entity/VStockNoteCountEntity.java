@@ -14,6 +14,11 @@ public class VStockNoteCountEntity
     private Integer customerId;
     private Long noteCount;
 
+    public static VStockNoteCountEntity newInstance()
+    {
+        return new VStockNoteCountEntity();
+    }
+
     @Id
     @Column( name = "customer_id" )
     public Integer getCustomerId()
@@ -88,5 +93,4 @@ public class VStockNoteCountEntity
                ", noteCount=" + noteCount +
                '}';
     }
-
 }

@@ -39,6 +39,11 @@ public class StockNoteEntity implements MyLogger
     private List<StockNoteStockEntity> stockNoteStocks;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
 
+    public static StockNoteEntity newInstance()
+    {
+        return new StockNoteEntity();
+    }
+
     @Id
     @Column( name = "id", nullable = false )
     @GeneratedValue(strategy = GenerationType.IDENTITY)

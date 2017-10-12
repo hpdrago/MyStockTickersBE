@@ -32,6 +32,11 @@ public class StockNoteStockEntity implements YahooStockService.YahooStockContain
     @JoinColumn( name = "stock_note_id", nullable = false, updatable = false, insertable = false )
     private StockNoteEntity stockNoteEntity;
 
+    public static StockNoteStockEntity newInstance()
+    {
+        return new StockNoteStockEntity();
+    }
+
     /**
      * Creates a new primary key id.
      * @param id

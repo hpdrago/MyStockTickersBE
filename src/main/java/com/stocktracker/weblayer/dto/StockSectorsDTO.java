@@ -1,12 +1,9 @@
 package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.stocktracker.servicelayer.entity.StockSectorDE;
-import com.stocktracker.servicelayer.entity.StockSubSectorDE;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * This class contains the Stock Sector information.
@@ -27,39 +24,42 @@ public class StockSectorsDTO
      * @param stockSubSectorDEList
      * @return new StockSectorsDTO
      */
+    /*
     public static StockSectorsDTO newInstance( final List<StockSectorDE> stockSectorDEList,
                                                final List<StockSubSectorDE> stockSubSectorDEList )
     {
         return new StockSectorsDTO( stockSectorDEList, stockSubSectorDEList );
     }
+    */
 
     /**
      * Create a new instance from the list of stock sector information
      *
-     * @param stockSectorDEList
-     * @param stockSubSectorDEList
+//     * @param stockSectorDEList
+//     * @param stockSubSectorDEList
      */
-    private StockSectorsDTO( final List<StockSectorDE> stockSectorDEList,
-                             final List<StockSubSectorDE> stockSubSectorDEList )
-    {
-        /*
-         * Load the sectors first
-         */
-        stockSectorDEList.forEach( ( stockSectorDE ) -> stockSectors.add( new StockSector( stockSectorDE ) ) );
+//    private StockSectorsDTO( final List<StockSectorDE> stockSectorDEList,
+//                             final List<StockSubSectorDE> stockSubSectorDEList )
+//    {
+//        /*
+//         * Load the sectors first
+//         */
+//        stockSectorDEList.forEach( ( stockSectorDE ) -> stockSectors.add( new StockSector( stockSectorDE ) ) );
+//
+//        /*
+//         * Now go through the list and add the sub sectors to the sector
+//         */
+//        for ( StockSubSectorDE stockSubSectorDE : stockSubSectorDEList )
+//        {
+//            this.stockSectors
+//                .stream()
+//                .filter( stockSector -> stockSector.sectorId == stockSubSectorDE.getSectorId() )
+//                .findAny()
+//                .orElseThrow( () -> new IllegalArgumentException( String.format( "Cannot find sector " + stockSubSectorDE ) ) )
+//                .addSubSector( stockSubSectorDE );
+//        }
+//    }
 
-        /*
-         * Now go through the list and add the sub sectors to the sector
-         */
-        for ( StockSubSectorDE stockSubSectorDE : stockSubSectorDEList )
-        {
-            this.stockSectors
-                .stream()
-                .filter( stockSector -> stockSector.sectorId == stockSubSectorDE.getSectorId() )
-                .findAny()
-                .orElseThrow( () -> new IllegalArgumentException( String.format( "Cannot find sector " + stockSubSectorDE ) ) )
-                .addSubSector( stockSubSectorDE );
-        }
-    }
 
     @Override
     public String toString()
@@ -82,7 +82,8 @@ public class StockSectorsDTO
         @JsonProperty
         private List<StockSector> subSectors;
 
-        public StockSector( final StockSectorDE stockSectorDE )
+        /*
+        public StockSector( final StockSectorDTO stockSectorDE )
         {
             this.sectorId = stockSectorDE.getId();
             this.sectorName = stockSectorDE.getSector();
@@ -133,5 +134,6 @@ public class StockSectorsDTO
         {
             return Objects.hash( sectorId );
         }
+        */
     }
 }

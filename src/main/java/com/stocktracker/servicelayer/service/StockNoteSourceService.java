@@ -2,15 +2,27 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
+import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
-public class StockNoteSourceService extends BaseService
+public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, StockNoteSourceDTO>
 {
+    private StockNoteSourceRepository stockNoteSourceRepository;
+
+    @Autowired
+    public void setStockNoteSourceRepository( final StockNoteSourceRepository stockNoteSourceRepository )
+    {
+        this.stockNoteSourceRepository = stockNoteSourceRepository;
+    }
+
     /**
      * Get the stock note source for the stock note source id.
      *
@@ -23,7 +35,7 @@ public class StockNoteSourceService extends BaseService
         final String methodName = "getStockNoteSource";
         logMethodBegin( methodName, stockNoteSourceId );
         Assert.isTrue( stockNoteSourceId > 0, "stockNoteId must be > 0" );
-        StockNoteSourceEntity stockNoteSourceEntity = stockNoteSourceRepository.findOne( stockNoteSourceId );
+        StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceRepository.findOne( stockNoteSourceId );
         if ( stockNoteSourceEntity == null )
         {
             throw new StockNoteSourceNotFoundException( stockNoteSourceId );
@@ -37,15 +49,16 @@ public class StockNoteSourceService extends BaseService
      *
      * @param customerId The id for the stock note source
      */
-    public List<StockNoteSourceEntity> getStockNoteSources( final int customerId )
+    public List<StockNoteSourceDTO> getStockNoteSources( final int customerId )
     {
         final String methodName = "getStockNoteSources";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteSourceEntity> stockNoteSourceEntities =
             stockNoteSourceRepository.findByCustomerIdOrderByTimesUsedDesc( customerId );
+        List<StockNoteSourceDTO> stockNoteSourceDTOs = this.entitiesToDTOs( stockNoteSourceEntities );
         logMethodEnd( methodName, stockNoteSourceEntities.size() + " sources found" );
-        return stockNoteSourceEntities;
+        return stockNoteSourceDTOs;
     }
 
     /**
@@ -57,10 +70,28 @@ public class StockNoteSourceService extends BaseService
     {
         final String methodName = "createStockNoteSource";
         logMethodBegin( methodName, stockNoteSourceDTO );
-        StockNoteSourceEntity stockNoteSourceEntity = StockNoteSourceEntity.newInstance( stockNoteSourceDTO );
+        StockNoteSourceEntity stockNoteSourceEntity = this.dtoToEntity( stockNoteSourceDTO );
         StockNoteSourceEntity newStockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
-        StockNoteSourceDTO newStockNoteSourceDTO = StockNoteSourceDTO.newInstance( newStockNoteSourceEntity );
+        StockNoteSourceDTO newStockNoteSourceDTO = this.entityToDTO( newStockNoteSourceEntity );
         logMethodEnd( methodName, newStockNoteSourceDTO );
         return newStockNoteSourceDTO;
+    }
+
+    @Override
+    protected StockNoteSourceDTO entityToDTO( final StockNoteSourceEntity stockNoteSourceEntity )
+    {
+        Objects.requireNonNull( stockNoteSourceEntity );
+        StockNoteSourceDTO stockNoteSourceDTO = StockNoteSourceDTO.newInstance();
+        BeanUtils.copyProperties( stockNoteSourceEntity, stockNoteSourceDTO );
+        return stockNoteSourceDTO;
+    }
+
+    @Override
+    protected StockNoteSourceEntity dtoToEntity( final StockNoteSourceDTO stockNoteSourceDTO )
+    {
+        Objects.requireNonNull( stockNoteSourceDTO );
+        StockNoteSourceEntity stockNoteSourceEntity = StockNoteSourceEntity.newInstance();
+        BeanUtils.copyProperties( stockNoteSourceDTO, stockNoteSourceEntity );
+        return stockNoteSourceEntity;
     }
 }

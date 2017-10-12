@@ -6,6 +6,11 @@ public class StockNoteCountDTO
     private String tickerSymbol;
     private int noteCount;
 
+    public static StockNoteCountDTO newInstance()
+    {
+        return new StockNoteCountDTO();
+    }
+
     public String getTickerSymbol()
     {
         return tickerSymbol;

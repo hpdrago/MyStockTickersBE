@@ -1,7 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.entity.StockDE;
-import org.springframework.beans.BeanUtils;
+import com.stocktracker.servicelayer.service.StockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -10,7 +9,7 @@ import java.util.Objects;
 /**
  * Created by mike on 9/11/2016.
  */
-public class StockDTO
+public class StockDTO implements StockService.StockCompanyNameContainer
 {
     private String tickerSymbol;
     private String companyName;
@@ -24,19 +23,6 @@ public class StockDTO
     public static StockDTO newInstance()
     {
         StockDTO stockDTO = new StockDTO();
-        return stockDTO;
-    }
-
-    /**
-     * Create a new instance from a StockDE instance
-     * @param stockDE
-     * @return
-     */
-    public static StockDTO newInstance( final StockDE stockDE )
-    {
-        Objects.requireNonNull( stockDE );
-        StockDTO stockDTO = new StockDTO();
-        BeanUtils.copyProperties( stockDE, stockDTO );
         return stockDTO;
     }
 

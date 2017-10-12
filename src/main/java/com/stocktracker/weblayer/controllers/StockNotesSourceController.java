@@ -1,6 +1,5 @@
 package com.stocktracker.weblayer.controllers;
 
-import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,9 +37,7 @@ public class StockNotesSourceController extends AbstractController
         final String methodName = "getStockNotesSources";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteSourceEntity> stockNoteSourceEntities = stockNoteSourceService.getStockNoteSources( customerId );
-        List<StockNoteSourceDTO> stockNoteSourceDTOs =
-            this.listCopyStockNoteSourceEntityToStockNoteSourceDTO.copy( stockNoteSourceEntities );
+        List<StockNoteSourceDTO> stockNoteSourceDTOs = stockNoteSourceService.getStockNoteSources( customerId );
         logMethodEnd( methodName, stockNoteSourceDTOs.size() );
         return stockNoteSourceDTOs;
     }

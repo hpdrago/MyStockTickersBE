@@ -1,20 +1,12 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.servicelayer.entity.PortfolioDE;
-import com.stocktracker.weblayer.dto.PortfolioDTO;
-import org.springframework.beans.BeanUtils;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -22,23 +14,20 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "portfolio", schema = "stocktracker", catalog = "" )
-public class PortfolioEntity extends BaseDBEntity<PortfolioEntity, PortfolioDE>
+public class PortfolioEntity
 {
     private Integer id;
     private String name;
     private Integer customerId;
     private Timestamp createDate;
-    //private Collection<PortfolioStockEntity> portfolioStocksById;
 
     /**
      * Create a new instance from a PortfolioDTO
-     * @param portfolioDTO
      * @return
      */
-    public static PortfolioEntity newInstance( final PortfolioDTO portfolioDTO )
+    public static PortfolioEntity newInstance()
     {
         PortfolioEntity portfolioEntity = new PortfolioEntity();
-        BeanUtils.copyProperties( portfolioDTO, portfolioEntity );
         return portfolioEntity;
     }
 

@@ -1,15 +1,14 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
-import org.springframework.beans.BeanUtils;
+import com.stocktracker.servicelayer.service.StockService;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDTO
+public class PortfolioStockDTO implements StockService.StockCompanyNameContainer,
+                                          StockService.StockPriceContainer
 {
     private Integer id;
     private Integer customerId;
@@ -28,15 +27,12 @@ public class PortfolioStockDTO
     private Integer profitTakingShares;
 
     /**
-     * Creates a new {@code PortfolioStockDTO} from a {@code PortfolioStockDE} instance
-     * @param portfolioStockDE
+     * Creates a new {@code PortfolioStockDTO}
      * @return
      */
-    public static PortfolioStockDTO newInstance( final PortfolioStockDE portfolioStockDE )
+    public static PortfolioStockDTO newInstance()
     {
-        Objects.requireNonNull( portfolioStockDE );
         PortfolioStockDTO portfolioStockDTO = new PortfolioStockDTO();
-        BeanUtils.copyProperties( portfolioStockDE, portfolioStockDTO );
         return portfolioStockDTO;
     }
 
@@ -73,6 +69,12 @@ public class PortfolioStockDTO
     public String getTickerSymbol()
     {
         return tickerSymbol;
+    }
+
+    @Override
+    public void setStockPrice( final BigDecimal stockPrice )
+    {
+        this.setLastPrice( stockPrice );
     }
 
     public void setTickerSymbol( String tickerSymbol )

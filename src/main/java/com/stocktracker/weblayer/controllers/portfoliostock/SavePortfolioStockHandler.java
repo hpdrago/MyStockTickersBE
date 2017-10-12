@@ -1,7 +1,6 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.stereotype.Component;
@@ -31,11 +30,9 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
                                               portfolioStockDTO.getPortfolioId(),
                                               portfolioStockDTO.getTickerSymbol() );
         }
-        PortfolioStockDE portfolioStockDE = PortfolioStockDE.newInstance( portfolioStockDTO );
-        logDebug( methodName, "call addPortfolioStockDE: {0}", portfolioStockDE );
-        portfolioStockDE = portfolioStockService.addPortfolioStock( portfolioStockDE );
-        logDebug( methodName, "return addPortfolioStockDE: {0}", portfolioStockDE );
-        PortfolioStockDTO returnPortfolioStockDTO = PortfolioStockDTO.newInstance( portfolioStockDE );
-        return returnPortfolioStockDTO;
+        logDebug( methodName, "call addPorfolioStockDTO: {0}", portfolioStockDTO );
+        PortfolioStockDTO newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        logDebug( methodName, "return addPorfolioStockDTO: {0}", portfolioStockDTO );
+        return newPortfolioStockDTO;
     }
 }

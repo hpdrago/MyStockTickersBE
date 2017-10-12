@@ -4,13 +4,9 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockNotFoundInExchangeException;
-import com.stocktracker.servicelayer.entity.StockDE;
-import com.stocktracker.servicelayer.entity.StockSectorDE;
-import com.stocktracker.servicelayer.entity.StockSubSectorDE;
 import com.stocktracker.weblayer.dto.StockDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,7 +22,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import yahoofinance.Stock;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by mike on 9/11/2016.
@@ -48,8 +43,7 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, pageRequest );
-        Page<StockDE> stockDEs = this.stockService.getPage( pageRequest,false );
-        Page<StockDTO> stockDTOs = mapStockEntityPageIntoStockDEPage( pageRequest, stockDEs );
+        Page<StockDTO> stockDTOs = this.stockService.getPage( pageRequest,false );
         logMethodEnd( methodName, stockDTOs );
         return stockDTOs;
     }
@@ -72,26 +66,11 @@ public class StockController extends AbstractController implements MyLogger
         {
             throw new IllegalArgumentException( "companiesLike cannot be null or empty" );
         }
-        Page<StockDE> stockDEs = this.stockService.getCompaniesLike( pageRequest,
-                                                                companiesLike,
+        Page<StockDTO> stockDTOs = this.stockService.getCompaniesLike( pageRequest,
+                                                                      companiesLike,
                                                                 false );
-        Page<StockDTO> stockDTOs = mapStockEntityPageIntoStockDEPage( pageRequest, stockDEs );
         logMethodEnd( methodName, stockDTOs );
         return stockDTOs;
-    }
-
-    /**
-     * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
-     *
-     * @param pageRequest The information of the requested page.
-     * @param source      The {@code Page<ENTITY>} object.
-     * @return The created {@code Page<DTO>} object.
-     */
-    private Page<StockDTO> mapStockEntityPageIntoStockDEPage( final Pageable pageRequest,
-                                                              final Page<StockDE> source )
-    {
-        List<StockDTO> stockDTOs = listCopyStockDEToStockDTO.copy( source.getContent() );
-        return new PageImpl<>( stockDTOs, pageRequest, source.getTotalElements() );
     }
 
     /**
@@ -113,8 +92,7 @@ public class StockController extends AbstractController implements MyLogger
          */
         try
         {
-            StockDE stockDE = this.stockService.getStock( tickerSymbol );
-            stockDTO = StockDTO.newInstance( stockDE );
+            stockDTO = this.stockService.getStock( tickerSymbol );
         }
         catch( StockNotFoundInDatabaseException e )
         {
@@ -129,8 +107,7 @@ public class StockController extends AbstractController implements MyLogger
                 {
                     throw new StockNotFoundInExchangeException( tickerSymbol );
                 }
-                StockDE stockDE = this.stockService.addStock( yahooStock );
-                stockDTO = StockDTO.newInstance( stockDE );
+                stockDTO = this.stockService.addStock( yahooStock );
             }
             catch( IOException e2 )
             {
@@ -158,16 +135,14 @@ public class StockController extends AbstractController implements MyLogger
             logError( methodName, "Duplicate stock: " + stockDTO.getTickerSymbol() );
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
         }
-        StockDE stockDE = StockDE.newInstance( stockDTO );
-        logDebug( methodName, "call stockDE: {0}", stockDE );
-        stockDE = this.stockService.addStock( stockDE );
-        logDebug( methodName, "return stockDE: {0}", stockDE );
-        StockDTO returnStockDTO = StockDTO.newInstance( stockDE );
+        logDebug( methodName, "call stockDTO: {0}", stockDTO );
+        StockDTO newStockDTO = this.stockService.addStock( stockDTO );
+        logDebug( methodName, "return stockDTO: {0}", newStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
-                                     .buildAndExpand( stockDE ).toUri());
-        logMethodEnd( methodName, returnStockDTO );
+                                     .buildAndExpand( newStockDTO ).toUri());
+        logMethodEnd( methodName, newStockDTO );
         return new ResponseEntity<>( stockDTO, httpHeaders, HttpStatus.CREATED );
     }
 
@@ -210,10 +185,13 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStockSectors";
         logMethodBegin( methodName );
+        /*
         List<StockSectorDE> stockSectorDEList = this.stockService.getStockSectors();
         List<StockSubSectorDE> stockSubSectorDEList = this.stockService.getStockSubSectors();
         StockSectorsDTO stockSectorsDTO = StockSectorsDTO.newInstance( stockSectorDEList, stockSubSectorDEList );
         logMethodEnd( methodName, stockSectorsDTO );
         return stockSectorsDTO;
+        */
+        return null;
     }
 }

@@ -1,16 +1,12 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.entity.PortfolioDE;
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,8 +37,7 @@ public class PortfolioController extends AbstractController implements MyLogger
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
-        List<PortfolioDE> portfolioDEs = portfolioService.getPortfoliosByCustomerId( customerId );
-        List<PortfolioDTO> portfolioDTOs = listCopyPortfolioDEToPortfolioDTO.copy( portfolioDEs );
+        List<PortfolioDTO> portfolioDTOs = portfolioService.getPortfoliosByCustomerId( customerId );
         logMethodEnd( methodName, portfolioDTOs );
         return portfolioDTOs;
     }
@@ -60,10 +55,9 @@ public class PortfolioController extends AbstractController implements MyLogger
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
-        List<PortfolioStockDE> portfolioStockDES = portfolioService.getPortfolioStocks( portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOS = listCopyCustomerStockDEToCustomerStockDTO.copy( portfolioStockDES ) ;
-        logMethodEnd( methodName, portfolioStockDTOS );
-        return portfolioStockDTOS;
+        List<PortfolioStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
+        logMethodEnd( methodName, portfolioStockDTOs );
+        return portfolioStockDTOs;
     }
 
     /**
@@ -78,12 +72,13 @@ public class PortfolioController extends AbstractController implements MyLogger
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDto );
-        PortfolioDE portfolioDE = portfolioService.addPortfolio( customerId, portfolioDto );
-        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
+        PortfolioDTO portfolioDTO = portfolioService.addPortfolio( customerId, portfolioDto );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
-                                    .fromCurrentRequest().path("/{id}")
-                                    .buildAndExpand( portfolioDE ).toUri());
+                                    .fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand( portfolioDTO )
+                                    .toUri());
         logMethodEnd( methodName, portfolioDTO );
         return new ResponseEntity<>( portfolioDTO, httpHeaders, HttpStatus.CREATED);
     }
@@ -99,10 +94,9 @@ public class PortfolioController extends AbstractController implements MyLogger
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, portfolioId );
-        PortfolioDE portfolioDE = portfolioService.getPortfolioById( portfolioId );
-        logDebug( methodName, "portfolio: {0}", portfolioDE.toString() );
-        portfolioDE = portfolioService.deletePortfolio( portfolioId );
-        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
+        PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
+        logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
+        portfolioDTO = portfolioService.deletePortfolio( portfolioId );
         logMethodBegin( methodName, portfolioDTO );
         return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );
     }

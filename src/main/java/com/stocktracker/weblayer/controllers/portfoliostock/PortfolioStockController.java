@@ -1,12 +1,7 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
-/**
- * Created by mike on 11/25/2016.
- */
-
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.weblayer.controllers.AbstractController;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This class contains all of the PortfolioStockDE related REST weblayer service call mapping and handling
+ * This class contains all of the PortfolioStockDTO related REST weblayer service call mapping and handling
  * <p>
  * Created by mike on 5/9/2016.
  */
@@ -56,8 +51,8 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
-        PortfolioStockDE portfolioStockDE = this.portfolioStockService.getPortfolioStock( customerId, portfolioId, tickerSymbol );
-        PortfolioStockDTO portfolioStockDTO = PortfolioStockDTO.newInstance( portfolioStockDE );
+        PortfolioStockDTO portfolioStockDTO = this.portfolioStockService
+                                                  .getPortfolioStock( customerId, portfolioId, tickerSymbol );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
     }
@@ -81,11 +76,11 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
-        PortfolioStockDE portfolioStockDE = PortfolioStockDE.newInstance();
-        portfolioStockDE.setTickerSymbol( tickerSymbol );
-        portfolioStockDE.setCustomerId( customerId );
-        portfolioStockDE.setPortfolioId( portfolioId );
-        this.portfolioStockService.deletePortfolioStock( portfolioStockDE );
+        PortfolioStockDTO portfolioStockDTO = PortfolioStockDTO.newInstance();
+        portfolioStockDTO.setTickerSymbol( tickerSymbol );
+        portfolioStockDTO.setCustomerId( customerId );
+        portfolioStockDTO.setPortfolioId( portfolioId );
+        this.portfolioStockService.deletePortfolioStock( portfolioStockDTO );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -127,8 +122,7 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
-        List<PortfolioStockDE> portfolioStockDEList = this.portfolioStockService.getPortfolioStocks( customerId, portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOList = this.listCopyPortfolioStockDEToPortfolioStockDTO.copy( portfolioStockDEList );
+        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( customerId, portfolioId );
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ) );
         return portfolioStockDTOList;
     }

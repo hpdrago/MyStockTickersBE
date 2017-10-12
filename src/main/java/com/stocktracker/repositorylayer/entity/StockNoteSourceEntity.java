@@ -29,10 +29,9 @@ public class StockNoteSourceEntity
     private Timestamp dateCreated;
     private Collection<StockNoteEntity> stockNotesById;
 
-    public static StockNoteSourceEntity newInstance( final StockNoteSourceDTO stockNoteSourceDTO )
+    public static StockNoteSourceEntity newInstance()
     {
         StockNoteSourceEntity stockNoteSourceEntity = new StockNoteSourceEntity();
-        BeanUtils.copyProperties( stockNoteSourceDTO, stockNoteSourceEntity );
         return stockNoteSourceEntity;
     }
 

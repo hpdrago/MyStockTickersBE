@@ -1,12 +1,12 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.entity.PortfolioEntity;
-import com.stocktracker.repositorylayer.entity.VPortfolioStockEntity;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
-import com.stocktracker.servicelayer.entity.PortfolioDE;
+import com.stocktracker.repositorylayer.entity.PortfolioEntity;
+import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -23,26 +23,34 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioService extends BaseService implements MyLogger
+public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO> implements MyLogger
 {
+    private PortfolioRepository portfolioRepository;
+
+    @Autowired
+    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
+    {
+        this.portfolioRepository = portfolioRepository;
+    }
+
     /**
      * Get the portfolio by id request
      * @param portfolioId
      * @return
      */
-    public PortfolioDE getPortfolioById( final int portfolioId )
+    public PortfolioDTO getPortfolioById( final int portfolioId )
     {
         final String methodName = "getPortfolioById";
         logMethodBegin( methodName, portfolioId );
         Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
-        PortfolioEntity portfolioEntity = portfolioRepository.findOne( portfolioId );
+        PortfolioEntity portfolioEntity = this.portfolioRepository.findOne( portfolioId );
         if ( portfolioEntity == null )
         {
             throw new PortfolioNotFoundException( portfolioId );
         }
-        PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
-        logMethodEnd( methodName, portfolioDE );
-        return portfolioDE;
+        PortfolioDTO portfolioDTO = this.entityToDTO( portfolioEntity );
+        logMethodEnd( methodName, portfolioDTO );
+        return portfolioDTO;
     }
 
     /**
@@ -51,40 +59,20 @@ public class PortfolioService extends BaseService implements MyLogger
      * @return List of Portfolio DTO's for the customer
      * @throws PortfolioNotFoundException
      */
-    public List<PortfolioDE> getPortfoliosByCustomerId( final int customerId )
+    public List<PortfolioDTO> getPortfoliosByCustomerId( final int customerId )
         throws PortfolioNotFoundException
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
-        List<PortfolioEntity> portfolioEntities = portfolioRepository.findByCustomerId( customerId );
-        List<PortfolioDE> portfolioDomainEntities = new ArrayList<>();
+        List<PortfolioEntity> portfolioEntities = this.portfolioRepository.findByCustomerId( customerId );
+        List<PortfolioDTO> portfolioDTOs = new ArrayList<>();
         if ( portfolioEntities != null )
         {
-            portfolioDomainEntities = listCopyPortfolioEntityToPortfolioDE.copy( portfolioEntities );
+            portfolioDTOs = this.entitiesToDTOs( portfolioEntities );
         }
-        logMethodEnd( methodName, portfolioDomainEntities );
-        return portfolioDomainEntities;
-    }
-
-    /**
-     * Get all of the stocks for a portfolio
-     * @param portfolioId
-     * @return
-     */
-    public List<PortfolioStockDE> getPortfolioStocks( final int portfolioId )
-    {
-        final String methodName = "getPortfolioStocks";
-        logMethodBegin( methodName, portfolioId );
-        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
-        List<VPortfolioStockEntity> stocks = vPortfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
-        List<PortfolioStockDE> portfolioStockDES = new ArrayList<>();
-        if ( stocks != null )
-        {
-            portfolioStockDES = listCopyVPortfolioStockEntityToCustomerStockDE.copy( stocks );
-        }
-        logMethodEnd( methodName, portfolioStockDES );
-        return portfolioStockDES;
+        logMethodEnd( methodName, portfolioDTOs );
+        return portfolioDTOs;
     }
 
     /**
@@ -93,33 +81,51 @@ public class PortfolioService extends BaseService implements MyLogger
      * @param portfolioDTO
      * @return PortfolioEntity that was inserted
      */
-    public PortfolioDE addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
+    public PortfolioDTO addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDTO );
         Objects.requireNonNull( portfolioDTO, "portfolioDTO cannot be null" );
         Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
-        PortfolioEntity portfolioEntity = PortfolioEntity.newInstance( portfolioDTO );
-        portfolioEntity = portfolioRepository.save( portfolioEntity );
-        PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
-        logMethodEnd( methodName, portfolioDE );
-        return portfolioDE;
+        PortfolioEntity portfolioEntity = this.dtoToEntity( portfolioDTO );
+        portfolioEntity = this.portfolioRepository.save( portfolioEntity );
+        PortfolioDTO returnPortfolioDTO = this.entityToDTO( portfolioEntity );
+        logMethodEnd( methodName, returnPortfolioDTO );
+        return returnPortfolioDTO;
     }
 
     /**
      * Delete the portfolio from the database
      * @param portfolioId The portfolio id
-     * @return The PortfolioDE for the deleted portfolio
+     * @return The PortfolioDTO for the deleted portfolio
      */
-    public PortfolioDE deletePortfolio( final int portfolioId )
+    public PortfolioDTO deletePortfolio( final int portfolioId )
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, portfolioId );
         Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
-        PortfolioEntity portfolioEntity = portfolioRepository.getOne( portfolioId );
-        portfolioRepository.delete( portfolioId );
-        PortfolioDE portfolioDE = PortfolioDE.newInstance( portfolioEntity );
-        logMethodEnd( methodName, portfolioDE );
-        return portfolioDE;
+        PortfolioEntity portfolioEntity = this.portfolioRepository.getOne( portfolioId );
+        this.portfolioRepository.delete( portfolioId );
+        PortfolioDTO portfolioDTO = this.entityToDTO( portfolioEntity );
+        logMethodEnd( methodName, portfolioDTO );
+        return portfolioDTO;
+    }
+
+    @Override
+    protected PortfolioDTO entityToDTO( final PortfolioEntity entity )
+    {
+        Objects.requireNonNull( entity );
+        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance();
+        BeanUtils.copyProperties( entity, portfolioDTO );
+        return portfolioDTO;
+    }
+
+    @Override
+    protected PortfolioEntity dtoToEntity( final PortfolioDTO dto )
+    {
+        Objects.requireNonNull( dto );
+        PortfolioEntity portfolioEntity = PortfolioEntity.newInstance();
+        BeanUtils.copyProperties( portfolioEntity, dto );
+        return portfolioEntity;
     }
 }

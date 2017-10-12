@@ -7,7 +7,9 @@ import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntityPK;
-import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
+import com.stocktracker.repositorylayer.repository.StockNoteRepository;
+import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
+import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import com.stocktracker.weblayer.dto.StockNoteStockDTO;
 import org.springframework.beans.BeanUtils;
@@ -31,12 +33,43 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class StockNoteService extends BaseService
+public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
 {
     /**
-     * Autowired service class
+     * Autowired service classes
      */
+
     private StockService stockService;
+    private StockNoteRepository stockNoteRepository;
+    private StockNoteSourceRepository stockNoteSourceRepository;
+    private VStockNoteCountRepository vStockNoteCountRepository;
+    private StockNoteStockService stockNoteStockService;
+
+
+    @Autowired
+    public void setStockNoteSourceRepository( final StockNoteSourceRepository stockNoteSourceRepository )
+    {
+        this.stockNoteSourceRepository = stockNoteSourceRepository;
+    }
+
+    @Autowired
+    public void setStockNoteStockService( final StockNoteStockService stockNoteStockService )
+    {
+        this.stockNoteStockService = stockNoteStockService;
+    }
+
+    @Autowired
+    public void setvStockNoteCountRepository( final VStockNoteCountRepository vStockNoteCountRepository )
+    {
+        this.vStockNoteCountRepository = vStockNoteCountRepository;
+    }
+
+
+    @Autowired
+    public void setStockNoteRepository( final StockNoteRepository stockNoteRepository )
+    {
+        this.stockNoteRepository = stockNoteRepository;
+    }
 
     /**
      * Allow DI to set the StockService
@@ -65,50 +98,16 @@ public class StockNoteService extends BaseService
      * @param customerId
      * @return
      */
-    public List<StockNoteEntity> getStockNotes( final int customerId )
+    public List<StockNoteDTO> getStockNotes( final int customerId )
     {
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities =
             this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
-        logMethodEnd( methodName, stockNoteEntities.size() );
-        return stockNoteEntities;
-    }
-
-    /**
-     * Get the stock notes for the customer and the ticker symbol.
-     *
-     * @param customerId
-     * @param tickerSymbol
-     * @return
-     */
-    public List<StockNoteStockEntity> getStockNoteStocks( final int customerId, final String tickerSymbol )
-    {
-        final String methodName = "getStocks";
-        logMethodBegin( methodName, customerId, tickerSymbol );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        //List<StockNoteStockEntity> stockNoteStockEntities =
-        //    stockNoteStockRepository.findStockNoteStockEntitiesByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        //logMethodEnd( methodName, stockNoteStockEntities.size() );
-        return null;// stockNoteStockEntities;
-    }
-
-    /**
-     * Aggregates the number of notices for each stock (ticker symbol) for a customer.
-     * @param customerId The customer id.
-     * @return List of {@code StockNoteCountDE} instances.
-     */
-    public List<VStockNoteCountEntity> getStockNotesCount( final int customerId )
-    {
-        final String methodName = "getStockNotesCount";
-        logMethodBegin( methodName, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<VStockNoteCountEntity> stockNoteTickerSymbolCountEntities =
-            this.vStockNoteCountRepository.findByCustomerId( customerId );
-        logMethodEnd( methodName, stockNoteTickerSymbolCountEntities.size() );
-        return stockNoteTickerSymbolCountEntities;
+        List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( stockNoteEntities );
+        logMethodEnd( methodName, stockNoteDTOs.size() );
+        return stockNoteDTOs;
     }
 
     /**
@@ -138,7 +137,7 @@ public class StockNoteService extends BaseService
         /*
          * Convert back into a DTO to be sent back to the caller so that they have the updated information
          */
-        StockNoteDTO returnStockNoteDTO = createStockNoteDTO( stockNoteEntity );
+        StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
     }
@@ -181,7 +180,7 @@ public class StockNoteService extends BaseService
         /*
          * Convert back into a DTO to be sent back to the caller so that they have the updated information
          */
-        StockNoteDTO returnStockNoteDTO = this.createStockNoteDTO( dbStockNoteEntity );
+        StockNoteDTO returnStockNoteDTO = this.entityToDTO( dbStockNoteEntity );
 
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
@@ -229,29 +228,6 @@ public class StockNoteService extends BaseService
         stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
         stockNoteStockEntity.setStockPrice( stockNoteStockDTO.getStockPrice() );
         return stockNoteStockEntity;
-    }
-
-    /**
-     * Create a new instance from a StockNoteDE instance
-     * @param stockNoteEntity
-     * @return
-     */
-    public StockNoteDTO createStockNoteDTO( final StockNoteEntity stockNoteEntity )
-    {
-        Objects.requireNonNull( stockNoteEntity );
-        StockNoteDTO stockNoteDTO = new StockNoteDTO();
-        BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
-        try
-        {
-            stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
-        }
-        catch ( ParseException e )
-        {
-            throw new IllegalArgumentException( "Error converting UTC notes date to a string", e );
-        }
-        this.listCopyStockNoteStockEntityToStockNoteStockDTO
-            .copy( stockNoteEntity.getStockNoteStocks(), stockNoteDTO.getStocks() );
-        return stockNoteDTO;
     }
 
     /**
@@ -423,8 +399,36 @@ public class StockNoteService extends BaseService
             throw new StockNoteNotFoundException( stockNotesId ) ;
         }
         this.stockNoteRepository.delete( stockNoteEntity );
-        StockNoteDTO stockNoteDTO = this.createStockNoteDTO( stockNoteEntity );
+        StockNoteDTO stockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, stockNoteDTO );
         return stockNoteDTO;
+    }
+
+    @Override
+    protected StockNoteDTO entityToDTO( final StockNoteEntity stockNoteEntity )
+    {
+        Objects.requireNonNull( stockNoteEntity );
+        StockNoteDTO stockNoteDTO = new StockNoteDTO();
+        BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
+        try
+        {
+            stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( "Error converting UTC notes date to a string", e );
+        }
+        List<StockNoteStockDTO> stockNoteStockDTOs = this.stockNoteStockService
+                                                         .entitiesToDTOs( stockNoteEntity.getStockNoteStocks() );
+        stockNoteDTO.setStocks( stockNoteStockDTOs );
+        return stockNoteDTO;
+    }
+
+    @Override
+    protected StockNoteEntity dtoToEntity( final StockNoteDTO stockNoteDTO )
+    {
+        StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance();
+        BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
+        return stockNoteEntity;
     }
 }

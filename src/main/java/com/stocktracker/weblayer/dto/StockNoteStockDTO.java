@@ -1,7 +1,5 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
-
 import java.math.BigDecimal;
 
 public class StockNoteStockDTO
@@ -11,13 +9,9 @@ public class StockNoteStockDTO
     private Integer customerId;
     private BigDecimal stockPrice;
 
-    public static StockNoteStockDTO newInstance( final StockNoteStockEntity stockNoteStockEntity )
+    public static StockNoteStockDTO newInstance()
     {
         StockNoteStockDTO stockNoteStockDTO = new StockNoteStockDTO();
-        stockNoteStockDTO.setStockNotesId( stockNoteStockEntity.getStockNoteId() );
-        stockNoteStockDTO.setTickerSymbol( stockNoteStockEntity.getId().getTickerSymbol() );
-        stockNoteStockDTO.setCustomerId( stockNoteStockEntity.getCustomerId() );
-        stockNoteStockDTO.setStockPrice( stockNoteStockEntity.getStockPrice() );
         return stockNoteStockDTO;
     }
 

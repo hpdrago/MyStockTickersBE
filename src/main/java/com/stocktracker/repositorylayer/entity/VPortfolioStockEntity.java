@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.servicelayer.entity.StockDE;
+import com.stocktracker.weblayer.dto.StockDTO;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Basic;
@@ -17,7 +17,7 @@ import java.util.Objects;
 @Entity
 @Immutable
 @Table( name = "v_portfolio_stock", schema = "stocktracker", catalog = "" )
-public class VPortfolioStockEntity extends BaseDBEntity<VPortfolioStockEntity, StockDE>
+public class VPortfolioStockEntity
 {
     private Integer portfolioId;
     private String tickerSymbol;

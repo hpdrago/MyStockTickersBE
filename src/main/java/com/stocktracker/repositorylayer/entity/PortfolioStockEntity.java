@@ -1,15 +1,10 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
-import org.springframework.beans.BeanUtils;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -21,7 +16,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "portfolio_stock", schema = "stocktracker", catalog = "" )
-public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, PortfolioStockDE>
+public class PortfolioStockEntity
 {
     private Integer id;
     private Integer customerId;
@@ -38,6 +33,11 @@ public class PortfolioStockEntity extends BaseDBEntity<PortfolioStockEntity, Por
     private Integer profitTakingShares;
     private Integer realizedGain;
     private Timestamp createDate;
+
+    public static PortfolioStockEntity newInstance()
+    {
+        return new PortfolioStockEntity();
+    }
 
     /**
      * Default constructor

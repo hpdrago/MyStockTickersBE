@@ -1,9 +1,5 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.common.BooleanUtils;
-import com.stocktracker.servicelayer.entity.StockDE;
-import org.springframework.beans.BeanUtils;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +14,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "stock", schema = "stocktracker" )
-public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
+public class StockEntity
 {
     private String tickerSymbol;
     private String companyName;
@@ -30,40 +26,13 @@ public class StockEntity extends BaseDBEntity<StockEntity, StockDE>
     private Timestamp lastPriceChange;
 
     /**
-     * Create a new stock entity instance from a stock DE
-     * @param stockDE
+     * Create a new stock entity instance
      * @return
      */
-    public static StockEntity newInstance( final StockDE stockDE )
+    public static StockEntity newInstance()
     {
-        Objects.requireNonNull( stockDE );
         StockEntity stockEntity = new StockEntity();
-        BeanUtils.copyProperties( stockDE, stockEntity );
-        stockEntity.setUserEntered( BooleanUtils.fromBooleanToChar( stockDE.isUserEntered() ));
         return stockEntity;
-    }
-
-    /**
-     * Copies properties from {@code stockEntity} to {@code stockDE}
-     * @param stockEntity
-     * @param stockDE
-     */
-    public void fromDBEntityToDomainEntity( final StockEntity stockEntity, final StockDE stockDE )
-    {
-        stockDE.setUserEntered( BooleanUtils.fromCharToBoolean( stockEntity.userEntered ));
-        super.fromDBEntityToDomainEntity( stockEntity, stockDE );
-    }
-
-    /**
-     * Copies properties from {@code stockDE} to {@code stockEntity}
-     * @param stockDE
-     * @param stockEntity
-     */
-    @Override
-    public void fromDomainEntityToDBEntity( final StockDE stockDE, final StockEntity stockEntity )
-    {
-        stockEntity.setUserEntered( BooleanUtils.fromBooleanToChar( stockDE.isUserEntered() ));
-        super.fromDomainEntityToDBEntity( stockDE, stockEntity );
     }
 
     @Id

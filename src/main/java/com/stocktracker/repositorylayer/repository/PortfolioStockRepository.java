@@ -30,4 +30,6 @@ public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEn
                                                                              final String tickerSymbol );
 
 
+
+    List<PortfolioStockEntity> findByPortfolioIdOrderByTickerSymbol( int portfolioId );
  }

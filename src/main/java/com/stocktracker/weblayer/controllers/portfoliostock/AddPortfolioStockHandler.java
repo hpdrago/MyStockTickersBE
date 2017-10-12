@@ -1,7 +1,6 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.DuplicatePortfolioStockException;
-import com.stocktracker.servicelayer.entity.PortfolioStockDE;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.stereotype.Component;
@@ -25,24 +24,22 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
         final String methodName = "handleRequest";
         logMethodBegin( methodName, portfolioStockDTO );
         checkForDuplicate( portfolioStockDTO );
-        PortfolioStockDE portfolioStockDE = PortfolioStockDE.newInstance( portfolioStockDTO );
-        logDebug( methodName, "call addPortfolioStockDE: {0}", portfolioStockDE );
+        logDebug( methodName, "call addPortfolioStockDTO: {0}", portfolioStockDTO );
         /*
          * Add to the database
          */
-        portfolioStockDE = this.portfolioStockService.addPortfolioStock( portfolioStockDE );
-        logDebug( methodName, "return addPortfolioStockDE: {0}", portfolioStockDE );
+        PortfolioStockDTO newPotfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        logDebug( methodName, "return addPortfolioStockDTO: {0}", portfolioStockDTO );
         /*
          * Gather the rest of the return data
          */
         //PortfolioDE portfolioDE = this.portfolioService.getPortfolioById( portfolioStockDTO.getPortfolioId() );
-        //List<PortfolioStockDE> portfolioStockDEList = this.portfolioService.getPortfolioStocks( portfolioStockDTO.getPortfolioId() );
+        //List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioService.getPortfolioStocks( portfolioStockDTO.getPortfolioId() );
         /*
          * Convert the DE's to DTO's
          */
-        PortfolioStockDTO newPortfolioStockDTO = PortfolioStockDTO.newInstance( portfolioStockDE );
         //PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
-        //List<PortfolioStockDTO> portfolioStockDTOList = this.listCopyPortfolioStockDEToPortfolioStockDTO.copy( portfolioStockDEList );
+        //List<PortfolioStockDTO> portfolioStockDTOList = this.listCopyPortfolioStockDTOToPortfolioStockDTO.copy( portfolioStockDTOList );
         /*
          * Create the return DTO
          */
@@ -51,8 +48,8 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
                                                                                       portfolioDTO,
                                                                                       portfolioStockDTOList );
         */
-        logMethodEnd( methodName );
-        return portfolioStockDTO;
+        logMethodEnd( methodName, newPotfolioStockDTO );
+        return newPotfolioStockDTO;
     }
 
     /**

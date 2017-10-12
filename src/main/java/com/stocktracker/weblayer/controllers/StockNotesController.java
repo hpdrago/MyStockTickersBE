@@ -1,12 +1,12 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.entity.StockNoteEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
-import com.stocktracker.repositorylayer.entity.VStockNoteCountEntity;
+import com.stocktracker.servicelayer.service.StockNoteCountService;
+import com.stocktracker.servicelayer.service.StockNoteStockService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import com.stocktracker.weblayer.dto.StockNoteStockDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +31,21 @@ import java.util.Objects;
 @CrossOrigin
 public class StockNotesController extends AbstractController implements MyLogger
 {
+    private StockNoteStockService stockNoteStockService;
+    private StockNoteCountService stockNoteCountService;
+
+    @Autowired
+    public void setStockNoteCountService( final StockNoteCountService stockNoteCountService )
+    {
+        this.stockNoteCountService = stockNoteCountService;
+    }
+
+    @Autowired
+    public void setStockNoteStockService( final StockNoteStockService stockNoteStockService )
+    {
+        this.stockNoteStockService = stockNoteStockService;
+    }
+
     /**
      * Add a stock note to the database
      *
@@ -149,10 +164,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteEntity> stockNoteEntities = stockNoteService.getStockNotes( customerId );
-        //logDebug( methodName, "stockNoteEntities: {0}", stockNoteEntities );
-        List<StockNoteDTO> stockNoteDTOs =
-            this.listCopyStockNoteEntityToStockNoteDTO.copy( stockNoteEntities );
+        List<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotes( customerId );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.size() );
         return stockNoteDTOs;
@@ -174,9 +186,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         logMethodBegin( methodName, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteStockEntity> stockNoteStockEntities = stockNoteService.getStockNoteStocks( customerId, tickerSymbol );
-        List<StockNoteStockDTO> stockNoteStockDTOs =
-            this.listCopyStockNoteStockEntityToStockNoteStockDTO.copy( stockNoteStockEntities );
+        List<StockNoteStockDTO> stockNoteStockDTOs = stockNoteStockService.getStockNoteStocks( customerId, tickerSymbol );
         logMethodEnd( methodName, stockNoteStockDTOs.size() );
         return stockNoteStockDTOs;
     }
@@ -195,11 +205,9 @@ public class StockNotesController extends AbstractController implements MyLogger
         final String methodName = "getStockNotesTickerSymbols";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<VStockNoteCountEntity> stockNoteCountDES = stockNoteService.getStockNotesCount( customerId );
-        List<StockNoteCountDTO> stockNoteCountDTOS = listCopyStockNoteCountEntityToStockNoteCountDTO
-            .copy( stockNoteCountDES );
-        logMethodEnd( methodName, stockNoteCountDTOS.size() );
-        return stockNoteCountDTOS;
+        List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteService.getStockNotesCount( customerId );
+        logMethodEnd( methodName, stockNoteCountDTOs.size() );
+        return stockNoteCountDTOs;
     }
 
 }

@@ -1,11 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.entity.CustomerDE;
 import com.stocktracker.weblayer.dto.CustomerDTO;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +13,7 @@ import java.util.List;
 
 
 /**
- * This class contains all of the CustomerDE related REST weblayer service call mapping and handling
+ * This class contains all of the CustomerDTO related REST weblayer service call mapping and handling
  * <p>
  * Created by mike on 5/9/2016.
  */
@@ -36,8 +33,7 @@ public class CustomerController extends AbstractController implements MyLogger
     {
         final String methodName = "getCustomers";
         logMethodBegin( methodName );
-        List<CustomerDE> customerDEs = customerService.getAllCustomers();
-        List<CustomerDTO> customerDTOs = listCopyCustomerDEToCustomerDTO.copy( customerDEs );
+        List<CustomerDTO> customerDTOs = customerService.getAllCustomers();
         logMethodEnd( methodName, customerDTOs );
         return customerDTOs;
     }
@@ -55,8 +51,7 @@ public class CustomerController extends AbstractController implements MyLogger
     {
         final String methodName = "getCustomer";
         logMethodBegin( methodName, id );
-        CustomerDE customerDE = customerService.getCustomerById( id );
-        CustomerDTO customerDTO = CustomerDTO.newInstance( customerDE );
+        CustomerDTO customerDTO = customerService.getCustomerById( id );
         logMethodEnd( methodName, customerDTO );
         return customerDTO;
     }
@@ -74,8 +69,7 @@ public class CustomerController extends AbstractController implements MyLogger
     {
         final String methodName = "getCustomer";
         logMethodBegin( methodName, email );
-        CustomerDE customerDE = customerService.getCustomerByEmail( email );
-        CustomerDTO customerDTO = CustomerDTO.newInstance( customerDE );
+        CustomerDTO customerDTO = customerService.getCustomerByEmail( email );
         logMethodEnd( methodName, customerDTO );
         return customerDTO;
     }
