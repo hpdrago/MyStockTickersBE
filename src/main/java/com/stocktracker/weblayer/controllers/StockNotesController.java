@@ -205,7 +205,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         final String methodName = "getStockNotesTickerSymbols";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteService.getStockNotesCount( customerId );
+        List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteCountService.getStockNotesCount( customerId );
         logMethodEnd( methodName, stockNoteCountDTOs.size() );
         return stockNoteCountDTOs;
     }

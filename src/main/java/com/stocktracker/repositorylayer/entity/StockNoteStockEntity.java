@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.servicelayer.service.YahooStockService;
+import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -9,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -28,7 +30,6 @@ public class StockNoteStockEntity implements YahooStockService.YahooStockContain
     private BigDecimal stockPrice;
 
     @ManyToOne( fetch = FetchType.EAGER )
-    @NotFound( action = NotFoundAction.IGNORE )
     @JoinColumn( name = "stock_note_id", nullable = false, updatable = false, insertable = false )
     private StockNoteEntity stockNoteEntity;
 
