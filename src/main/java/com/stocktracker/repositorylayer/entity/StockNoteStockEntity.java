@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -34,7 +35,7 @@ public class StockNoteStockEntity
     }
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column( name = "id", nullable = false )
     public Integer getId()
     {
@@ -43,19 +44,21 @@ public class StockNoteStockEntity
 
     public void setId( final Integer id )
     {
+        if ( this.id != null && id != null )
+            throw new IllegalArgumentException( "Cannot change ID value" );
         this.id = id;
     }
 
     @Basic
-    @Column( name = "stock_note_id", nullable = false )
+    @Column( name = "stock_note_id", nullable = false, updatable = false, insertable = false )
     public Integer getStockNoteId()
     {
-        return id;
+        return this.stockNoteEntity == null ? null : this.stockNoteEntity.getId();
     }
 
     public void setStockNoteId( final Integer stockNoteId )
     {
-        this.id = stockNoteId;
+        // don't set the parent id
     }
 
     @Basic
@@ -130,4 +133,15 @@ public class StockNoteStockEntity
         return Objects.hash( id, tickerSymbol, customerId, stockPrice );
     }
 
+    @Override
+    public String toString()
+    {
+        return "StockNoteStockEntity{" +
+               "id=" + id +
+               ", stockNoteStockId=" + stockNoteEntity.getId() +
+               ", customerId=" + customerId +
+               ", tickerSymbol='" + tickerSymbol + '\'' +
+               ", stockPrice=" + stockPrice +
+               '}';
+    }
 }

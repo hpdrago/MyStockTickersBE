@@ -47,6 +47,7 @@ public class StockNoteStockService extends BaseService<StockNoteStockEntity, Sto
         Objects.requireNonNull( stockNoteStockEntity );
         StockNoteStockDTO stockNoteStockDTO = StockNoteStockDTO.newInstance();
         BeanUtils.copyProperties( stockNoteStockEntity, stockNoteStockDTO );
+        stockNoteStockDTO.setStockNotesId( stockNoteStockEntity.getStockNoteEntity().getId() );
         return stockNoteStockDTO;
     }
 

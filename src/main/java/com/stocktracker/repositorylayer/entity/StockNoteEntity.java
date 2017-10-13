@@ -39,7 +39,6 @@ public class StockNoteEntity implements MyLogger
     private List<StockNoteStockEntity> stockNoteStocks;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Integer notesSourceId;
-    private CustomerEntity customerByCustomerId;
 
     public static StockNoteEntity newInstance()
     {
@@ -155,6 +154,18 @@ public class StockNoteEntity implements MyLogger
         this.bullOrBear = bullOrBear;
     }
 
+    @Basic
+    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false )
+    public Integer getNotesSourceId()
+    {
+        return notesSourceId;
+    }
+
+    public void setNotesSourceId( final Integer notesSourceId )
+    {
+        this.notesSourceId = notesSourceId;
+    }
+
     @ManyToOne
     @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
     public StockNoteSourceEntity getStockNoteSourceByNotesSourceId()
@@ -243,43 +254,19 @@ public class StockNoteEntity implements MyLogger
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockNoteEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", notes='" ).append( notes ).append( '\'' );
-        sb.append( ", notesDate=" ).append( notesDate );
-        sb.append( ", dateCreated=" ).append( dateCreated );
-        sb.append( ", dateModified=" ).append( dateModified );
-        sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", notesRating=" ).append( notesRating );
-        sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
-        sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", stockNoteSource=" ).append( stockNoteSourceByNotesSourceId );
-        sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
-        sb.append( '}' );
-        return sb.toString();
-    }
-
-    @Basic
-    @Column( name = "notes_source_id", nullable = true )
-    public Integer getNotesSourceId()
-    {
-        return notesSourceId;
-    }
-
-    public void setNotesSourceId( final Integer notesSourceId )
-    {
-        this.notesSourceId = notesSourceId;
-    }
-
-    @ManyToOne
-    @JoinColumn( name = "customer_id", referencedColumnName = "id", nullable = false )
-    public CustomerEntity getCustomerByCustomerId()
-    {
-        return customerByCustomerId;
-    }
-
-    public void setCustomerByCustomerId( final CustomerEntity customerByCustomerId )
-    {
-        this.customerByCustomerId = customerByCustomerId;
+        return "StockNoteEntity{" +
+               "id=" + id +
+               ", notes='" + notes + '\'' +
+               ", notesDate=" + notesDate +
+               ", dateCreated=" + dateCreated +
+               ", dateModified=" + dateModified +
+               ", notesRating=" + notesRating +
+               ", publicInd='" + publicInd + '\'' +
+               ", bullOrBear=" + bullOrBear +
+               ", stockNoteStocks=" + stockNoteStocks +
+               ", stockNoteSourceByNotesSourceId=" + stockNoteSourceByNotesSourceId +
+               ", notesSourceId=" + notesSourceId +
+               ", customerId=" + customerId +
+               '}';
     }
 }

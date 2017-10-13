@@ -214,7 +214,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
                                                              final StockNoteStockDTO stockNoteStockDTO )
     {
         StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
-        stockNoteStockEntity.setId( stockNoteEntity.getId() );
+        stockNoteStockEntity.setStockNoteEntity( stockNoteEntity );
         stockNoteStockEntity.setTickerSymbol( stockNoteStockDTO.getTickerSymbol() );
         stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
         stockNoteStockEntity.setStockPrice( stockNoteStockDTO.getStockPrice() );
