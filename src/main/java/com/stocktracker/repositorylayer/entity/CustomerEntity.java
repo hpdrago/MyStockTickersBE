@@ -26,13 +26,13 @@ public class CustomerEntity
     private Collection<PortfolioEntity> portfolios;
     private Collection<StockNoteEntity> stockNotes;
 
+    public CustomerEntity()
+    {
+    }
+
     public static CustomerEntity newInstance()
     {
         return new CustomerEntity();
-    }
-
-    public CustomerEntity()
-    {
     }
 
     @Id

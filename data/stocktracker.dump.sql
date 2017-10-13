@@ -86,7 +86,7 @@ CREATE TABLE `portfolio` (
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `idx_portfolio_customer_id` (`customer_id`),
   CONSTRAINT `FK_PORTFOLIO_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -95,6 +95,7 @@ CREATE TABLE `portfolio` (
 
 LOCK TABLES `portfolio` WRITE;
 /*!40000 ALTER TABLE `portfolio` DISABLE KEYS */;
+INSERT INTO `portfolio` VALUES (1,'Mike\'s IRA',1,'2017-10-08 20:11:30');
 /*!40000 ALTER TABLE `portfolio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -108,7 +109,7 @@ DROP TABLE IF EXISTS `portfolio_stock`;
 CREATE TABLE `portfolio_stock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
-  `portfolio_id` int(11) DEFAULT NULL,
+  `portfolio_id` int(11) NOT NULL,
   `ticker_symbol` varchar(5) NOT NULL,
   `number_of_shares` int(11) DEFAULT NULL,
   `cost_basis` int(11) DEFAULT NULL,
@@ -127,9 +128,9 @@ CREATE TABLE `portfolio_stock` (
   KEY `idx_portfolio_stock_portfolio_id` (`portfolio_id`),
   KEY `FK_PORTFOLIO_STOCK_STOCK_idx` (`ticker_symbol`),
   CONSTRAINT `FK_PORTFOLIO_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_PORTFOLIO_STOCK_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,6 +139,7 @@ CREATE TABLE `portfolio_stock` (
 
 LOCK TABLES `portfolio_stock` WRITE;
 /*!40000 ALTER TABLE `portfolio_stock` DISABLE KEYS */;
+INSERT INTO `portfolio_stock` VALUES (2,1,1,'PGNX',0,0,0,0,0.00,0,0.00,0,NULL,NULL,'2017-10-11 02:18:28');
 /*!40000 ALTER TABLE `portfolio_stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -161,6 +163,7 @@ CREATE TABLE `stock` (
   `quote_url` varchar(120) DEFAULT NULL,
   `sector` varchar(45) DEFAULT NULL,
   `industry` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`ticker_symbol`),
   UNIQUE KEY `ticker_symbol_UNIQUE` (`ticker_symbol`),
   KEY `FK_CUSTOMER_STOCK_idx` (`created_by`),
   FULLTEXT KEY `idx_stock_ticker_symbol` (`ticker_symbol`),
@@ -201,7 +204,7 @@ CREATE TABLE `stock_note` (
   KEY `FK_STOCK_NOTES_STOCK_NOTES_SOURCE_idx` (`notes_source_id`),
   KEY `IDX_CUSTOMER` (`customer_id`),
   CONSTRAINT `FK_STOCK_NOTES_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -210,7 +213,7 @@ CREATE TABLE `stock_note` (
 
 LOCK TABLES `stock_note` WRITE;
 /*!40000 ALTER TABLE `stock_note` DISABLE KEYS */;
-INSERT INTO `stock_note` VALUES (10,1,'notes',6,3,'2017-09-17 07:11:46',1,'N','2017-09-17 14:59:05',NULL),(11,1,'Two gold stocks',7,5,'2017-09-17 15:01:42',1,NULL,'2017-09-17 15:02:14',NULL),(12,1,'Lots of hope for this one',8,5,'2017-09-17 15:09:51',1,NULL,'2017-09-17 15:10:37',NULL),(14,1,'Bear target',NULL,3,'2017-09-17 15:45:28',1,NULL,'2017-09-17 15:45:49',NULL),(15,1,'Eye stuff',NULL,5,'2017-09-17 01:56:52',1,'N','2017-09-17 15:57:20',NULL);
+INSERT INTO `stock_note` VALUES (10,1,'notes',6,3,'2017-09-17 07:11:46',1,'N','2017-09-17 14:59:05',NULL),(11,1,'Two gold stocks',7,5,'2017-09-17 15:01:42',1,NULL,'2017-09-17 15:02:14',NULL),(12,1,'Lots of hope for this one',8,5,'2017-09-17 15:09:51',1,NULL,'2017-09-17 15:10:37',NULL),(14,1,'Bear target',NULL,3,'2017-09-17 15:45:28',1,NULL,'2017-09-17 15:45:49',NULL),(15,1,'Eye stuff',NULL,5,'2017-09-17 01:56:52',1,'N','2017-09-17 15:57:20',NULL),(30,1,'frank',NULL,0,'2017-10-08 12:53:48',0,NULL,'2017-10-08 12:54:00',NULL);
 /*!40000 ALTER TABLE `stock_note` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -297,17 +300,20 @@ DROP TABLE IF EXISTS `stock_note_stock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stock_note_stock` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `stock_note_id` int(11) NOT NULL,
   `ticker_symbol` varchar(5) NOT NULL,
   `customer_id` int(11) NOT NULL,
   `stock_price` decimal(7,2) DEFAULT NULL,
-  PRIMARY KEY (`stock_note_id`,`ticker_symbol`),
+  PRIMARY KEY (`id`),
   KEY `FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx` (`stock_note_id`),
   KEY `FK_STOCK_NOTE_STOCK_CUSTOMER_idx` (`customer_id`),
   KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
+  KEY `FK_STOCK_NOTE_STOCK_STOCK_idx` (`ticker_symbol`),
   CONSTRAINT `FK_STOCK_NOTE_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FK_STOCK_NOTE_STOCK_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_NOTE_STOCK_STOCK_NOTE` FOREIGN KEY (`stock_note_id`) REFERENCES `stock_note` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -316,7 +322,7 @@ CREATE TABLE `stock_note_stock` (
 
 LOCK TABLES `stock_note_stock` WRITE;
 /*!40000 ALTER TABLE `stock_note_stock` DISABLE KEYS */;
-INSERT INTO `stock_note_stock` VALUES (10,'BTO',1,37.30),(10,'SCYX',1,2.01),(11,'ABX',1,17.30),(11,'NEM',1,37.85),(12,'SGYP',1,2.70),(14,'BEAR',1,NULL),(15,'NVTA',1,9.99),(15,'OCUL',1,6.49),(15,'PGNX',1,7.46),(15,'SCYX',1,2.42);
+INSERT INTO `stock_note_stock` VALUES (1,10,'BTO',1,37.30),(2,10,'SCYX',1,2.01),(3,11,'ABX',1,17.30),(4,11,'NEM',1,37.85),(5,12,'SGYP',1,2.70),(7,15,'NVTA',1,9.99),(8,15,'OCUL',1,6.49),(9,15,'PGNX',1,7.46),(10,15,'SCYX',1,2.42),(11,30,'ACAD',1,38.54);
 /*!40000 ALTER TABLE `stock_note_stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -419,4 +425,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-10-08  7:45:53
+-- Dump completed on 2017-10-12 19:55:41

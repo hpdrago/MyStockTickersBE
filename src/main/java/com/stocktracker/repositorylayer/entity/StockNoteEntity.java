@@ -38,6 +38,8 @@ public class StockNoteEntity implements MyLogger
     private Byte bullOrBear;
     private List<StockNoteStockEntity> stockNoteStocks;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
+    private Integer notesSourceId;
+    private CustomerEntity customerByCustomerId;
 
     public static StockNoteEntity newInstance()
     {
@@ -82,7 +84,7 @@ public class StockNoteEntity implements MyLogger
     }
 
     @Basic
-    @Column( name = "notes_date", nullable = true )
+    @Column( name = "notes_date", nullable = false )
     public Timestamp getNotesDate()
     {
         return notesDate;
@@ -203,7 +205,7 @@ public class StockNoteEntity implements MyLogger
          */
         if ( this.getId() != null && this.getId() != 0 )
         {
-            stockNoteStockEntity.getId().setStockNoteId( this.getId() );
+            stockNoteStockEntity.setStockNoteId( this.getId() );
         }
         stockNoteStockEntity.setCustomerId( this.getCustomerId() );
         if ( this.stockNoteStocks == null )
@@ -255,5 +257,29 @@ public class StockNoteEntity implements MyLogger
         sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @Basic
+    @Column( name = "notes_source_id", nullable = true )
+    public Integer getNotesSourceId()
+    {
+        return notesSourceId;
+    }
+
+    public void setNotesSourceId( final Integer notesSourceId )
+    {
+        this.notesSourceId = notesSourceId;
+    }
+
+    @ManyToOne
+    @JoinColumn( name = "customer_id", referencedColumnName = "id", nullable = false )
+    public CustomerEntity getCustomerByCustomerId()
+    {
+        return customerByCustomerId;
+    }
+
+    public void setCustomerByCustomerId( final CustomerEntity customerByCustomerId )
+    {
+        this.customerByCustomerId = customerByCustomerId;
     }
 }

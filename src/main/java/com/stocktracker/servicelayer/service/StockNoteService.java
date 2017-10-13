@@ -6,7 +6,6 @@ import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteStockEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteStockEntityPK;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
 import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
@@ -199,14 +197,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         for ( final StockNoteStockDTO stockNoteStockDTO: stockNoteDTO.getStocks() )
         {
             StockNoteStockEntity stockNoteStockEntity = createStockNoteStockEntity( stockNoteEntity, stockNoteStockDTO );
-            try
-            {
-                this.yahooStockService.setStockInformation( stockNoteStockEntity );
-            }
-            catch ( IOException e )
-            {
-                logError( methodName, "Error getting stock information", e );
-            }
             stockNoteEntity.addStockNoteStock( stockNoteStockEntity );
         }
         logMethodEnd( methodName, stockNoteEntity );
@@ -224,7 +214,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
                                                              final StockNoteStockDTO stockNoteStockDTO )
     {
         StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
-        stockNoteStockEntity.setId( stockNoteEntity.getId(), stockNoteStockDTO.getTickerSymbol() );
+        stockNoteStockEntity.setId( stockNoteEntity.getId() );
+        stockNoteStockEntity.setTickerSymbol( stockNoteStockDTO.getTickerSymbol() );
         stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
         stockNoteStockEntity.setStockPrice( stockNoteStockDTO.getStockPrice() );
         return stockNoteStockEntity;
@@ -295,7 +286,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
          */
         Set<String> originalStocks = dbStockNoteEntity.getStockNoteStocks()
                                                       .stream()
-                                                      .map( stockNoteStockEntity -> stockNoteStockEntity.getId().getTickerSymbol() )
+                                                      .map( stockNoteStockEntity -> stockNoteStockEntity.getTickerSymbol() )
                                                       .collect( Collectors.toSet() );
         Set<String> currentStocks = stockNoteDTO.getStocks()
             .stream()
@@ -313,7 +304,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
             for ( int i = 0; i < dbStockNoteEntity.getStockNoteStocks().size(); i++ )
             {
                 if ( dbStockNoteEntity.getStockNoteStocks().get( i )
-                                      .getId()
                                       .getTickerSymbol()
                                       .equals( tickerSymbol ) )
                 {
@@ -331,9 +321,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         {
             logDebug( methodName, "Adding stock: {0}", tickerSymbol );
             StockNoteStockEntity stockNoteStockEntity = new StockNoteStockEntity();
-            StockNoteStockEntityPK stockNoteStockEntityPK = new StockNoteStockEntityPK( dbStockNoteEntity.getId(),
-                                                                                        tickerSymbol );
-            stockNoteStockEntity.setId( stockNoteStockEntityPK );
+            stockNoteStockEntity.setStockNoteEntity( dbStockNoteEntity );
+            stockNoteStockEntity.setTickerSymbol( tickerSymbol );
             stockNoteStockEntity.setCustomerId( dbStockNoteEntity.getCustomerId() );
             dbStockNoteEntity.getStockNoteStocks().add( stockNoteStockEntity );
             stockNoteStockEntity.setStockPrice( this.stockService.getStockPrice( tickerSymbol ));

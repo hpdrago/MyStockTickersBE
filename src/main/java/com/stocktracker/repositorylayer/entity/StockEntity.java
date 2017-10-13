@@ -13,7 +13,7 @@ import java.util.Objects;
  * Created by mike on 9/11/2016.
  */
 @Entity
-@Table( name = "stock", schema = "stocktracker" )
+@Table( name = "stock", schema = "stocktracker", catalog = "" )
 public class StockEntity
 {
     private String tickerSymbol;
@@ -24,6 +24,11 @@ public class StockEntity
     private BigDecimal lastPrice;
     private Timestamp lastPriceUpdate;
     private Timestamp lastPriceChange;
+    private String stockExchange;
+    private Timestamp createDate;
+    private String quoteUrl;
+    private String sector;
+    private String industry;
 
     /**
      * Create a new stock entity instance
@@ -33,6 +38,26 @@ public class StockEntity
     {
         StockEntity stockEntity = new StockEntity();
         return stockEntity;
+    }
+
+    /*
+    @Basic
+    @Column( name = "exchange", nullable = true, length = 10 )
+    public String getExchange()
+    {
+        return exchange;
+    }
+
+    public void setExchange( final String exchange )
+    {
+        this.exchange = exchange;
+    }
+    */
+
+    public void setUserEntered( final String userEntered )
+    {
+        if ( userEntered == null )
+        this.userEntered = userEntered == null ? 'N' : userEntered.equals( "Y" ) ? 'Y' : 'N';
     }
 
     @Id
@@ -58,20 +83,6 @@ public class StockEntity
     {
         this.companyName = companyName;
     }
-
-    /*
-    @Basic
-    @Column( name = "exchange", nullable = true, length = 10 )
-    public String getExchange()
-    {
-        return exchange;
-    }
-
-    public void setExchange( final String exchange )
-    {
-        this.exchange = exchange;
-    }
-    */
 
     @Basic
     @Column( name = "created_by" )
@@ -181,4 +192,63 @@ public class StockEntity
         return Objects.hash( tickerSymbol, companyName ); //, exchange );
     }
 
+    @Basic
+    @Column( name = "stock_exchange", nullable = true, length = 10 )
+    public String getStockExchange()
+    {
+        return stockExchange;
+    }
+
+    public void setStockExchange( final String stockExchange )
+    {
+        this.stockExchange = stockExchange;
+    }
+
+    @Basic
+    @Column( name = "create_date", nullable = false )
+    public Timestamp getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( final Timestamp createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    @Basic
+    @Column( name = "quote_url", nullable = true, length = 120 )
+    public String getQuoteUrl()
+    {
+        return quoteUrl;
+    }
+
+    public void setQuoteUrl( final String quoteUrl )
+    {
+        this.quoteUrl = quoteUrl;
+    }
+
+    @Basic
+    @Column( name = "sector", nullable = true, length = 45 )
+    public String getSector()
+    {
+        return sector;
+    }
+
+    public void setSector( final String sector )
+    {
+        this.sector = sector;
+    }
+
+    @Basic
+    @Column( name = "industry", nullable = true, length = 45 )
+    public String getIndustry()
+    {
+        return industry;
+    }
+
+    public void setIndustry( final String industry )
+    {
+        this.industry = industry;
+    }
 }
