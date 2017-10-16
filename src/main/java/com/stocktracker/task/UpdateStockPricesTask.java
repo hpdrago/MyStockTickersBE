@@ -43,7 +43,7 @@ public class UpdateStockPricesTask implements MyLogger
                 {
                     StockTickerQuote stockTickerQuote = this.yahooStockService.getStockQuote( stockEntity.getTickerSymbol() );
                     logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
-                              stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceUpdate() );
+                              stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceChange() );
                     stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
                     stockEntity.setLastPriceUpdate( new Timestamp( startTime ) );
                     stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );

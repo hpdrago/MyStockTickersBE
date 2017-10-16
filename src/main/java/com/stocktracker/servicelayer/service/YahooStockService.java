@@ -47,13 +47,16 @@ public class YahooStockService implements MyLogger
      */
     public StockTickerQuote getStockTickerQuote( final Stock stock )
     {
+        final String methodName = "getStockTickerQuote";
+        logMethodBegin( methodName, stock );
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
         stockTickerQuote.setTickerSymbol( stock.getSymbol() );
         stockTickerQuote.setLastPrice( stock.getQuote().getPrice() );
         if ( stock.getQuote().getLastTradeTime() != null )
         {
-            stockTickerQuote.setLastPriceUpdate( new Timestamp( stock.getQuote().getLastTradeTime().getTimeInMillis() ) );
+            stockTickerQuote.setLastPriceChange( new Timestamp( stock.getQuote().getLastTradeTime().getTimeInMillis() ) );
         }
+        logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
 
@@ -66,8 +69,12 @@ public class YahooStockService implements MyLogger
     public Stock getStockFromYahoo( final String tickerSymbol )
         throws IOException
     {
+        final String methodName = "getStockFromYahoo";
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        return YahooFinance.get( tickerSymbol );
+        Stock stock = YahooFinance.get( tickerSymbol );
+        logMethodEnd( methodName, stock );
+        return stock;
     }
 
     /**
@@ -77,11 +84,14 @@ public class YahooStockService implements MyLogger
     public void setStockInformation( final YahooStockContainer container )
         throws IOException
     {
+        final String methodName = "setStockInformation";
+        logMethodBegin( methodName, container.getTickerSymbol() );
         Stock stock = getStockFromYahoo( container.getTickerSymbol() ) ;
         container.setCompanyName( stock.getName() );
         StockTickerQuote stockTickerQuote = this.getStockTickerQuote( stock );
         container.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
         container.setLastPrice( stockTickerQuote.getLastPrice() );
+        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getLastPrice() );
     }
 
     /**
@@ -93,5 +103,8 @@ public class YahooStockService implements MyLogger
         void setLastPrice( final BigDecimal stockPrice );
         void setLastPriceChange( final Timestamp lastPriceChange );
         void setCompanyName( final String companyName );
+        BigDecimal getLastPrice();
+        Timestamp getLastPriceChange();
+        String getCompanyName();
     }
 }

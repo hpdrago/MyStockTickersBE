@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Created by mike on 9/11/2016.
  */
-public class StockDTO implements StockService.StockCompanyNameContainer
+public class StockDTO implements YahooStockService.YahooStockContainer
 {
     private String tickerSymbol;
     private String companyName;

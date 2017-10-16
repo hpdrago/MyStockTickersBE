@@ -1,14 +1,17 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 /**
  * Created by mike on 10/30/2016.
  */
 public class PortfolioStockDTO implements StockService.StockCompanyNameContainer,
-                                          StockService.StockPriceContainer
+                                          StockService.StockPriceContainer,
+                                          YahooStockService.YahooStockContainer
 {
     private Integer id;
     private Integer customerId;
@@ -16,15 +19,20 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     private String tickerSymbol;
     private String companyName;
     private Integer numberOfShares;
-    private Integer sectorId;
-    private Integer costBasis;
+    private BigDecimal averageUnitCost;
     private BigDecimal lastPrice;
-    private Integer realizedGain;
-    private Integer realizedLoss;
+    private Timestamp lastPriceChange;
+    private BigDecimal realizedGains;
+    private BigDecimal realizedLosses;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private BigDecimal profitTakingPrice;
     private Integer profitTakingShares;
+    private Integer sectorId;
+
+    /***** Calculated fields *****/
+    private Integer marketValue;
+    private Integer costBasis;
 
     /**
      * Creates a new {@code PortfolioStockDTO}
@@ -90,16 +98,19 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     public void setNumberOfShares( Integer numberOfShares )
     {
         this.numberOfShares = numberOfShares;
+        this.calculateCostBasis();
+        this.calculateMarketValue();
     }
 
-    public Integer getCostBasis()
+    public BigDecimal getAverageUnitCost()
     {
-        return costBasis;
+        return averageUnitCost;
     }
 
-    public void setCostBasis( Integer costBasis )
+    public void setAverageUnitCost( BigDecimal averageUnitCost )
     {
-        this.costBasis = costBasis;
+        this.averageUnitCost = averageUnitCost;
+        this.calculateCostBasis();
     }
 
     public BigDecimal getLastPrice()
@@ -110,16 +121,17 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     public void setLastPrice( BigDecimal lastPrice )
     {
         this.lastPrice = lastPrice;
+        this.calculateMarketValue();
     }
 
-    public Integer getRealizedLoss()
+    public BigDecimal getRealizedLosses()
     {
-        return realizedLoss;
+        return realizedLosses == null ? new BigDecimal( 0 ) : realizedLosses;
     }
 
-    public void setRealizedLoss( Integer realizedLoss )
+    public void setRealizedLosses( BigDecimal realizedLosses )
     {
-        this.realizedLoss = realizedLoss;
+        this.realizedLosses = realizedLosses;
     }
 
     public BigDecimal getStopLossPrice()
@@ -162,14 +174,14 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
         this.profitTakingShares = profitTakingShares;
     }
 
-    public Integer getRealizedGain()
+    public BigDecimal getRealizedGains()
     {
-        return realizedGain;
+        return realizedGains == null ? new BigDecimal(0 ) : realizedGains;
     }
 
-    public void setRealizedGain( Integer realizedGain )
+    public void setRealizedGains( BigDecimal realizedGains )
     {
-        this.realizedGain = realizedGain;
+        this.realizedGains = realizedGains;
     }
 
     public Integer getSectorId()
@@ -193,6 +205,64 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     }
 
     @Override
+    public Timestamp getLastPriceChange()
+    {
+        return lastPriceChange;
+    }
+
+    @Override
+    public void setLastPriceChange( final Timestamp lastPriceChange )
+    {
+        this.lastPriceChange = lastPriceChange;
+    }
+
+    private void calculateMarketValue()
+    {
+        if ( this.numberOfShares != null && this.lastPrice != null )
+        {
+            this.marketValue = (int) (this.numberOfShares.floatValue() *
+                                      this.lastPrice.floatValue());
+        }
+        else
+        {
+            this.marketValue = 0;
+        }
+    }
+
+    private void calculateCostBasis()
+    {
+        if ( this.numberOfShares != null && this.averageUnitCost != null )
+        {
+            this.costBasis = (int) (this.numberOfShares.floatValue() *
+                                    this.averageUnitCost.floatValue());
+        }
+        else
+        {
+            this.costBasis = 0;
+        }
+    }
+
+    public Integer getMarketValue()
+    {
+        return marketValue;
+    }
+
+    public void setMarketValue( Integer marketValue )
+    {
+        this.marketValue = marketValue;
+    }
+
+    public Integer getCostBasis()
+    {
+        return costBasis;
+    }
+
+    public void setCostBasis( Integer costBasis )
+    {
+        this.costBasis = costBasis;
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "PortfolioStockDTO{" );
@@ -202,15 +272,18 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
-        sb.append( ", sectorId=" ).append( sectorId );
-        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", averageUnitCost=" ).append( averageUnitCost );
         sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", realizedGain=" ).append( realizedGain );
-        sb.append( ", realizedLoss=" ).append( realizedLoss );
+        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", marketValue=" ).append( marketValue );
+        sb.append( ", realizedGains=" ).append( realizedGains );
+        sb.append( ", realizedLosses=" ).append( realizedLosses );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
         sb.append( ", stopLossShares=" ).append( stopLossShares );
         sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
         sb.append( ", profitTakingShares=" ).append( profitTakingShares );
+        sb.append( ", sectorId=" ).append( sectorId );
         sb.append( '}' );
         return sb.toString();
     }

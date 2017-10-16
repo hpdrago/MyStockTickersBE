@@ -26,12 +26,9 @@ import java.util.Objects;
 public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO> implements MyLogger
 {
     private PortfolioRepository portfolioRepository;
-
-    @Autowired
-    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
-    {
-        this.portfolioRepository = portfolioRepository;
-    }
+    private StockService stockService;
+    private PortfolioStockService portfolioStockService;
+    private PortfolioCalculator portfolioCalculator;
 
     /**
      * Get the portfolio by id request
@@ -49,6 +46,7 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
             throw new PortfolioNotFoundException( portfolioId );
         }
         PortfolioDTO portfolioDTO = this.entityToDTO( portfolioEntity );
+        this.portfolioCalculator.calculate( portfolioDTO );
         logMethodEnd( methodName, portfolioDTO );
         return portfolioDTO;
     }
@@ -71,6 +69,7 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
         {
             portfolioDTOs = this.entitiesToDTOs( portfolioEntities );
         }
+        this.portfolioCalculator.calculate( portfolioDTOs );
         logMethodEnd( methodName, portfolioDTOs );
         return portfolioDTOs;
     }
@@ -125,7 +124,32 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
     {
         Objects.requireNonNull( dto );
         PortfolioEntity portfolioEntity = PortfolioEntity.newInstance();
-        BeanUtils.copyProperties( portfolioEntity, dto );
+        BeanUtils.copyProperties( dto, portfolioEntity );
         return portfolioEntity;
     }
+
+    @Autowired
+    public void setPortfolioCalculator( final PortfolioCalculator portfolioCalculator )
+    {
+        this.portfolioCalculator = portfolioCalculator;
+    }
+
+    @Autowired
+    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
+    {
+        this.portfolioRepository = portfolioRepository;
+    }
+
+    @Autowired
+    public void setStockService( StockService stockService )
+    {
+        this.stockService = stockService;
+    }
+
+    @Autowired
+    public void setPortfolioStockService( PortfolioStockService portfolioStockService )
+    {
+        this.portfolioStockService = portfolioStockService;
+    }
+
 }

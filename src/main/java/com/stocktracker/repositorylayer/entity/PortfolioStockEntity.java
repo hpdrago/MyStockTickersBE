@@ -26,13 +26,13 @@ public class PortfolioStockEntity
     private Integer numberOfShares;
     private Integer sectorId;
     private Integer subSectorId;
-    private Integer costBasis;
-    private Integer realizedLoss;
+    private BigDecimal averageUnitCost;
+    private BigDecimal realizedLosses;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private BigDecimal profitTakingPrice;
     private Integer profitTakingShares;
-    private Integer realizedGain;
+    private BigDecimal realizedGains;
     private Timestamp createDate;
 
     public static PortfolioStockEntity newInstance()
@@ -109,27 +109,27 @@ public class PortfolioStockEntity
     }
 
     @Basic
-    @Column( name = "cost_basis", nullable = true )
-    public Integer getCostBasis()
+    @Column( name = "average_unit_cost", nullable = true )
+    public BigDecimal getAverageUnitCost()
     {
-        return costBasis;
+        return averageUnitCost;
     }
 
-    public void setCostBasis( final Integer costBasis )
+    public void setAverageUnitCost( final BigDecimal costBasis )
     {
-        this.costBasis = costBasis;
+        this.averageUnitCost = costBasis;
     }
 
     @Basic
-    @Column( name = "realized_loss", nullable = true )
-    public Integer getRealizedLoss()
+    @Column( name = "realized_losses", nullable = true )
+    public BigDecimal getRealizedLosses()
     {
-        return realizedLoss;
+        return realizedLosses;
     }
 
-    public void setRealizedLoss( final Integer realizedLoss )
+    public void setRealizedLosses( final BigDecimal realizedLoss )
     {
-        this.realizedLoss = realizedLoss;
+        this.realizedLosses = realizedLoss;
     }
 
     @Basic
@@ -181,15 +181,15 @@ public class PortfolioStockEntity
     }
 
     @Basic
-    @Column( name = "realized_gain", nullable = true )
-    public Integer getRealizedGain()
+    @Column( name = "realized_gains", nullable = true )
+    public BigDecimal getRealizedGains()
     {
-        return realizedGain;
+        return realizedGains;
     }
 
-    public void setRealizedGain( final Integer realizedGain )
+    public void setRealizedGains( final BigDecimal realizedGain )
     {
-        this.realizedGain = realizedGain;
+        this.realizedGains = realizedGain;
     }
 
     @Basic

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,9 +60,10 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         {
             throw new PortfolioStockNotFound( customerId, portfolioId, tickerSymbol );
         }
-        PortfolioStockDTO portfolioStockDE = this.entityToDTO( portfolioStockEntity );
-        logMethodEnd( methodName, portfolioStockDE );
-        return portfolioStockDE;
+        PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
+        this.setStockInformation( portfolioStockDTO );
+        logMethodEnd( methodName, portfolioStockDTO );
+        return portfolioStockDTO;
     }
 
     /**
@@ -79,8 +81,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         List<PortfolioStockEntity> portfolioStockEntities = portfolioStockRepository.
             findByCustomerIdAndPortfolioIdOrderByTickerSymbol( customerId, portfolioId );
         List<PortfolioStockDTO> portfolioStockDTOList = this.entitiesToDTOs( portfolioStockEntities );
-        portfolioStockDTOList.forEach( portfolioStockDTO -> this.stockService.setCompanyName( portfolioStockDTO ));
-        portfolioStockDTOList.forEach( portfolioStockDTO -> this.stockService.setStockPrice( portfolioStockDTO ));
+        this.setStockInformation( portfolioStockDTOList );
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ));
         return portfolioStockDTOList;
     }
@@ -122,6 +123,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         logDebug( methodName, "inserting: {0}", portfolioStockEntity );
         PortfolioStockEntity returnCustomerStockEntity = this.portfolioStockRepository.save( portfolioStockEntity );
         PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
+        this.setStockInformation( returnPortfolioStockDTO );
         logMethodEnd( methodName, returnPortfolioStockDTO );
         return returnPortfolioStockDTO;
     }
@@ -155,17 +157,18 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
 
     /**
      * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioStockDTO} instance
-     * @param portfolioStockDE
+     * @param portfolioStockDTO
      * @return
      */
-    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDE )
+    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDTO )
     {
         final String methodName = "createPortfolioStockEntity";
-        logMethodBegin( methodName, portfolioStockDE );
-        Objects.requireNonNull( portfolioStockDE );
+        logMethodBegin( methodName, portfolioStockDTO );
+        Objects.requireNonNull( portfolioStockDTO );
         PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance();
-        portfolioStockEntity.setPortfolioId( portfolioStockDE.getPortfolioId() );
-        BeanUtils.copyProperties( portfolioStockDE, portfolioStockEntity );
+        portfolioStockEntity.setPortfolioId( portfolioStockDTO.getPortfolioId() );
+        BeanUtils.copyProperties( portfolioStockDTO, portfolioStockEntity );
+        this.setStockInformation( portfolioStockDTO );
         logMethodEnd( methodName, portfolioStockEntity );
         return portfolioStockEntity;
     }
@@ -185,9 +188,40 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         if ( stocks != null )
         {
             portfolioStockDTOs = entitiesToDTOs( stocks );
+            this.setStockInformation( portfolioStockDTOs );
         }
         logMethodEnd( methodName, portfolioStockDTOs );
         return portfolioStockDTOs;
+    }
+
+    /**
+     * Sets the company name, last price, and last price change
+     * @param portfolioStockDTOList
+     */
+    private void setStockInformation( final List<PortfolioStockDTO> portfolioStockDTOList )
+    {
+        final String methodName = "setStockInformation";
+        portfolioStockDTOList.forEach( portfolioStockDTO ->
+        {
+            setStockInformation( portfolioStockDTO );
+        } );
+    }
+
+    /**
+     * Sets the company name, last price, and last price change
+     * @param portfolioStockDTO
+     */
+    private void setStockInformation( final PortfolioStockDTO portfolioStockDTO )
+    {
+        final String methodName = "setStockInformation";
+        try
+        {
+            this.stockService.setStockInformation( portfolioStockDTO );
+        }
+        catch ( IOException e )
+        {
+            logError( methodName, e );
+        }
     }
 
     @Override

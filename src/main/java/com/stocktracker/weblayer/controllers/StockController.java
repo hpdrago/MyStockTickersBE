@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
-import com.stocktracker.common.exceptions.StockNotFoundInExchangeException;
 import com.stocktracker.weblayer.dto.StockDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
 import org.springframework.data.domain.Page;
@@ -19,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import yahoofinance.Stock;
-
-import java.io.IOException;
 
 /**
  * Created by mike on 9/11/2016.
@@ -90,30 +86,7 @@ public class StockController extends AbstractController implements MyLogger
         /*
          * Search the database first
          */
-        try
-        {
-            stockDTO = this.stockService.getStock( tickerSymbol );
-        }
-        catch( StockNotFoundInDatabaseException e )
-        {
-            /*
-             * Not in DB, search yahoo
-             */
-            try
-            {
-                Stock yahooStock = this.yahooStockService.getStockFromYahoo( tickerSymbol );
-                logDebug( methodName, "yahooStock: {0}", yahooStock );
-                if ( yahooStock.getName() == null )
-                {
-                    throw new StockNotFoundInExchangeException( tickerSymbol );
-                }
-                stockDTO = this.stockService.addStock( yahooStock );
-            }
-            catch( IOException e2 )
-            {
-                throw new StockNotFoundInExchangeException( tickerSymbol, e2 );
-            }
-        }
+        stockDTO = this.stockService.getStock( tickerSymbol );
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
     }

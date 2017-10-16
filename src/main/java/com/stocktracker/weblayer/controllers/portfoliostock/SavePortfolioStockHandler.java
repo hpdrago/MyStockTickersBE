@@ -21,9 +21,9 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
     public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
     {
         final String methodName = "handleRequest";
-        if ( portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),
-                                                  portfolioStockDTO.getPortfolioId(),
-                                                  portfolioStockDTO.getTickerSymbol() ) )
+        if ( !portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),
+                                                   portfolioStockDTO.getPortfolioId(),
+                                                   portfolioStockDTO.getTickerSymbol() ) )
         {
             logError( methodName, "Duplicate customer stock: " + portfolioStockDTO.getTickerSymbol() );
             throw new PortfolioStockNotFound( portfolioStockDTO.getCustomerId(),

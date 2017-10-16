@@ -66,7 +66,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/portfolio",
+    @RequestMapping( value = "/portfolios/customer/{customerId}",
         method = RequestMethod.POST )
     public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable int customerId, @RequestBody PortfolioDTO portfolioDto )
     {
@@ -97,6 +97,23 @@ public class PortfolioController extends AbstractController implements MyLogger
         PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
         logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
         portfolioDTO = portfolioService.deletePortfolio( portfolioId );
+        logMethodBegin( methodName, portfolioDTO );
+        return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );
+    }
+
+    /**
+     * Get a single portfoliio
+     * @param portfolioId
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping(value = "/portfolios/portfolio/{portfolioId}", method = RequestMethod.GET)
+    public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable( "portfolioId" ) int portfolioId )
+    {
+        final String methodName = "getPortfolio";
+        logMethodBegin( methodName, portfolioId );
+        PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
+        logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
         logMethodBegin( methodName, portfolioDTO );
         return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );
     }

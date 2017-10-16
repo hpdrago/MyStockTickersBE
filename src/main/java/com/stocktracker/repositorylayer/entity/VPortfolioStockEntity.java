@@ -1,6 +1,5 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.weblayer.dto.StockDTO;
 import org.hibernate.annotations.Immutable;
 
 import javax.persistence.Basic;
@@ -27,8 +26,8 @@ public class VPortfolioStockEntity
     private Integer sectorId;
     private Integer subSectorId;
     private Integer costBasis;
-    private Integer realizedGain;
-    private Integer realizedLoss;
+    private BigDecimal realizedGains;
+    private BigDecimal realizedLosses;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private Integer profitTakingShares;
@@ -156,27 +155,27 @@ public class VPortfolioStockEntity
     }
 
     @Basic
-    @Column( name = "realized_gain", nullable = true )
-    public Integer getRealizedGain()
+    @Column( name = "realized_gains", nullable = true )
+    public BigDecimal getRealizedGains()
     {
-        return realizedGain;
+        return realizedGains;
     }
 
-    public void setRealizedGain( Integer realizedGain )
+    public void setRealizedGains( BigDecimal realizedGain )
     {
-        this.realizedGain = realizedGain;
+        this.realizedGains = realizedGain;
     }
 
     @Basic
-    @Column( name = "realized_loss", nullable = true )
-    public Integer getRealizedLoss()
+    @Column( name = "realized_losses", nullable = true )
+    public BigDecimal getRealizedLosses()
     {
-        return realizedLoss;
+        return realizedLosses;
     }
 
-    public void setRealizedLoss( Integer realizedLoss )
+    public void setRealizedLosses( BigDecimal realizedLoss )
     {
-        this.realizedLoss = realizedLoss;
+        this.realizedLosses = realizedLoss;
     }
 
     @Basic
@@ -215,8 +214,8 @@ public class VPortfolioStockEntity
         sb.append( ", sectorId=" ).append( sectorId );
         sb.append( ", subSectorId=" ).append( subSectorId );
         sb.append( ", costBasis=" ).append( costBasis );
-        sb.append( ", realizedGain=" ).append( realizedGain );
-        sb.append( ", realizedLoss=" ).append( realizedLoss );
+        sb.append( ", realizedGain=" ).append( realizedGains );
+        sb.append( ", realizedLoss=" ).append( realizedLosses );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
         sb.append( ", stopLossShares=" ).append( stopLossShares );
         sb.append( ", profitTakingShares=" ).append( profitTakingShares );
@@ -238,23 +237,23 @@ public class VPortfolioStockEntity
         }
         final VPortfolioStockEntity that = (VPortfolioStockEntity) o;
         return Objects.equals( portfolioId, that.portfolioId ) &&
-            Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-            Objects.equals( companyName, that.companyName ) &&
-            Objects.equals( numberOfShares, that.numberOfShares ) &&
-            Objects.equals( lastPrice, that.lastPrice ) &&
-            Objects.equals( costBasis, that.costBasis ) &&
-            Objects.equals( realizedGain, that.realizedGain ) &&
-            Objects.equals( realizedLoss, that.realizedLoss ) &&
-            Objects.equals( stopLossPrice, that.stopLossPrice ) &&
-            Objects.equals( stopLossShares, that.stopLossShares ) &&
-            Objects.equals( profitTakingShares, that.profitTakingShares ) &&
-            Objects.equals( profitTakingPrice, that.profitTakingPrice );
+               Objects.equals( tickerSymbol, that.tickerSymbol ) &&
+               Objects.equals( companyName, that.companyName ) &&
+               Objects.equals( numberOfShares, that.numberOfShares ) &&
+               Objects.equals( lastPrice, that.lastPrice ) &&
+               Objects.equals( costBasis, that.costBasis ) &&
+               Objects.equals( realizedGains, that.realizedGains ) &&
+               Objects.equals( realizedLosses, that.realizedLosses ) &&
+               Objects.equals( stopLossPrice, that.stopLossPrice ) &&
+               Objects.equals( stopLossShares, that.stopLossShares ) &&
+               Objects.equals( profitTakingShares, that.profitTakingShares ) &&
+               Objects.equals( profitTakingPrice, that.profitTakingPrice );
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash( portfolioId, tickerSymbol, companyName, lastPrice, costBasis, numberOfShares, realizedGain, realizedLoss, stopLossPrice, stopLossShares, profitTakingPrice, profitTakingShares );
+        return Objects.hash( portfolioId, tickerSymbol, companyName, lastPrice, costBasis, numberOfShares, realizedGains, realizedLosses, stopLossPrice, stopLossShares, profitTakingPrice, profitTakingShares );
     }
 
     @Basic
