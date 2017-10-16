@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.18-log
+-- Server version	5.7.17-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -306,6 +306,8 @@ CREATE TABLE `stock_note_stock` (
   `ticker_symbol` varchar(5) NOT NULL,
   `customer_id` int(11) NOT NULL,
   `stock_price` decimal(7,2) DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx` (`stock_note_id`),
   KEY `FK_STOCK_NOTE_STOCK_CUSTOMER_idx` (`customer_id`),
@@ -323,7 +325,7 @@ CREATE TABLE `stock_note_stock` (
 
 LOCK TABLES `stock_note_stock` WRITE;
 /*!40000 ALTER TABLE `stock_note_stock` DISABLE KEYS */;
-INSERT INTO `stock_note_stock` VALUES (1,10,'BTO',1,37.30),(2,10,'SCYX',1,2.01),(3,11,'ABX',1,17.30),(4,11,'NEM',1,37.85),(5,12,'SGYP',1,2.70),(7,15,'NVTA',1,9.99),(8,15,'OCUL',1,6.49),(9,15,'PGNX',1,7.46),(10,15,'SCYX',1,2.42),(11,30,'ACAD',1,38.54);
+INSERT INTO `stock_note_stock` VALUES (1,10,'BTO',1,37.30,'2017-10-16 18:52:16',NULL),(2,10,'SCYX',1,2.01,'2017-10-16 18:52:16',NULL),(3,11,'ABX',1,17.30,'2017-10-16 18:52:16',NULL),(4,11,'NEM',1,37.85,'2017-10-16 18:52:16',NULL),(5,12,'SGYP',1,2.70,'2017-10-16 18:52:16',NULL),(7,15,'NVTA',1,9.99,'2017-10-16 18:52:16',NULL),(8,15,'OCUL',1,6.49,'2017-10-16 18:52:16',NULL),(9,15,'PGNX',1,7.46,'2017-10-16 18:52:16',NULL),(10,15,'SCYX',1,2.42,'2017-10-16 18:52:16',NULL),(11,30,'ACAD',1,38.54,'2017-10-16 18:52:16',NULL);
 /*!40000 ALTER TABLE `stock_note_stock` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -374,7 +376,48 @@ LOCK TABLES `stock_sub_sector` WRITE;
 UNLOCK TABLES;
 
 --
--- Temporary table structure for view `v_portfolio_stock`
+-- Table structure for table `stock_summary`
+--
+
+DROP TABLE IF EXISTS `stock_summary`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stock_summary` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `ticker_symbol` varchar(5) NOT NULL,
+  `comments` varchar(45) DEFAULT NULL,
+  `analyst_buy_count` int(11) DEFAULT NULL,
+  `analyst_sell_count` int(11) DEFAULT NULL,
+  `analyst_hold_count` int(11) DEFAULT NULL,
+  `next_catalyst_date` timestamp NULL DEFAULT NULL,
+  `next_catalyst_desc` varchar(30) DEFAULT NULL,
+  `avg_analyst_price_target` decimal(7,2) DEFAULT NULL,
+  `low_analyst_price_target` decimal(7,2) DEFAULT NULL,
+  `high_analyst_price_target` decimal(7,2) DEFAULT NULL,
+  `buy_shares_below` decimal(7,2) DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
+  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
+  KEY `FK_STOCK_SUMMARY_STOCK_idx` (`ticker_symbol`),
+  CONSTRAINT `FK_STOCK_SUMMARY_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_STOCK_SUMMARY_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_summary`
+--
+
+LOCK TABLES `stock_summary` WRITE;
+/*!40000 ALTER TABLE `stock_summary` DISABLE KEYS */;
+/*!40000 ALTER TABLE `stock_summary` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Temporary view structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -401,6 +444,20 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Temporary view structure for view `v_stock_note_count`
+--
+
+DROP TABLE IF EXISTS `v_stock_note_count`;
+/*!50001 DROP VIEW IF EXISTS `v_stock_note_count`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `v_stock_note_count` AS SELECT 
+ 1 AS `customer_id`,
+ 1 AS `ticker_symbol`,
+ 1 AS `note_count`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Final view structure for view `v_portfolio_stock`
 --
 
@@ -417,6 +474,24 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `v_stock_note_count`
+--
+
+/*!50001 DROP VIEW IF EXISTS `v_stock_note_count`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_stock_note_count` AS select `sns`.`customer_id` AS `customer_id`,`sns`.`ticker_symbol` AS `ticker_symbol`,count(0) AS `note_count` from `stock_note_stock` `sns` group by `sns`.`customer_id`,`sns`.`ticker_symbol` order by `sns`.`customer_id`,`sns`.`ticker_symbol` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -427,4 +502,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-10-15 17:16:16
+-- Dump completed on 2017-10-16 11:53:57
