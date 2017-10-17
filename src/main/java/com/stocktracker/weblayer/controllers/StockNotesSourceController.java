@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +26,8 @@ import java.util.Objects;
 @CrossOrigin
 public class StockNotesSourceController extends AbstractController
 {
+    private StockNoteSourceService stockNoteSourceService;
+
     /**
      * Get all of the stocks notes sources for a customer
      *
@@ -72,5 +76,11 @@ public class StockNotesSourceController extends AbstractController
         Objects.requireNonNull( stockNoteSourceDTO.getCustomerId(), "stockNoteSourceDTO.customerId cannot be null" );
         Assert.isTrue( stockNoteSourceDTO.getId() > 0, "stockNoteSourceDTO.id must be > 0" );
         Assert.isTrue( stockNoteSourceDTO.getCustomerId() > 0, "stockNoteSourceDTO.customerId must be > 0" );
+    }
+
+    @Autowired
+    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    {
+        this.stockNoteSourceService = stockNoteSourceService;
     }
 }

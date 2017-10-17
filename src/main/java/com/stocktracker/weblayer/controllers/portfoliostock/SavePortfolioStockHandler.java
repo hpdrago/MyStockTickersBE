@@ -1,8 +1,10 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
+import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO, PortfolioStockDTO>
 {
+    private PortfolioStockService portfolioStockService;
+
     /**
      * Handle the request.  Update the stock in the database and return the updated {@code PortfolioStockDTO}
      * @param portfolioStockDTO
@@ -34,5 +38,11 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
         PortfolioStockDTO newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
         logDebug( methodName, "return addPorfolioStockDTO: {0}", portfolioStockDTO );
         return newPortfolioStockDTO;
+    }
+
+    @Autowired
+    public void setPortfolioStockService( final PortfolioStockService portfolioStockService )
+    {
+        this.portfolioStockService = portfolioStockService;
     }
 }

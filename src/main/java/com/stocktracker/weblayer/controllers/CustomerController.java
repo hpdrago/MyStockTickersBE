@@ -1,7 +1,9 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.CustomerService;
 import com.stocktracker.weblayer.dto.CustomerDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,14 @@ import java.util.List;
 @CrossOrigin
 public class CustomerController extends AbstractController implements MyLogger
 {
+    private CustomerService customerService;
+
+    @Autowired
+    public void setCustomerService( final CustomerService customerService )
+    {
+        this.customerService = customerService;
+    }
+
     /**
      * Get all of the customers
      *

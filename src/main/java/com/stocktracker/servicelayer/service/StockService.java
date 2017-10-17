@@ -14,13 +14,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import yahoofinance.Stock;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by mike on 9/11/2016.
@@ -32,24 +31,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     private YahooStockService yahooStockService;
     private StockService stockService;
     private StockRepository stockRepository;
-
-    @Autowired
-    public void setStockRepository( final StockRepository stockRepository )
-    {
-        this.stockRepository = stockRepository;
-    }
-
-    @Autowired
-    public void setStockService( final StockService stockService )
-    {
-        this.stockService = stockService;
-    }
-
-    @Autowired
-    public void setYahooStockService( final YahooStockService yahooStockService )
-    {
-        this.yahooStockService = yahooStockService;
-    }
+    private StockCache stockCache;
 
     /**
      * To be implemented by any class containing a ticker symbol and a stock company name to
@@ -174,21 +156,14 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         if ( stockEntity == null )
         {
             logDebug( methodName, "{0} not in stock table, calling yahoo..." );
-            Stock yahooStock;
-            try
+            Optional<StockCache.CachedStock> cachedStock;
+            cachedStock = this.stockCache.getStock( tickerSymbol );
+            logDebug( methodName, "yahooStock: {0}", cachedStock );
+            if ( !cachedStock.isPresent() )
             {
-                yahooStock = this.yahooStockService.getStockFromYahoo( tickerSymbol );
-                logDebug( methodName, "yahooStock: {0}", yahooStock );
-                if ( yahooStock.getName() == null )
-                {
-                    throw new StockNotFoundInExchangeException( tickerSymbol );
-                }
+                throw new StockNotFoundInExchangeException( tickerSymbol );
             }
-            catch ( IOException e )
-            {
-                throw new StockNotFoundInExchangeException( tickerSymbol, e );
-            }
-            stockDTO = this.addStock( yahooStock );
+            stockDTO = this.addStock( cachedStock.get() );
         }
         else
         {
@@ -299,25 +274,21 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
 
     /**
      * Add a Yahoo stock to the database
-     * @param yahooStock
+     * @param cachedStock
      * @return {@code StockDTO} the stock that was added to the database
      */
-    public StockDTO addStock( final Stock yahooStock )
+    public StockDTO addStock( final StockCache.CachedStock cachedStock )
     {
         final String methodName = "addStock";
-        logMethodBegin( methodName, yahooStock );
-        Objects.requireNonNull( yahooStock, "yahooStock cannot be null" );
+        logMethodBegin( methodName, cachedStock );
+        Objects.requireNonNull( cachedStock, "yahooStock cannot be null" );
         StockDTO stockDTO = StockDTO.newInstance();
-        stockDTO.setTickerSymbol( yahooStock.getSymbol() );
-        stockDTO.setCompanyName( yahooStock.getName() );
+        stockDTO.setTickerSymbol( cachedStock.getTickerSymbol() );
+        stockDTO.setCompanyName( cachedStock.getCompanyName() );
         stockDTO.setUserEntered( false );
-        stockDTO.setExchange( yahooStock.getStockExchange() );
-        if ( yahooStock.getQuote().getLastTradeTime() != null )
-        {
-            stockDTO.setLastPriceUpdate( new Timestamp( yahooStock.getQuote().getLastTradeTime().getTimeInMillis() ) );
-            stockDTO.setLastPriceChange( new Timestamp( yahooStock.getQuote().getLastTradeTime().getTimeInMillis() ) );
-        }
-        stockDTO.setLastPrice( yahooStock.getQuote().getPrice() );
+        stockDTO.setExchange( cachedStock.getExchange() );
+        stockDTO.setLastPriceChange( cachedStock.getLastPriceChange() );
+        stockDTO.setLastPrice( cachedStock.getLastPrice() );
         stockDTO.setCreatedBy( 1 );
         this.addStock( stockDTO );
         logMethodEnd( methodName, stockDTO );
@@ -440,4 +411,29 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         stockEntity.setUserEntered( BooleanUtils.fromBooleanToChar( stockDTO.isUserEntered() ));
         return stockEntity;
     }
+
+    @Autowired
+    public void setStockRepository( final StockRepository stockRepository )
+    {
+        this.stockRepository = stockRepository;
+    }
+
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        this.stockService = stockService;
+    }
+
+    @Autowired
+    public void setYahooStockService( final YahooStockService yahooStockService )
+    {
+        this.yahooStockService = yahooStockService;
+    }
+
+    @Autowired
+    public void setStockCache( final StockCache stockCache )
+    {
+        this.stockCache = stockCache;
+    }
+
 }

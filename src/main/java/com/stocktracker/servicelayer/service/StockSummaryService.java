@@ -6,7 +6,6 @@ import com.stocktracker.repositorylayer.repository.StockSummaryRepository;
 import com.stocktracker.weblayer.dto.StockSummaryDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +18,7 @@ import java.util.Objects;
 public class StockSummaryService extends BaseService<StockSummaryEntity, StockSummaryDTO> implements MyLogger
 {
     private StockSummaryRepository stockSummaryRepository;
+    private StockCache stockCache;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -29,10 +29,58 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
     {
         final String methodName = "getStockSummaries";
         logMethodBegin( methodName, customerId );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
         List<StockSummaryEntity> stockSummaryEntities = this.stockSummaryRepository.findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockSummaryDTO> stockSummaryDTOs = this.entitiesToDTOs( stockSummaryEntities );
         logMethodEnd( methodName, "Found " + stockSummaryEntities.size() + " summaries" );
         return stockSummaryDTOs;
+    }
+
+    /**
+     * Get a single stock summary by stockSummaryId
+     * @param stockSummaryId
+     * @return StockSummaryDTO instance
+     */
+    public StockSummaryDTO getStockSummary( @NotNull final Integer stockSummaryId )
+    {
+        final String methodName = "getStockSummary";
+        logMethodBegin( methodName, stockSummaryId );
+        Objects.requireNonNull( stockSummaryId, "stockSummaryId cannot be null" );
+        StockSummaryEntity stockSummaryEntity = this.stockSummaryRepository.findOne( stockSummaryId );
+        StockSummaryDTO stockSummaryDTO = this.entityToDTO( stockSummaryEntity );
+        logMethodEnd( methodName, stockSummaryDTO );
+        return stockSummaryDTO;
+    }
+
+    /**
+     * Add a new stock summary to the database
+     * @param stockSummaryDTO
+     * @return
+     */
+    public StockSummaryDTO saveStockSummary( @NotNull final StockSummaryDTO stockSummaryDTO )
+    {
+        final String methodName = "saveStockSummary";
+        logMethodBegin( methodName, stockSummaryDTO );
+        Objects.requireNonNull( stockSummaryDTO, "stockSummaryDTO cannot be null" );
+        StockSummaryEntity stockSummaryEntity = this.dtoToEntity( stockSummaryDTO );
+        stockSummaryEntity = this.stockSummaryRepository.save( stockSummaryEntity );
+        logDebug( methodName, "saved {0}", stockSummaryEntity );
+        StockSummaryDTO returnStockSummaryDTO = this.entityToDTO( stockSummaryEntity );
+        logMethodEnd( methodName, returnStockSummaryDTO );
+        return returnStockSummaryDTO;
+    }
+
+    /**
+     * Deletes the stock summary from the database
+     * @param stockSummaryId
+     */
+    public void deleteStockSummary( @NotNull final Integer stockSummaryId )
+    {
+        final String methodName = "deleteStockSummary";
+        Objects.requireNonNull( stockSummaryId, "stockSummaryId cannot be null" );
+        logMethodBegin( methodName, stockSummaryId );
+        this.stockSummaryRepository.delete( stockSummaryId );
+        logMethodEnd( methodName );
     }
 
     @Override
@@ -57,5 +105,11 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
     public void setStockSummaryRepository( final StockSummaryRepository stockSummaryRepository )
     {
         this.stockSummaryRepository = stockSummaryRepository;
+    }
+
+    @Autowired
+    public void setStockCache( final StockCache stockCache )
+    {
+        this.stockCache = stockCache;
     }
 }

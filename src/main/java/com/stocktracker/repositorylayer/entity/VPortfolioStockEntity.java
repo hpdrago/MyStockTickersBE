@@ -25,7 +25,6 @@ public class VPortfolioStockEntity
     private BigDecimal lastPrice;
     private Integer sectorId;
     private Integer subSectorId;
-    private Integer costBasis;
     private BigDecimal realizedGains;
     private BigDecimal realizedLosses;
     private BigDecimal stopLossPrice;
@@ -33,9 +32,60 @@ public class VPortfolioStockEntity
     private Integer profitTakingShares;
     private BigDecimal profitTakingPrice;
     private Integer id;
+    private Integer customerId;
+    private BigDecimal realizedGain;
+    private BigDecimal realizedLoss;
 
     @Id
-    @Column( name = "portfolio_id", nullable = true )
+    @Column( name = "id", nullable = false )
+    public Integer getId()
+    {
+        return id;
+    }
+
+    public void setId( final Integer id )
+    {
+        this.id = id;
+    }
+
+    @Basic
+    @Column( name = "customer_id", nullable = false )
+    public Integer getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( final Integer customerId )
+    {
+        this.customerId = customerId;
+    }
+
+    @Basic
+    @Column( name = "realized_gain", nullable = true, precision = 2 )
+    public BigDecimal getRealizedGain()
+    {
+        return realizedGain;
+    }
+
+    public void setRealizedGain( final BigDecimal realizedGain )
+    {
+        this.realizedGain = realizedGain;
+    }
+
+    @Basic
+    @Column( name = "realized_loss", nullable = true, precision = 2 )
+    public BigDecimal getRealizedLoss()
+    {
+        return realizedLoss;
+    }
+
+    public void setRealizedLoss( final BigDecimal realizedLoss )
+    {
+        this.realizedLoss = realizedLoss;
+    }
+
+    @Basic
+    @Column( name = "portfolio_id", nullable = false )
     public Integer getPortfolioId()
     {
         return portfolioId;
@@ -80,18 +130,6 @@ public class VPortfolioStockEntity
     public void setLastPrice( final BigDecimal lastPrice )
     {
         this.lastPrice = lastPrice;
-    }
-
-    @Basic
-    @Column( name = "cost_basis", nullable = true, precision = 2 )
-    public Integer getCostBasis()
-    {
-        return costBasis;
-    }
-
-    public void setCostBasis( final Integer costBasis )
-    {
-        this.costBasis = costBasis;
     }
 
     @Basic
@@ -203,6 +241,27 @@ public class VPortfolioStockEntity
     }
 
     @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !(o instanceof VPortfolioStockEntity) )
+        {
+            return false;
+        }
+        final VPortfolioStockEntity that = (VPortfolioStockEntity) o;
+        return Objects.equals( id, that.id );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( id );
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "VPortfolioStockEntity{" );
@@ -213,58 +272,17 @@ public class VPortfolioStockEntity
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", sectorId=" ).append( sectorId );
         sb.append( ", subSectorId=" ).append( subSectorId );
-        sb.append( ", costBasis=" ).append( costBasis );
-        sb.append( ", realizedGain=" ).append( realizedGains );
-        sb.append( ", realizedLoss=" ).append( realizedLosses );
+        sb.append( ", realizedGains=" ).append( realizedGains );
+        sb.append( ", realizedLosses=" ).append( realizedLosses );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
         sb.append( ", stopLossShares=" ).append( stopLossShares );
         sb.append( ", profitTakingShares=" ).append( profitTakingShares );
         sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
+        sb.append( ", id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", realizedGain=" ).append( realizedGain );
+        sb.append( ", realizedLoss=" ).append( realizedLoss );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final VPortfolioStockEntity that = (VPortfolioStockEntity) o;
-        return Objects.equals( portfolioId, that.portfolioId ) &&
-               Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-               Objects.equals( companyName, that.companyName ) &&
-               Objects.equals( numberOfShares, that.numberOfShares ) &&
-               Objects.equals( lastPrice, that.lastPrice ) &&
-               Objects.equals( costBasis, that.costBasis ) &&
-               Objects.equals( realizedGains, that.realizedGains ) &&
-               Objects.equals( realizedLosses, that.realizedLosses ) &&
-               Objects.equals( stopLossPrice, that.stopLossPrice ) &&
-               Objects.equals( stopLossShares, that.stopLossShares ) &&
-               Objects.equals( profitTakingShares, that.profitTakingShares ) &&
-               Objects.equals( profitTakingPrice, that.profitTakingPrice );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( portfolioId, tickerSymbol, companyName, lastPrice, costBasis, numberOfShares, realizedGains, realizedLosses, stopLossPrice, stopLossShares, profitTakingPrice, profitTakingShares );
-    }
-
-    @Basic
-    @Column( name = "id", nullable = false )
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
     }
 }

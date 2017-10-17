@@ -21,6 +21,7 @@ public class PortfolioEntity
     private String name;
     private Integer customerId;
     private Timestamp createDate;
+    private Timestamp updateDate;
 
     /**
      * Create a new instance from a PortfolioDTO
@@ -69,6 +70,18 @@ public class PortfolioEntity
         this.customerId = customerId;
     }
 
+    @Basic
+    @Column( name = "update_date", nullable = true )
+    public Timestamp getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( final Timestamp updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
     /**
      * Can be null as default value will be set by the DB.
      * @return
@@ -84,20 +97,6 @@ public class PortfolioEntity
     {
         this.createDate = createDate;
     }
-
-    /*
-    @OneToMany
-    @JoinColumn( name = "portfolio_id", referencedColumnName = "id", nullable = false )
-    public Collection<PortfolioStockEntity> getPortfolioStocksById()
-    {
-        return portfolioStocksById;
-    }
-
-    public void setPortfolioStocksById( final Collection<PortfolioStockEntity> portfolioStocksById )
-    {
-        this.portfolioStocksById = portfolioStocksById;
-    }
-    */
 
     @Override
     public boolean equals( final Object o )
@@ -129,7 +128,7 @@ public class PortfolioEntity
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", createDate=" ).append( createDate );
-        //sb.append( ", portfolioStocksById=" ).append( portfolioStocksById );
+        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }

@@ -3,8 +3,10 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
+import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.weblayer.dto.StockDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +28,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @CrossOrigin
 public class StockController extends AbstractController implements MyLogger
 {
+    private StockService stockService;
+
     /**
      * Get all of the stocks within the pageRequest parameters
      *
@@ -166,5 +170,11 @@ public class StockController extends AbstractController implements MyLogger
         return stockSectorsDTO;
         */
         return null;
+    }
+
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        this.stockService = stockService;
     }
 }

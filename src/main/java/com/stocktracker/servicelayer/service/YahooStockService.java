@@ -29,7 +29,7 @@ public class YahooStockService implements MyLogger
         StockTickerQuote stockTickerQuote = null;
         try
         {
-            Stock stock = getStockFromYahoo( tickerSymbol );
+            Stock stock = getStock( tickerSymbol );
             stockTickerQuote = getStockTickerQuote( stock );
             logMethodEnd( methodName, String.format( "{0} {1}", tickerSymbol, stockTickerQuote.getLastPrice() ));
         }
@@ -66,10 +66,10 @@ public class YahooStockService implements MyLogger
      * @return
      * @throws IOException
      */
-    public Stock getStockFromYahoo( final String tickerSymbol )
+    public Stock getStock( final String tickerSymbol )
         throws IOException
     {
-        final String methodName = "getStockFromYahoo";
+        final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Stock stock = YahooFinance.get( tickerSymbol );
@@ -86,7 +86,7 @@ public class YahooStockService implements MyLogger
     {
         final String methodName = "setStockInformation";
         logMethodBegin( methodName, container.getTickerSymbol() );
-        Stock stock = getStockFromYahoo( container.getTickerSymbol() ) ;
+        Stock stock = getStock( container.getTickerSymbol() ) ;
         container.setCompanyName( stock.getName() );
         StockTickerQuote stockTickerQuote = this.getStockTickerQuote( stock );
         container.setLastPriceChange( stockTickerQuote.getLastPriceChange() );

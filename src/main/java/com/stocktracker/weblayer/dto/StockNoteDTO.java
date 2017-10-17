@@ -1,10 +1,5 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.repositorylayer.entity.StockNoteEntity;
-import org.springframework.beans.BeanUtils;
-
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +18,7 @@ public class StockNoteDTO
     private Integer notesRating;
     private Boolean publicInd;
     private Byte bullOrBear;
+    private String actionTaken;
     private String dateCreated;
     private String dateModified;
     /**
@@ -177,6 +173,16 @@ public class StockNoteDTO
         this.stocks = stocks;
     }
 
+    public String getActionTaken()
+    {
+        return actionTaken;
+    }
+
+    public void setActionTaken( final String actionTaken )
+    {
+        this.actionTaken = actionTaken;
+    }
+
     @Override
     public String toString()
     {
@@ -190,6 +196,7 @@ public class StockNoteDTO
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd=" ).append( publicInd );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
+        sb.append( ", actionTaken=" ).append( actionTaken );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
         sb.append( ", stocks=" ).append( stocks );

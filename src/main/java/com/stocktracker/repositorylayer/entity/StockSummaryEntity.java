@@ -3,10 +3,13 @@ package com.stocktracker.repositorylayer.entity;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 @Table( name = "stock_summary", schema = "stocktracker", catalog = "" )
@@ -25,6 +28,8 @@ public class StockSummaryEntity
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
     private BigDecimal buySharesBelow;
+    private Timestamp createDate;
+    private Timestamp updateDate;
 
     public static StockSummaryEntity newInstance()
     {
@@ -32,7 +37,8 @@ public class StockSummaryEntity
     }
 
     @Id
-    @Column( name = "id" )
+    @Column( name = "id", nullable = false )
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
     public Integer getId()
     {
         return id;
@@ -68,7 +74,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "comments" )
+    @Column( name = "comments", nullable = true, length = 45 )
     public String getComments()
     {
         return comments;
@@ -80,7 +86,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "analyst_buy_count" )
+    @Column( name = "analyst_buy_count", nullable = true )
     public Integer getAnalystBuyCount()
     {
         return analystBuyCount;
@@ -92,7 +98,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "analyst_sell_count" )
+    @Column( name = "analyst_sell_count", nullable = true )
     public Integer getAnalystSellCount()
     {
         return analystSellCount;
@@ -104,7 +110,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "analyst_hold_count" )
+    @Column( name = "analyst_hold_count", nullable = true )
     public Integer getAnalystHoldCount()
     {
         return analystHoldCount;
@@ -116,7 +122,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "next_catalyst_date" )
+    @Column( name = "next_catalyst_date", nullable = true )
     public Timestamp getNextCatalystDate()
     {
         return nextCatalystDate;
@@ -128,7 +134,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "next_catalyst_desc" )
+    @Column( name = "next_catalyst_desc", nullable = true, length = 30 )
     public String getNextCatalystDesc()
     {
         return nextCatalystDesc;
@@ -140,7 +146,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "avg_analyst_price_target" )
+    @Column( name = "avg_analyst_price_target", nullable = true, precision = 2 )
     public BigDecimal getAvgAnalystPriceTarget()
     {
         return avgAnalystPriceTarget;
@@ -152,7 +158,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "low_analyst_price_target" )
+    @Column( name = "low_analyst_price_target", nullable = true, precision = 2 )
     public BigDecimal getLowAnalystPriceTarget()
     {
         return lowAnalystPriceTarget;
@@ -164,7 +170,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "high_analyst_price_target" )
+    @Column( name = "high_analyst_price_target", nullable = true, precision = 2 )
     public BigDecimal getHighAnalystPriceTarget()
     {
         return highAnalystPriceTarget;
@@ -176,7 +182,7 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "buy_shares_below" )
+    @Column( name = "buy_shares_below", nullable = true, precision = 2 )
     public BigDecimal getBuySharesBelow()
     {
         return buySharesBelow;
@@ -187,6 +193,30 @@ public class StockSummaryEntity
         this.buySharesBelow = buySharesBelow;
     }
 
+    @Basic
+    @Column( name = "create_date", nullable = false )
+    public Timestamp getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( final Timestamp createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    @Basic
+    @Column( name = "update_date", nullable = true )
+    public Timestamp getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( final Timestamp updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -194,24 +224,18 @@ public class StockSummaryEntity
         {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
+        if ( !(o instanceof StockSummaryEntity) )
         {
             return false;
         }
-
         final StockSummaryEntity that = (StockSummaryEntity) o;
-
-        return id != null
-               ? id.equals( that.id )
-               : that.id == null;
+        return Objects.equals( id, that.id );
     }
 
     @Override
     public int hashCode()
     {
-        return id != null
-               ? id.hashCode()
-               : 0;
+        return Objects.hash( id );
     }
 
     @Override
@@ -231,6 +255,8 @@ public class StockSummaryEntity
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }

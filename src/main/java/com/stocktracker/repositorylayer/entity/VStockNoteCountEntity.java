@@ -19,8 +19,9 @@ public class VStockNoteCountEntity
         return new VStockNoteCountEntity();
     }
 
+    @Basic
     @Id
-    @Column( name = "customer_id" )
+    @Column( name = "customer_id", nullable = false )
     public Integer getCustomerId()
     {
         return customerId;
@@ -32,7 +33,7 @@ public class VStockNoteCountEntity
     }
 
     @Basic
-    @Column( name = "ticker_symbol" )
+    @Column( name = "ticker_symbol", nullable = false, length = 5 )
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -44,7 +45,7 @@ public class VStockNoteCountEntity
     }
 
     @Basic
-    @Column( name = "note_count" )
+    @Column( name = "note_count", nullable = false )
     public Long getNoteCount()
     {
         return noteCount;

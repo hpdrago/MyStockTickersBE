@@ -36,9 +36,12 @@ public class StockNoteEntity implements MyLogger
     private Integer notesRating;
     private String publicInd;
     private Byte bullOrBear;
+    private String actionTaken;
     private List<StockNoteStockEntity> stockNoteStocks;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Integer notesSourceId;
+    private Timestamp createDate;
+    private Timestamp updateDate;
 
     public static StockNoteEntity newInstance()
     {
@@ -95,7 +98,7 @@ public class StockNoteEntity implements MyLogger
     }
 
     @Basic
-    @Column( name = "date_created", nullable = false, insertable = false, updatable = false )
+    @Column( name = "create_date", nullable = false, insertable = false, updatable = false )
     public Timestamp getDateCreated()
     {
         return dateCreated;
@@ -107,7 +110,7 @@ public class StockNoteEntity implements MyLogger
     }
 
     @Basic
-    @Column( name = "date_modified", nullable = true, insertable = false )
+    @Column( name = "update_date", nullable = true, insertable = false )
     public Timestamp getDateModified()
     {
         return dateModified;
@@ -251,22 +254,62 @@ public class StockNoteEntity implements MyLogger
         return Objects.hash( id );
     }
 
+    @Basic
+    @Column( name = "create_date", nullable = false )
+    public Timestamp getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( final Timestamp createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    @Basic
+    @Column( name = "update_date", insertable = false, updatable = false )
+    public Timestamp getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( final Timestamp updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
+    @Basic
+    @Column( name = "action_taken", nullable = false )
+    public String getActionTaken()
+    {
+        return actionTaken;
+    }
+
+    public void setActionTaken( final String actionTaken )
+    {
+        this.actionTaken = actionTaken;
+    }
+
     @Override
     public String toString()
     {
-        return "StockNoteEntity{" +
-               "id=" + id +
-               ", notes='" + notes + '\'' +
-               ", notesDate=" + notesDate +
-               ", dateCreated=" + dateCreated +
-               ", dateModified=" + dateModified +
-               ", notesRating=" + notesRating +
-               ", publicInd='" + publicInd + '\'' +
-               ", bullOrBear=" + bullOrBear +
-               ", stockNoteStocks=" + stockNoteStocks +
-               ", stockNoteSourceByNotesSourceId=" + stockNoteSourceByNotesSourceId +
-               ", notesSourceId=" + notesSourceId +
-               ", customerId=" + customerId +
-               '}';
+        final StringBuilder sb = new StringBuilder( "StockNoteEntity{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", notes='" ).append( notes ).append( '\'' );
+        sb.append( ", notesDate=" ).append( notesDate );
+        sb.append( ", dateCreated=" ).append( dateCreated );
+        sb.append( ", dateModified=" ).append( dateModified );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", notesRating=" ).append( notesRating );
+        sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
+        sb.append( ", bullOrBear=" ).append( bullOrBear );
+        sb.append( ", actionTaken=" ).append( actionTaken );
+        sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
+        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
+        sb.append( ", notesSourceId=" ).append( notesSourceId );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

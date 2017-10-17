@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
+import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractController;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,8 @@ import java.util.Objects;
 @RestController
 public class PortfolioStockController extends AbstractController
 {
-    @Autowired
+    private PortfolioStockService portfolioStockService;
     private AddPortfolioStockHandler addPortfolioStockHandler;
-    @Autowired
     private SavePortfolioStockHandler savePortfolioStockHandler;
 
     /**
@@ -206,13 +206,21 @@ public class PortfolioStockController extends AbstractController
         }
     }
 
+    @Autowired
     public void setAddPortfolioStockHandler( final AddPortfolioStockHandler addPortfolioStockHandler )
     {
         this.addPortfolioStockHandler = addPortfolioStockHandler;
     }
 
+    @Autowired
     public void setSavePortfolioStockHandler( final SavePortfolioStockHandler savePortfolioStockHandler )
     {
         this.savePortfolioStockHandler = savePortfolioStockHandler;
+    }
+
+    @Autowired
+    public void setPortfolioStockService( final PortfolioStockService portfolioStockService )
+    {
+        this.portfolioStockService = portfolioStockService;
     }
 }

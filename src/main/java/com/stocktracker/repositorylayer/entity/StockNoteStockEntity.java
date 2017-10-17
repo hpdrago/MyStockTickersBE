@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -24,6 +25,8 @@ public class StockNoteStockEntity
     private Integer customerId;
     private String tickerSymbol;
     private BigDecimal stockPrice;
+    private Timestamp createDate;
+    private Timestamp updateDate;
 
     @ManyToOne( fetch = FetchType.EAGER )
     @JoinColumn( name = "stock_note_id", nullable = false, updatable = false, insertable = false )
@@ -133,15 +136,43 @@ public class StockNoteStockEntity
         return Objects.hash( id, tickerSymbol, customerId, stockPrice );
     }
 
+    @Basic
+    @Column( name = "update_date", nullable = true )
+    public Timestamp getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( final Timestamp updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
+    @Basic
+    @Column( name = "create_date", nullable = false )
+    public Timestamp getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( final Timestamp createDate )
+    {
+        this.createDate = createDate;
+    }
+
     @Override
     public String toString()
     {
-        return "StockNoteStockEntity{" +
-               "id=" + id +
-               ", stockNoteStockId=" + stockNoteEntity.getId() +
-               ", customerId=" + customerId +
-               ", tickerSymbol='" + tickerSymbol + '\'' +
-               ", stockPrice=" + stockPrice +
-               '}';
+        final StringBuilder sb = new StringBuilder( "StockNoteStockEntity{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", stockPrice=" ).append( stockPrice );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", stockNoteEntity=" ).append( stockNoteEntity );
+        sb.append( '}' );
+        return sb.toString();
     }
+
 }

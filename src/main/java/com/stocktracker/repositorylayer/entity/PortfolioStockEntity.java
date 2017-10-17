@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -34,17 +36,18 @@ public class PortfolioStockEntity
     private Integer profitTakingShares;
     private BigDecimal realizedGains;
     private Timestamp createDate;
-
-    public static PortfolioStockEntity newInstance()
-    {
-        return new PortfolioStockEntity();
-    }
+    private Timestamp updateDate;
 
     /**
      * Default constructor
      */
     public PortfolioStockEntity()
     {
+    }
+
+    public static PortfolioStockEntity newInstance()
+    {
+        return new PortfolioStockEntity();
     }
 
     @Id
@@ -109,7 +112,7 @@ public class PortfolioStockEntity
     }
 
     @Basic
-    @Column( name = "average_unit_cost", nullable = true )
+    @Column( name = "average_unit_cost", nullable = true, precision = 2 )
     public BigDecimal getAverageUnitCost()
     {
         return averageUnitCost;
@@ -121,7 +124,7 @@ public class PortfolioStockEntity
     }
 
     @Basic
-    @Column( name = "realized_losses", nullable = true )
+    @Column( name = "realized_losses", nullable = true, precision = 2 )
     public BigDecimal getRealizedLosses()
     {
         return realizedLosses;
@@ -181,7 +184,7 @@ public class PortfolioStockEntity
     }
 
     @Basic
-    @Column( name = "realized_gains", nullable = true )
+    @Column( name = "realized_gains", nullable = true, precision = 2 )
     public BigDecimal getRealizedGains()
     {
         return realizedGains;
@@ -249,6 +252,18 @@ public class PortfolioStockEntity
         return Objects.hash( id );
     }
 
+    @Basic
+    @Column( name = "update_date", nullable = true )
+    public Timestamp getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( final Timestamp updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
     @Override
     public String toString()
     {
@@ -258,6 +273,17 @@ public class PortfolioStockEntity
         sb.append( ", portfolioId=" ).append( portfolioId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
+        sb.append( ", sectorId=" ).append( sectorId );
+        sb.append( ", subSectorId=" ).append( subSectorId );
+        sb.append( ", averageUnitCost=" ).append( averageUnitCost );
+        sb.append( ", realizedLosses=" ).append( realizedLosses );
+        sb.append( ", stopLossPrice=" ).append( stopLossPrice );
+        sb.append( ", stopLossShares=" ).append( stopLossShares );
+        sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
+        sb.append( ", profitTakingShares=" ).append( profitTakingShares );
+        sb.append( ", realizedGains=" ).append( realizedGains );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }

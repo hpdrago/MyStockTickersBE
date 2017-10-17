@@ -24,8 +24,7 @@ public class CustomerEntity
     private String email;
     private String password;
     private Timestamp createDate;
-    private Collection<PortfolioEntity> portfolios;
-    private Collection<StockNoteEntity> stockNotes;
+    private Timestamp updateDate;
 
     public CustomerEntity()
     {
@@ -85,28 +84,16 @@ public class CustomerEntity
         this.createDate = createDate;
     }
 
-    @OneToMany
-    @JoinColumn( name = "customer_id", referencedColumnName = "id" )
-    public Collection<PortfolioEntity> getPortfolios()
+    @Basic
+    @Column( name = "update_date", nullable = true )
+    public Timestamp getUpdateDate()
     {
-        return portfolios;
+        return updateDate;
     }
 
-    public void setPortfolios( final Collection<PortfolioEntity> portfoliosById )
+    public void setUpdateDate( final Timestamp updateDate )
     {
-        this.portfolios = portfoliosById;
-    }
-
-    @OneToMany
-    @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
-    public Collection<StockNoteEntity> getStockNotes()
-    {
-        return stockNotes;
-    }
-
-    public void setStockNotes( final Collection<StockNoteEntity> stockNotesById )
-    {
-        this.stockNotes = stockNotesById;
+        this.updateDate = updateDate;
     }
 
     @Override
@@ -136,7 +123,9 @@ public class CustomerEntity
         final StringBuilder sb = new StringBuilder( "CustomerEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", email='" ).append( email ).append( '\'' );
-        sb.append( ", portfoliosById=" ).append( portfolios );
+        sb.append( ", password='" ).append( password ).append( '\'' );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }

@@ -1,10 +1,15 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.servicelayer.service.YahooStockService;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class StockSummaryDTO
+public class StockSummaryDTO implements YahooStockService.YahooStockContainer
 {
+    /*
+     * Entity (DB columns)
+     */
     private Integer id;
     private Integer customerId;
     private String tickerSymbol;
@@ -18,6 +23,14 @@ public class StockSummaryDTO
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
     private BigDecimal buySharesBelow;
+
+    /*
+     * Calculate columns
+     */
+    private BigDecimal lastPrice;
+    private Timestamp lastPriceChange;
+    private BigDecimal avgUpsidePercent;
+    private String companyName;
 
     public static StockSummaryDTO newInstance()
     {
@@ -194,7 +207,53 @@ public class StockSummaryDTO
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    public BigDecimal getLastPrice()
+    {
+        return lastPrice;
+    }
+
+    @Override
+    public Timestamp getLastPriceChange()
+    {
+        return null;
+    }
+
+    public void setLastPrice( BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
+    @Override
+    public void setLastPriceChange( final Timestamp lastPriceChange )
+    {
+        this.lastPriceChange = lastPriceChange;
+    }
+
+    @Override
+    public String getCompanyName()
+    {
+        return null;
+    }
+
+    @Override
+    public void setCompanyName( final String companyName )
+    {
+        this.companyName = companyName;
+    }
+
+    public BigDecimal getAvgUpsidePercent()
+    {
+        return avgUpsidePercent;
+    }
+
+    public void setAvgUpsidePercent( BigDecimal avgUpsidePercent )
+    {
+        this.avgUpsidePercent = avgUpsidePercent;
     }
 }

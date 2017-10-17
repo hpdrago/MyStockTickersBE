@@ -1,8 +1,11 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.PortfolioService;
+import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,6 +27,9 @@ import java.util.List;
 @CrossOrigin
 public class PortfolioController extends AbstractController implements MyLogger
 {
+    private PortfolioService portfolioService;
+    private PortfolioStockService portfolioStockService;
+
     /**
      * Get a list of portfolios for a single customer {@code customerId}
      *
@@ -116,5 +122,17 @@ public class PortfolioController extends AbstractController implements MyLogger
         logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
         logMethodBegin( methodName, portfolioDTO );
         return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );
+    }
+
+    @Autowired
+    public void setPortfolioStockService( final PortfolioStockService portfolioStockService )
+    {
+        this.portfolioStockService = portfolioStockService;
+    }
+
+    @Autowired
+    public void setPortfolioService( final PortfolioService portfolioService )
+    {
+        this.portfolioService = portfolioService;
     }
 }

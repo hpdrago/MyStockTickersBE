@@ -90,16 +90,6 @@ public class StockDTO implements YahooStockService.YahooStockContainer
         this.lastPrice = lastPrice;
     }
 
-    public Timestamp getLastPriceUpdate()
-    {
-        return lastPriceUpdate;
-    }
-
-    public void setLastPriceUpdate( Timestamp lastPriceUpdate )
-    {
-        this.lastPriceUpdate = lastPriceUpdate;
-    }
-
     public Timestamp getLastPriceChange()
     {
         return lastPriceChange;

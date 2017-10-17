@@ -4,6 +4,8 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -26,19 +28,10 @@ public class StockEntity
     private Timestamp lastPriceChange;
     private String stockExchange;
     private Timestamp createDate;
+    private Timestamp updateDate;
     private String quoteUrl;
     private String sector;
     private String industry;
-
-    /**
-     * Create a new stock entity instance
-     * @return
-     */
-    public static StockEntity newInstance()
-    {
-        StockEntity stockEntity = new StockEntity();
-        return stockEntity;
-    }
 
     /*
     @Basic
@@ -53,6 +46,17 @@ public class StockEntity
         this.exchange = exchange;
     }
     */
+    private CustomerEntity customerByCreatedBy;
+
+    /**
+     * Create a new stock entity instance
+     * @return
+     */
+    public static StockEntity newInstance()
+    {
+        StockEntity stockEntity = new StockEntity();
+        return stockEntity;
+    }
 
     public void setUserEntered( final String userEntered )
     {
@@ -151,25 +155,6 @@ public class StockEntity
     }
 
     @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder( "StockEntity" );
-        sb.append( "@" );
-        sb.append( hashCode() );
-        sb.append( "{" );
-        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
-   //     sb.append( ", exchange='" ).append( exchange ).append( '\'' );
-        sb.append( ", createdBy=" ).append( createdBy );
-        sb.append( ", userEntered=" ).append( userEntered );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceUpdate=" ).append( lastPriceUpdate );
-        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( '}' );
-        return sb.toString();
-    }
-
-    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -250,5 +235,39 @@ public class StockEntity
     public void setIndustry( final String industry )
     {
         this.industry = industry;
+    }
+
+    @Basic
+    @Column( name = "update_date", nullable = true )
+    public Timestamp getUpdateDate()
+    {
+        return updateDate;
+    }
+
+    public void setUpdateDate( final Timestamp updateDate )
+    {
+        this.updateDate = updateDate;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "StockEntity{" );
+        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", createdBy=" ).append( createdBy );
+        sb.append( ", userEntered=" ).append( userEntered );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", lastPriceUpdate=" ).append( lastPriceUpdate );
+        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
+        sb.append( ", stockExchange='" ).append( stockExchange ).append( '\'' );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", quoteUrl='" ).append( quoteUrl ).append( '\'' );
+        sb.append( ", sector='" ).append( sector ).append( '\'' );
+        sb.append( ", industry='" ).append( industry ).append( '\'' );
+        sb.append( ", customerByCreatedBy=" ).append( customerByCreatedBy );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

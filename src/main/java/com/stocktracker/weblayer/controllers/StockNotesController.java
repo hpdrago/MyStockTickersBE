@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.StockNoteCountService;
+import com.stocktracker.servicelayer.service.StockNoteService;
 import com.stocktracker.servicelayer.service.StockNoteStockService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
@@ -33,18 +34,7 @@ public class StockNotesController extends AbstractController implements MyLogger
 {
     private StockNoteStockService stockNoteStockService;
     private StockNoteCountService stockNoteCountService;
-
-    @Autowired
-    public void setStockNoteCountService( final StockNoteCountService stockNoteCountService )
-    {
-        this.stockNoteCountService = stockNoteCountService;
-    }
-
-    @Autowired
-    public void setStockNoteStockService( final StockNoteStockService stockNoteStockService )
-    {
-        this.stockNoteStockService = stockNoteStockService;
-    }
+    private StockNoteService stockNoteService;
 
     /**
      * Add a stock note to the database
@@ -208,6 +198,24 @@ public class StockNotesController extends AbstractController implements MyLogger
         List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteCountService.getStockNotesCount( customerId );
         logMethodEnd( methodName, stockNoteCountDTOs.size() );
         return stockNoteCountDTOs;
+    }
+
+    @Autowired
+    public void setStockNoteService( final StockNoteService stockNoteService )
+    {
+        this.stockNoteService = stockNoteService;
+    }
+
+    @Autowired
+    public void setStockNoteCountService( final StockNoteCountService stockNoteCountService )
+    {
+        this.stockNoteCountService = stockNoteCountService;
+    }
+
+    @Autowired
+    public void setStockNoteStockService( final StockNoteStockService stockNoteStockService )
+    {
+        this.stockNoteStockService = stockNoteStockService;
     }
 
 }
