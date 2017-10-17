@@ -37,6 +37,7 @@ public class StockNoteEntity implements MyLogger
     private String publicInd;
     private Byte bullOrBear;
     private String actionTaken;
+    private Integer actionTakenShares;
     private List<StockNoteStockEntity> stockNoteStocks;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Integer notesSourceId;
@@ -290,6 +291,18 @@ public class StockNoteEntity implements MyLogger
         this.actionTaken = actionTaken;
     }
 
+    @Basic
+    @Column( name = "action_taken_shares", nullable = false )
+    public Integer getActionTakenShares()
+    {
+        return actionTakenShares;
+    }
+
+    public void setActionTakenShares( final Integer actionTakenShares )
+    {
+        this.actionTakenShares = actionTakenShares;
+    }
+
     @Override
     public String toString()
     {
@@ -304,6 +317,7 @@ public class StockNoteEntity implements MyLogger
         sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
         sb.append( ", actionTaken=" ).append( actionTaken );
+        sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
         sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
         sb.append( ", notesSourceId=" ).append( notesSourceId );

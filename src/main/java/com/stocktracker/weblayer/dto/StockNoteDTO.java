@@ -19,6 +19,7 @@ public class StockNoteDTO
     private Boolean publicInd;
     private Byte bullOrBear;
     private String actionTaken;
+    private Integer actionTakenShares;
     private String dateCreated;
     private String dateModified;
     /**
@@ -183,6 +184,16 @@ public class StockNoteDTO
         this.actionTaken = actionTaken;
     }
 
+    public Integer getActionTakenShares()
+    {
+        return actionTakenShares;
+    }
+
+    public void setActionTakenShares( final Integer actionTakenShares )
+    {
+        this.actionTakenShares = actionTakenShares;
+    }
+
     @Override
     public String toString()
     {
@@ -197,6 +208,7 @@ public class StockNoteDTO
         sb.append( ", publicInd=" ).append( publicInd );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
         sb.append( ", actionTaken=" ).append( actionTaken );
+        sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( ", dateModified=" ).append( dateModified );
         sb.append( ", stocks=" ).append( stocks );

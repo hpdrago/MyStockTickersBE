@@ -31,7 +31,7 @@ public class StockSummaryController implements MyLogger
      * Get all of the stock summaries for a customer
      * @return
      */
-    @RequestMapping( value = "/stockSummaries/{customer_id}",
+    @RequestMapping( value = "/stockSummary/customer/{customer_id}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<StockSummaryDTO> getStockSummaries( @PathVariable int customerId )
@@ -47,7 +47,7 @@ public class StockSummaryController implements MyLogger
      * Get a single stock summary
      * @return
      */
-    @RequestMapping( value = "/stockSummaries/stockSummary/{stockSummaryId}",
+    @RequestMapping( value = "/stockSummary/{stockSummaryId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockSummaryDTO getStockSummary( @PathVariable int stockSummaryId )
@@ -64,7 +64,7 @@ public class StockSummaryController implements MyLogger
      * @param stockSummaryId
      * @return
      */
-    @RequestMapping( value = "/stockSummaries/stockSummary/{stockSummaryId}",
+    @RequestMapping( value = "/stockSummary/{stockSummaryId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockSummary( @PathVariable int stockSummaryId )
