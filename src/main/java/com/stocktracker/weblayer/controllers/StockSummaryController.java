@@ -31,7 +31,7 @@ public class StockSummaryController implements MyLogger
      * Get all of the stock summaries for a customer
      * @return
      */
-    @RequestMapping( value = "/stockSummary/customer/{customer_id}",
+    @RequestMapping( value = "/stockSummary/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<StockSummaryDTO> getStockSummaries( @PathVariable int customerId )

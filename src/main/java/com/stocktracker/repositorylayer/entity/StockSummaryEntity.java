@@ -19,9 +19,11 @@ public class StockSummaryEntity
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
+    private Integer analystStrongBuyCount;
     private Integer analystBuyCount;
-    private Integer analystSellCount;
     private Integer analystHoldCount;
+    private Integer analystUnderPerformCount;
+    private Integer analystSellCount;
     private Timestamp nextCatalystDate;
     private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
@@ -120,6 +122,31 @@ public class StockSummaryEntity
     {
         this.analystHoldCount = analystHoldCount;
     }
+
+    @Basic
+    @Column( name = "analyst_strong_buy_count", nullable = true )
+    public Integer getAnalystStrongBuyCount()
+    {
+        return analystStrongBuyCount;
+    }
+
+    public void setAnalystStrongBuyCount( final Integer analystStrongBuyCount )
+    {
+        this.analystStrongBuyCount = analystStrongBuyCount;
+    }
+
+    @Basic
+    @Column( name = "analyst_under_perform_count", nullable = true )
+    public Integer getAnalystUnderPerformCount()
+    {
+        return analystUnderPerformCount;
+    }
+
+    public void setAnalystUnderPerformCount( final Integer analystUnderPerformCount )
+    {
+        this.analystUnderPerformCount = analystUnderPerformCount;
+    }
+
 
     @Basic
     @Column( name = "next_catalyst_date", nullable = true )
@@ -246,9 +273,11 @@ public class StockSummaryEntity
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
+        sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
         sb.append( ", analystBuyCount=" ).append( analystBuyCount );
-        sb.append( ", analystSellCount=" ).append( analystSellCount );
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
+        sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
+        sb.append( ", analystSellCount=" ).append( analystSellCount );
         sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
         sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );

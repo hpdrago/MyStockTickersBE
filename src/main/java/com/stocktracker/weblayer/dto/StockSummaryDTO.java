@@ -14,9 +14,11 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
+    private Integer analystStrongBuyCount;
     private Integer analystBuyCount;
-    private Integer analystSellCount;
     private Integer analystHoldCount;
+    private Integer analystUnderPerformCount;
+    private Integer analystSellCount;
     private Timestamp nextCatalystDate;
     private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
@@ -198,9 +200,11 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
+        sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
         sb.append( ", analystBuyCount=" ).append( analystBuyCount );
-        sb.append( ", analystSellCount=" ).append( analystSellCount );
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
+        sb.append( ", analystUnderPerform=" ).append( analystUnderPerformCount );
+        sb.append( ", analystSellCount=" ).append( analystSellCount );
         sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
         sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
@@ -255,5 +259,25 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     public void setAvgUpsidePercent( BigDecimal avgUpsidePercent )
     {
         this.avgUpsidePercent = avgUpsidePercent;
+    }
+
+    public Integer getAnalystStrongBuyCount()
+    {
+        return analystStrongBuyCount;
+    }
+
+    public void setAnalystStrongBuyCount( Integer analystStrongBuyCount )
+    {
+        this.analystStrongBuyCount = analystStrongBuyCount;
+    }
+
+    public Integer getAnalystUnderPerformCount()
+    {
+        return analystUnderPerformCount;
+    }
+
+    public void setAnalystUnderPerformCount( Integer analystUnderPerformCount )
+    {
+        this.analystUnderPerformCount = analystUnderPerformCount;
     }
 }
