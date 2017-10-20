@@ -73,14 +73,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         {
             for ( StockDTO stockDTO : stockDTOs )
             {
-                try
-                {
-                    setStockInformation( stockDTO );
-                }
-                catch ( IOException e )
-                {
-                    logError( methodName, e );
-                }
+                setStockInformation( stockDTO );
             }
         }
         logMethodEnd( methodName );
@@ -156,8 +149,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         if ( stockEntity == null )
         {
             logDebug( methodName, "{0} not in stock table, calling yahoo..." );
-            Optional<StockCache.CachedStock> cachedStock;
-            cachedStock = this.stockCache.getStock( tickerSymbol );
+            Optional<StockCache.CachedStock> cachedStock = this.stockCache.getStock( tickerSymbol );
             logDebug( methodName, "yahooStock: {0}", cachedStock );
             if ( !cachedStock.isPresent() )
             {
@@ -168,14 +160,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         else
         {
             stockDTO = this.entityToDTO( stockEntity );
-            try
-            {
-                setStockInformation( stockDTO );
-            }
-            catch ( IOException e )
-            {
-                throw new StockNotFoundInExchangeException( tickerSymbol, e );
-            }
+            setStockInformation( stockDTO );
         }
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
@@ -209,14 +194,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         StockEntity stockEntity = this.dtoToEntity( stockDTO );
         stockEntity = stockRepository.save( stockEntity );
         StockDTO returnStockDTO = this.entityToDTO( stockEntity );
-        try
-        {
-            this.setStockInformation( returnStockDTO );
-        }
-        catch ( IOException e )
-        {
-            logError( methodName, e );
-        }
+        this.setStockInformation( returnStockDTO );
         logMethodEnd( methodName, returnStockDTO );
         return returnStockDTO;
     }
@@ -341,7 +319,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @param containers
      * @throws IOException
      */
-    private void setStockInformation( final List<YahooStockService.YahooStockContainer> containers )
+    public void setStockInformation( final List<YahooStockService.YahooStockContainer> containers )
         throws IOException
     {
         final String methodName = "setStockInformation";
@@ -355,23 +333,33 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     }
 
     /**
-     * Makes a call to Yahoo to get the current stock information including the price, last price change, and company
-     * name.  This information that was retrieved from Yahoo, is also saved back to the database stock table.
+     * Obtains the stock information from the stock cache with the current stock information including the price,
+     * last price change, and company name.
+     * This information that was retrieved from the cache, is also saved back to the database stock table.
      * @param container
-     * @throws IOException
      */
     public void setStockInformation( final YahooStockService.YahooStockContainer container )
-        throws IOException
     {
         final String methodName = "setStockInformation";
         logMethodBegin( methodName, container.getTickerSymbol() );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        this.yahooStockService.setStockInformation( container );
-        /*
-         * Update the stock table with the new information
-         */
-        this.saveStockInformation( container );
+        Optional<StockCache.CachedStock> cachedStock = this.stockCache.getStock( container.getTickerSymbol() );
+        if ( cachedStock.isPresent() )
+        {
+            /*
+             * Update the stock table with the new information
+             */
+            container.setCompanyName( cachedStock.get().getCompanyName() );
+            container.setLastPrice( cachedStock.get().getLastPrice() );
+            container.setLastPriceChange( cachedStock.get().getLastPriceChange() );
+            this.saveStockInformation( container );
+        }
+        else
+        {
+            logWarn( methodName, "Could not get stock information from the stock cache for {0}",
+                     container.getTickerSymbol() );
+        }
         logMethodEnd( methodName, container );
     }
 

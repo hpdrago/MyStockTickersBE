@@ -18,7 +18,8 @@ import java.util.Objects;
 public class StockSummaryService extends BaseService<StockSummaryEntity, StockSummaryDTO> implements MyLogger
 {
     private StockSummaryRepository stockSummaryRepository;
-    private StockCache stockCache;
+
+    private StockService stockService;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -32,6 +33,7 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         List<StockSummaryEntity> stockSummaryEntities = this.stockSummaryRepository.findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockSummaryDTO> stockSummaryDTOs = this.entitiesToDTOs( stockSummaryEntities );
+        stockSummaryDTOs.forEach( stockSummaryDTO ->  this.stockService.setStockInformation( stockSummaryDTO ));
         logMethodEnd( methodName, "Found " + stockSummaryEntities.size() + " summaries" );
         return stockSummaryDTOs;
     }
@@ -108,8 +110,9 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
     }
 
     @Autowired
-    public void setStockCache( final StockCache stockCache )
+    public void setStockService( final StockService stockService )
     {
-        this.stockCache = stockCache;
+        this.stockService = stockService;
     }
+
 }

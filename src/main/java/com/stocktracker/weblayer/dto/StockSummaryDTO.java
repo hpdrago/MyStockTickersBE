@@ -19,15 +19,17 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     private Integer analystHoldCount;
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
+    private Timestamp lastAnalystSentimentDate;
     private Timestamp nextCatalystDate;
     private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
+    private Timestamp lastAnalystPriceDate;
     private BigDecimal buySharesBelow;
 
     /*
-     * Calculate columns
+     * Calculated columns
      */
     private BigDecimal lastPrice;
     private Timestamp lastPriceChange;
@@ -192,31 +194,6 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
         return id.hashCode();
     }
 
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder( "StockSummaryDTO{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", comments='" ).append( comments ).append( '\'' );
-        sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
-        sb.append( ", analystBuyCount=" ).append( analystBuyCount );
-        sb.append( ", analystHoldCount=" ).append( analystHoldCount );
-        sb.append( ", analystUnderPerform=" ).append( analystUnderPerformCount );
-        sb.append( ", analystSellCount=" ).append( analystSellCount );
-        sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
-        sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
-        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
-        sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
-        sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
-        sb.append( ", buySharesBelow=" ).append( buySharesBelow );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
-        sb.append( '}' );
-        return sb.toString();
-    }
-
     public BigDecimal getLastPrice()
     {
         return lastPrice;
@@ -279,5 +256,54 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     public void setAnalystUnderPerformCount( Integer analystUnderPerformCount )
     {
         this.analystUnderPerformCount = analystUnderPerformCount;
+    }
+
+    public Timestamp getLastAnalystSentimentDate()
+    {
+        return lastAnalystSentimentDate;
+    }
+
+    public void setLastAnalystSentimentDate( final Timestamp lastAnalystSentimentDate )
+    {
+        this.lastAnalystSentimentDate = lastAnalystSentimentDate;
+    }
+
+    public Timestamp getLastAnalystPriceDate()
+    {
+        return lastAnalystPriceDate;
+    }
+
+    public void setLastAnalystPriceDate( final Timestamp lastAnalystPriceDate )
+    {
+        this.lastAnalystPriceDate = lastAnalystPriceDate;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "StockSummaryDTO{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", comments='" ).append( comments ).append( '\'' );
+        sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
+        sb.append( ", analystBuyCount=" ).append( analystBuyCount );
+        sb.append( ", analystHoldCount=" ).append( analystHoldCount );
+        sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
+        sb.append( ", analystSellCount=" ).append( analystSellCount );
+        sb.append( ", lastAnalystSentimentDate=" ).append( lastAnalystSentimentDate );
+        sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
+        sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
+        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
+        sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
+        sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
+        sb.append( ", lastAnalystPriceDate=" ).append( lastAnalystPriceDate );
+        sb.append( ", buySharesBelow=" ).append( buySharesBelow );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
+        sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

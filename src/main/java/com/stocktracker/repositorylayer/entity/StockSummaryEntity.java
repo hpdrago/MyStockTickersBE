@@ -24,12 +24,14 @@ public class StockSummaryEntity
     private Integer analystHoldCount;
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
+    private Timestamp lastAnalystSentimentDate;
     private Timestamp nextCatalystDate;
     private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
     private BigDecimal buySharesBelow;
+    private Timestamp lastAnalystPriceDate;
     private Timestamp createDate;
     private Timestamp updateDate;
 
@@ -244,6 +246,30 @@ public class StockSummaryEntity
         this.updateDate = updateDate;
     }
 
+    @Basic
+    @Column( name = "last_analyst_sentiment_date", nullable = true )
+    public Timestamp getLastAnalystSentimentDate()
+    {
+        return lastAnalystSentimentDate;
+    }
+
+    public void setLastAnalystSentimentDate( final Timestamp lastAnalystSentimentDate )
+    {
+        this.lastAnalystSentimentDate = lastAnalystSentimentDate;
+    }
+
+    @Basic
+    @Column( name = "last_analyst_price_date", nullable = true )
+    public Timestamp getLastAnalystPriceDate()
+    {
+        return lastAnalystPriceDate;
+    }
+
+    public void setLastAnalystPriceDate( final Timestamp lastAnalystPriceDate )
+    {
+        this.lastAnalystPriceDate = lastAnalystPriceDate;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -278,15 +304,18 @@ public class StockSummaryEntity
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
+        sb.append( ", lastAnalystSentimentDate=" ).append( lastAnalystSentimentDate );
         sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
         sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
+        sb.append( ", lastAnalystPriceDate=" ).append( lastAnalystPriceDate );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }
+
 }

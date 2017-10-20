@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.StockSummaryService;
 import com.stocktracker.weblayer.dto.StockSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
