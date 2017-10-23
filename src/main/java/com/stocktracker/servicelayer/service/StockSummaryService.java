@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockSummaryEntity;
 import com.stocktracker.repositorylayer.repository.StockSummaryRepository;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +37,7 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
         List<StockSummaryEntity> stockSummaryEntities = this.stockSummaryRepository.findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockSummaryDTO> stockSummaryDTOs = this.entitiesToDTOs( stockSummaryEntities );
         stockSummaryDTOs.forEach( stockSummaryDTO ->  this.stockService.setStockInformation( stockSummaryDTO ));
+        logDebug( methodName, "stockSummaries: {0}", stockSummaryDTOs );
         logMethodEnd( methodName, "Found " + stockSummaryEntities.size() + " summaries" );
         return stockSummaryDTOs;
     }
@@ -50,6 +54,7 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
         Objects.requireNonNull( stockSummaryId, "stockSummaryId cannot be null" );
         StockSummaryEntity stockSummaryEntity = this.stockSummaryRepository.findOne( stockSummaryId );
         StockSummaryDTO stockSummaryDTO = this.entityToDTO( stockSummaryEntity );
+        this.stockService.setStockInformation( stockSummaryDTO );
         logMethodEnd( methodName, stockSummaryDTO );
         return stockSummaryDTO;
     }
@@ -68,6 +73,7 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
         stockSummaryEntity = this.stockSummaryRepository.save( stockSummaryEntity );
         logDebug( methodName, "saved {0}", stockSummaryEntity );
         StockSummaryDTO returnStockSummaryDTO = this.entityToDTO( stockSummaryEntity );
+        this.stockService.setStockInformation( returnStockSummaryDTO );
         logMethodEnd( methodName, returnStockSummaryDTO );
         return returnStockSummaryDTO;
     }
@@ -86,21 +92,63 @@ public class StockSummaryService extends BaseService<StockSummaryEntity, StockSu
     }
 
     @Override
-    protected StockSummaryDTO entityToDTO( final StockSummaryEntity stockEntity )
+    protected StockSummaryDTO entityToDTO( final StockSummaryEntity stockSummaryEntity )
     {
-        Objects.requireNonNull( stockEntity );
-        StockSummaryDTO stockDTO = StockSummaryDTO.newInstance();
-        BeanUtils.copyProperties( stockEntity, stockDTO );
-        return stockDTO;
+        final String methodName = "entityToDTO";
+        Objects.requireNonNull( stockSummaryEntity );
+        StockSummaryDTO stockSummaryDTO = StockSummaryDTO.newInstance();
+        BeanUtils.copyProperties( stockSummaryEntity, stockSummaryDTO );
+        performCalculations( stockSummaryDTO );
+        stockSummaryDTO.setAnalystPriceDate( stockSummaryEntity.getAnalystPriceDate() );
+        stockSummaryDTO.setAnalystSentimentDate( stockSummaryEntity.getAnalystSentimentDate() );
+        stockSummaryDTO.setNextCatalystDate( stockSummaryEntity.getNextCatalystDate() );
+        return stockSummaryDTO;
+    }
+
+    private void performCalculations( final StockSummaryDTO stockSummaryDTO )
+    {
+        if ( stockSummaryDTO.getLastPrice() != null &&
+             stockSummaryDTO.getAvgAnalystPriceTarget() != null &&
+             stockSummaryDTO.getAvgAnalystPriceTarget().intValue() > 0 )
+        {
+            stockSummaryDTO.setAvgUpsidePercent( stockSummaryDTO.getLastPrice()
+                                                                .divide( stockSummaryDTO
+                                                                             .getAvgAnalystPriceTarget() )
+                                                                .multiply( new BigDecimal( 100 ) ) );
+        }
     }
 
     @Override
-    protected StockSummaryEntity dtoToEntity( final StockSummaryDTO stockDTO )
+    protected StockSummaryEntity dtoToEntity( final StockSummaryDTO stockSummaryDTO )
     {
-        Objects.requireNonNull( stockDTO );
-        StockSummaryEntity stockEntity = StockSummaryEntity.newInstance();
-        BeanUtils.copyProperties( stockDTO, stockEntity );
-        return stockEntity;
+        final String methodName = "dtoToEntity";
+        Objects.requireNonNull( stockSummaryDTO );
+        StockSummaryEntity stockSummaryEntity = StockSummaryEntity.newInstance();
+        BeanUtils.copyProperties( stockSummaryDTO, stockSummaryEntity );
+        try
+        {
+            if ( stockSummaryDTO.getAnalystPriceDate() != null )
+            {
+                stockSummaryEntity.setAnalystPriceDate(
+                    JSONDateConverter.toTimestamp( stockSummaryDTO.getAnalystPriceDate() ) );
+            }
+
+            if ( stockSummaryDTO.getAnalystSentimentDate() != null )
+            {
+                stockSummaryEntity.setAnalystSentimentDate(
+                    JSONDateConverter.toTimestamp( stockSummaryDTO.getAnalystSentimentDate() ) );
+            }
+            if ( stockSummaryDTO.getNextCatalystDate() != null )
+            {
+                stockSummaryEntity.setNextCatalystDate(
+                    JSONDateConverter.toTimestamp( stockSummaryDTO.getNextCatalystDate() ) );
+            }
+        }
+        catch ( ParseException e )
+        {
+            logError( methodName, e );
+        }
+        return stockSummaryEntity;
     }
 
     @Autowired

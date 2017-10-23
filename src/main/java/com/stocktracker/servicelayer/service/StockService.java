@@ -265,7 +265,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         stockDTO.setCompanyName( cachedStock.getCompanyName() );
         stockDTO.setUserEntered( false );
         stockDTO.setExchange( cachedStock.getExchange() );
-        stockDTO.setLastPriceChange( cachedStock.getLastPriceChange() );
+        stockDTO.setLastPriceChangeTimestamp( cachedStock.getLastPriceChange() );
         stockDTO.setLastPrice( cachedStock.getLastPrice() );
         stockDTO.setCreatedBy( 1 );
         this.addStock( stockDTO );
@@ -352,7 +352,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
              */
             container.setCompanyName( cachedStock.get().getCompanyName() );
             container.setLastPrice( cachedStock.get().getLastPrice() );
-            container.setLastPriceChange( cachedStock.get().getLastPriceChange() );
+            container.setLastPriceChangeTimestamp( cachedStock.get().getLastPriceChange() );
             this.saveStockInformation( container );
         }
         else
@@ -373,9 +373,12 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
         StockEntity stockEntity = this.getStockEntity( container.getTickerSymbol() );
-        stockEntity.setCompanyName( container.getCompanyName() );
+        if ( stockEntity == null )
+        {
+            stockEntity.setCompanyName( container.getCompanyName() );
+        }
         stockEntity.setLastPrice( container.getLastPrice() );
-        stockEntity.setLastPriceChange( container.getLastPriceChange() );
+        stockEntity.setLastPriceChange( container.getLastPriceChangeTimestamp() );
         this.stockRepository.save( stockEntity );
         logMethodEnd( methodName, container );
     }

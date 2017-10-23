@@ -24,14 +24,14 @@ public class StockSummaryEntity
     private Integer analystHoldCount;
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
-    private Timestamp lastAnalystSentimentDate;
+    private Timestamp analystSentimentDate;
     private Timestamp nextCatalystDate;
     private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
     private BigDecimal buySharesBelow;
-    private Timestamp lastAnalystPriceDate;
+    private Timestamp analystPriceDate;
     private Timestamp createDate;
     private Timestamp updateDate;
 
@@ -247,27 +247,27 @@ public class StockSummaryEntity
     }
 
     @Basic
-    @Column( name = "last_analyst_sentiment_date", nullable = true )
-    public Timestamp getLastAnalystSentimentDate()
+    @Column( name = "analyst_sentiment_date", nullable = true )
+    public Timestamp getAnalystSentimentDate()
     {
-        return lastAnalystSentimentDate;
+        return analystSentimentDate;
     }
 
-    public void setLastAnalystSentimentDate( final Timestamp lastAnalystSentimentDate )
+    public void setAnalystSentimentDate( final Timestamp analystSentimentDate )
     {
-        this.lastAnalystSentimentDate = lastAnalystSentimentDate;
+        this.analystSentimentDate = analystSentimentDate;
     }
 
     @Basic
-    @Column( name = "last_analyst_price_date", nullable = true )
-    public Timestamp getLastAnalystPriceDate()
+    @Column( name = "analyst_price_date", nullable = true )
+    public Timestamp getAnalystPriceDate()
     {
-        return lastAnalystPriceDate;
+        return analystPriceDate;
     }
 
-    public void setLastAnalystPriceDate( final Timestamp lastAnalystPriceDate )
+    public void setAnalystPriceDate( final Timestamp analystPriceDate )
     {
-        this.lastAnalystPriceDate = lastAnalystPriceDate;
+        this.analystPriceDate = analystPriceDate;
     }
 
     @Override
@@ -304,14 +304,14 @@ public class StockSummaryEntity
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
-        sb.append( ", lastAnalystSentimentDate=" ).append( lastAnalystSentimentDate );
+        sb.append( ", lastAnalystSentimentDate=" ).append( analystSentimentDate );
         sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
         sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
-        sb.append( ", lastAnalystPriceDate=" ).append( lastAnalystPriceDate );
+        sb.append( ", lastAnalystPriceDate=" ).append( analystPriceDate );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );

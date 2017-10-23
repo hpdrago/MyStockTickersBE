@@ -1,9 +1,11 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Objects;
 
 /**
@@ -15,8 +17,7 @@ public class StockDTO implements YahooStockService.YahooStockContainer
     private String companyName;
     private String exchange;
     private BigDecimal lastPrice;
-    private Timestamp lastPriceUpdate;
-    private Timestamp lastPriceChange;
+    private String lastPriceChange;
     private int createdBy;
     private boolean userEntered;
 
@@ -90,12 +91,50 @@ public class StockDTO implements YahooStockService.YahooStockContainer
         this.lastPrice = lastPrice;
     }
 
-    public Timestamp getLastPriceChange()
+    @Override
+    public Timestamp getLastPriceChangeTimestamp()
+    {
+        Timestamp returnValue = null;
+        if ( this.lastPriceChange != null )
+        {
+            try
+            {
+                returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
+            }
+            catch ( ParseException e )
+            {
+                e.printStackTrace();
+            }
+        }
+        return returnValue;
+    }
+
+    @Override
+    public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
+    {
+        if ( lastPriceChange == null )
+        {
+            this.lastPriceChange = null;
+        }
+        else
+        {
+            try
+            {
+                this.lastPriceChange = JSONDateConverter.toString( lastPriceChange );
+            }
+            catch ( ParseException e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public String getLastPriceChange()
     {
         return lastPriceChange;
     }
 
-    public void setLastPriceChange( Timestamp lastPriceChange )
+    public void setLastPriceChange( String lastPriceChange )
     {
         this.lastPriceChange = lastPriceChange;
     }
@@ -129,7 +168,6 @@ public class StockDTO implements YahooStockService.YahooStockContainer
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice='" ).append( lastPrice ).append( '\'' );
-        sb.append( ", lastPriceUpdate='" ).append( lastPriceUpdate ).append( '\'' );
         sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy='" ).append( createdBy ).append( '\'' );

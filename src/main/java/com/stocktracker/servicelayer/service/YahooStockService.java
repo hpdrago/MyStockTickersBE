@@ -89,7 +89,7 @@ public class YahooStockService implements MyLogger
         Stock stock = getStock( container.getTickerSymbol() ) ;
         container.setCompanyName( stock.getName() );
         StockTickerQuote stockTickerQuote = this.getStockTickerQuote( stock );
-        container.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
+        container.setLastPriceChangeTimestamp( stockTickerQuote.getLastPriceChange() );
         container.setLastPrice( stockTickerQuote.getLastPrice() );
         logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getLastPrice() );
     }
@@ -101,10 +101,10 @@ public class YahooStockService implements MyLogger
     {
         String getTickerSymbol();
         void setLastPrice( final BigDecimal stockPrice );
-        void setLastPriceChange( final Timestamp lastPriceChange );
+        void setLastPriceChangeTimestamp( final Timestamp lastPriceChange );
         void setCompanyName( final String companyName );
         BigDecimal getLastPrice();
-        Timestamp getLastPriceChange();
+        Timestamp getLastPriceChangeTimestamp();
         String getCompanyName();
     }
 }

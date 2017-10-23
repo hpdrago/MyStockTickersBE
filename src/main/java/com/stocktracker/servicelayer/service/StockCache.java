@@ -77,6 +77,7 @@ public class StockCache implements MyLogger
         catch ( IOException e )
         {
             logError( methodName, e );
+            cachedStockEntry = this.cacheEntryMap.get( tickerSymbol );
         }
         logMethodEnd( methodName, cachedStockEntry );
         return cachedStockEntry;

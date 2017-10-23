@@ -15,7 +15,7 @@ public class JSONDateConverter
     public static Timestamp toTimestamp( final String jsonUTCDate )
         throws ParseException
     {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd" );
         dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
         Date parsedDate = dateFormat.parse( jsonUTCDate );
         Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
@@ -25,7 +25,7 @@ public class JSONDateConverter
     public static String toString( final Timestamp utcTimestamp )
         throws ParseException
     {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
         return dateFormat.format( utcTimestamp );
     }
 }

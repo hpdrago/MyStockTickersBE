@@ -1,9 +1,11 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 public class StockSummaryDTO implements YahooStockService.YahooStockContainer
 {
@@ -19,20 +21,20 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     private Integer analystHoldCount;
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
-    private Timestamp lastAnalystSentimentDate;
-    private Timestamp nextCatalystDate;
+    private String analystSentimentDate;
+    private String nextCatalystDate;
     private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
-    private Timestamp lastAnalystPriceDate;
+    private String analystPriceDate;
     private BigDecimal buySharesBelow;
 
     /*
      * Calculated columns
      */
     private BigDecimal lastPrice;
-    private Timestamp lastPriceChange;
+    private String lastPriceChange;
     private BigDecimal avgUpsidePercent;
     private String companyName;
 
@@ -111,14 +113,33 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
         this.analystHoldCount = analystHoldCount;
     }
 
-    public Timestamp getNextCatalystDate()
+    public String getNextCatalystDate()
     {
         return nextCatalystDate;
     }
 
-    public void setNextCatalystDate( Timestamp nextCatalystDate )
+    public void setNextCatalystDate( String nextCatalystDate )
     {
         this.nextCatalystDate = nextCatalystDate;
+    }
+
+    public void setNextCatalystDate( Timestamp nextCatalystDate )
+    {
+        if ( nextCatalystDate == null )
+        {
+            this.nextCatalystDate = null;
+        }
+        else
+        {
+            try
+            {
+                this.nextCatalystDate = JSONDateConverter.toString( nextCatalystDate );
+            }
+            catch ( ParseException e )
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     public String getNextCatalystDesc()
@@ -171,38 +192,9 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
         this.buySharesBelow = buySharesBelow;
     }
 
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        final StockSummaryDTO that = (StockSummaryDTO) o;
-
-        return id.equals( that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
-
     public BigDecimal getLastPrice()
     {
         return lastPrice;
-    }
-
-    @Override
-    public Timestamp getLastPriceChange()
-    {
-        return null;
     }
 
     public void setLastPrice( BigDecimal lastPrice )
@@ -211,7 +203,42 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     }
 
     @Override
-    public void setLastPriceChange( final Timestamp lastPriceChange )
+    public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
+    {
+        try
+        {
+            this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
+        }
+        catch ( ParseException e )
+        {
+            this.lastPriceChange = null;
+        }
+    }
+
+    @Override
+    public Timestamp getLastPriceChangeTimestamp()
+    {
+        Timestamp returnValue = null;
+        if ( this.lastPriceChange != null )
+        {
+            try
+            {
+                returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
+            }
+            catch ( ParseException e )
+            {
+                e.printStackTrace();
+            }
+        }
+        return returnValue;
+    }
+
+    public String getLastPriceChange()
+    {
+        return lastPriceChange;
+    }
+
+    public void setLastPriceChange( final String lastPriceChange )
     {
         this.lastPriceChange = lastPriceChange;
     }
@@ -219,7 +246,7 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     @Override
     public String getCompanyName()
     {
-        return null;
+        return this.companyName;
     }
 
     @Override
@@ -258,24 +285,87 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
         this.analystUnderPerformCount = analystUnderPerformCount;
     }
 
-    public Timestamp getLastAnalystSentimentDate()
+    public String getAnalystSentimentDate()
     {
-        return lastAnalystSentimentDate;
+        return analystSentimentDate;
     }
 
-    public void setLastAnalystSentimentDate( final Timestamp lastAnalystSentimentDate )
+    public void setAnalystSentimentDate( final Timestamp analystSentimentDate )
     {
-        this.lastAnalystSentimentDate = lastAnalystSentimentDate;
+        if ( analystSentimentDate == null )
+        {
+            this.analystSentimentDate = null;
+        }
+        else
+        {
+            try
+            {
+                this.analystSentimentDate = JSONDateConverter.toString( analystSentimentDate );
+            }
+            catch ( ParseException e )
+            {
+                this.analystSentimentDate = null;
+                e.printStackTrace();
+            }
+        }
     }
 
-    public Timestamp getLastAnalystPriceDate()
+    public void setAnalystSentimentDate( final String analystSentimentDate )
     {
-        return lastAnalystPriceDate;
+        this.analystSentimentDate = analystSentimentDate;
     }
 
-    public void setLastAnalystPriceDate( final Timestamp lastAnalystPriceDate )
+    public String getAnalystPriceDate()
     {
-        this.lastAnalystPriceDate = lastAnalystPriceDate;
+        return analystPriceDate;
+    }
+
+    public void setAnalystPriceDate( final String analystPriceDate )
+    {
+        this.analystPriceDate = analystPriceDate;
+    }
+
+    public void setAnalystPriceDate( final Timestamp analystPriceDate )
+    {
+        if ( analystPriceDate == null )
+        {
+            this.analystPriceDate = null;
+        }
+        else
+        {
+            try
+            {
+                this.analystPriceDate = JSONDateConverter.toString( analystPriceDate );
+            }
+            catch ( ParseException e )
+            {
+                this.analystPriceDate = null;
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        final StockSummaryDTO that = (StockSummaryDTO) o;
+
+        return id.equals( that.id );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return id.hashCode();
     }
 
     @Override
@@ -291,13 +381,13 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
-        sb.append( ", lastAnalystSentimentDate=" ).append( lastAnalystSentimentDate );
+        sb.append( ", analystSentimentDate=" ).append( analystSentimentDate );
         sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
         sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
-        sb.append( ", lastAnalystPriceDate=" ).append( lastAnalystPriceDate );
+        sb.append( ", analystPriceDate=" ).append( analystPriceDate );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -214,14 +213,8 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
     private void setStockInformation( final PortfolioStockDTO portfolioStockDTO )
     {
         final String methodName = "setStockInformation";
-        try
-        {
-            this.stockService.setStockInformation( portfolioStockDTO );
-        }
-        catch ( IOException e )
-        {
-            logError( methodName, e );
-        }
+        logDebug( methodName, "portfolioStockDTO: {0}", portfolioStockDTO );
+        this.stockService.setStockInformation( portfolioStockDTO );
     }
 
     @Override

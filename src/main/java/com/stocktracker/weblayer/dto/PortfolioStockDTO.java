@@ -1,10 +1,12 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.ParseException;
 
 /**
  * Created by mike on 10/30/2016.
@@ -21,7 +23,7 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     private Integer numberOfShares;
     private BigDecimal averageUnitCost;
     private BigDecimal lastPrice;
-    private Timestamp lastPriceChange;
+    private String lastPriceChange;
     private BigDecimal realizedGains;
     private BigDecimal realizedLosses;
     private BigDecimal stopLossPrice;
@@ -204,16 +206,52 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
         this.portfolioId = portfolioId;
     }
 
-    @Override
-    public Timestamp getLastPriceChange()
+    public String getLastPriceChange()
     {
         return lastPriceChange;
     }
 
-    @Override
-    public void setLastPriceChange( final Timestamp lastPriceChange )
+    public void setLastPriceChange( final String lastPriceChange )
     {
         this.lastPriceChange = lastPriceChange;
+    }
+
+    @Override
+    public Timestamp getLastPriceChangeTimestamp()
+    {
+        Timestamp returnValue = null;
+        if ( this.lastPriceChange != null )
+        {
+            try
+            {
+                returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
+            }
+            catch ( ParseException e )
+            {
+                e.printStackTrace();
+            }
+        }
+        return returnValue;
+    }
+
+    @Override
+    public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
+    {
+        if ( lastPriceChange != null )
+        {
+            try
+            {
+                JSONDateConverter.toString( lastPriceChange );
+            }
+            catch ( ParseException e )
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+        {
+            this.lastPriceChange = null;
+        }
     }
 
     private void calculateMarketValue()
