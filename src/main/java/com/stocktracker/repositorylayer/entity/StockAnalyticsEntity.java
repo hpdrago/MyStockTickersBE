@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@Table( name = "stock_summary", schema = "stocktracker", catalog = "" )
-public class StockSummaryEntity
+@Table( name = "stock_analytics", schema = "stocktracker", catalog = "" )
+public class StockAnalyticsEntity
 {
     private Integer id;
     private Integer customerId;
@@ -25,8 +25,6 @@ public class StockSummaryEntity
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
     private Timestamp analystSentimentDate;
-    private Timestamp nextCatalystDate;
-    private String nextCatalystDesc;
     private BigDecimal avgAnalystPriceTarget;
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
@@ -35,9 +33,9 @@ public class StockSummaryEntity
     private Timestamp createDate;
     private Timestamp updateDate;
 
-    public static StockSummaryEntity newInstance()
+    public static StockAnalyticsEntity newInstance()
     {
-        return new StockSummaryEntity();
+        return new StockAnalyticsEntity();
     }
 
     @Id
@@ -149,31 +147,6 @@ public class StockSummaryEntity
         this.analystUnderPerformCount = analystUnderPerformCount;
     }
 
-
-    @Basic
-    @Column( name = "next_catalyst_date", nullable = true )
-    public Timestamp getNextCatalystDate()
-    {
-        return nextCatalystDate;
-    }
-
-    public void setNextCatalystDate( final Timestamp nextCatalystDate )
-    {
-        this.nextCatalystDate = nextCatalystDate;
-    }
-
-    @Basic
-    @Column( name = "next_catalyst_desc", nullable = true, length = 30 )
-    public String getNextCatalystDesc()
-    {
-        return nextCatalystDesc;
-    }
-
-    public void setNextCatalystDesc( final String nextCatalystDesc )
-    {
-        this.nextCatalystDesc = nextCatalystDesc;
-    }
-
     @Basic
     @Column( name = "avg_analyst_price_target", nullable = true, precision = 2 )
     public BigDecimal getAvgAnalystPriceTarget()
@@ -277,11 +250,11 @@ public class StockSummaryEntity
         {
             return true;
         }
-        if ( !(o instanceof StockSummaryEntity) )
+        if ( !(o instanceof StockAnalyticsEntity) )
         {
             return false;
         }
-        final StockSummaryEntity that = (StockSummaryEntity) o;
+        final StockAnalyticsEntity that = (StockAnalyticsEntity) o;
         return Objects.equals( id, that.id );
     }
 
@@ -294,7 +267,7 @@ public class StockSummaryEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockSummaryEntity{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalyticsEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
@@ -305,8 +278,6 @@ public class StockSummaryEntity
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
         sb.append( ", lastAnalystSentimentDate=" ).append( analystSentimentDate );
-        sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
-        sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );

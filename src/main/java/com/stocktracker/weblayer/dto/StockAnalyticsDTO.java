@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 
-public class StockSummaryDTO implements YahooStockService.YahooStockContainer
+public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
 {
     /*
      * Entity (DB columns)
@@ -38,9 +38,9 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     private BigDecimal avgUpsidePercent;
     private String companyName;
 
-    public static StockSummaryDTO newInstance()
+    public static StockAnalyticsDTO newInstance()
     {
-        return new StockSummaryDTO();
+        return new StockAnalyticsDTO();
     }
 
     public Integer getId()
@@ -357,7 +357,7 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
             return false;
         }
 
-        final StockSummaryDTO that = (StockSummaryDTO) o;
+        final StockAnalyticsDTO that = (StockAnalyticsDTO) o;
 
         return id.equals( that.id );
     }
@@ -371,7 +371,7 @@ public class StockSummaryDTO implements YahooStockService.YahooStockContainer
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockSummaryDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalyticsDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );

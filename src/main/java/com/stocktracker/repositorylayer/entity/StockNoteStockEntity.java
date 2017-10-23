@@ -170,7 +170,6 @@ public class StockNoteStockEntity
         sb.append( ", stockPrice=" ).append( stockPrice );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", stockNoteEntity=" ).append( stockNoteEntity );
         sb.append( '}' );
         return sb.toString();
     }
