@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockAnalyticsEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalyticsRepository;
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,7 +35,6 @@ public class StockAnalyticsService extends BaseService<StockAnalyticsEntity, Sto
         List<StockAnalyticsEntity> stockAnalyticsEntities = this.stockAnalyticsRepository
             .findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockAnalyticsDTO> stockAnalyticsDTOs = this.entitiesToDTOs( stockAnalyticsEntities );
-        stockAnalyticsDTOs.forEach( stockAnalyticsDTO ->  this.stockService.setStockInformation( stockAnalyticsDTO ));
         logDebug( methodName, "stockAnalyticsList: {0}", stockAnalyticsDTOs );
         logMethodEnd( methodName, "Found " + stockAnalyticsEntities.size() + " summaries" );
         return stockAnalyticsDTOs;
@@ -55,7 +52,6 @@ public class StockAnalyticsService extends BaseService<StockAnalyticsEntity, Sto
         Objects.requireNonNull( stockAnalyticsId, "stockAnalyticsId cannot be null" );
         StockAnalyticsEntity stockAnalyticsEntity = this.stockAnalyticsRepository.findOne( stockAnalyticsId );
         StockAnalyticsDTO stockAnalyticsDTO = this.entityToDTO( stockAnalyticsEntity );
-        this.stockService.setStockInformation( stockAnalyticsDTO );
         logMethodEnd( methodName, stockAnalyticsDTO );
         return stockAnalyticsDTO;
     }
@@ -71,10 +67,13 @@ public class StockAnalyticsService extends BaseService<StockAnalyticsEntity, Sto
         logMethodBegin( methodName, stockAnalyticsDTO );
         Objects.requireNonNull( stockAnalyticsDTO, "stockAnalyticsDTO cannot be null" );
         StockAnalyticsEntity stockAnalyticsEntity = this.dtoToEntity( stockAnalyticsDTO );
-        stockAnalyticsEntity = this.stockAnalyticsRepository.save( stockAnalyticsEntity );
+        /*
+         * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
+         * or update triggers.
+         */
+        stockAnalyticsEntity = this.stockAnalyticsRepository.saveAndFlush( stockAnalyticsEntity );
         logDebug( methodName, "saved {0}", stockAnalyticsEntity );
         StockAnalyticsDTO returnStockAnalyticsDTO = this.entityToDTO( stockAnalyticsEntity );
-        this.stockService.setStockInformation( returnStockAnalyticsDTO );
         logMethodEnd( methodName, returnStockAnalyticsDTO );
         return returnStockAnalyticsDTO;
     }
@@ -95,10 +94,10 @@ public class StockAnalyticsService extends BaseService<StockAnalyticsEntity, Sto
     @Override
     protected StockAnalyticsDTO entityToDTO( final StockAnalyticsEntity stockAnalyticsEntity )
     {
-        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockAnalyticsEntity );
         StockAnalyticsDTO stockAnalyticsDTO = StockAnalyticsDTO.newInstance();
         BeanUtils.copyProperties( stockAnalyticsEntity, stockAnalyticsDTO );
+        this.stockService.setStockInformation( stockAnalyticsDTO );
         performCalculations( stockAnalyticsDTO );
         stockAnalyticsDTO.setAnalystPriceDate( stockAnalyticsEntity.getAnalystPriceDate() );
         stockAnalyticsDTO.setAnalystSentimentDate( stockAnalyticsEntity.getAnalystSentimentDate() );
@@ -107,15 +106,19 @@ public class StockAnalyticsService extends BaseService<StockAnalyticsEntity, Sto
 
     private void performCalculations( final StockAnalyticsDTO stockAnalyticsDTO )
     {
+        final String methodName = "performCalculations";
+        logMethodBegin( methodName, stockAnalyticsDTO );
         if ( stockAnalyticsDTO.getLastPrice() != null &&
              stockAnalyticsDTO.getAvgAnalystPriceTarget() != null &&
-             stockAnalyticsDTO.getAvgAnalystPriceTarget().intValue() > 0 )
+             stockAnalyticsDTO.getAvgAnalystPriceTarget().floatValue() > 0.0 )
         {
-            stockAnalyticsDTO.setAvgUpsidePercent( stockAnalyticsDTO.getLastPrice()
-                                                                .divide( stockAnalyticsDTO
-                                                                             .getAvgAnalystPriceTarget() )
-                                                                .multiply( new BigDecimal( 100 ) ) );
+            /*
+             * 1 - (last price / avg target price)
+             */
+            stockAnalyticsDTO.setAvgUpsidePercent( new BigDecimal( 1 ).subtract((stockAnalyticsDTO.getLastPrice()
+                                                                           .divide( stockAnalyticsDTO.getAvgAnalystPriceTarget() ))));
         }
+        logMethodEnd( methodName, stockAnalyticsDTO.getAvgUpsidePercent() );
     }
 
     @Override
@@ -125,24 +128,6 @@ public class StockAnalyticsService extends BaseService<StockAnalyticsEntity, Sto
         Objects.requireNonNull( stockAnalyticsDTO );
         StockAnalyticsEntity stockAnalyticsEntity = StockAnalyticsEntity.newInstance();
         BeanUtils.copyProperties( stockAnalyticsDTO, stockAnalyticsEntity );
-        try
-        {
-            if ( stockAnalyticsDTO.getAnalystPriceDate() != null )
-            {
-                stockAnalyticsEntity.setAnalystPriceDate(
-                    JSONDateConverter.toTimestamp( stockAnalyticsDTO.getAnalystPriceDate() ) );
-            }
-
-            if ( stockAnalyticsDTO.getAnalystSentimentDate() != null )
-            {
-                stockAnalyticsEntity.setAnalystSentimentDate(
-                    JSONDateConverter.toTimestamp( stockAnalyticsDTO.getAnalystSentimentDate() ) );
-            }
-        }
-        catch ( ParseException e )
-        {
-            logError( methodName, e );
-        }
         return stockAnalyticsEntity;
     }
 

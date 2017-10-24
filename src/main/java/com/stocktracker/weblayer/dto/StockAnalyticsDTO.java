@@ -28,7 +28,6 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
     private String analystPriceDate;
-    private BigDecimal buySharesBelow;
 
     /*
      * Calculated columns
@@ -180,16 +179,6 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
     public void setHighAnalystPriceTarget( BigDecimal highAnalystPriceTarget )
     {
         this.highAnalystPriceTarget = highAnalystPriceTarget;
-    }
-
-    public BigDecimal getBuySharesBelow()
-    {
-        return buySharesBelow;
-    }
-
-    public void setBuySharesBelow( BigDecimal buySharesBelow )
-    {
-        this.buySharesBelow = buySharesBelow;
     }
 
     public BigDecimal getLastPrice()
@@ -388,7 +377,6 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", analystPriceDate=" ).append( analystPriceDate );
-        sb.append( ", buySharesBelow=" ).append( buySharesBelow );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );

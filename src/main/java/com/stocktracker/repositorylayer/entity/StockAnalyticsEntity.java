@@ -28,7 +28,6 @@ public class StockAnalyticsEntity
     private BigDecimal avgAnalystPriceTarget;
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
-    private BigDecimal buySharesBelow;
     private Timestamp analystPriceDate;
     private Timestamp createDate;
     private Timestamp updateDate;
@@ -184,18 +183,6 @@ public class StockAnalyticsEntity
     }
 
     @Basic
-    @Column( name = "buy_shares_below", nullable = true, precision = 2 )
-    public BigDecimal getBuySharesBelow()
-    {
-        return buySharesBelow;
-    }
-
-    public void setBuySharesBelow( final BigDecimal buySharesBelow )
-    {
-        this.buySharesBelow = buySharesBelow;
-    }
-
-    @Basic
     @Column( name = "create_date", nullable = false )
     public Timestamp getCreateDate()
     {
@@ -220,7 +207,7 @@ public class StockAnalyticsEntity
     }
 
     @Basic
-    @Column( name = "analyst_sentiment_date", nullable = true )
+    @Column( name = "analyst_sentiment_date", nullable = true, insertable = false, updatable = false )
     public Timestamp getAnalystSentimentDate()
     {
         return analystSentimentDate;
@@ -232,7 +219,7 @@ public class StockAnalyticsEntity
     }
 
     @Basic
-    @Column( name = "analyst_price_date", nullable = true )
+    @Column( name = "analyst_price_date", nullable = true, insertable = false, updatable = false )
     public Timestamp getAnalystPriceDate()
     {
         return analystPriceDate;
@@ -281,7 +268,6 @@ public class StockAnalyticsEntity
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
-        sb.append( ", buySharesBelow=" ).append( buySharesBelow );
         sb.append( ", lastAnalystPriceDate=" ).append( analystPriceDate );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );

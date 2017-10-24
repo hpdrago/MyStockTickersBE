@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.StockService;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +21,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
-public class StockNoteStockEntity
+public class StockNoteStockEntity implements StockService.StockPriceContainer
 {
     private Integer id;
     private Integer customerId;

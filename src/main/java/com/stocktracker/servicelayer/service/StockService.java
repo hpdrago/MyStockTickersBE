@@ -29,7 +29,6 @@ import java.util.Optional;
 public class StockService extends BaseService<StockEntity, StockDTO> implements MyLogger
 {
     private YahooStockService yahooStockService;
-    private StockService stockService;
     private StockRepository stockRepository;
     private StockCache stockCache;
 
@@ -299,6 +298,15 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     }
 
     /**
+     * Convenience method to set the stock price.  Simply calls {@code updateStockPrice}.
+     * Provided for searches for setting a stock price.
+     */
+    public void setStockPrice( final StockPriceContainer container )
+    {
+        this.updateStockPrice( container );
+    }
+
+    /**
      * Using the ticker symbol of {@code container}, obtains and sets the stock's company name on the {@code container}
      * @param container
      */
@@ -407,12 +415,6 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     public void setStockRepository( final StockRepository stockRepository )
     {
         this.stockRepository = stockRepository;
-    }
-
-    @Autowired
-    public void setStockService( final StockService stockService )
-    {
-        this.stockService = stockService;
     }
 
     @Autowired

@@ -122,19 +122,12 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         logDebug( methodName, "saving stockNoteEntity: {0}", stockNoteEntity );
         checkForNewSource( stockNoteEntity, stockNoteDTO );
         /*
-         * Save the stock notes
-         * However, cannot insert the stock note stocks without a stock_note_id so we'll save these stock notes
-         * now, and then insert them after the save of the StockNoteEnitty
+         * Set the stock prices
          */
-        List<StockNoteStockEntity> stockNoteStocks = stockNoteEntity.getStockNoteStocks();
-        stockNoteEntity.setStockNoteStocks( null );
+        stockNoteEntity.getStockNoteStocks()
+                       .forEach( stockNoteStockEntity -> this.stockService.updateStockPrice( stockNoteStockEntity ) );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
-        stockNoteEntity.setStockNoteStocks( stockNoteStocks );
         logDebug( methodName, "after saving stockNoteEntity: {0}", stockNoteEntity );
-
-        /*
-         * Convert back into a DTO to be sent back to the caller so that they have the updated information
-         */
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
@@ -325,7 +318,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
             stockNoteStockEntity.setTickerSymbol( tickerSymbol );
             stockNoteStockEntity.setCustomerId( dbStockNoteEntity.getCustomerId() );
             dbStockNoteEntity.getStockNoteStocks().add( stockNoteStockEntity );
-            stockNoteStockEntity.setStockPrice( this.stockService.getStockPrice( tickerSymbol ));
+            this.stockService.updateStockPrice( stockNoteStockEntity );
         }
 
         logMethodEnd( methodName, this );
