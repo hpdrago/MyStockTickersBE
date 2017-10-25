@@ -47,10 +47,10 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * To be implemented by any class containing a ticker symbol and a stock price to
      * beu use with the {@code updateStockPrice} methods
      */
-    public interface StockPriceContainer
+    public interface LastPriceContainer
     {
         String getTickerSymbol();
-        void setStockPrice( final BigDecimal stockPrice );
+        void setLastPrice( final BigDecimal stockPrice );
     }
 
     /**
@@ -302,7 +302,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * Convenience method to set the stock price.  Simply calls {@code updateStockPrice}.
      * Provided for searches for setting a stock price.
      */
-    public void setStockPrice( final StockPriceContainer container )
+    public void setStockPrice( final LastPriceContainer container )
     {
         this.updateStockPrice( container );
     }
@@ -311,14 +311,14 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * Using the ticker symbol of {@code container}, obtains and sets the stock's company name on the {@code container}
      * @param container
      */
-    public void updateStockPrice( final StockPriceContainer container )
+    public void updateStockPrice( final LastPriceContainer container )
     {
         final String methodName = "updateStockPrice";
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
         logMethodBegin( methodName, container.getTickerSymbol() );
         StockEntity stockEntity = getStockEntity( container.getTickerSymbol() );
         final BigDecimal stockPrice = stockEntity.getLastPrice();
-        container.setStockPrice( stockPrice );
+        container.setLastPrice( stockPrice );
         logMethodEnd( methodName, stockPrice );
     }
 

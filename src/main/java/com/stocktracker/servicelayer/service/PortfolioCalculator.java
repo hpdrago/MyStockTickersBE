@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioLastStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +40,11 @@ public class PortfolioCalculator implements MyLogger
      */
     public void calculate( final PortfolioDTO portfolioDTO )
     {
-        List<PortfolioStockDTO> portfolioStocks = this.portfolioStockService.getPortfolioStocks( portfolioDTO.getId() );
+        List<PortfolioLastStockDTO> portfolioStocks = this.portfolioStockService.getPortfolioStocks( portfolioDTO.getId() );
         int portfolioRealizedGL = 0;
         int portfolioUnRealizedGL = 0;
         int marketValue = 0;
-        for ( PortfolioStockDTO portfolioStockDTO: portfolioStocks )
+        for ( PortfolioLastStockDTO portfolioStockDTO: portfolioStocks )
         {
             int stockRealizedGL = portfolioStockDTO.getRealizedGains().intValue() -
                                   portfolioStockDTO.getRealizedLosses().intValue();

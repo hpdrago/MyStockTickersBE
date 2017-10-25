@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers.portfoliostock;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioLastStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
  * Created by mike on 12/3/2016.
  */
 @Component
-public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO, PortfolioStockDTO>
+public class SavePortfolioStockHandler extends AbstractHandler<PortfolioLastStockDTO, PortfolioLastStockDTO>
 {
     private PortfolioStockService portfolioStockService;
 
     /**
-     * Handle the request.  Update the stock in the database and return the updated {@code PortfolioStockDTO}
+     * Handle the request.  Update the stock in the database and return the updated {@code PortfolioLastStockDTO}
      * @param portfolioStockDTO
      * @return
      */
     @Override
-    public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
+    public PortfolioLastStockDTO handleRequest( final PortfolioLastStockDTO portfolioStockDTO )
     {
         final String methodName = "handleRequest";
         if ( !portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),
@@ -35,7 +35,7 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
                                               portfolioStockDTO.getTickerSymbol() );
         }
         logDebug( methodName, "call addPorfolioStockDTO: {0}", portfolioStockDTO );
-        PortfolioStockDTO newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        PortfolioLastStockDTO newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
         logDebug( methodName, "return addPorfolioStockDTO: {0}", portfolioStockDTO );
         return newPortfolioStockDTO;
     }

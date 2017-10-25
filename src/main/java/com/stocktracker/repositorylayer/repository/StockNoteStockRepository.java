@@ -14,7 +14,7 @@ public interface StockNoteStockRepository extends JpaRepository<StockNoteStockEn
     @Query("select sns from StockNoteStockEntity sns where sns.customerId = ?1 and " +
            "                                               sns.tickerSymbol = ?2")
     List<StockNoteStockEntity> findStockNoteStockEntitiesByCustomerIdAndTickerSymbol( final int customerId,
-                                                                                      final String tickerSymbol );
+                                                                                          final String tickerSymbol );
 
     /*
     @Query("SELECT s FROM STOCK_NOTE")

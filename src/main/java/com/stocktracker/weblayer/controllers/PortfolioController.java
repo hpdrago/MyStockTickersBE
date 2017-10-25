@@ -4,7 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioLastStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,11 +57,11 @@ public class PortfolioController extends AbstractController implements MyLogger
     @RequestMapping( value = "/portfolios/{portfolioId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
+    public List<PortfolioLastStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
+        List<PortfolioLastStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
         logMethodEnd( methodName, portfolioStockDTOs );
         return portfolioStockDTOs;
     }

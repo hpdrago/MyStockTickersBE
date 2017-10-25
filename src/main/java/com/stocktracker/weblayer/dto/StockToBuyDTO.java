@@ -17,6 +17,7 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     private String tickerSymbol;
     private String comments;
     private BigDecimal buySharesBelow;
+    private BigDecimal stockPrice;
 
     /*
      * Calculated columns
@@ -80,14 +81,14 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         this.buySharesBelow = buySharesBelow;
     }
 
-    public BigDecimal getLastPrice()
+    public BigDecimal getStockPrice()
     {
-        return lastPrice;
+        return stockPrice;
     }
 
-    public void setLastPrice( BigDecimal lastPrice )
+    public void setStockPrice( BigDecimal stockPrice )
     {
-        this.lastPrice = lastPrice;
+        this.stockPrice = stockPrice;
     }
 
     @Override
@@ -143,6 +144,16 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         this.companyName = companyName;
     }
 
+    public BigDecimal getLastPrice()
+    {
+        return lastPrice;
+    }
+
+    public void setLastPrice( final BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -175,7 +186,8 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
-        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", stockPrice=" ).append( stockPrice );
+        sb.append( ", lastPrice=" ).append( stockPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );

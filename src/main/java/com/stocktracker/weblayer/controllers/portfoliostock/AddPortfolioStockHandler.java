@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers.portfoliostock;
 import com.stocktracker.common.exceptions.DuplicatePortfolioStockException;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioLastStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO, PortfolioStockDTO>
+public class AddPortfolioStockHandler extends AbstractHandler<PortfolioLastStockDTO, PortfolioLastStockDTO>
 {
     private PortfolioStockService portfolioStockService;
 
@@ -23,7 +23,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
      * @return The Stock that was added, the Portfolio that the stock was added to, and the list of Stocks for the
      *         portfolio in an instance of {@code AddPortfolioStockDTO}
      */
-    public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
+    public PortfolioLastStockDTO handleRequest( final PortfolioLastStockDTO portfolioStockDTO )
     {
         final String methodName = "handleRequest";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -32,18 +32,18 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
         /*
          * Add to the database
          */
-        PortfolioStockDTO newPotfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        PortfolioLastStockDTO newPotfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
         logDebug( methodName, "return addPortfolioStockDTO: {0}", portfolioStockDTO );
         /*
          * Gather the rest of the return data
          */
         //PortfolioDE portfolioDE = this.portfolioService.getPortfolioById( portfolioStockDTO.getPortfolioId() );
-        //List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioService.getPortfolioStocks( portfolioStockDTO.getPortfolioId() );
+        //List<PortfolioLastStockDTO> portfolioStockDTOList = this.portfolioService.getPortfolioStocks( portfolioStockDTO.getPortfolioId() );
         /*
          * Convert the DE's to DTO's
          */
         //PortfolioDTO portfolioDTO = PortfolioDTO.newInstance( portfolioDE );
-        //List<PortfolioStockDTO> portfolioStockDTOList = this.listCopyPortfolioStockDTOToPortfolioStockDTO.copy( portfolioStockDTOList );
+        //List<PortfolioLastStockDTO> portfolioStockDTOList = this.listCopyPortfolioStockDTOToPortfolioStockDTO.copy( portfolioStockDTOList );
         /*
          * Create the return DTO
          */
@@ -61,7 +61,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
      * @param portfolioStockDTO
      * @throws DuplicatePortfolioStockException if the stock is already in the portfolio
      */
-    private void checkForDuplicate( final PortfolioStockDTO portfolioStockDTO )
+    private void checkForDuplicate( final PortfolioLastStockDTO portfolioStockDTO )
     {
 
         if ( portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),

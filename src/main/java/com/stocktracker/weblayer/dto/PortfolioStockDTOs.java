@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This class contains a list a {@code PortfolioStockDTO} instances.
+ * This class contains a list a {@code PortfolioLastStockDTO} instances.
  *
  * Created by mike on 12/3/2016.
  */
 public class PortfolioStockDTOs
 {
-    private List<PortfolioStockDTO> portfolioStocks = new ArrayList<>();
+    private List<PortfolioLastStockDTO> portfolioStocks = new ArrayList<>();
 
-    public static PortfolioStockDTOs newInstance( final List<PortfolioStockDTO> portfolioStockDTOList )
+    public static PortfolioStockDTOs newInstance( final List<PortfolioLastStockDTO> portfolioStockDTOList )
     {
         Objects.requireNonNull( portfolioStockDTOList );
         PortfolioStockDTOs portfolioStockDTOs = new PortfolioStockDTOs();

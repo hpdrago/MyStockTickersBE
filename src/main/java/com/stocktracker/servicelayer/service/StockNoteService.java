@@ -36,7 +36,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     /**
      * Autowired service classes
      */
-
     private StockService stockService;
     private StockNoteRepository stockNoteRepository;
     private StockNoteSourceRepository stockNoteSourceRepository;
@@ -121,16 +120,23 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         StockNoteEntity stockNoteEntity = this.createStockNoteEntity( stockNoteDTO );
         logDebug( methodName, "saving stockNoteEntity: {0}", stockNoteEntity );
         checkForNewSource( stockNoteEntity, stockNoteDTO );
-        /*
-         * Set the stock prices
-         */
-        stockNoteEntity.getStockNoteStocks()
-                       .forEach( stockNoteStockEntity -> this.stockService.updateStockPrice( stockNoteStockEntity ) );
+        setStockPrices( stockNoteEntity );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         logDebug( methodName, "after saving stockNoteEntity: {0}", stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
+    }
+
+    /**
+     * Sets the stock prices - that is the stock price at the time the stock note is created
+     * @param stockNoteEntity
+     */
+    private void setStockPrices( final StockNoteEntity stockNoteEntity )
+    {
+        stockNoteEntity.getStockNoteStocks()
+                       .forEach( stockNoteStockEntity -> stockNoteStockEntity.setStockPrice(
+                           this.stockService.getStockPrice( stockNoteStockEntity.getTickerSymbol() ) ));
     }
 
     /**
@@ -210,7 +216,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         stockNoteStockEntity.setStockNoteEntity( stockNoteEntity );
         stockNoteStockEntity.setTickerSymbol( stockNoteStockDTO.getTickerSymbol() );
         stockNoteStockEntity.setCustomerId( stockNoteEntity.getCustomerId() );
-        stockNoteStockEntity.setStockPrice( stockNoteStockDTO.getStockPrice() );
         return stockNoteStockEntity;
     }
 
@@ -224,6 +229,14 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = new StockNoteEntity();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
+        if ( stockNoteEntity.getActionTaken() == null )
+        {
+            stockNoteEntity.setActionTaken( StockNoteActionTaken.NONE.name() );
+        }
+        if ( stockNoteEntity.getActionTakenShares() == null )
+        {
+            stockNoteEntity.setActionTakenShares( 0 );
+        }
         if ( stockNoteDTO.getNotesDate() != null )
         {
             try
@@ -318,7 +331,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
             stockNoteStockEntity.setTickerSymbol( tickerSymbol );
             stockNoteStockEntity.setCustomerId( dbStockNoteEntity.getCustomerId() );
             dbStockNoteEntity.getStockNoteStocks().add( stockNoteStockEntity );
-            this.stockService.updateStockPrice( stockNoteStockEntity );
         }
 
         logMethodEnd( methodName, this );

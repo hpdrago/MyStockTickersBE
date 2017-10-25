@@ -17,12 +17,13 @@ import java.util.Objects;
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
 public class StockToBuyEntity
 {
-    private static final int COMMENTS_LEN = 512;
+    private static final int COMMENTS_LEN = 4096;
     private Integer id;
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
     private BigDecimal buySharesBelow;
+    private BigDecimal stockPrice;
     private Timestamp createDate;
     private Timestamp updateDate;
 
@@ -69,7 +70,7 @@ public class StockToBuyEntity
     }
 
     @Basic
-    @Column( name = "comments", nullable = true, length = 45 )
+    @Column( name = "comments", nullable = true, length = COMMENTS_LEN )
     public String getComments()
     {
         return comments;
@@ -77,7 +78,7 @@ public class StockToBuyEntity
 
     public void setComments( final String comments )
     {
-        this.comments = comments == null ? null : comments.substring( 0, COMMENTS_LEN );
+        this.comments = comments == null ? null : StringUtils.truncate( comments, COMMENTS_LEN );
     }
 
     @Basic
@@ -92,6 +93,17 @@ public class StockToBuyEntity
         this.buySharesBelow = buySharesBelow;
     }
 
+    @Basic
+    @Column( name = "stock_price", nullable = true, precision = 2 )
+    public BigDecimal getStockPrice()
+    {
+        return stockPrice;
+    }
+
+    public void setStockPrice( final BigDecimal stockPrice )
+    {
+        this.stockPrice = stockPrice;
+    }
     @Basic
     @Column( name = "create_date", nullable = false )
     public Timestamp getCreateDate()

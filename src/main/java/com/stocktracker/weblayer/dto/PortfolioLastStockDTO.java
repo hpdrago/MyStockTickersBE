@@ -11,9 +11,9 @@ import java.text.ParseException;
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDTO implements StockService.StockCompanyNameContainer,
-                                          StockService.StockPriceContainer,
-                                          YahooStockService.YahooStockContainer
+public class PortfolioLastStockDTO implements StockService.StockCompanyNameContainer,
+                                              StockService.LastPriceContainer,
+                                              YahooStockService.YahooStockContainer
 {
     private Integer id;
     private Integer customerId;
@@ -37,12 +37,12 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     private Integer costBasis;
 
     /**
-     * Creates a new {@code PortfolioStockDTO}
+     * Creates a new {@code PortfolioLastStockDTO}
      * @return
      */
-    public static PortfolioStockDTO newInstance()
+    public static PortfolioLastStockDTO newInstance()
     {
-        PortfolioStockDTO portfolioStockDTO = new PortfolioStockDTO();
+        PortfolioLastStockDTO portfolioStockDTO = new PortfolioLastStockDTO();
         return portfolioStockDTO;
     }
 
@@ -81,12 +81,6 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
         return tickerSymbol;
     }
 
-    @Override
-    public void setStockPrice( final BigDecimal stockPrice )
-    {
-        this.setLastPrice( stockPrice );
-    }
-
     public void setTickerSymbol( String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
@@ -120,9 +114,9 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
         return lastPrice;
     }
 
-    public void setLastPrice( BigDecimal lastPrice )
+    public void setLastPrice( BigDecimal stockPrice )
     {
-        this.lastPrice = lastPrice;
+        this.lastPrice = stockPrice;
         this.calculateMarketValue();
     }
 
@@ -303,7 +297,7 @@ public class PortfolioStockDTO implements StockService.StockCompanyNameContainer
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "PortfolioStockDTO{" );
+        final StringBuilder sb = new StringBuilder( "PortfolioLastStockDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId='" ).append( customerId ).append( '\'' );
         sb.append( ", portfolioId='" ).append( portfolioId ).append( '\'' );

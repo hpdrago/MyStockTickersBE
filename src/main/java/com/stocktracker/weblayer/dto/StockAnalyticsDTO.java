@@ -186,9 +186,9 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
         return lastPrice;
     }
 
-    public void setLastPrice( BigDecimal lastPrice )
+    public void setLastPrice( BigDecimal stockPrice )
     {
-        this.lastPrice = lastPrice;
+        this.lastPrice = stockPrice;
     }
 
     @Override

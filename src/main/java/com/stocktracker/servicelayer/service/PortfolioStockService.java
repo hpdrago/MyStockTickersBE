@@ -4,7 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioLastStockDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioStockService extends BaseService<PortfolioStockEntity, PortfolioStockDTO> implements MyLogger
+public class PortfolioStockService extends BaseService<PortfolioStockEntity, PortfolioLastStockDTO> implements MyLogger
 {
     private StockService stockService;
     private PortfolioStockRepository portfolioStockRepository;
@@ -45,7 +45,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @param tickerSymbol
      * @return
      */
-    public PortfolioStockDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
+    public PortfolioLastStockDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
         throws PortfolioStockNotFound
     {
         final String methodName = "getPortfolioStock";
@@ -59,7 +59,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         {
             throw new PortfolioStockNotFound( customerId, portfolioId, tickerSymbol );
         }
-        PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
+        PortfolioLastStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
         this.setStockInformation( portfolioStockDTO );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
@@ -71,7 +71,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @param portfolioId
      * @return
      */
-    public List<PortfolioStockDTO> getPortfolioStocks( final int customerId, final int portfolioId )
+    public List<PortfolioLastStockDTO> getPortfolioStocks( final int customerId, final int portfolioId )
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -79,7 +79,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         Assert.isTrue( portfolioId > 0, "portfolioId must be > 0" );
         List<PortfolioStockEntity> portfolioStockEntities = portfolioStockRepository.
             findByCustomerIdAndPortfolioIdOrderByTickerSymbol( customerId, portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOList = this.entitiesToDTOs( portfolioStockEntities );
+        List<PortfolioLastStockDTO> portfolioStockDTOList = this.entitiesToDTOs( portfolioStockEntities );
         this.setStockInformation( portfolioStockDTOList );
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ));
         return portfolioStockDTOList;
@@ -113,7 +113,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @param portfolioStockDE
      * @return
      */
-    public PortfolioStockDTO addPortfolioStock( final PortfolioStockDTO portfolioStockDE )
+    public PortfolioLastStockDTO addPortfolioStock( final PortfolioLastStockDTO portfolioStockDE )
     {
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
@@ -121,7 +121,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         PortfolioStockEntity portfolioStockEntity = this.createPortfolioStockEntity( portfolioStockDE );
         logDebug( methodName, "inserting: {0}", portfolioStockEntity );
         PortfolioStockEntity returnCustomerStockEntity = this.portfolioStockRepository.save( portfolioStockEntity );
-        PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
+        PortfolioLastStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
         this.setStockInformation( returnPortfolioStockDTO );
         logMethodEnd( methodName, returnPortfolioStockDTO );
         return returnPortfolioStockDTO;
@@ -144,7 +144,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * Delete a portfolio stock as defined by the {@code portfolioStockDE}
      * @param portfolioStockDE
      */
-    public void deletePortfolioStock( final PortfolioStockDTO portfolioStockDE )
+    public void deletePortfolioStock( final PortfolioLastStockDTO portfolioStockDE )
     {
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
@@ -155,11 +155,11 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
     }
 
     /**
-     * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioStockDTO} instance
+     * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioLastStockDTO} instance
      * @param portfolioStockDTO
      * @return
      */
-    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDTO )
+    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioLastStockDTO portfolioStockDTO )
     {
         final String methodName = "createPortfolioStockEntity";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -177,13 +177,13 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @param portfolioId
      * @return
      */
-    public List<PortfolioStockDTO> getPortfolioStocks( final int portfolioId )
+    public List<PortfolioLastStockDTO> getPortfolioStocks( final int portfolioId )
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
         Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
         List<PortfolioStockEntity> stocks = portfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOs = new ArrayList<>();
+        List<PortfolioLastStockDTO> portfolioStockDTOs = new ArrayList<>();
         if ( stocks != null )
         {
             portfolioStockDTOs = entitiesToDTOs( stocks );
@@ -197,7 +197,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * Sets the company name, last price, and last price change
      * @param portfolioStockDTOList
      */
-    private void setStockInformation( final List<PortfolioStockDTO> portfolioStockDTOList )
+    private void setStockInformation( final List<PortfolioLastStockDTO> portfolioStockDTOList )
     {
         final String methodName = "setStockInformation";
         portfolioStockDTOList.forEach( portfolioStockDTO ->
@@ -210,7 +210,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * Sets the company name, last price, and last price change
      * @param portfolioStockDTO
      */
-    private void setStockInformation( final PortfolioStockDTO portfolioStockDTO )
+    private void setStockInformation( final PortfolioLastStockDTO portfolioStockDTO )
     {
         final String methodName = "setStockInformation";
         logDebug( methodName, "portfolioStockDTO: {0}", portfolioStockDTO );
@@ -218,15 +218,15 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
     }
 
     @Override
-    protected PortfolioStockDTO entityToDTO( final PortfolioStockEntity entity )
+    protected PortfolioLastStockDTO entityToDTO( final PortfolioStockEntity entity )
     {
-        PortfolioStockDTO dto = PortfolioStockDTO.newInstance();
+        PortfolioLastStockDTO dto = PortfolioLastStockDTO.newInstance();
         BeanUtils.copyProperties( entity, dto );
         return dto;
     }
 
     @Override
-    protected PortfolioStockEntity dtoToEntity( final PortfolioStockDTO dto )
+    protected PortfolioStockEntity dtoToEntity( final PortfolioLastStockDTO dto )
     {
         PortfolioStockEntity entity = PortfolioStockEntity.newInstance();
         BeanUtils.copyProperties( entity, dto );

@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "stock_note_stock", schema = "stocktracker", catalog = "" )
-public class StockNoteStockEntity implements StockService.StockPriceContainer
+public class StockNoteStockEntity
 {
     private Integer id;
     private Integer customerId;
@@ -114,30 +114,6 @@ public class StockNoteStockEntity implements StockService.StockPriceContainer
         this.stockNoteEntity = stockNoteEntity;
     }
 
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockNoteStockEntity that = (StockNoteStockEntity) o;
-        return Objects.equals( id, that.id ) &&
-               Objects.equals( customerId, that.customerId ) &&
-               Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-               Objects.equals( stockPrice, that.stockPrice );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( id, tickerSymbol, customerId, stockPrice );
-    }
-
     @Basic
     @Column( name = "update_date", nullable = true )
     public Timestamp getUpdateDate()
@@ -160,6 +136,30 @@ public class StockNoteStockEntity implements StockService.StockPriceContainer
     public void setCreateDate( final Timestamp createDate )
     {
         this.createDate = createDate;
+    }
+
+    @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        final StockNoteStockEntity that = (StockNoteStockEntity) o;
+        return Objects.equals( id, that.id ) &&
+               Objects.equals( customerId, that.customerId ) &&
+               Objects.equals( tickerSymbol, that.tickerSymbol ) &&
+               Objects.equals( stockPrice, that.stockPrice );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( id, tickerSymbol, customerId, stockPrice );
     }
 
     @Override
