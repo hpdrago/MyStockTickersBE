@@ -7,6 +7,7 @@ import com.stocktracker.repositorylayer.common.BooleanUtils;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
 import com.stocktracker.weblayer.dto.StockDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -279,7 +280,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      */
     private StockEntity getStockEntity( final String tickerSymbol )
     {
-        return stockRepository.findOne( tickerSymbol );
+        return stockRepository.findOne( StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN ) );
     }
 
     /**

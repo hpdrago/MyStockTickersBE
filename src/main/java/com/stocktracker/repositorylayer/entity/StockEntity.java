@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +20,7 @@ import java.util.Objects;
 @Table( name = "stock", schema = "stocktracker", catalog = "" )
 public class StockEntity
 {
+    public static final int TICKER_SYMBOL_LEN = 5;
     private String tickerSymbol;
     private String companyName;
     //private String exchange;
@@ -73,7 +76,7 @@ public class StockEntity
 
     public void setTickerSymbol( final String tickerSymbol )
     {
-        this.tickerSymbol = tickerSymbol;
+        this.tickerSymbol = tickerSymbol == null ? null : StringUtils.truncate( tickerSymbol, TICKER_SYMBOL_LEN );
     }
 
     @Basic

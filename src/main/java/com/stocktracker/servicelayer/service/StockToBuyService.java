@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
