@@ -233,14 +233,7 @@ public class PortfolioLastStockDTO implements StockService.StockCompanyNameConta
     {
         if ( lastPriceChange != null )
         {
-            try
-            {
-                JSONDateConverter.toString( lastPriceChange );
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            JSONDateConverter.toString( lastPriceChange );
         }
         else
         {

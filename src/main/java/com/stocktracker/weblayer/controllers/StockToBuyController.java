@@ -34,12 +34,12 @@ public class StockToBuyController implements MyLogger
     @RequestMapping( value = "/stockToBuy/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockToBuyDTO> getStockSummaries( @PathVariable int customerId )
+    public List<StockToBuyDTO> getStockStockToBuy( @PathVariable int customerId )
     {
-        final String methodName = "getStockSummaries";
+        final String methodName = "getStockStockToBuy";
         logMethodBegin( methodName );
         List<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService.getStockToBuyList( customerId );
-        logMethodEnd( methodName, "stockSummaries size: " + stockToBuyDTOs.size() );
+        logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.size() );
         return stockToBuyDTOs;
     }
 

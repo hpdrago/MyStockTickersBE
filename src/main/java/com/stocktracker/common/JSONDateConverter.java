@@ -22,9 +22,17 @@ public class JSONDateConverter
         return timestamp;
     }
 
+    /**
+     * Converts a timestamp into a YYYY-MM-DD string
+     * @param utcTimestamp
+     * @return null if {@code utcTimestamp} is null
+     */
     public static String toString( final Timestamp utcTimestamp )
-        throws ParseException
     {
+        if ( utcTimestamp == null )
+        {
+            return null;
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
         return dateFormat.format( utcTimestamp );
     }

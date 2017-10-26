@@ -6,6 +6,7 @@ import com.stocktracker.servicelayer.service.YahooStockService;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.List;
 
 public class StockToBuyDTO implements YahooStockService.YahooStockContainer
 {
@@ -18,6 +19,8 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     private String comments;
     private BigDecimal buySharesBelow;
     private BigDecimal stockPrice;
+    private String createDate;
+    private String[] tags;
 
     /*
      * Calculated columns
@@ -94,14 +97,7 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     @Override
     public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
     {
-        try
-        {
-            this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
-        }
-        catch ( ParseException e )
-        {
-            this.lastPriceChange = null;
-        }
+        this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
     }
 
     @Override
@@ -154,6 +150,31 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         this.lastPrice = lastPrice;
     }
 
+    public String getCreateDate()
+    {
+        return createDate;
+    }
+
+    public void setCreateDate( final String createDate )
+    {
+        this.createDate = createDate;
+    }
+
+    public String[] getTags()
+    {
+        return tags;
+    }
+
+    public void setTags( final String[] tags )
+    {
+        this.tags = tags;
+    }
+
+    public void setTagsArray( final List<String> stockTags )
+    {
+        this.tags = stockTags.toArray(new String[stockTags.size()]);
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -180,7 +201,7 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalyticsDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockToBuyDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
@@ -190,6 +211,7 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         sb.append( ", lastPrice=" ).append( stockPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

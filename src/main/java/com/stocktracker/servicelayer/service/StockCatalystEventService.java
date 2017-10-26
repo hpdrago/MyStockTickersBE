@@ -102,20 +102,12 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     @Override
     protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
-        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockCatalystEventEntity );
         StockCatalystEventDTO stockCatalystEventDTO = StockCatalystEventDTO.newInstance();
         BeanUtils.copyProperties( stockCatalystEventEntity, stockCatalystEventDTO );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
-            try
-            {
-                stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toString( stockCatalystEventEntity.getCatalystDate() ));
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toString( stockCatalystEventEntity.getCatalystDate() ));
         }
         this.stockService.setCompanyName( stockCatalystEventDTO );
         return stockCatalystEventDTO;
@@ -124,7 +116,6 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     @Override
     protected StockCatalystEventEntity dtoToEntity( final StockCatalystEventDTO stockCatalystEventDTO )
     {
-        final String methodName = "dtoToEntity";
         Objects.requireNonNull( stockCatalystEventDTO );
         StockCatalystEventEntity stockCatalystEventEntity = StockCatalystEventEntity.newInstance();
         BeanUtils.copyProperties( stockCatalystEventDTO, stockCatalystEventEntity );

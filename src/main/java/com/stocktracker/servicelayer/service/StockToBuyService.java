@@ -1,6 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
@@ -10,12 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 @Transactional
-public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
+public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, StockToBuyDTO> implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
 
@@ -75,7 +78,20 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         {
             stockToBuyEntity.setStockPrice( this.stockService.getStockPrice( stockToBuyEntity.getTickerSymbol() ) );
         }
+        /*
+         * The create date is set by a trigger, but since this record might not be immediately inserted, set a date
+         * now so it shows in the table for the user.
+         */
+        if ( stockToBuyEntity.getCreateDate() == null )
+        {
+            stockToBuyEntity.setCreateDate( new Timestamp( System.currentTimeMillis() ) );
+        }
         stockToBuyEntity = this.stockToBuyRepository.save( stockToBuyEntity );
+        this.saveStockTags( stockToBuyEntity.getCustomerId(),
+                            stockToBuyEntity.getTickerSymbol(),
+                            StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                            stockToBuyEntity.getId(),
+                            stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.stockService.setStockInformation( returnStockToBuyDTO );
@@ -103,6 +119,10 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
         this.stockService.setStockInformation( stockToBuyDTO );
+        stockToBuyDTO.setTagsArray( this.findStockTags( stockToBuyDTO.getCustomerId(),
+                                                        StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                                                        stockToBuyDTO.getId() ) );
+        stockToBuyDTO.setCreateDate( JSONDateConverter.toString( stockToBuyEntity.getCreateDate() ) );
         return stockToBuyDTO;
     }
 

@@ -118,14 +118,7 @@ public class StockDTO implements YahooStockService.YahooStockContainer
         }
         else
         {
-            try
-            {
-                this.lastPriceChange = JSONDateConverter.toString( lastPriceChange );
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            this.lastPriceChange = JSONDateConverter.toString( lastPriceChange );
         }
     }
 

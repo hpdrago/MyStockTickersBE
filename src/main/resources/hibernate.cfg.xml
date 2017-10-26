@@ -20,5 +20,8 @@
         <mapping class="com.stocktracker.repositorylayer.entity.VStockNoteCountEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockNoteStockEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockAnalyticsEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.CustomerTagEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.StockTagEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.VStockTagEntity"/>
     </session-factory>
 </hibernate-configuration>

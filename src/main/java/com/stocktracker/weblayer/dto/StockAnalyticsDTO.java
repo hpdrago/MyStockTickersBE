@@ -130,14 +130,7 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
         }
         else
         {
-            try
-            {
-                this.nextCatalystDate = JSONDateConverter.toString( nextCatalystDate );
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            this.nextCatalystDate = JSONDateConverter.toString( nextCatalystDate );
         }
     }
 
@@ -194,14 +187,7 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
     @Override
     public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
     {
-        try
-        {
-            this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
-        }
-        catch ( ParseException e )
-        {
-            this.lastPriceChange = null;
-        }
+        this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
     }
 
     @Override
@@ -287,15 +273,7 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
         }
         else
         {
-            try
-            {
-                this.analystSentimentDate = JSONDateConverter.toString( analystSentimentDate );
-            }
-            catch ( ParseException e )
-            {
-                this.analystSentimentDate = null;
-                e.printStackTrace();
-            }
+            this.analystSentimentDate = JSONDateConverter.toString( analystSentimentDate );
         }
     }
 
@@ -322,15 +300,7 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
         }
         else
         {
-            try
-            {
-                this.analystPriceDate = JSONDateConverter.toString( analystPriceDate );
-            }
-            catch ( ParseException e )
-            {
-                this.analystPriceDate = null;
-                e.printStackTrace();
-            }
+            this.analystPriceDate = JSONDateConverter.toString( analystPriceDate );
         }
     }
 

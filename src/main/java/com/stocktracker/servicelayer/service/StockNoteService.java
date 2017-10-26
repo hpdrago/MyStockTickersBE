@@ -404,14 +404,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = new StockNoteDTO();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
-        try
-        {
-            stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
-        }
-        catch ( ParseException e )
-        {
-            throw new IllegalArgumentException( "Error converting UTC notes date to a string", e );
-        }
+        stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
         List<StockNoteStockDTO> stockNoteStockDTOs = this.stockNoteStockService
                                                          .entitiesToDTOs( stockNoteEntity.getStockNoteStocks() );
         stockNoteDTO.setStocks( stockNoteStockDTOs );
