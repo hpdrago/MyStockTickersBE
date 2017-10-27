@@ -1,6 +1,5 @@
 package com.stocktracker.repositorylayer.repository;
 
-import com.stocktracker.repositorylayer.entity.StockAnalyticsEntity;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

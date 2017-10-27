@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.entity.StockTagEntity;
 
 import java.util.ArrayList;
 import java.util.List;

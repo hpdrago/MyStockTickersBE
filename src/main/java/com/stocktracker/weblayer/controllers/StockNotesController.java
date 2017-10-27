@@ -3,10 +3,8 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.StockNoteCountService;
 import com.stocktracker.servicelayer.service.StockNoteService;
-import com.stocktracker.servicelayer.service.StockNoteStockService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
-import com.stocktracker.weblayer.dto.StockNoteStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,7 +30,6 @@ import java.util.Objects;
 @CrossOrigin
 public class StockNotesController extends AbstractController implements MyLogger
 {
-    private StockNoteStockService stockNoteStockService;
     private StockNoteCountService stockNoteCountService;
     private StockNoteService stockNoteService;
 
@@ -48,13 +45,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, stockNotesDTO );
-        if ( stockNotesDTO.getStocks().isEmpty() )
-        {
-            throw new IllegalArgumentException( "No stocks were specified" );
-        }
         validateStockNoteDTOPostArgument( stockNotesDTO );
         StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNotesDTO );
-        logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -76,10 +68,6 @@ public class StockNotesController extends AbstractController implements MyLogger
     {
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, stockNotesId, stockNotesDTO );
-        if ( stockNotesDTO.getStocks().isEmpty() )
-        {
-            throw new IllegalArgumentException( "No stocks were specified" );
-        }
         validateStockNoteDTOPostArgument( stockNotesDTO );
         StockNoteDTO returnStockDTO = null;
         try
@@ -136,8 +124,6 @@ public class StockNotesController extends AbstractController implements MyLogger
         Assert.isTrue( stockNotesDTO.getCustomerId() > 0, "customer id must be > 0" );
         Objects.requireNonNull( stockNotesDTO.getNotes(),"notes cannot be null" );
         Assert.isTrue( stockNotesDTO.getNotes().length() > 0, "customer id must be > 0" );
-        Objects.requireNonNull( stockNotesDTO.getStocks(), "stock notes cannot be null" );
-        Assert.isTrue( stockNotesDTO.getStocks().size() > 0, "stocks cannot be empty" );
     }
 
     /**
@@ -164,7 +150,6 @@ public class StockNotesController extends AbstractController implements MyLogger
      * Get all of the stocks notes for a customer and ticker symbol
      *
      * @return
-     */
     @CrossOrigin
     @RequestMapping( value = "/stockNotes/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
@@ -180,6 +165,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         logMethodEnd( methodName, stockNoteStockDTOs.size() );
         return stockNoteStockDTOs;
     }
+     */
 
     /**
      * Get all of the ticker symbols and number of notes for each ticker
@@ -211,11 +197,4 @@ public class StockNotesController extends AbstractController implements MyLogger
     {
         this.stockNoteCountService = stockNoteCountService;
     }
-
-    @Autowired
-    public void setStockNoteStockService( final StockNoteStockService stockNoteStockService )
-    {
-        this.stockNoteStockService = stockNoteStockService;
-    }
-
 }

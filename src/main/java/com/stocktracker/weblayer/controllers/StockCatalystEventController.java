@@ -2,7 +2,6 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.StockCatalystEventService;
-import com.stocktracker.servicelayer.service.StockCatalystEventService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

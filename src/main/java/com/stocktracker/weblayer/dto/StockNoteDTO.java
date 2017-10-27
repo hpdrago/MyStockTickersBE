@@ -1,7 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -11,6 +10,7 @@ public class StockNoteDTO
 {
     private Integer id;
     private Integer customerId;
+    private String tickerSymbol;
     private String notes;
     private String notesDate;
     private String notesSourceName;
@@ -20,14 +20,10 @@ public class StockNoteDTO
     private Byte bullOrBear;
     private String actionTaken;
     private Integer actionTakenShares;
-    private String dateCreated;
-    private String dateModified;
-    /**
-     * The list of stocks for the notes 1 to M relationship.
-     * Name of the methods for this cannot be the same as the StockNoteEntity or copy properties classes will
-     * copy the StockNoteStockEntity instance into this list -- they are the wrong type!!!
-     */
-    private List<StockNoteStockDTO> stocks;
+    private BigDecimal actionTakenPrice;
+    private BigDecimal stockPriceWhenCreated;
+    private String createDate;
+    private String updateDate;
 
     public Integer getId()
     {
@@ -79,24 +75,24 @@ public class StockNoteDTO
         this.notesSourceId = notesSourceId;
     }
 
-    public String getDateCreated()
+    public String getCreateDate()
     {
-        return dateCreated;
+        return createDate;
     }
 
-    public void setDateCreated( String dateCreated )
+    public void setCreateDate( String createDate )
     {
-        this.dateCreated = dateCreated;
+        this.createDate = createDate;
     }
 
-    public String getDateModified()
+    public String getUpdateDate()
     {
-        return dateModified;
+        return updateDate;
     }
 
-    public void setDateModified( String dateModified )
+    public void setUpdateDate( String updateDate )
     {
-        this.dateModified = dateModified;
+        this.updateDate = updateDate;
     }
 
     public Integer getNotesRating()
@@ -160,20 +156,6 @@ public class StockNoteDTO
         return Objects.hash( id );
     }
 
-    public List<StockNoteStockDTO> getStocks()
-    {
-        if ( stocks == null )
-        {
-            stocks = new ArrayList<>();
-        }
-        return stocks;
-    }
-
-    public void setStocks( List<StockNoteStockDTO> stocks )
-    {
-        this.stocks = stocks;
-    }
-
     public String getActionTaken()
     {
         return actionTaken;
@@ -194,12 +176,43 @@ public class StockNoteDTO
         this.actionTakenShares = actionTakenShares;
     }
 
+    public BigDecimal getActionTakenPrice()
+    {
+        return actionTakenPrice;
+    }
+
+    public void setActionTakenPrice( final BigDecimal actionTakenPrice )
+    {
+        this.actionTakenPrice = actionTakenPrice;
+    }
+
+    public BigDecimal getStockPriceWhenCreated()
+    {
+        return stockPriceWhenCreated;
+    }
+
+    public void setStockPriceWhenCreated( final BigDecimal stockPriceWhenCreated )
+    {
+        this.stockPriceWhenCreated = stockPriceWhenCreated;
+    }
+
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockNoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
         sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
@@ -207,12 +220,14 @@ public class StockNoteDTO
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd=" ).append( publicInd );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", actionTaken=" ).append( actionTaken );
+        sb.append( ", actionTaken='" ).append( actionTaken ).append( '\'' );
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
-        sb.append( ", dateCreated=" ).append( dateCreated );
-        sb.append( ", dateModified=" ).append( dateModified );
-        sb.append( ", stocks=" ).append( stocks );
+        sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
+        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
+        sb.append( ", createDate='" ).append( createDate ).append( '\'' );
+        sb.append( ", updateDate='" ).append( updateDate ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
+
 }

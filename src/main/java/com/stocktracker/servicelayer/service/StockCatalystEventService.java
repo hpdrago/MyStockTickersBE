@@ -15,8 +15,6 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.data.repository.init.ResourceReader.Type.JSON;
-
 /**
  * This is the service class for the Stock Catalyst Event table/entity
  */

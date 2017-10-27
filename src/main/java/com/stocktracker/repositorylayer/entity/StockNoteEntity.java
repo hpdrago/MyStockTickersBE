@@ -1,23 +1,18 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
-import org.springframework.util.Assert;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +23,7 @@ import java.util.Objects;
 public class StockNoteEntity implements MyLogger
 {
     private Integer id;
+    private String tickerSymbol;
     private String notes;
     private Timestamp notesDate;
     private Timestamp dateCreated;
@@ -38,9 +34,10 @@ public class StockNoteEntity implements MyLogger
     private Byte bullOrBear;
     private String actionTaken;
     private Integer actionTakenShares;
-    private List<StockNoteStockEntity> stockNoteStocks;
+    private BigDecimal actionTakenPrice;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Integer notesSourceId;
+    private BigDecimal stockPriceWhenCreated;
     private Timestamp createDate;
     private Timestamp updateDate;
 
@@ -182,79 +179,6 @@ public class StockNoteEntity implements MyLogger
         this.stockNoteSourceByNotesSourceId = stockNoteSourceByNotesSourceId;
     }
 
-    @OneToMany( mappedBy = "stockNoteEntity",
-                cascade = CascadeType.ALL,
-                orphanRemoval = true )
-    public List<StockNoteStockEntity> getStockNoteStocks()
-    {
-        return stockNoteStocks;
-    }
-
-    /**
-     * Adds all of the {@code StockNoteStock} instances to the stock note.  Sets the stock_note_id and customer_id on the
-     * StockNoteStock instance so that the integrity is preserved.
-     * @param stockNoteStocks
-     */
-    public void setStockNoteStocks( final List<StockNoteStockEntity> stockNoteStocks )
-    {
-        /*
-         * Copy the stock note id over to the children
-         */
-        if ( stockNoteStocks != null )
-        {
-            stockNoteStocks.forEach( stockNoteStockEntity -> stockNoteStockEntity.setStockNoteId( this.getId()) );
-        }
-        this.stockNoteStocks = stockNoteStocks;
-    }
-
-    /**
-     * Adds a {@code StockNoteStock} instance to the stock note.  Sets the stock_note_id and customer_id on the
-     * StockNoteStock instance so that the integrity is preserved.
-     * @param stockNoteStockEntity
-     */
-    public void addStockNoteStock( final StockNoteStockEntity stockNoteStockEntity )
-    {
-        /*
-         * We assume that the StockNoteStockEntity has the ticker symbol set but not the actual stock_note_id
-         * so we set that here
-         */
-        if ( this.getId() != null && this.getId() != 0 )
-        {
-            stockNoteStockEntity.setStockNoteId( this.getId() );
-        }
-        stockNoteStockEntity.setCustomerId( this.getCustomerId() );
-        if ( this.stockNoteStocks == null )
-        {
-            this.stockNoteStocks = new ArrayList<>();
-        }
-        this.stockNoteStocks.add( stockNoteStockEntity );
-        /*
-         * Set the bi-directional relationship
-         */
-        stockNoteStockEntity.setStockNoteEntity( this );
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockNoteEntity that = (StockNoteEntity) o;
-        return Objects.equals( id, that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( id );
-    }
-
     @Basic
     @Column( name = "create_date", nullable = false )
     public Timestamp getCreateDate()
@@ -303,11 +227,69 @@ public class StockNoteEntity implements MyLogger
         this.actionTakenShares = actionTakenShares;
     }
 
+    @Basic
+    @Column( name = "ticker_symbol", nullable = false )
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
+    @Basic
+    @Column( name = "action_taken_price", nullable = false )
+    public BigDecimal getActionTakenPrice()
+    {
+        return actionTakenPrice;
+    }
+
+    public void setActionTakenPrice( final BigDecimal actionTakenPrice )
+    {
+        this.actionTakenPrice = actionTakenPrice;
+    }
+
+    @Basic
+    @Column( name = "stock_price_when_created", nullable = false )
+    public BigDecimal getStockPriceWhenCreated()
+    {
+        return stockPriceWhenCreated;
+    }
+
+    public void setStockPriceWhenCreated( final BigDecimal stockPriceWhenCreated )
+    {
+        this.stockPriceWhenCreated = stockPriceWhenCreated;
+    }
+
+    @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        final StockNoteEntity that = (StockNoteEntity) o;
+        return Objects.equals( id, that.id );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( id );
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockNoteEntity{" );
         sb.append( "id=" ).append( id );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
         sb.append( ", notesDate=" ).append( notesDate );
         sb.append( ", dateCreated=" ).append( dateCreated );
@@ -316,11 +298,12 @@ public class StockNoteEntity implements MyLogger
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", actionTaken=" ).append( actionTaken );
+        sb.append( ", actionTaken='" ).append( actionTaken ).append( '\'' );
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
-        sb.append( ", stockNoteStocks=" ).append( stockNoteStocks );
+        sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
+        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );

@@ -1,11 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.StockService;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.ParseException;
 
 public class StockCatalystEventDTO implements StockService.StockCompanyNameContainer
 {

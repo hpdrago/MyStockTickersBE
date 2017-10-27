@@ -1,8 +1,5 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
-import org.springframework.beans.BeanUtils;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
