@@ -5,7 +5,7 @@ import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.ParseException;
+import java.util.Arrays;
 import java.util.List;
 
 public class StockToBuyDTO implements YahooStockService.YahooStockContainer
@@ -19,6 +19,8 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     private String comments;
     private BigDecimal buySharesBelow;
     private BigDecimal stockPrice;
+    private String completed;
+    private String buyAfterDate;
     private String createDate;
     private String[] tags;
 
@@ -106,14 +108,7 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         Timestamp returnValue = null;
         if ( this.lastPriceChange != null )
         {
-            try
-            {
-                returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
         }
         return returnValue;
     }
@@ -175,6 +170,26 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         this.tags = stockTags.toArray(new String[stockTags.size()]);
     }
 
+    public String getCompleted()
+    {
+        return completed;
+    }
+
+    public void setCompleted( final String completed )
+    {
+        this.completed = completed;
+    }
+
+    public String getBuyAfterDate()
+    {
+        return buyAfterDate;
+    }
+
+    public void setBuyAfterDate( final String buyAfterDate )
+    {
+        this.buyAfterDate = buyAfterDate;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -208,10 +223,13 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", buySharesBelow=" ).append( buySharesBelow );
         sb.append( ", stockPrice=" ).append( stockPrice );
-        sb.append( ", lastPrice=" ).append( stockPrice );
-        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", completed='" ).append( completed ).append( '\'' );
+        sb.append( ", buyAfterDate=" ).append( buyAfterDate );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
+        sb.append( ", tags=" ).append( Arrays.toString( tags ) );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

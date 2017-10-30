@@ -13,12 +13,20 @@ import java.util.TimeZone;
 public class JSONDateConverter
 {
     public static Timestamp toTimestamp( final String jsonUTCDate )
-        throws ParseException
     {
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd" );
         dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
-        Date parsedDate = dateFormat.parse( jsonUTCDate );
-        Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+        Date parsedDate = null;
+        Timestamp timestamp = null;
+        try
+        {
+            parsedDate = dateFormat.parse( jsonUTCDate );
+            timestamp = new java.sql.Timestamp(parsedDate.getTime());
+        }
+        catch ( ParseException e )
+        {
+            e.printStackTrace();
+        }
         return timestamp;
     }
 

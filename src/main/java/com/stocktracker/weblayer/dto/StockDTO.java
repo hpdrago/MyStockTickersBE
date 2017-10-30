@@ -5,7 +5,6 @@ import com.stocktracker.servicelayer.service.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Objects;
 
 /**
@@ -97,14 +96,7 @@ public class StockDTO implements YahooStockService.YahooStockContainer
         Timestamp returnValue = null;
         if ( this.lastPriceChange != null )
         {
-            try
-            {
-                returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
         }
         return returnValue;
     }

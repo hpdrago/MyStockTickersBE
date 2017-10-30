@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -119,14 +118,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
         BeanUtils.copyProperties( stockCatalystEventDTO, stockCatalystEventEntity );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
-            try
-            {
-                stockCatalystEventEntity.setCatalystDate( JSONDateConverter.toTimestamp( stockCatalystEventDTO.getCatalystDate() ) );
-            }
-            catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
+            stockCatalystEventEntity.setCatalystDate( JSONDateConverter.toTimestamp( stockCatalystEventDTO.getCatalystDate() ) );
         }
         return stockCatalystEventEntity;
     }

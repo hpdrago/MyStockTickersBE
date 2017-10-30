@@ -23,5 +23,6 @@
         <mapping class="com.stocktracker.repositorylayer.entity.CustomerTagEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockTagEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.VStockTagEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.StockToBuyEntity"/>
     </session-factory>
 </hibernate-configuration>

@@ -166,14 +166,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         }
         if ( stockNoteDTO.getNotesDate() != null )
         {
-            try
-            {
-                stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
-            }
-            catch ( ParseException e )
-            {
-                throw new IllegalArgumentException( "Error converting notesDate to timestamp", e );
-            }
+            stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         }
         return stockNoteEntity;
     }

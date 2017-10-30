@@ -123,6 +123,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
                                                         stockToBuyDTO.getId() ) );
         stockToBuyDTO.setCreateDate( JSONDateConverter.toString( stockToBuyEntity.getCreateDate() ) );
+        stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toString( stockToBuyEntity.getBuyAfterDate() ) );
         return stockToBuyDTO;
     }
 
@@ -132,6 +133,10 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         Objects.requireNonNull( stockToBuyDTO );
         StockToBuyEntity stockToBuyEntity = StockToBuyEntity.newInstance();
         BeanUtils.copyProperties( stockToBuyDTO, stockToBuyEntity );
+        if ( stockToBuyDTO.getBuyAfterDate() != null )
+        {
+            stockToBuyEntity.setBuyAfterDate( JSONDateConverter.toTimestamp( stockToBuyDTO.getBuyAfterDate() ));
+        }
         return stockToBuyEntity;
     }
 
