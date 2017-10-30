@@ -23,6 +23,7 @@ public class StockCache implements MyLogger
     private static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
     private Map<String, CachedStockEntry> cacheEntryMap = new HashMap<>();
     private YahooStockService yahooStockService;
+    private IEXTradingStockService iexTradingStockService;
 
     /**
      * Get the stock quote information for the {@code tickerSymbol}
@@ -81,12 +82,6 @@ public class StockCache implements MyLogger
         }
         logMethodEnd( methodName, cachedStockEntry );
         return cachedStockEntry;
-    }
-
-    @Autowired
-    public void setStockService( final YahooStockService yahooStockService )
-    {
-        this.yahooStockService = yahooStockService;
     }
 
     /**
@@ -198,4 +193,18 @@ public class StockCache implements MyLogger
             return sb.toString();
         }
     }
+
+    @Autowired
+    public void setYahooStockService( final YahooStockService yahooStockService )
+    {
+        this.yahooStockService = yahooStockService;
+    }
+
+    @Autowired
+    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
+    {
+        this.iexTradingStockService = iexTradingStockService;
+    }
+
+
 }

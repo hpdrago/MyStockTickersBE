@@ -29,7 +29,6 @@ import java.util.Optional;
 @Transactional
 public class StockService extends BaseService<StockEntity, StockDTO> implements MyLogger
 {
-    private YahooStockService yahooStockService;
     private StockRepository stockRepository;
     private StockCache stockCache;
 
@@ -222,17 +221,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        Objects.requireNonNull( this.yahooStockService, "yahooStockService cannot be null" );
-        StockTickerQuote stockTickerQuote = this.yahooStockService.getStockQuote( tickerSymbol );
-        BigDecimal stockPrice = null;
-        if ( stockTickerQuote != null )
-        {
-            stockPrice = stockTickerQuote.getLastPrice();
-        }
-        /*
-         * Update the stock table with the new price
-         */
-        updateStockPrice( tickerSymbol, stockTickerQuote );
+        BigDecimal stockPrice = this.getStock( tickerSymbol ).getLastPrice();
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
     }
@@ -416,12 +405,6 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     public void setStockRepository( final StockRepository stockRepository )
     {
         this.stockRepository = stockRepository;
-    }
-
-    @Autowired
-    public void setYahooStockService( final YahooStockService yahooStockService )
-    {
-        this.yahooStockService = yahooStockService;
     }
 
     @Autowired

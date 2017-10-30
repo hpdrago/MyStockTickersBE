@@ -17,8 +17,8 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
-    private BigDecimal buySharesBelow;
-    private BigDecimal stockPrice;
+    private BigDecimal buySharesUpToPrice;
+    private BigDecimal stockPriceWhenCreated;
     private String completed;
     private String buyAfterDate;
     private String createDate;
@@ -29,6 +29,7 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
      */
     private BigDecimal lastPrice;
     private String lastPriceChange;
+    private BigDecimal percentChange;
     private String companyName;
 
     public static StockToBuyDTO newInstance()
@@ -76,24 +77,24 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         this.comments = comments;
     }
 
-    public BigDecimal getBuySharesBelow()
+    public BigDecimal getBuySharesUpToPrice()
     {
-        return buySharesBelow;
+        return buySharesUpToPrice;
     }
 
-    public void setBuySharesBelow( BigDecimal buySharesBelow )
+    public void setBuySharesUpToPrice( BigDecimal buySharesUpToPrice )
     {
-        this.buySharesBelow = buySharesBelow;
+        this.buySharesUpToPrice = buySharesUpToPrice;
     }
 
-    public BigDecimal getStockPrice()
+    public BigDecimal getStockPriceWhenCreated()
     {
-        return stockPrice;
+        return stockPriceWhenCreated;
     }
 
-    public void setStockPrice( BigDecimal stockPrice )
+    public void setStockPriceWhenCreated( BigDecimal stockPriceWhenCreated )
     {
-        this.stockPrice = stockPrice;
+        this.stockPriceWhenCreated = stockPriceWhenCreated;
     }
 
     @Override
@@ -190,6 +191,16 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         this.buyAfterDate = buyAfterDate;
     }
 
+    public BigDecimal getPercentChange()
+    {
+        return percentChange;
+    }
+
+    public void setPercentChange( final BigDecimal percentChange )
+    {
+        this.percentChange = percentChange;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -221,14 +232,15 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
-        sb.append( ", buySharesBelow=" ).append( buySharesBelow );
-        sb.append( ", stockPrice=" ).append( stockPrice );
+        sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
+        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", tags=" ).append( Arrays.toString( tags ) );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
+        sb.append( ", percentChange='" ).append( percentChange ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

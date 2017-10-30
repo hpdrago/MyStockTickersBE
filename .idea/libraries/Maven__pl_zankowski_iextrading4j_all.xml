@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: pl.zankowski:iextrading4j-all">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/pl/zankowski/iextrading4j-all/iextrading4j-all-.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/pl/zankowski/iextrading4j-all/iextrading4j-all--javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/pl/zankowski/iextrading4j-all/iextrading4j-all--sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

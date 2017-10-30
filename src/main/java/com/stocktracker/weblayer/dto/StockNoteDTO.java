@@ -22,6 +22,8 @@ public class StockNoteDTO
     private Integer actionTakenShares;
     private BigDecimal actionTakenPrice;
     private BigDecimal stockPriceWhenCreated;
+    private BigDecimal lastPrice;
+    private BigDecimal percentChange;
     private String createDate;
     private String updateDate;
 
@@ -206,6 +208,26 @@ public class StockNoteDTO
         this.tickerSymbol = tickerSymbol;
     }
 
+    public BigDecimal getLastPrice()
+    {
+        return lastPrice;
+    }
+
+    public void setLastPrice( final BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
+    public BigDecimal getPercentChange()
+    {
+        return percentChange;
+    }
+
+    public void setPercentChange( final BigDecimal percentChange )
+    {
+        this.percentChange = percentChange;
+    }
+
     @Override
     public String toString()
     {
@@ -224,6 +246,8 @@ public class StockNoteDTO
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", percentChange=" ).append( percentChange );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", updateDate='" ).append( updateDate ).append( '\'' );
         sb.append( '}' );

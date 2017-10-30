@@ -11,8 +11,8 @@ import java.sql.Timestamp;
 public class StockTickerQuote
 {
     private String tickerSymbol;
+    private String companyName;
     private BigDecimal lastPrice;
-    private Timestamp lastPriceUpdate;
     private Timestamp lastPriceChange;
 
     public String getTickerSymbol()
@@ -45,14 +45,25 @@ public class StockTickerQuote
         this.lastPriceChange = lastPriceChange;
     }
 
+
+    public String getCompanyName()
+    {
+        return companyName;
+    }
+
+    public void setCompanyName( final String companyName )
+    {
+        this.companyName = companyName;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockTickerQuote{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceUpdate=" ).append( lastPriceUpdate );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
+        sb.append( ", companyName=" ).append( companyName );
         sb.append( '}' );
         return sb.toString();
     }

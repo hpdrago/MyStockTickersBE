@@ -74,9 +74,9 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         /*
          * The stock price needs to be set the first time as it records the stock price when the record was created.
          */
-        if ( stockToBuyEntity.getStockPrice() == null )
+        if ( stockToBuyEntity.getStockPriceWhenCreated() == null )
         {
-            stockToBuyEntity.setStockPrice( this.stockService.getStockPrice( stockToBuyEntity.getTickerSymbol() ) );
+            stockToBuyEntity.setStockPriceWhenCreated( this.stockService.getStockPrice( stockToBuyEntity.getTickerSymbol() ) );
         }
         /*
          * The create date is set by a trigger, but since this record might not be immediately inserted, set a date
@@ -124,6 +124,8 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
                                                         stockToBuyDTO.getId() ) );
         stockToBuyDTO.setCreateDate( JSONDateConverter.toString( stockToBuyEntity.getCreateDate() ) );
         stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toString( stockToBuyEntity.getBuyAfterDate() ) );
+        stockToBuyDTO.setPercentChange( calculatePercentOfChange( stockToBuyDTO.getStockPriceWhenCreated(),
+                                                                  stockToBuyDTO.getLastPrice() ) );
         return stockToBuyDTO;
     }
 

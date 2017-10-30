@@ -22,8 +22,8 @@ public class StockToBuyEntity
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
-    private BigDecimal buySharesBelow;
-    private BigDecimal stockPrice;
+    private BigDecimal buySharesUpToPrice;
+    private BigDecimal stockPriceWhenCreated;
     private String completed;
     private Timestamp buyAfterDate;
     private Timestamp createDate;
@@ -84,27 +84,27 @@ public class StockToBuyEntity
     }
 
     @Basic
-    @Column( name = "buy_shares_below", nullable = true, precision = 2 )
-    public BigDecimal getBuySharesBelow()
+    @Column( name = "buy_shares_up_to_price", nullable = true, precision = 2 )
+    public BigDecimal getBuySharesUpToPrice()
     {
-        return buySharesBelow;
+        return buySharesUpToPrice;
     }
 
-    public void setBuySharesBelow( final BigDecimal buySharesBelow )
+    public void setBuySharesUpToPrice( final BigDecimal buySharesBelow )
     {
-        this.buySharesBelow = buySharesBelow;
+        this.buySharesUpToPrice = buySharesBelow;
     }
 
     @Basic
-    @Column( name = "stock_price", nullable = true, precision = 2 )
-    public BigDecimal getStockPrice()
+    @Column( name = "stock_price_when_created", nullable = true, precision = 2 )
+    public BigDecimal getStockPriceWhenCreated()
     {
-        return stockPrice;
+        return stockPriceWhenCreated;
     }
 
-    public void setStockPrice( final BigDecimal stockPrice )
+    public void setStockPriceWhenCreated( final BigDecimal stockPrice )
     {
-        this.stockPrice = stockPrice;
+        this.stockPriceWhenCreated = stockPrice;
     }
 
     @Basic
@@ -184,8 +184,8 @@ public class StockToBuyEntity
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
-        sb.append( ", buySharesBelow=" ).append( buySharesBelow );
-        sb.append( ", stockPrice=" ).append( stockPrice );
+        sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
+        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
         sb.append( ", createDate=" ).append( createDate );

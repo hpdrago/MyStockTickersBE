@@ -71,7 +71,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         List<StockNoteEntity> stockNoteEntities =
             this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
         List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( stockNoteEntities );
-        logMethodEnd( methodName, stockNoteDTOs.size() );
+        logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }
 
@@ -267,6 +267,9 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
         stockNoteDTO.setCreateDate( JSONDateConverter.toString( stockNoteEntity.getCreateDate() ));
         stockNoteDTO.setUpdateDate( JSONDateConverter.toString( stockNoteEntity.getUpdateDate() ));
+        stockNoteDTO.setLastPrice( this.stockService.getStockPrice( stockNoteDTO.getTickerSymbol() ) );
+        stockNoteDTO.setPercentChange( calculatePercentOfChange( stockNoteDTO.getStockPriceWhenCreated(),
+                                                                 stockNoteDTO.getLastPrice() ) );
         return stockNoteDTO;
     }
 
