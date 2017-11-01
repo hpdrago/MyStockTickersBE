@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
 import org.springframework.stereotype.Service;
@@ -14,8 +14,14 @@ import java.util.Objects;
  * This class contains the methods to interact with the Yahoo stock library
  */
 @Service
-public class YahooStockService implements MyLogger
+public class YahooStockService implements MyLogger, StockCache.StockQuoteServiceProvider
 {
+    @Override
+    public String getProviderName()
+    {
+        return "Yahoo";
+    }
+
     /**
      * Get the stock price for the {@code tickerSymbol}
      * @param tickerSymbol

@@ -2,7 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.StockService;
-import com.stocktracker.servicelayer.service.YahooStockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

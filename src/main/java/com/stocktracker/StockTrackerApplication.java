@@ -38,6 +38,7 @@ public class StockTrackerApplication
      * https://drissamri.be/blog/java/enable-https-in-spring-boot/
      * @return
      */
+    /*
     @Bean
     public EmbeddedServletContainerFactory servletContainer()
     {
@@ -69,4 +70,5 @@ public class StockTrackerApplication
 
         return connector;
     }
+    */
 }

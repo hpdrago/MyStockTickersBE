@@ -12,8 +12,8 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@Table( name = "stock_analytics", schema = "stocktracker", catalog = "" )
-public class StockAnalyticsEntity
+@Table( name = "stock_analyst_consensus", schema = "stocktracker", catalog = "" )
+public class StockAnalystConsensusEntity
 {
     private Integer id;
     private Integer customerId;
@@ -32,9 +32,9 @@ public class StockAnalyticsEntity
     private Timestamp createDate;
     private Timestamp updateDate;
 
-    public static StockAnalyticsEntity newInstance()
+    public static StockAnalystConsensusEntity newInstance()
     {
-        return new StockAnalyticsEntity();
+        return new StockAnalystConsensusEntity();
     }
 
     @Id
@@ -237,11 +237,11 @@ public class StockAnalyticsEntity
         {
             return true;
         }
-        if ( !(o instanceof StockAnalyticsEntity) )
+        if ( !(o instanceof StockAnalystConsensusEntity) )
         {
             return false;
         }
-        final StockAnalyticsEntity that = (StockAnalyticsEntity) o;
+        final StockAnalystConsensusEntity that = (StockAnalystConsensusEntity) o;
         return Objects.equals( id, that.id );
     }
 
@@ -254,7 +254,7 @@ public class StockAnalyticsEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalyticsEntity{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );

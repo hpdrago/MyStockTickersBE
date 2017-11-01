@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,17 @@ import java.math.BigDecimal;
 //import pl.zankowski.iextrading4j.client.IEXTradingClient;
 
 @Service
-public class IEXTradingStockService implements MyLogger
+public class IEXTradingStockService implements MyLogger, StockCache.StockQuoteServiceProvider
 {
     private static final String BASE_URL = "https://api.iextrading.com/";
     private static final String API_VERSION = "1.0";
+    private IEXTradingClient iexTradingClient = IEXTradingClient.create();
+
+    @Override
+    public String getProviderName()
+    {
+        return "IEXTrading";
+    }
 
     public StockTickerQuote getStockQuote( final String tickerSymbol )
     {
@@ -25,13 +32,11 @@ public class IEXTradingStockService implements MyLogger
         return stockTickerQuote;
     }
 
-    private IEXTradingClient iexTradingClient = IEXTradingClient.create();
-
     public Quote getQuote( final String tickerSymbol )
     {
         final String methodName = "getQuote";
         logMethodBegin( methodName, tickerSymbol );
-        StocksEndpoint stocksEndpoint = iexTradingClient.getStocksEndpoint();
+        StocksEndpoint stocksEndpoint = this.iexTradingClient.getStocksEndpoint();
         Quote quote = stocksEndpoint.requestQuote( StockRequest.builder()
                                                                .withSymbol( tickerSymbol )
                                                                .build() );

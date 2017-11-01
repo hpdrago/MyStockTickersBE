@@ -103,7 +103,7 @@ public class StockCatalystEventDTO implements StockService.StockCompanyNameConta
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalyticsDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );

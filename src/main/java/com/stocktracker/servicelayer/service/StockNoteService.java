@@ -7,6 +7,7 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
 import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
+import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import org.springframework.util.Assert;
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * This is the service class for the StockNotesEntity
@@ -70,9 +73,29 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities =
             this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
-        List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( stockNoteEntities );
+        List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( customerId, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
+    }
+
+    /**
+     *
+     * @param customerId
+     * @param entities
+     * @return
+     */
+    private List<StockNoteDTO> entitiesToDTOs( final int customerId,
+                                              final List<StockNoteEntity> entities )
+    {
+        List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository.findByCustomerIdOrderByTimesUsedDesc( customerId );
+        Map<Long, StockNoteSourceEntity> sourceEntityMap = customerSources.stream()
+                                                                          .collect( Collectors.toMap( StockNoteSourceEntity::getId,
+                                                                                                      StockNoteSourceEntity::Object() ));
+        List<StockNoteDTO> stockNoteDTOs = super.entitiesToDTOs( entities );
+        for ( StockNoteDTO stockNoteDTO: stockNoteDTOs )
+        {
+            if ( stockNoteDTO.getNotesSourceId() )
+        }
     }
 
     /**
@@ -87,8 +110,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
-        StockNoteEntity stockNoteEntity = this.newStockNoteEntity( stockNoteDTO );
-                checkForNewSource( stockNoteEntity, stockNoteDTO );
+        StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
+        checkForNewSource( stockNoteEntity, stockNoteDTO );
         setStockPrice( stockNoteEntity );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
@@ -117,24 +140,11 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
-        /*
-         * Retrieve the entity from the database so we can apply the changes which includes the stocks -- we need to
-         * compare the current stocks in the DB with the changes made by the user.
-         */
-        StockNoteEntity dbStockNoteEntity = stockNoteRepository.findOne( stockNoteDTO.getId() );
-        logDebug( methodName, "dbStockNoteEntity: {0}", dbStockNoteEntity );
-
-        /*
-         * Copy the new values into the database entity
-         */
-        this.copyUpdateProperties( stockNoteDTO, dbStockNoteEntity );
-
+        StockNoteEntity dbStockNoteEntity = this.dtoToEntity( stockNoteDTO );
         /*
          * Check for any changes to the sources
          */
-        logDebug( methodName, "saving stockNoteEntity: {0}", dbStockNoteEntity );
         this.checkForNewSource( dbStockNoteEntity, stockNoteDTO );
-
         /*
          * Save the stock notes
          */
@@ -148,52 +158,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
 
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
-    }
-
-    /**
-     * Create a new StockNoteEntity instance from a StockNoteDE instance.
-     * @param stockNoteDTO
-     * @return
-     */
-    private StockNoteEntity newStockNoteEntity( final StockNoteDTO stockNoteDTO )
-    {
-        Objects.requireNonNull( stockNoteDTO );
-        StockNoteEntity stockNoteEntity = new StockNoteEntity();
-        BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
-        if ( stockNoteEntity.getActionTaken() == null )
-        {
-            stockNoteEntity.setActionTaken( StockNoteActionTaken.NONE.name() );
-        }
-        if ( stockNoteDTO.getNotesDate() != null )
-        {
-            stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
-        }
-        return stockNoteEntity;
-    }
-
-    /**
-     * Copies the properties from the {@code dtoStockNoteEntity} to the {@code dbStockNoteEntity}
-     * @param stockNoteDTO
-     * @param dbStockNoteEntity
-     */
-    public void copyUpdateProperties( @NotNull final StockNoteDTO stockNoteDTO,
-                                      @NotNull final StockNoteEntity dbStockNoteEntity )
-        throws ParseException
-    {
-        final String methodName = "copyUpdateProperties";
-        logMethodBegin( methodName, stockNoteDTO, dbStockNoteEntity );
-        Objects.requireNonNull( stockNoteDTO );
-        Objects.requireNonNull( dbStockNoteEntity );
-        /*
-         * Only copy the properties that can be updated
-         */
-        dbStockNoteEntity.setNotes( stockNoteDTO.getNotes() );
-        dbStockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
-        dbStockNoteEntity.setNotesRating( stockNoteDTO.getNotesRating() );
-        dbStockNoteEntity.setPublicInd( stockNoteDTO.getPublicInd() == null ? "N"
-                                                                            : stockNoteDTO.getPublicInd() ? "Y" : "N" );
-        dbStockNoteEntity.setBullOrBear( stockNoteDTO.getBullOrBear() );
-        logMethodEnd( methodName, dbStockNoteEntity );
     }
 
     /**
@@ -278,6 +242,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     {
         StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
+        stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;
     }
 

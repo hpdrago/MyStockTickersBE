@@ -17,11 +17,4 @@ public interface StockNoteSourceRepository extends JpaRepository<StockNoteSource
      */
     List<StockNoteSourceEntity> findByCustomerIdOrderByTimesUsedDesc( final int customerId );
 
-    /**
-     * Finds a customer's stock note source by name
-     * @param customerId
-     * @param sourceName
-     * @return
-     */
-    StockNoteSourceEntity findByCustomerIdAndAndName( final int customerId, final String sourceName );
 }

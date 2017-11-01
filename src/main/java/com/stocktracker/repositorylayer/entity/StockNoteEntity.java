@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.StockNoteActionTaken;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -29,10 +30,10 @@ public class StockNoteEntity implements MyLogger
     private Timestamp dateCreated;
     private Timestamp dateModified;
     private Integer customerId;
-    private Integer notesRating;
+    private Byte notesRating;
     private String publicInd;
     private Byte bullOrBear;
-    private String actionTaken;
+    private Byte actionTaken;
     private Integer actionTakenShares;
     private BigDecimal actionTakenPrice;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
@@ -121,12 +122,12 @@ public class StockNoteEntity implements MyLogger
 
     @Basic
     @Column( name = "notes_rating", nullable = true )
-    public Integer getNotesRating()
+    public Byte getNotesRating()
     {
         return notesRating;
     }
 
-    public void setNotesRating( final Integer noteRating )
+    public void setNotesRating( final Byte noteRating )
     {
         this.notesRating = noteRating;
     }
@@ -205,12 +206,12 @@ public class StockNoteEntity implements MyLogger
 
     @Basic
     @Column( name = "action_taken", nullable = false )
-    public String getActionTaken()
+    public Byte getActionTaken()
     {
         return actionTaken;
     }
 
-    public void setActionTaken( final String actionTaken )
+    public void setActionTaken( final Byte actionTaken )
     {
         this.actionTaken = actionTaken;
     }
@@ -298,7 +299,7 @@ public class StockNoteEntity implements MyLogger
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd='" ).append( publicInd ).append( '\'' );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", actionTaken='" ).append( actionTaken ).append( '\'' );
+        sb.append( ", actionTaken=" ).append( actionTaken );
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );

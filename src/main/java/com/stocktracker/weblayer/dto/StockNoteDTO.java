@@ -15,10 +15,10 @@ public class StockNoteDTO
     private String notesDate;
     private String notesSourceName;
     private Integer notesSourceId;
-    private Integer notesRating;
+    private Byte notesRating;
     private Boolean publicInd;
     private Byte bullOrBear;
-    private String actionTaken;
+    private Byte actionTaken;
     private Integer actionTakenShares;
     private BigDecimal actionTakenPrice;
     private BigDecimal stockPriceWhenCreated;
@@ -97,12 +97,12 @@ public class StockNoteDTO
         this.updateDate = updateDate;
     }
 
-    public Integer getNotesRating()
+    public Byte getNotesRating()
     {
         return notesRating;
     }
 
-    public void setNotesRating( Integer notesRating )
+    public void setNotesRating( Byte notesRating )
     {
         this.notesRating = notesRating;
     }
@@ -158,12 +158,12 @@ public class StockNoteDTO
         return Objects.hash( id );
     }
 
-    public String getActionTaken()
+    public Byte getActionTaken()
     {
         return actionTaken;
     }
 
-    public void setActionTaken( final String actionTaken )
+    public void setActionTaken( final Byte actionTaken )
     {
         this.actionTaken = actionTaken;
     }
@@ -242,7 +242,7 @@ public class StockNoteDTO
         sb.append( ", notesRating=" ).append( notesRating );
         sb.append( ", publicInd=" ).append( publicInd );
         sb.append( ", bullOrBear=" ).append( bullOrBear );
-        sb.append( ", actionTaken='" ).append( actionTaken ).append( '\'' );
+        sb.append( ", actionTaken=" ).append( actionTaken );
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );

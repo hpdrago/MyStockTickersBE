@@ -1,6 +1,9 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.stockinformationprovider.IEXTradingStockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import yahoofinance.Stock;
@@ -38,14 +41,14 @@ public class StockCache implements MyLogger
         CachedStockEntry cachedStockEntry = this.cacheEntryMap.get( tickerSymbol );
         if ( cachedStockEntry == null )
         {
-            cachedStockEntry = getStockFromYahoo( tickerSymbol );
+            cachedStockEntry = this.getStockFromProvider( this.iexTradingStockService, tickerSymbol );
         }
         else
         {
             if ( System.currentTimeMillis() - cachedStockEntry.lastUpdateTime > EXPIRATION_TIME )
             {
                 logDebug( methodName, "{0} is stale", tickerSymbol );
-                cachedStockEntry = getStockFromYahoo( tickerSymbol );
+                cachedStockEntry = this.getStockFromProvider( this.iexTradingStockService, tickerSymbol );
             }
         }
         logMethodEnd( methodName, cachedStockEntry );
@@ -57,31 +60,41 @@ public class StockCache implements MyLogger
      * @param tickerSymbol
      * @return
      */
-    private CachedStockEntry getStockFromYahoo( final @NotNull String tickerSymbol )
+    private CachedStockEntry getStockFromProvider( final @NotNull StockQuoteServiceProvider stockQuoteServiceProvider,
+                                                   final @NotNull String tickerSymbol )
     {
-        final String methodName = "getStockFromYahoo";
+        final String methodName = "getStockFromProvider";
         logMethodBegin( methodName, tickerSymbol );
         CachedStockEntry cachedStockEntry = null;
-        try
+        StockTickerQuote stockTickerQuote = stockQuoteServiceProvider.getStockQuote( tickerSymbol );
+        if ( stockTickerQuote == null )
         {
-            Stock stock = this.yahooStockService.getStock( tickerSymbol );
-            if ( stock == null )
-            {
-                logInfo( methodName, "Yahoo doesn't recognize {0}" );
-            }
-            else
-            {
-                cachedStockEntry = new CachedStockEntry( stock );
-                this.cacheEntryMap.put( tickerSymbol, cachedStockEntry );
-            }
+            logInfo( methodName, "{0} doesn't recognize {1}",
+                     stockQuoteServiceProvider.getProviderName(), tickerSymbol );
         }
-        catch ( IOException e )
+        else
         {
-            logError( methodName, e );
-            cachedStockEntry = this.cacheEntryMap.get( tickerSymbol );
+            cachedStockEntry = new CachedStockEntry( stockTickerQuote );
+            this.cacheEntryMap.put( tickerSymbol, cachedStockEntry );
         }
         logMethodEnd( methodName, cachedStockEntry );
         return cachedStockEntry;
+    }
+
+    public interface StockQuoteServiceProvider
+    {
+        /**
+         * Identifies the provider of the service
+         * @return
+         */
+        String getProviderName();
+
+        /**
+         * Gets a stock quote for {@code tickerSymbol}
+         * @param tickerSymbol
+         * @return
+         */
+        StockTickerQuote getStockQuote( final String tickerSymbol );
     }
 
     /**
@@ -96,6 +109,9 @@ public class StockCache implements MyLogger
         Timestamp getLastPriceChange();
     }
 
+    /**
+     * POJO implementation for interface {@code CachedStock}
+     */
     private class CachedStockEntry implements CachedStock
     {
         private String tickerSymbol;
@@ -105,18 +121,13 @@ public class StockCache implements MyLogger
         private Timestamp lastPriceChange;
         private long lastUpdateTime;
 
-        public CachedStockEntry( final Stock yahooStock )
+        public CachedStockEntry( final StockTickerQuote stockTickerQuote )
         {
             this.lastUpdateTime = System.currentTimeMillis();
-            this.tickerSymbol = yahooStock.getSymbol();
-            this.companyName = yahooStock.getName();
-            this.exchange = yahooStock.getStockExchange();
-
-            if ( yahooStock.getQuote().getLastTradeTime() != null )
-            {
-                this.lastPriceChange = ( new Timestamp( yahooStock.getQuote().getLastTradeTime().getTimeInMillis() ) );
-            }
-            this.lastPrice = yahooStock.getQuote().getPrice();
+            this.tickerSymbol = stockTickerQuote.getTickerSymbol();
+            this.companyName = stockTickerQuote.getCompanyName();
+            this.lastPriceChange = stockTickerQuote.getLastPriceChange();
+            this.lastPrice = stockTickerQuote.getLastPrice();
         }
 
         public String getTickerSymbol()

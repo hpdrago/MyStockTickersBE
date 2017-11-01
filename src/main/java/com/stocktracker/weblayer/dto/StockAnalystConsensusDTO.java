@@ -1,12 +1,12 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.servicelayer.service.YahooStockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
+public class StockAnalystConsensusDTO implements YahooStockService.YahooStockContainer
 {
     /*
      * Entity (DB columns)
@@ -36,9 +36,9 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
     private BigDecimal avgUpsidePercent;
     private String companyName;
 
-    public static StockAnalyticsDTO newInstance()
+    public static StockAnalystConsensusDTO newInstance()
     {
-        return new StockAnalyticsDTO();
+        return new StockAnalystConsensusDTO();
     }
 
     public Integer getId()
@@ -308,7 +308,7 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
             return false;
         }
 
-        final StockAnalyticsDTO that = (StockAnalyticsDTO) o;
+        final StockAnalystConsensusDTO that = (StockAnalystConsensusDTO) o;
 
         return id.equals( that.id );
     }
@@ -322,7 +322,7 @@ public class StockAnalyticsDTO implements YahooStockService.YahooStockContainer
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalyticsDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );

@@ -83,7 +83,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>RELEASE</version>
+			<version>18.0</version>
 		</dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
@@ -92,11 +92,13 @@
             <version>3.6</version>
         </dependency>
 
+		<!--
 		<dependency>
 			<groupId>pl.zankowski</groupId>
 			<artifactId>iextrading4j-all</artifactId>
 			<version></version>
 		</dependency>
+		-->
 	</dependencies>
 
 	<!--<build>

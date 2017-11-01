@@ -11,6 +11,11 @@
       <root url="jar://$PROJECT_DIR$/../iextrading4j/out/artifacts/iextrading4j_jar/iextrading4j.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../iextrading4j/iextrading4j-client/src/main/java" />
+      <root url="file://$PROJECT_DIR$/../iextrading4j/iextrading4j-client-rest/src/main/java" />
+      <root url="file://$PROJECT_DIR$/../iextrading4j/iextrading4j-client-socket/src/main/java" />
+      <root url="file://$PROJECT_DIR$/../iextrading4j/iextrading4j-client-rest/src/main/java" />
+    </SOURCES>
   </library>
 </component>

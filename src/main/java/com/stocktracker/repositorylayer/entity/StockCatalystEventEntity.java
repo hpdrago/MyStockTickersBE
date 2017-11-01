@@ -136,7 +136,7 @@ public class StockCatalystEventEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalyticsEntity{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
