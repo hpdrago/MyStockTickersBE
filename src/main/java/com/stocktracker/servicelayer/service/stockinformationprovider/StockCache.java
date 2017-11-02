@@ -31,8 +31,14 @@ public class StockCache implements MyLogger
 
     public StockCache()
     {
+    }
+
+    public void init()
+    {
+        logMethodBegin( "init" );
         ApplicationContext context = new AnnotationConfigApplicationContext( AppConfig.class );
         taskExecutor = (ThreadPoolTaskExecutor) context.getBean( "taskExecutor" );
+        logDebug( "init", "context: {0} taskExecutor: {1}:", context, taskExecutor );
     }
 
     /**
@@ -48,6 +54,10 @@ public class StockCache implements MyLogger
         logMethodBegin( methodName, tickerSymbol, fetchMode );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( fetchMode, "fetchMode cannot be null" );
+        if ( taskExecutor == null )
+        {
+            this.init();
+        }
         CachedStockEntry cachedStockEntry = this.cacheEntryMap.get( tickerSymbol );
         if ( cachedStockEntry == null )
         {
