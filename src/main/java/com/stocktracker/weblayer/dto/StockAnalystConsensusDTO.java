@@ -1,12 +1,12 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
+import com.stocktracker.servicelayer.service.StockService;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class StockAnalystConsensusDTO implements YahooStockService.YahooStockContainer
+public class StockAnalystConsensusDTO implements StockService.StockQuoteContainer
 {
     /*
      * Entity (DB columns)
@@ -181,23 +181,6 @@ public class StockAnalystConsensusDTO implements YahooStockService.YahooStockCon
     public void setLastPrice( BigDecimal stockPrice )
     {
         this.lastPrice = stockPrice;
-    }
-
-    @Override
-    public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
-    {
-        this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
-    }
-
-    @Override
-    public Timestamp getLastPriceChangeTimestamp()
-    {
-        Timestamp returnValue = null;
-        if ( this.lastPriceChange != null )
-        {
-            returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
-        }
-        return returnValue;
     }
 
     public String getLastPriceChange()

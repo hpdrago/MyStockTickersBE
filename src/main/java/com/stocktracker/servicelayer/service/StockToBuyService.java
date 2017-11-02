@@ -37,7 +37,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
             .findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( stockToBuyEntities );
-        stockToBuyDTOs.forEach( stockToBuyDTO ->  this.stockService.setStockInformation( stockToBuyDTO ));
+        stockToBuyDTOs.forEach( stockToBuyDTO ->  this.stockService.setStockQuoteInformation( stockToBuyDTO ));
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " summaries" );
         return stockToBuyDTOs;
@@ -55,7 +55,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
         StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
         StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockService.setStockInformation( stockToBuyDTO );
+        this.stockService.setStockQuoteInformation( stockToBuyDTO );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -94,7 +94,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockService.setStockInformation( returnStockToBuyDTO );
+        this.stockService.setStockQuoteInformation( returnStockToBuyDTO );
         logMethodEnd( methodName, returnStockToBuyDTO );
         return returnStockToBuyDTO;
     }
@@ -118,7 +118,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         Objects.requireNonNull( stockToBuyEntity );
         StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
-        this.stockService.setStockInformation( stockToBuyDTO );
+        this.stockService.setStockQuoteInformation( stockToBuyDTO );
         stockToBuyDTO.setTagsArray( this.findStockTags( stockToBuyDTO.getCustomerId(),
                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
                                                         stockToBuyDTO.getId() ) );

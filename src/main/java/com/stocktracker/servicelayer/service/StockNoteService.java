@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -38,28 +37,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     private StockNoteRepository stockNoteRepository;
     private StockNoteSourceRepository stockNoteSourceRepository;
     private VStockNoteCountRepository vStockNoteCountRepository;
-
-    /**
-     * Allow DI to set the StockService
-     *
-     * @param stockService
-     */
-    @Autowired
-    public void setStockService( final StockService stockService )
-    {
-        this.stockService = stockService;
-    }
-
-    /**
-     * Autowired service class
-     */
     private YahooStockService yahooStockService;
-
-    @Autowired
-    public void setYahooStockService( final YahooStockService yahooStockService )
-    {
-        this.yahooStockService = yahooStockService;
-    }
 
     /**
      * Get all of the notes for a customer.
@@ -79,23 +57,31 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     }
 
     /**
-     *
+     * Converts the list of entities to DTOs
      * @param customerId
      * @param entities
      * @return
      */
     private List<StockNoteDTO> entitiesToDTOs( final int customerId,
-                                              final List<StockNoteEntity> entities )
+                                               final List<StockNoteEntity> entities )
     {
+        /*
+         * For now, maybe until we create a view -- if that makes sense, load the sources and populate the source
+         * values in the DTOs
+         */
         List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository.findByCustomerIdOrderByTimesUsedDesc( customerId );
-        Map<Long, StockNoteSourceEntity> sourceEntityMap = customerSources.stream()
-                                                                          .collect( Collectors.toMap( StockNoteSourceEntity::getId,
-                                                                                                      StockNoteSourceEntity::Object() ));
+        Map<Integer, String> sourceEntityMap = customerSources.stream()
+                                                              .collect( Collectors.toMap( StockNoteSourceEntity::getId,
+                                                                                          StockNoteSourceEntity::getName ));
         List<StockNoteDTO> stockNoteDTOs = super.entitiesToDTOs( entities );
         for ( StockNoteDTO stockNoteDTO: stockNoteDTOs )
         {
-            if ( stockNoteDTO.getNotesSourceId() )
+            if ( stockNoteDTO.getNotesSourceId() != null )
+            {
+                stockNoteDTO.setNotesSourceName( sourceEntityMap.get( stockNoteDTO.getNotesSourceId() ) );
+            }
         }
+        return stockNoteDTOs;
     }
 
     /**
@@ -112,21 +98,15 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
         checkForNewSource( stockNoteEntity, stockNoteDTO );
-        setStockPrice( stockNoteEntity );
+        /*
+         * Set the stock price when created for one stock note entity
+         */
+        stockNoteEntity.setStockPriceWhenCreated( this.stockService
+                                                      .getStockPrice( stockNoteEntity.getTickerSymbol() ));
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
-    }
-
-    /**
-     * Set the stock price when created for one stock note entity
-     * @param stockNoteEntity
-     */
-    private void setStockPrice( final StockNoteEntity stockNoteEntity )
-    {
-        stockNoteEntity.setStockPriceWhenCreated( this.stockService
-                                                      .getStockPrice( stockNoteEntity.getTickerSymbol() ));
     }
 
     /**
@@ -178,8 +158,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
              * Make sure it doesn't already exist
              */
             StockNoteSourceEntity stockNoteSourceEntity =
-                this.stockNoteSourceRepository.findByCustomerIdAndAndName( stockNoteDTO.getCustomerId(),
-                                                                           stockNoteDTO.getNotesSourceName() ) ;
+                this.stockNoteSourceRepository.findByCustomerIdAndName( stockNoteDTO.getCustomerId(),
+                                                                        stockNoteDTO.getNotesSourceName() ) ;
             logDebug( methodName, "stockNoteSourceEntity: {0}", stockNoteSourceEntity );
             if ( stockNoteSourceEntity != null )
             {
@@ -263,4 +243,26 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     {
         this.stockNoteRepository = stockNoteRepository;
     }
+
+    /**
+     * Allow DI to set the StockService
+     *
+     * @param stockService
+     */
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        this.stockService = stockService;
+    }
+
+    /**
+     * Autowired service class
+     */
+
+    @Autowired
+    public void setYahooStockService( final YahooStockService yahooStockService )
+    {
+        this.yahooStockService = yahooStockService;
+    }
+
 }

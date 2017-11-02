@@ -105,7 +105,7 @@ public class StockController extends AbstractController implements MyLogger
                       method = RequestMethod.POST )
     public ResponseEntity<StockDTO> addStock( @RequestBody final StockDTO stockDTO )
     {
-        final String methodName = "addStock";
+        final String methodName = "saveStock";
         logMethodBegin( methodName, stockDTO );
         if ( this.stockService.isStockExistsInDatabase( stockDTO.getTickerSymbol() ))
         {
@@ -113,7 +113,7 @@ public class StockController extends AbstractController implements MyLogger
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
         }
         logDebug( methodName, "call stockDTO: {0}", stockDTO );
-        StockDTO newStockDTO = this.stockService.addStock( stockDTO );
+        StockDTO newStockDTO = this.stockService.saveStock( stockDTO );
         logDebug( methodName, "return stockDTO: {0}", newStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder

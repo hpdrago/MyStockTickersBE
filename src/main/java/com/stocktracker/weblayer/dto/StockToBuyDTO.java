@@ -1,14 +1,12 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
+import com.stocktracker.servicelayer.service.StockService;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-public class StockToBuyDTO implements YahooStockService.YahooStockContainer
+public class StockToBuyDTO implements StockService.StockQuoteContainer
 {
     /*
      * Entity (DB columns)
@@ -95,23 +93,6 @@ public class StockToBuyDTO implements YahooStockService.YahooStockContainer
     public void setStockPriceWhenCreated( BigDecimal stockPriceWhenCreated )
     {
         this.stockPriceWhenCreated = stockPriceWhenCreated;
-    }
-
-    @Override
-    public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
-    {
-        this.lastPriceChange = JSONDateConverter.toString( lastPriceChange ) ;
-    }
-
-    @Override
-    public Timestamp getLastPriceChangeTimestamp()
-    {
-        Timestamp returnValue = null;
-        if ( this.lastPriceChange != null )
-        {
-            returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
-        }
-        return returnValue;
     }
 
     public String getLastPriceChange()

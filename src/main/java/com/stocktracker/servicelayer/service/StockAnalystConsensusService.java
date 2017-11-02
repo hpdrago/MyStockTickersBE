@@ -98,7 +98,7 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         Objects.requireNonNull( stockAnalystConsensusEntity );
         StockAnalystConsensusDTO stockAnalystConsensusDTO = StockAnalystConsensusDTO.newInstance();
         BeanUtils.copyProperties( stockAnalystConsensusEntity, stockAnalystConsensusDTO );
-        this.stockService.setStockInformation( stockAnalystConsensusDTO );
+        this.stockService.setStockQuoteInformation( stockAnalystConsensusDTO );
         performCalculations( stockAnalystConsensusDTO );
         stockAnalystConsensusDTO.setAnalystPriceDate( stockAnalystConsensusEntity.getAnalystPriceDate() );
         stockAnalystConsensusDTO.setAnalystSentimentDate( stockAnalystConsensusEntity.getAnalystSentimentDate() );

@@ -39,7 +39,7 @@ public class JSONDateConverter
     {
         if ( utcTimestamp == null )
         {
-            return null;
+            return "";
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
         return dateFormat.format( utcTimestamp );

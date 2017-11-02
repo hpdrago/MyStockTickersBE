@@ -1,14 +1,15 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
-import com.stocktracker.common.exceptions.StockNotFoundInExchangeException;
 import com.stocktracker.repositorylayer.common.BooleanUtils;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
+import com.stocktracker.servicelayer.service.stockinformationprovider.CachedStockQuote;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockCache;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
-import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +24,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Created by mike on 9/11/2016.
@@ -43,6 +43,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     {
         String getTickerSymbol();
         void setCompanyName( final String companyName );
+        String getCompanyName();
     }
 
     /**
@@ -53,6 +54,13 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     {
         String getTickerSymbol();
         void setLastPrice( final BigDecimal stockPrice );
+        BigDecimal getLastPrice();
+        void setLastPriceChange( final String lastPriceChange );
+        String getLastPriceChange();
+    }
+
+    public interface StockQuoteContainer extends StockCompanyNameContainer, LastPriceContainer
+    {
     }
 
     /**
@@ -75,7 +83,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         {
             for ( StockDTO stockDTO : stockDTOs )
             {
-                setStockInformation( stockDTO );
+                this.setStockQuoteInformation( stockDTO );
             }
         }
         logMethodEnd( methodName );
@@ -151,18 +159,15 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         if ( stockEntity == null )
         {
             logDebug( methodName, "{0} not in stock table, calling yahoo..." );
-            Optional<StockCache.CachedStock> cachedStock = this.stockCache.getStock( tickerSymbol );
+            CachedStockQuote cachedStock = this.stockCache
+                                               .getStock( tickerSymbol, StockQuoteFetchMode.ASYNCHRONOUS );
             logDebug( methodName, "yahooStock: {0}", cachedStock );
-            if ( !cachedStock.isPresent() )
-            {
-                throw new StockNotFoundInExchangeException( tickerSymbol );
-            }
-            stockDTO = this.addStock( cachedStock.get() );
+            stockDTO = this.cachedStockQuoteToStockDTO( cachedStock );
         }
         else
         {
             stockDTO = this.entityToDTO( stockEntity );
-            setStockInformation( stockDTO );
+            this.setStockQuoteInformation( stockDTO );
         }
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
@@ -184,19 +189,48 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     }
 
     /**
+     * Add a Yahoo stock to the database
+     * @param cachedStockQuote
+     * @return {@code StockDTO} the stock that was added to the database
+     */
+    public StockDTO saveStock( final CachedStockQuote cachedStockQuote )
+    {
+        final String methodName = "saveStock";
+        logMethodBegin( methodName, cachedStockQuote );
+        Objects.requireNonNull( cachedStockQuote, "yahooStock cannot be null" );
+        StockDTO stockDTO = cachedStockQuoteToStockDTO( cachedStockQuote );
+        this.saveStock( stockDTO );
+        logMethodEnd( methodName, stockDTO );
+        return stockDTO;
+    }
+
+    private StockDTO cachedStockQuoteToStockDTO( final CachedStockQuote cachedStockQuote )
+    {
+        StockDTO stockDTO = StockDTO.newInstance();
+        stockDTO.setTickerSymbol( cachedStockQuote.getTickerSymbol() );
+        stockDTO.setCompanyName( cachedStockQuote.getCompanyName() );
+        stockDTO.setUserEntered( false );
+        stockDTO.setExchange( cachedStockQuote.getExchange() );
+        stockDTO.setLastPriceChange( JSONDateConverter.toString( cachedStockQuote.getLastPriceChange() ));
+        stockDTO.setLastPrice( cachedStockQuote.getLastPrice() );
+        stockDTO.setCreatedBy( 1 );
+        return stockDTO;
+    }
+
+    /**
      * Add a stock to the database
      * @param stockDTO
      * @return
      */
-    public StockDTO addStock( final StockDTO stockDTO )
+    public StockDTO saveStock( final StockDTO stockDTO )
     {
-        final String methodName = "addStock";
+        final String methodName = "saveStock";
         logMethodBegin( methodName, stockDTO );
         Objects.requireNonNull( stockDTO, "stockDTO cannot be null" );
         StockEntity stockEntity = this.dtoToEntity( stockDTO );
-        stockEntity = stockRepository.save( stockEntity );
+        stockEntity = this.stockRepository.save( stockEntity );
         StockDTO returnStockDTO = this.entityToDTO( stockEntity );
-        this.setStockInformation( returnStockDTO );
+        this.setStockQuoteInformation( returnStockDTO );
         logMethodEnd( methodName, returnStockDTO );
         return returnStockDTO;
     }
@@ -210,7 +244,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         final String methodName = "deleteStock";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        stockRepository.delete( tickerSymbol );
+        this.stockRepository.delete( tickerSymbol );
         logMethodEnd( methodName );
     }
 
@@ -240,29 +274,6 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
         stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
         this.stockRepository.save( stockEntity );
-    }
-
-    /**
-     * Add a Yahoo stock to the database
-     * @param cachedStock
-     * @return {@code StockDTO} the stock that was added to the database
-     */
-    public StockDTO addStock( final StockCache.CachedStock cachedStock )
-    {
-        final String methodName = "addStock";
-        logMethodBegin( methodName, cachedStock );
-        Objects.requireNonNull( cachedStock, "yahooStock cannot be null" );
-        StockDTO stockDTO = StockDTO.newInstance();
-        stockDTO.setTickerSymbol( cachedStock.getTickerSymbol() );
-        stockDTO.setCompanyName( cachedStock.getCompanyName() );
-        stockDTO.setUserEntered( false );
-        stockDTO.setExchange( cachedStock.getExchange() );
-        stockDTO.setLastPriceChangeTimestamp( cachedStock.getLastPriceChange() );
-        stockDTO.setLastPrice( cachedStock.getLastPrice() );
-        stockDTO.setCreatedBy( 1 );
-        this.addStock( stockDTO );
-        logMethodEnd( methodName, stockDTO );
-        return stockDTO;
     }
 
     /**
@@ -320,15 +331,15 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @param containers
      * @throws IOException
      */
-    public void setStockInformation( final List<YahooStockService.YahooStockContainer> containers )
+    public void setStockQuoteInformation( final List<StockQuoteContainer> containers )
         throws IOException
     {
         final String methodName = "setStockInformation";
         logMethodBegin( methodName );
         Objects.requireNonNull( containers, "stockDomainEntities cannot be null" );
-        for ( YahooStockService.YahooStockContainer container : containers )
+        for ( StockQuoteContainer container : containers )
         {
-            this.setStockInformation( container );
+            this.setStockQuoteInformation( container );
         }
         logMethodEnd( methodName );
     }
@@ -339,22 +350,23 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * This information that was retrieved from the cache, is also saved back to the database stock table.
      * @param container
      */
-    public void setStockInformation( final YahooStockService.YahooStockContainer container )
+    public void setStockQuoteInformation( final StockQuoteContainer container )
     {
         final String methodName = "setStockInformation";
         logMethodBegin( methodName, container.getTickerSymbol() );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        Optional<StockCache.CachedStock> cachedStock = this.stockCache.getStock( container.getTickerSymbol() );
-        if ( cachedStock.isPresent() )
+        CachedStockQuote cachedStockQuote = this.stockCache.getStock( container.getTickerSymbol(),
+                                                                      StockQuoteFetchMode.ASYNCHRONOUS );
+        if ( cachedStockQuote.getStockQuoteState().isCurrent() ||
+             cachedStockQuote.getStockQuoteState().isStale() )
         {
             /*
              * Update the stock table with the new information
              */
-            container.setCompanyName( cachedStock.get().getCompanyName() );
-            container.setLastPrice( cachedStock.get().getLastPrice() );
-            container.setLastPriceChangeTimestamp( cachedStock.get().getLastPriceChange() );
-            this.saveStockInformation( container );
+            container.setCompanyName( cachedStockQuote.getCompanyName() );
+            container.setLastPrice( cachedStockQuote.getLastPrice() );
+            container.setLastPriceChange( JSONDateConverter.toString( cachedStockQuote.getLastPriceChange() ));
         }
         else
         {
@@ -366,22 +378,22 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
 
     /**
      * Saves the stock information in {@code container} to the stock table.
-     * @param container
+     * @param cachedStockQuote
      */
-    private void saveStockInformation( final YahooStockService.YahooStockContainer container )
+    public void persistStockQuote( final CachedStockQuote cachedStockQuote )
     {
-        final String methodName = "saveStockInformation";
-        Objects.requireNonNull( container, "container cannot be null" );
-        Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        StockEntity stockEntity = this.getStockEntity( container.getTickerSymbol() );
+        final String methodName = "persistStockQuote";
+        Objects.requireNonNull( cachedStockQuote, "container cannot be null" );
+        Objects.requireNonNull( cachedStockQuote.getTickerSymbol(), "container.getTickerSymbol() returns null" );
+        StockEntity stockEntity = this.getStockEntity( cachedStockQuote.getTickerSymbol() );
         if ( stockEntity == null )
         {
-            stockEntity.setCompanyName( container.getCompanyName() );
+            stockEntity.setCompanyName( cachedStockQuote.getCompanyName() );
         }
-        stockEntity.setLastPrice( container.getLastPrice() );
-        stockEntity.setLastPriceChange( container.getLastPriceChangeTimestamp() );
+        stockEntity.setLastPrice( cachedStockQuote.getLastPrice() );
+        stockEntity.setLastPriceChange( cachedStockQuote.getLastPriceChange() );
         this.stockRepository.save( stockEntity );
-        logMethodEnd( methodName, container );
+        logMethodEnd( methodName, cachedStockQuote );
     }
 
     @Override

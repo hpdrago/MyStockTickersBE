@@ -1,18 +1,13 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.StockService;
-import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioLastStockDTO implements StockService.StockCompanyNameContainer,
-                                              StockService.LastPriceContainer,
-                                              YahooStockService.YahooStockContainer
+public class PortfolioStockDTO implements StockService.StockQuoteContainer
 {
     private Integer id;
     private Integer customerId;
@@ -39,9 +34,9 @@ public class PortfolioLastStockDTO implements StockService.StockCompanyNameConta
      * Creates a new {@code PortfolioLastStockDTO}
      * @return
      */
-    public static PortfolioLastStockDTO newInstance()
+    public static PortfolioStockDTO newInstance()
     {
-        PortfolioLastStockDTO portfolioStockDTO = new PortfolioLastStockDTO();
+        PortfolioStockDTO portfolioStockDTO = new PortfolioStockDTO();
         return portfolioStockDTO;
     }
 
@@ -207,30 +202,6 @@ public class PortfolioLastStockDTO implements StockService.StockCompanyNameConta
     public void setLastPriceChange( final String lastPriceChange )
     {
         this.lastPriceChange = lastPriceChange;
-    }
-
-    @Override
-    public Timestamp getLastPriceChangeTimestamp()
-    {
-        Timestamp returnValue = null;
-        if ( this.lastPriceChange != null )
-        {
-            returnValue = JSONDateConverter.toTimestamp( this.lastPriceChange );
-        }
-        return returnValue;
-    }
-
-    @Override
-    public void setLastPriceChangeTimestamp( final Timestamp lastPriceChange )
-    {
-        if ( lastPriceChange != null )
-        {
-            JSONDateConverter.toString( lastPriceChange );
-        }
-        else
-        {
-            this.lastPriceChange = null;
-        }
     }
 
     private void calculateMarketValue()

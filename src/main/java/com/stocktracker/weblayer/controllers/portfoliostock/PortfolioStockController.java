@@ -4,7 +4,7 @@ import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractController;
-import com.stocktracker.weblayer.dto.PortfolioLastStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,14 +44,14 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public PortfolioLastStockDTO getPortfolioStock( @PathVariable int customerId,
-                                                    @PathVariable int portfolioId,
-                                                    @PathVariable String tickerSymbol )
+    public PortfolioStockDTO getPortfolioStock( @PathVariable int customerId,
+                                                @PathVariable int portfolioId,
+                                                @PathVariable String tickerSymbol )
         throws PortfolioStockNotFound
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
-        PortfolioLastStockDTO portfolioStockDTO = this.portfolioStockService
+        PortfolioStockDTO portfolioStockDTO = this.portfolioStockService
                                                   .getPortfolioStock( customerId, portfolioId, tickerSymbol );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
@@ -76,7 +76,7 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
-        PortfolioLastStockDTO portfolioStockDTO = PortfolioLastStockDTO.newInstance();
+        PortfolioStockDTO portfolioStockDTO = PortfolioStockDTO.newInstance();
         portfolioStockDTO.setTickerSymbol( tickerSymbol );
         portfolioStockDTO.setCustomerId( customerId );
         portfolioStockDTO.setPortfolioId( portfolioId );
@@ -116,13 +116,13 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = "/customer/{customerId}/portfolio/{portfolioId}/stocks",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<PortfolioLastStockDTO> getPortfolioStocks( @PathVariable int customerId,
-                                                           @PathVariable int portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int customerId,
+                                                       @PathVariable int portfolioId )
         throws PortfolioStockNotFound
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
-        List<PortfolioLastStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( customerId, portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( customerId, portfolioId );
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ) );
         return portfolioStockDTOList;
     }
@@ -135,7 +135,7 @@ public class PortfolioStockController extends AbstractController
     @CrossOrigin
     @RequestMapping( value = "/portfolioStock",
                      method = RequestMethod.POST )
-    public ResponseEntity<PortfolioLastStockDTO> addPortfolioStock( @RequestBody PortfolioLastStockDTO portfolioStockDTO )
+    public ResponseEntity<PortfolioStockDTO> addPortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO )
     {
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -143,7 +143,7 @@ public class PortfolioStockController extends AbstractController
         /*
          * Do the work
          */
-        PortfolioLastStockDTO newPortfolioStockDTO = this.addPortfolioStockHandler.handleRequest( portfolioStockDTO );
+        PortfolioStockDTO newPortfolioStockDTO = this.addPortfolioStockHandler.handleRequest( portfolioStockDTO );
         /*
          * send the response
          */
@@ -163,7 +163,7 @@ public class PortfolioStockController extends AbstractController
     @CrossOrigin
     @RequestMapping( value = "/portfolioStock",
         method = RequestMethod.PUT )
-    public ResponseEntity<PortfolioLastStockDTO> savePortfolioStock( @RequestBody PortfolioLastStockDTO portfolioStockDTO )
+    public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO )
     {
         final String methodName = "savePortfolioStock";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -171,7 +171,7 @@ public class PortfolioStockController extends AbstractController
         /*
          * Save the stock
          */
-        PortfolioLastStockDTO returnPortfolioStockDTO = this.savePortfolioStockHandler.handleRequest( portfolioStockDTO );
+        PortfolioStockDTO returnPortfolioStockDTO = this.savePortfolioStockHandler.handleRequest( portfolioStockDTO );
         /*
          * send the response
          */
@@ -187,7 +187,7 @@ public class PortfolioStockController extends AbstractController
      * Checks the {@code portfolioStockDTO} for the required fields
      * @param portfolioStockDTO
      */
-    private void checkRequiredFields( final @RequestBody PortfolioLastStockDTO portfolioStockDTO )
+    private void checkRequiredFields( final @RequestBody PortfolioStockDTO portfolioStockDTO )
         throws PortfolioStockMissingDataException
     {
         try

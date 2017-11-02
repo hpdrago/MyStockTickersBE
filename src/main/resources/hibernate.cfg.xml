@@ -18,7 +18,6 @@
         <mapping class="com.stocktracker.repositorylayer.entity.StockNoteSourceEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.VPortfolioStockEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.VStockNoteCountEntity"/>
-        <mapping class="com.stocktracker.repositorylayer.entity.StockNoteStockEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.CustomerTagEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockTagEntity"/>

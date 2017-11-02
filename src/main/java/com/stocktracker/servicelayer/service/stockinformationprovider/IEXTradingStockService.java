@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 //import pl.zankowski.iextrading4j.client.IEXTradingClient;
 
 @Service
-public class IEXTradingStockService implements MyLogger, StockCache.StockQuoteServiceProvider
+public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvider
 {
     private static final String BASE_URL = "https://api.iextrading.com/";
     private static final String API_VERSION = "1.0";

@@ -11,9 +11,9 @@ import java.util.Objects;
  */
 public class PortfolioStockDTOs
 {
-    private List<PortfolioLastStockDTO> portfolioStocks = new ArrayList<>();
+    private List<PortfolioStockDTO> portfolioStocks = new ArrayList<>();
 
-    public static PortfolioStockDTOs newInstance( final List<PortfolioLastStockDTO> portfolioStockDTOList )
+    public static PortfolioStockDTOs newInstance( final List<PortfolioStockDTO> portfolioStockDTOList )
     {
         Objects.requireNonNull( portfolioStockDTOList );
         PortfolioStockDTOs portfolioStockDTOs = new PortfolioStockDTOs();

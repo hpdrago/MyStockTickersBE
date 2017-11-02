@@ -1,15 +1,18 @@
 package com.stocktracker;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * JPA Configuration
  */
+@Configuration
+@EnableJpaRepositories( basePackages = {"com.stocktracker.repositorylayer.repository"} )
+@EnableAspectJAutoProxy( proxyTargetClass = true )
 public class PersistenceJPAConfig
 {
+    /*
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean()
     {
@@ -23,4 +26,5 @@ public class PersistenceJPAConfig
         transactionManager.setEntityManagerFactory( entityManagerFactoryBean().getObject() );
         return transactionManager;
     }
+    */
 }
