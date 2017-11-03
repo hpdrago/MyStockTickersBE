@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
      */
     private BigDecimal lastPrice;
     private String lastPriceChange;
+    private StockQuoteState stockQuoteState;
     private BigDecimal percentChange;
     private String companyName;
 
@@ -182,6 +184,19 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
         this.percentChange = percentChange;
     }
 
+
+    @Override
+    public StockQuoteState getStockQuoteState()
+    {
+        return stockQuoteState;
+    }
+
+    @Override
+    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    {
+        this.stockQuoteState = stockQuoteState;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -205,6 +220,7 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
         return id.hashCode();
     }
 
+
     @Override
     public String toString()
     {
@@ -216,12 +232,13 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
-        sb.append( ", buyAfterDate=" ).append( buyAfterDate );
+        sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", tags=" ).append( Arrays.toString( tags ) );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
-        sb.append( ", percentChange='" ).append( percentChange ).append( '\'' );
+        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
+        sb.append( ", percentChange=" ).append( percentChange );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

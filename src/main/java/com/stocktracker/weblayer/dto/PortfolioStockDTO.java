@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 
 import java.math.BigDecimal;
 
@@ -13,11 +14,8 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
     private Integer customerId;
     private Integer portfolioId;
     private String tickerSymbol;
-    private String companyName;
     private Integer numberOfShares;
     private BigDecimal averageUnitCost;
-    private BigDecimal lastPrice;
-    private String lastPriceChange;
     private BigDecimal realizedGains;
     private BigDecimal realizedLosses;
     private BigDecimal stopLossPrice;
@@ -27,6 +25,10 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
     private Integer sectorId;
 
     /***** Calculated fields *****/
+    private String companyName;
+    private BigDecimal lastPrice;
+    private String lastPriceChange;
+    private StockQuoteState stockQuoteState;
     private Integer marketValue;
     private Integer costBasis;
 
@@ -250,21 +252,32 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
         this.costBasis = costBasis;
     }
 
+
+    @Override
+    public StockQuoteState getStockQuoteState()
+    {
+        return stockQuoteState;
+    }
+
+    @Override
+    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    {
+        this.stockQuoteState = stockQuoteState;
+    }
+
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "PortfolioLastStockDTO{" );
+        final StringBuilder sb = new StringBuilder( "PortfolioStockDTO{" );
         sb.append( "id=" ).append( id );
-        sb.append( ", customerId='" ).append( customerId ).append( '\'' );
-        sb.append( ", portfolioId='" ).append( portfolioId ).append( '\'' );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", portfolioId=" ).append( portfolioId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
         sb.append( ", averageUnitCost=" ).append( averageUnitCost );
         sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", costBasis=" ).append( costBasis );
-        sb.append( ", marketValue=" ).append( marketValue );
+        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
         sb.append( ", realizedGains=" ).append( realizedGains );
         sb.append( ", realizedLosses=" ).append( realizedLosses );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
@@ -272,6 +285,9 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
         sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
         sb.append( ", profitTakingShares=" ).append( profitTakingShares );
         sb.append( ", sectorId=" ).append( sectorId );
+        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
+        sb.append( ", marketValue=" ).append( marketValue );
+        sb.append( ", costBasis=" ).append( costBasis );
         sb.append( '}' );
         return sb.toString();
     }

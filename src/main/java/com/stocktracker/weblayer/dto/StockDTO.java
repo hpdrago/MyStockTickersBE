@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -17,6 +18,7 @@ public class StockDTO implements StockService.StockQuoteContainer
     private String lastPriceChange;
     private int createdBy;
     private boolean userEntered;
+    private StockQuoteState stockQuoteState;
 
     public static StockDTO newInstance()
     {
@@ -114,6 +116,18 @@ public class StockDTO implements StockService.StockQuoteContainer
     }
 
     @Override
+    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    {
+        this.stockQuoteState = stockQuoteState;
+    }
+
+    @Override
+    public StockQuoteState getStockQuoteState()
+    {
+        return this.stockQuoteState;
+    }
+
+    @Override
     public int hashCode()
     {
         return Objects.hash( tickerSymbol, companyName, exchange );
@@ -128,6 +142,7 @@ public class StockDTO implements StockService.StockQuoteContainer
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice='" ).append( lastPrice ).append( '\'' );
         sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
+        sb.append( ", stockQuoteState='" ).append( stockQuoteState ).append( '\'' );
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", createdBy='" ).append( createdBy ).append( '\'' );
         sb.append( ", userEntered='" ).append( userEntered ).append( '\'' );

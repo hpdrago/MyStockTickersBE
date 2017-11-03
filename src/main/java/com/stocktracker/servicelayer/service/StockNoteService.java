@@ -7,7 +7,9 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
 import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
+import com.stocktracker.servicelayer.service.stockinformationprovider.CachedStockQuote;
 import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
+import com.stocktracker.weblayer.dto.StockDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,6 +213,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
         stockNoteDTO.setCreateDate( JSONDateConverter.toString( stockNoteEntity.getCreateDate() ));
         stockNoteDTO.setUpdateDate( JSONDateConverter.toString( stockNoteEntity.getUpdateDate() ));
+        StockDTO stockDTO = this.stockService.getStock( stockNoteDTO.getTickerSymbol() );
         stockNoteDTO.setLastPrice( this.stockService.getStockPrice( stockNoteDTO.getTickerSymbol() ) );
         stockNoteDTO.setPercentChange( calculatePercentOfChange( stockNoteDTO.getStockPriceWhenCreated(),
                                                                  stockNoteDTO.getLastPrice() ) );

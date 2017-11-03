@@ -9,6 +9,7 @@ import com.stocktracker.repositorylayer.repository.StockRepository;
 import com.stocktracker.servicelayer.service.stockinformationprovider.CachedStockQuote;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockCache;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 import com.stocktracker.weblayer.dto.StockDTO;
 import org.apache.commons.lang3.StringUtils;
@@ -61,6 +62,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
 
     public interface StockQuoteContainer extends StockCompanyNameContainer, LastPriceContainer
     {
+        void setStockQuoteState( final StockQuoteState stockQuoteState );
+        StockQuoteState getStockQuoteState();
     }
 
     /**
@@ -83,7 +86,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         {
             for ( StockDTO stockDTO : stockDTOs )
             {
-                this.setStockQuoteInformation( stockDTO );
+                this.setStockQuoteInformation( stockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
             }
         }
         logMethodEnd( methodName );
@@ -140,7 +143,12 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     }
 
     /**
-     * Gets a single stock for the {@code tickerSymbol} from the database
+     * Gets a single stock for the {@code tickerSymbol} from the stock cache or the database if necessary.
+     * If the stock price is not current, a request will be made to update the price asynchronously.  In this case,
+     * the {@code cachedStock.stockQuoteState = StockQuoteState.STALE or StockQuoteState.NOT_FOUND}.  In either case,
+     * a subsequent request will need to be made to retrieve the updated stock price while the background tasks obtains
+     * the update from the stock quote service.
+     *
      * @param tickerSymbol
      * @return
      * @throws StockNotFoundInDatabaseException if {@code tickerSymbol} is not found in the stock table
@@ -151,24 +159,9 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        /*
-         * Get the stock from the database
-         */
-        StockEntity stockEntity = getStockEntity( tickerSymbol );
-        StockDTO stockDTO;
-        if ( stockEntity == null )
-        {
-            logDebug( methodName, "{0} not in stock table, calling yahoo..." );
-            CachedStockQuote cachedStock = this.stockCache
-                                               .getStock( tickerSymbol, StockQuoteFetchMode.ASYNCHRONOUS );
-            logDebug( methodName, "yahooStock: {0}", cachedStock );
-            stockDTO = this.cachedStockQuoteToStockDTO( cachedStock );
-        }
-        else
-        {
-            stockDTO = this.entityToDTO( stockEntity );
-            this.setStockQuoteInformation( stockDTO );
-        }
+        CachedStockQuote cachedStock = this.stockCache.getStock( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+        logDebug( methodName, "cachedStock: {0}", cachedStock );
+        StockDTO stockDTO = this.cachedStockQuoteToStockDTO( cachedStock );
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
     }
@@ -204,6 +197,11 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         return stockDTO;
     }
 
+    /**
+     * Converts a {@code CachedStockQuote} into a {@code StockDTO}
+     * @param cachedStockQuote
+     * @return
+     */
     private StockDTO cachedStockQuoteToStockDTO( final CachedStockQuote cachedStockQuote )
     {
         StockDTO stockDTO = StockDTO.newInstance();
@@ -213,6 +211,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         stockDTO.setExchange( cachedStockQuote.getExchange() );
         stockDTO.setLastPriceChange( JSONDateConverter.toString( cachedStockQuote.getLastPriceChange() ));
         stockDTO.setLastPrice( cachedStockQuote.getLastPrice() );
+        stockDTO.setStockQuoteState( cachedStockQuote.getStockQuoteState() );
         stockDTO.setCreatedBy( 1 );
         return stockDTO;
     }
@@ -230,7 +229,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         StockEntity stockEntity = this.dtoToEntity( stockDTO );
         stockEntity = this.stockRepository.save( stockEntity );
         StockDTO returnStockDTO = this.entityToDTO( stockEntity );
-        this.setStockQuoteInformation( returnStockDTO );
+        //this.setStockQuoteInformation( returnStockDTO );
         logMethodEnd( methodName, returnStockDTO );
         return returnStockDTO;
     }
@@ -329,17 +328,19 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * Makes a call to Yahoo to get the current stock information including the price, last price change, and company
      * name.  This information that was retrieved from Yahoo, is also saved back to the database stock table.
      * @param containers
+     * @param stockQuoteFetchMode SYNCHRONOUS or ASYNCHRONOUS
      * @throws IOException
      */
-    public void setStockQuoteInformation( final List<StockQuoteContainer> containers )
+    public void setStockQuoteInformation( final List<StockQuoteContainer> containers,
+                                          final StockQuoteFetchMode stockQuoteFetchMode )
         throws IOException
     {
         final String methodName = "setStockInformation";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, stockQuoteFetchMode );
         Objects.requireNonNull( containers, "stockDomainEntities cannot be null" );
         for ( StockQuoteContainer container : containers )
         {
-            this.setStockQuoteInformation( container );
+            this.setStockQuoteInformation( container, stockQuoteFetchMode );
         }
         logMethodEnd( methodName );
     }
@@ -348,16 +349,18 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * Obtains the stock information from the stock cache with the current stock information including the price,
      * last price change, and company name.
      * This information that was retrieved from the cache, is also saved back to the database stock table.
-     * @param container
+     * @param container The container to populate with the stock quote information.
+     * @param stockQuoteFetchMode SYNCHRONOUS or ASYNCHRONOUS
      */
-    public void setStockQuoteInformation( final StockQuoteContainer container )
+    public void setStockQuoteInformation( final StockQuoteContainer container,
+                                          final StockQuoteFetchMode stockQuoteFetchMode )
     {
         final String methodName = "setStockInformation";
-        logMethodBegin( methodName, container.getTickerSymbol() );
+        logMethodBegin( methodName, container.getTickerSymbol(), stockQuoteFetchMode );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        CachedStockQuote cachedStockQuote = this.stockCache.getStock( container.getTickerSymbol(),
-                                                                      StockQuoteFetchMode.ASYNCHRONOUS );
+        CachedStockQuote cachedStockQuote = this.stockCache.getStock( container.getTickerSymbol(), stockQuoteFetchMode );
+        container.setStockQuoteState( cachedStockQuote.getStockQuoteState() );
         if ( cachedStockQuote.getStockQuoteState().isCurrent() ||
              cachedStockQuote.getStockQuoteState().isStale() )
         {

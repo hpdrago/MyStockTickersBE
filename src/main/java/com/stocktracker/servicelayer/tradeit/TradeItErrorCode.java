@@ -1,4 +1,4 @@
-package com.stocktracker.tradeit;
+package com.stocktracker.servicelayer.tradeit;
 
 /**
  * Created by michael.earl on 4/14/2017.

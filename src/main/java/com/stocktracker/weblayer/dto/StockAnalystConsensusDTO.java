@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -33,6 +34,7 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
      */
     private BigDecimal lastPrice;
     private String lastPriceChange;
+    private StockQuoteState stockQuoteState;
     private BigDecimal avgUpsidePercent;
     private String companyName;
 
@@ -280,6 +282,18 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
     }
 
     @Override
+    public StockQuoteState getStockQuoteState()
+    {
+        return stockQuoteState;
+    }
+
+    @Override
+    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    {
+        this.stockQuoteState = stockQuoteState;
+    }
+
+    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -324,6 +338,7 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
         sb.append( ", analystPriceDate=" ).append( analystPriceDate );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
+        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
         sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );

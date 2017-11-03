@@ -5,6 +5,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,8 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
             .findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( stockToBuyEntities );
-        stockToBuyDTOs.forEach( stockToBuyDTO ->  this.stockService.setStockQuoteInformation( stockToBuyDTO ));
+        stockToBuyDTOs.forEach( stockToBuyDTO ->  this.stockService.setStockQuoteInformation( stockToBuyDTO,
+                                                                                              StockQuoteFetchMode.ASYNCHRONOUS ));
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " summaries" );
         return stockToBuyDTOs;
@@ -55,7 +57,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
         StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
         StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockService.setStockQuoteInformation( stockToBuyDTO );
+        this.stockService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -94,7 +96,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockService.setStockQuoteInformation( returnStockToBuyDTO );
+        this.stockService.setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnStockToBuyDTO );
         return returnStockToBuyDTO;
     }
@@ -118,7 +120,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         Objects.requireNonNull( stockToBuyEntity );
         StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
-        this.stockService.setStockQuoteInformation( stockToBuyDTO );
+        this.stockService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         stockToBuyDTO.setTagsArray( this.findStockTags( stockToBuyDTO.getCustomerId(),
                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
                                                         stockToBuyDTO.getId() ) );

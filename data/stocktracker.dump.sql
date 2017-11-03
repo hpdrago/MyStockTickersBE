@@ -481,6 +481,7 @@ CREATE TABLE `stock_note` (
   `action_taken_price` varchar(45) DEFAULT NULL,
   `public_ind` varchar(1) DEFAULT NULL,
   `stock_price_when_created` decimal(7,2) DEFAULT NULL,
+  `version` int(11) NOT NULL DEFAULT '1',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -498,7 +499,7 @@ CREATE TABLE `stock_note` (
 
 LOCK TABLES `stock_note` WRITE;
 /*!40000 ALTER TABLE `stock_note` DISABLE KEYS */;
-INSERT INTO `stock_note` VALUES (42,1,'FEYE','<p>adfadsf</p>',NULL,0,'2016-10-30 17:00:00',0,0,0,NULL,NULL,16.70,'2017-10-27 20:41:30',NULL),(43,1,'ABC','<p>adfadsf</p>',NULL,0,'2015-10-30 17:00:00',0,0,0,NULL,NULL,76.38,'2017-11-01 22:02:25','2017-11-01 22:02:25'),(44,1,'NYMT','<p>adfadsf</p>',NULL,0,'2016-10-30 17:00:00',0,0,0,NULL,NULL,6.13,'2017-10-27 20:41:30',NULL),(46,1,'ABX','my comments',NULL,0,'2016-10-30 17:00:00',1,1,500,'20',NULL,14.68,'2017-10-28 18:48:22',NULL),(47,1,'ABX','my comments',NULL,5,'2016-10-30 17:00:00',1,1,500,'20',NULL,14.68,'2017-10-28 19:22:12',NULL),(48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',NULL,5,'2016-10-30 17:00:00',1,0,0,NULL,NULL,2.53,'2017-10-30 16:35:30',NULL),(49,1,'OMER','<p>https://seekingalpha.com/research/498952-bret-jensen/5063628-revisiting-investment-case-omeros#comments</p>',NULL,5,'2005-10-30 16:00:00',1,0,0,NULL,NULL,15.46,'2017-11-01 21:46:04','2017-11-01 21:46:04');
+INSERT INTO `stock_note` VALUES (42,1,'FEYE','<p>adfadsf</p>',NULL,0,'2016-10-30 17:00:00',0,0,0,NULL,NULL,16.70,1,'2017-10-27 20:41:30',NULL),(43,1,'ABC','<p>adfadsf</p>',NULL,0,'2015-10-30 17:00:00',0,0,0,NULL,NULL,76.38,1,'2017-11-01 22:02:25','2017-11-01 22:02:25'),(44,1,'NYMT','<p>adfadsf</p>',NULL,0,'2016-10-30 17:00:00',0,0,0,NULL,NULL,6.13,1,'2017-10-27 20:41:30',NULL),(46,1,'ABX','my comments',NULL,0,'2016-10-30 17:00:00',1,1,500,'20',NULL,14.68,1,'2017-10-28 18:48:22',NULL),(47,1,'ABX','my comments',NULL,5,'2016-10-30 17:00:00',1,1,500,'20',NULL,14.68,1,'2017-10-28 19:22:12',NULL),(48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',NULL,5,'2016-10-30 17:00:00',1,0,0,NULL,NULL,2.53,1,'2017-10-30 16:35:30',NULL),(49,1,'OMER','<p>https://seekingalpha.com/research/498952-bret-jensen/5063628-revisiting-investment-case-omeros#comments</p>',NULL,5,'2005-10-30 16:00:00',1,0,0,NULL,NULL,15.46,1,'2017-11-01 21:46:04','2017-11-01 21:46:04');
 /*!40000 ALTER TABLE `stock_note` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -532,7 +533,11 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_note_BEFORE_UPDATE` BEFORE UPDATE ON `stock_note` FOR EACH ROW
 BEGIN
-	IF NEW.notes_source_id <> OLD.notes_source_id THEN
+    /*
+     * When the source note changes, then update the used count appropriately.
+     */
+	IF NEW.notes_source_id <> OLD.notes_source_id 
+    THEN
 		UPDATE stock_note_source
 		   SET used_count = used_count - 1
 		 WHERE id = OLD.notes_source_id;
@@ -541,7 +546,22 @@ BEGIN
 		   SET used_count = used_count + 1
 		 WHERE id = NEW.notes_source_id;
     END IF;
+    /*
+     * Set the update date
+     */
 	SET NEW.UPDATE_DATE = current_timestamp();
+    /*
+     * Ensure that we are looking at the same version of the row, if not throw an exception
+     */
+    IF NEW.VERSION <> OLD.VERSION
+    THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'VERSION MISMATCH';
+    END IF;
+    /*
+     * Increment the version number
+     */
+    SET NEW.VERSION = OLD.VERSION + 1;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -902,4 +922,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-01 16:37:28
+-- Dump completed on 2017-11-03 16:20:44
