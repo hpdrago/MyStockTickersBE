@@ -4,6 +4,8 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +75,23 @@ public class StockController extends AbstractController implements MyLogger
         return stockDTOs;
     }
 
+    /**
+     * Get a stock quote for {@code tickerSymbol}
+     *
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = "/stockQuote/{tickerSymbol}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE})
+    public StockQuote getStockQuote( @PathVariable final String tickerSymbol )
+    {
+        final String methodName = "getStockQuote";
+        logMethodBegin( methodName, tickerSymbol );
+        StockQuote stockTickerQuote = this.stockService.getStockQuote( tickerSymbol, StockQuoteFetchMode.ASYNCHRONOUS );
+        logMethodEnd( methodName, stockTickerQuote );
+        return stockTickerQuote;
+    }
     /**
      * Get a single stock for {@code tickerSymbol}
      *

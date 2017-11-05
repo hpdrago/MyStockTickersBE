@@ -12,10 +12,10 @@ public interface StockQuoteServiceProvider
     String getProviderName();
 
     /**
-     * Gets a stock quote for {@code tickerSymbol}
+     * Get the ticker quote from the provider.
      * @param tickerSymbol
      * @return
      */
-    StockTickerQuote getStockQuote( final String tickerSymbol );
+    StockTickerQuote getStockTickerQuote( final String tickerSymbol );
 }
 

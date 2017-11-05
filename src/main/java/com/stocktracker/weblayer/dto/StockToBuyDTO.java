@@ -184,7 +184,6 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
         this.percentChange = percentChange;
     }
 
-
     @Override
     public StockQuoteState getStockQuoteState()
     {

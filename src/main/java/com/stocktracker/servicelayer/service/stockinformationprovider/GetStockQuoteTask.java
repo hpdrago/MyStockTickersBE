@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class GetStockQuoteTask implements Runnable, MyLogger
 {
     private StockQuoteServiceProvider serviceProvider;
-    private StockCache stockCache;
+    private StockQuoteCache stockQuoteCache;
     private String tickerSymbol;
 
     @Override
@@ -24,8 +24,9 @@ public class GetStockQuoteTask implements Runnable, MyLogger
         /*
          * We don't care about the return value, we just want to load the cache with the stock quote.
          */
-        this.stockCache.getStockFromProvider( this.serviceProvider,
-                                              this.tickerSymbol );
+        /*
+        this.stockQuoteCache.getStockFromProvider( this.serviceProvider,
+                                                   this.tickerSymbol );*/
         logMethodEnd( "run", this.tickerSymbol );
     }
 
@@ -34,9 +35,9 @@ public class GetStockQuoteTask implements Runnable, MyLogger
         this.tickerSymbol = tickerSymbol;
     }
 
-    public void setStockCache( final StockCache stockCache )
+    public void setStockQuoteCache( final StockQuoteCache stockQuoteCache )
     {
-        this.stockCache = stockCache;
+        this.stockQuoteCache = stockQuoteCache;
     }
 
 

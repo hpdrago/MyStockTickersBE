@@ -41,7 +41,7 @@ public class UpdateStockPricesTask implements MyLogger
                     stockEntity.getLastPriceUpdate().before( yesterday );
                 if ( updateNeeded )
                 {
-                    StockTickerQuote stockTickerQuote = this.yahooStockService.getStockQuote( stockEntity.getTickerSymbol() );
+                    StockTickerQuote stockTickerQuote = this.yahooStockService.getStockTickerQuote( stockEntity.getTickerSymbol() );
                     logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
                               stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceChange() );
                     stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );

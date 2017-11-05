@@ -28,7 +28,7 @@ public class StockNoteDTO implements StockService.StockQuoteContainer
     private BigDecimal stockPriceWhenCreated;
     private BigDecimal lastPrice;
     private String lastPriceChange;
-    private StockQuoteState stockQuoteState;
+    private Integer stockQuoteState;
     private BigDecimal percentChange;
     private String createDate;
     private String updateDate;
@@ -234,13 +234,12 @@ public class StockNoteDTO implements StockService.StockQuoteContainer
     @Override
     public void setStockQuoteState( final StockQuoteState stockQuoteState )
     {
-        this.stockQuoteState = stockQuoteState;
+        this.stockQuoteState = stockQuoteState.ordinal();
     }
 
-    @Override
     public StockQuoteState getStockQuoteState()
     {
-        return stockQuoteState;
+        return StockQuoteState.valueOf( stockQuoteState );
     }
 
     @Override

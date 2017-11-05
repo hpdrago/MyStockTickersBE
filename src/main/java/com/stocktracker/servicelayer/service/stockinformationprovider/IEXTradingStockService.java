@@ -10,11 +10,12 @@ import pl.zankowski.iextrading4j.client.endpoint.stocks.request.StockRequest;
 import java.math.BigDecimal;
 //import pl.zankowski.iextrading4j.client.IEXTradingClient;
 
+/**
+ * This service obtains Stock Quotes from the IEXTrading platform
+ */
 @Service
 public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvider
 {
-    private static final String BASE_URL = "https://api.iextrading.com/";
-    private static final String API_VERSION = "1.0";
     private IEXTradingClient iexTradingClient = IEXTradingClient.create();
 
     @Override
@@ -23,24 +24,48 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
         return "IEXTrading";
     }
 
-    public StockTickerQuote getStockQuote( final String tickerSymbol )
+    /**
+     * Gets the stock quote
+     * @param tickerSymbol
+     * @return StockTickerQuote
+     */
+    public StockTickerQuote getStockTickerQuote( final String tickerSymbol )
     {
-        Quote quote = this.getQuote( tickerSymbol );
-        StockTickerQuote stockTickerQuote = new StockTickerQuote();
-        stockTickerQuote.setLastPrice( new BigDecimal( quote.getLatestPrice() ));
-        stockTickerQuote.setCompanyName( quote.getCompanyName() );
+        final String methodName = "getStockTickerQuote";
+        logMethodBegin( methodName, tickerSymbol );
+        StockTickerQuote stockTickerQuote = this.getIEXTradingQuote( tickerSymbol );
+        logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
 
-    public Quote getQuote( final String tickerSymbol )
+    /**
+     * Gets the stock quote synchronously
+     * @param tickerSymbol
+     * @return IEXTrading quote
+     */
+    public StockTickerQuote getIEXTradingQuote( final String tickerSymbol )
     {
-        final String methodName = "getQuote";
+        final String methodName = "getIEXTradingQuote";
         logMethodBegin( methodName, tickerSymbol );
         StocksEndpoint stocksEndpoint = this.iexTradingClient.getStocksEndpoint();
         Quote quote = stocksEndpoint.requestQuote( StockRequest.builder()
                                                                .withSymbol( tickerSymbol )
                                                                .build() );
-        logMethodEnd( methodName, quote );
-        return quote;
+        StockTickerQuote stockTickerQuote = this.quoteToStockTickerQuote( quote );
+        logMethodEnd( methodName, stockTickerQuote );
+        return stockTickerQuote;
+    }
+
+    /**
+     * Converts the IEX Quote into a StockTickerQuote
+     * @param quote
+     * @return
+     */
+    private StockTickerQuote quoteToStockTickerQuote( final Quote quote )
+    {
+        StockTickerQuote stockTickerQuote = new StockTickerQuote();
+        stockTickerQuote.setLastPrice( new BigDecimal( quote.getLatestPrice() ));
+        stockTickerQuote.setCompanyName( quote.getCompanyName() );
+        return stockTickerQuote;
     }
 }

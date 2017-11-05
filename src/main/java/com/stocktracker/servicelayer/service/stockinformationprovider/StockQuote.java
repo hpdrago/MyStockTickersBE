@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 /**
  * This interface defines the methods to extract the values from a cached stock
  */
-public interface CachedStockQuote
+public interface StockQuote
 {
     String getTickerSymbol();
     String getCompanyName();

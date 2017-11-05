@@ -1,27 +1,28 @@
 package com.stocktracker;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.Executor;
+
 @Configuration
-@EnableAutoConfiguration( exclude={DataSourceAutoConfiguration.class})
+@EnableAsync
 public class AppConfig
 {
     /**
-     * https://www.mkyong.com/spring/spring-and-java-thread-example/
-     * @return
+     * http://www.baeldung.com/spring-async
+     * @return Thread pool executor
      */
-    @Bean
-    public ThreadPoolTaskExecutor taskExecutor()
+    @Bean(name = "stockQuoteThreadPool")
+    public Executor threadPoolTaskExecutor()
     {
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         pool.setCorePoolSize(5);
         pool.setMaxPoolSize(30);
         pool.setWaitForTasksToCompleteOnShutdown(true);
+        pool.setThreadNamePrefix( "StockQuote-" );
         return pool;
     }
-
 }

@@ -27,7 +27,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * @param tickerSymbol
      * @return -1 if there is an error, otherwise the last stock price will be returned
      */
-    public StockTickerQuote getStockQuote( final String tickerSymbol )
+    public StockTickerQuote getStockTickerQuote( final String tickerSymbol )
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );

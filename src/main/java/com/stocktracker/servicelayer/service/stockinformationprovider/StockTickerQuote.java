@@ -2,18 +2,46 @@ package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * This class is used to return stock update information from the stock quote service
  *
  * Created by mike on 12/10/2016.
  */
-public class StockTickerQuote
+public class StockTickerQuote implements StockQuote
 {
     private String tickerSymbol;
     private String companyName;
     private BigDecimal lastPrice;
     private Timestamp lastPriceChange;
+    private StockQuoteState stockQuoteState;
+
+    /**
+     * Create a new instance with the ticker and the state.
+     * This method is used when the stock quote is being retrieved asynchronously.
+     * @param tickerSymbol
+     * @param stockQuoteState
+     * @return
+     */
+    public static StockTickerQuote newInstance( final String tickerSymbol,
+                                                final StockQuoteState stockQuoteState )
+    {
+        StockTickerQuote stockTickerQuote = new StockTickerQuote();
+        stockTickerQuote.tickerSymbol = tickerSymbol;
+        stockTickerQuote.stockQuoteState = stockQuoteState;
+        return stockTickerQuote;
+    }
+
+    public StockQuoteState getStockQuoteState()
+    {
+        return stockQuoteState;
+    }
+
+    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    {
+        this.stockQuoteState = stockQuoteState;
+    }
 
     public String getTickerSymbol()
     {
@@ -51,9 +79,37 @@ public class StockTickerQuote
         return companyName;
     }
 
+    @Override
+    public String getExchange()
+    {
+        return null;
+    }
+
     public void setCompanyName( final String companyName )
     {
         this.companyName = companyName;
+    }
+
+
+    @Override
+    public boolean equals( final Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+        final StockTickerQuote that = (StockTickerQuote) o;
+        return Objects.equals( tickerSymbol, that.tickerSymbol );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( tickerSymbol );
     }
 
     @Override
@@ -61,9 +117,10 @@ public class StockTickerQuote
     {
         final StringBuilder sb = new StringBuilder( "StockTickerQuote{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", companyName=" ).append( companyName );
+        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
         sb.append( '}' );
         return sb.toString();
     }

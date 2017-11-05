@@ -6,8 +6,8 @@ import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.repositorylayer.common.BooleanUtils;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
-import com.stocktracker.servicelayer.service.stockinformationprovider.CachedStockQuote;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockCache;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteCache;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
@@ -34,7 +34,7 @@ import java.util.Objects;
 public class StockService extends BaseService<StockEntity, StockDTO> implements MyLogger
 {
     private StockRepository stockRepository;
-    private StockCache stockCache;
+    private StockQuoteCache stockQuoteCache;
 
     /**
      * To be implemented by any class containing a ticker symbol and a stock company name to
@@ -154,16 +154,41 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @throws StockNotFoundInDatabaseException if {@code tickerSymbol} is not found in the stock table
      */
     public StockDTO getStock( final String tickerSymbol )
-        throws StockNotFoundInDatabaseException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        CachedStockQuote cachedStock = this.stockCache.getStock( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
-        logDebug( methodName, "cachedStock: {0}", cachedStock );
-        StockDTO stockDTO = this.cachedStockQuoteToStockDTO( cachedStock );
+        StockEntity stockEntity = this.stockRepository.findOne( tickerSymbol );
+        StockDTO stockDTO = null;
+        if ( stockEntity != null )
+        {
+            stockDTO = this.entityToDTO( stockEntity );
+        }
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
+    }
+
+    /**
+     * Gets a stock quote from the {@code StockQuoteCache}.
+     * If the fetch mode is SYNCHRONOUS, this method will block and wait while the quote is retrieved.
+     * If the fetch mode is ASYNCHRONOUS and the stock quote is not found or is stale, this block will return without
+     * a complete quote.  The quote can be obtained by a subsequent request.  If the stock quote is found and is current,
+     * the behaviour is that of the SYNCHRONOUS mode and this method will return with a complete stock quote.
+     * @param tickerSymbol
+     * @param stockQuoteFetchMode
+     * @return
+     * @throws StockNotFoundInDatabaseException
+     */
+    public StockQuote getStockQuote( final String tickerSymbol,
+                                     final StockQuoteFetchMode stockQuoteFetchMode )
+        throws StockNotFoundInDatabaseException
+    {
+        final String methodName = "getStockQuote";
+        logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        StockQuote stockQuote = this.stockQuoteCache.getStockQuote( tickerSymbol, stockQuoteFetchMode );
+        logMethodEnd( methodName, stockQuote );
+        return stockQuote;
     }
 
     /**
@@ -183,15 +208,15 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
 
     /**
      * Add a Yahoo stock to the database
-     * @param cachedStockQuote
+     * @param stockQuote
      * @return {@code StockDTO} the stock that was added to the database
      */
-    public StockDTO saveStock( final CachedStockQuote cachedStockQuote )
+    public StockDTO saveStock( final StockQuote stockQuote )
     {
         final String methodName = "saveStock";
-        logMethodBegin( methodName, cachedStockQuote );
-        Objects.requireNonNull( cachedStockQuote, "yahooStock cannot be null" );
-        StockDTO stockDTO = cachedStockQuoteToStockDTO( cachedStockQuote );
+        logMethodBegin( methodName, stockQuote );
+        Objects.requireNonNull( stockQuote, "yahooStock cannot be null" );
+        StockDTO stockDTO = stockQuoteToStockDTO( stockQuote );
         this.saveStock( stockDTO );
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
@@ -199,19 +224,19 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
 
     /**
      * Converts a {@code CachedStockQuote} into a {@code StockDTO}
-     * @param cachedStockQuote
+     * @param stockQuote
      * @return
      */
-    private StockDTO cachedStockQuoteToStockDTO( final CachedStockQuote cachedStockQuote )
+    private StockDTO stockQuoteToStockDTO( final StockQuote stockQuote )
     {
         StockDTO stockDTO = StockDTO.newInstance();
-        stockDTO.setTickerSymbol( cachedStockQuote.getTickerSymbol() );
-        stockDTO.setCompanyName( cachedStockQuote.getCompanyName() );
+        stockDTO.setTickerSymbol( stockQuote.getTickerSymbol() );
+        stockDTO.setCompanyName( stockQuote.getCompanyName() );
         stockDTO.setUserEntered( false );
-        stockDTO.setExchange( cachedStockQuote.getExchange() );
-        stockDTO.setLastPriceChange( JSONDateConverter.toString( cachedStockQuote.getLastPriceChange() ));
-        stockDTO.setLastPrice( cachedStockQuote.getLastPrice() );
-        stockDTO.setStockQuoteState( cachedStockQuote.getStockQuoteState() );
+        stockDTO.setExchange( stockQuote.getExchange() );
+        stockDTO.setLastPriceChange( JSONDateConverter.toString( stockQuote.getLastPriceChange() ));
+        stockDTO.setLastPrice( stockQuote.getLastPrice() );
+        stockDTO.setStockQuoteState( stockQuote.getStockQuoteState() );
         stockDTO.setCreatedBy( 1 );
         return stockDTO;
     }
@@ -254,10 +279,15 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      */
     public BigDecimal getStockPrice( final String tickerSymbol )
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        BigDecimal stockPrice = this.getStock( tickerSymbol ).getLastPrice();
+        BigDecimal stockPrice = null;
+        StockQuote stockQuote = this.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+        if ( !stockQuote.getStockQuoteState().isNotFound() )
+        {
+            stockPrice = this.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS ).getLastPrice();
+        }
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
     }
@@ -359,17 +389,17 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         logMethodBegin( methodName, container.getTickerSymbol(), stockQuoteFetchMode );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        CachedStockQuote cachedStockQuote = this.stockCache.getStock( container.getTickerSymbol(), stockQuoteFetchMode );
-        container.setStockQuoteState( cachedStockQuote.getStockQuoteState() );
-        if ( cachedStockQuote.getStockQuoteState().isCurrent() ||
-             cachedStockQuote.getStockQuoteState().isStale() )
+        StockQuote stockQuote = this.stockQuoteCache.getStockQuote( container.getTickerSymbol(), stockQuoteFetchMode );
+        container.setStockQuoteState( stockQuote.getStockQuoteState() );
+        if ( stockQuote.getStockQuoteState().isCurrent() ||
+             stockQuote.getStockQuoteState().isStale() )
         {
             /*
              * Update the stock table with the new information
              */
-            container.setCompanyName( cachedStockQuote.getCompanyName() );
-            container.setLastPrice( cachedStockQuote.getLastPrice() );
-            container.setLastPriceChange( JSONDateConverter.toString( cachedStockQuote.getLastPriceChange() ));
+            container.setCompanyName( stockQuote.getCompanyName() );
+            container.setLastPrice( stockQuote.getLastPrice() );
+            container.setLastPriceChange( JSONDateConverter.toString( stockQuote.getLastPriceChange() ));
         }
         else
         {
@@ -381,22 +411,22 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
 
     /**
      * Saves the stock information in {@code container} to the stock table.
-     * @param cachedStockQuote
+     * @param stockQuote
      */
-    public void persistStockQuote( final CachedStockQuote cachedStockQuote )
+    public void persistStockQuote( final StockQuote stockQuote )
     {
         final String methodName = "persistStockQuote";
-        Objects.requireNonNull( cachedStockQuote, "container cannot be null" );
-        Objects.requireNonNull( cachedStockQuote.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        StockEntity stockEntity = this.getStockEntity( cachedStockQuote.getTickerSymbol() );
+        Objects.requireNonNull( stockQuote, "container cannot be null" );
+        Objects.requireNonNull( stockQuote.getTickerSymbol(), "container.getTickerSymbol() returns null" );
+        StockEntity stockEntity = this.getStockEntity( stockQuote.getTickerSymbol() );
         if ( stockEntity == null )
         {
-            stockEntity.setCompanyName( cachedStockQuote.getCompanyName() );
+            stockEntity.setCompanyName( stockQuote.getCompanyName() );
         }
-        stockEntity.setLastPrice( cachedStockQuote.getLastPrice() );
-        stockEntity.setLastPriceChange( cachedStockQuote.getLastPriceChange() );
+        stockEntity.setLastPrice( stockQuote.getLastPrice() );
+        stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
         this.stockRepository.save( stockEntity );
-        logMethodEnd( methodName, cachedStockQuote );
+        logMethodEnd( methodName, stockQuote );
     }
 
     @Override
@@ -426,9 +456,9 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     }
 
     @Autowired
-    public void setStockCache( final StockCache stockCache )
+    public void setStockQuoteCache( final StockQuoteCache stockQuoteCache )
     {
-        this.stockCache = stockCache;
+        this.stockQuoteCache = stockQuoteCache;
     }
 
 }
