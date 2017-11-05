@@ -88,7 +88,7 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
-        StockQuote stockTickerQuote = this.stockService.getStockQuote( tickerSymbol, StockQuoteFetchMode.ASYNCHRONOUS );
+        StockQuote stockTickerQuote = this.stockService.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
