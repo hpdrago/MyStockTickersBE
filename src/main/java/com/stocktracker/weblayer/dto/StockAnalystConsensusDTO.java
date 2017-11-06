@@ -1,20 +1,22 @@
 package com.stocktracker.weblayer.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
+import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class StockAnalystConsensusDTO implements StockService.StockQuoteContainer
+public class StockAnalystConsensusDTO extends StockTickerQuote implements StockService.StockQuoteContainer
 {
     /*
      * Entity (DB columns)
      */
     private Integer id;
     private Integer customerId;
-    private String tickerSymbol;
     private String comments;
     private Integer analystStrongBuyCount;
     private Integer analystBuyCount;
@@ -24,17 +26,18 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
     private String analystSentimentDate;
     private String nextCatalystDate;
     private String nextCatalystDesc;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal avgAnalystPriceTarget;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lowAnalystPriceTarget;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal highAnalystPriceTarget;
     private String analystPriceDate;
 
     /*
      * Calculated columns
      */
-    private BigDecimal lastPrice;
-    private String lastPriceChange;
-    private StockQuoteState stockQuoteState;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal avgUpsidePercent;
     private String companyName;
 
@@ -61,16 +64,6 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
     public void setCustomerId( Integer customerId )
     {
         this.customerId = customerId;
-    }
-
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
     }
 
     public String getComments()
@@ -175,26 +168,6 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
         this.highAnalystPriceTarget = highAnalystPriceTarget;
     }
 
-    public BigDecimal getLastPrice()
-    {
-        return lastPrice;
-    }
-
-    public void setLastPrice( BigDecimal stockPrice )
-    {
-        this.lastPrice = stockPrice;
-    }
-
-    public String getLastPriceChange()
-    {
-        return lastPriceChange;
-    }
-
-    public void setLastPriceChange( final String lastPriceChange )
-    {
-        this.lastPriceChange = lastPriceChange;
-    }
-
     @Override
     public String getCompanyName()
     {
@@ -282,18 +255,6 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
     }
 
     @Override
-    public StockQuoteState getStockQuoteState()
-    {
-        return stockQuoteState;
-    }
-
-    @Override
-    public void setStockQuoteState( final StockQuoteState stockQuoteState )
-    {
-        this.stockQuoteState = stockQuoteState;
-    }
-
-    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -322,7 +283,7 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
         sb.append( ", analystBuyCount=" ).append( analystBuyCount );
@@ -336,9 +297,6 @@ public class StockAnalystConsensusDTO implements StockService.StockQuoteContaine
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", analystPriceDate=" ).append( analystPriceDate );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
         sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );

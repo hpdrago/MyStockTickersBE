@@ -1,7 +1,10 @@
 package com.stocktracker.weblayer.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -9,12 +12,10 @@ import java.util.Objects;
 /**
  * Created by mike on 5/7/2017.
  */
-public class StockNoteDTO implements StockService.StockQuoteContainer
+public class StockNoteDTO extends StockTickerQuote implements StockService.StockQuoteContainer
 {
     private Integer id;
     private Integer customerId;
-    private String tickerSymbol;
-    private String companyName;
     private String notes;
     private String notesDate;
     private String notesSourceName;
@@ -24,12 +25,10 @@ public class StockNoteDTO implements StockService.StockQuoteContainer
     private Byte bullOrBear;
     private Byte actionTaken;
     private Integer actionTakenShares;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal actionTakenPrice;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal stockPriceWhenCreated;
-    private BigDecimal lastPrice;
-    private String lastPriceChange;
-    private Integer stockQuoteState;
-    private BigDecimal percentChange;
     private String createDate;
     private String updateDate;
 
@@ -204,79 +203,13 @@ public class StockNoteDTO implements StockService.StockQuoteContainer
         this.stockPriceWhenCreated = stockPriceWhenCreated;
     }
 
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    @Override
-    public void setCompanyName( final String companyName )
-    {
-
-    }
-
-    @Override
-    public String getCompanyName()
-    {
-        return null;
-    }
-
-    public void setTickerSymbol( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
-    public BigDecimal getLastPrice()
-    {
-        return lastPrice;
-    }
-
-    @Override
-    public void setStockQuoteState( final StockQuoteState stockQuoteState )
-    {
-        this.stockQuoteState = stockQuoteState.ordinal();
-    }
-
-    public StockQuoteState getStockQuoteState()
-    {
-        return StockQuoteState.valueOf( stockQuoteState );
-    }
-
-    @Override
-    public void setLastPriceChange( final String lastPriceChange )
-    {
-        this.lastPriceChange = lastPriceChange;
-    }
-
-    @Override
-    public String getLastPriceChange()
-    {
-        return this.lastPriceChange;
-    }
-
-    public void setLastPrice( final BigDecimal lastPrice )
-    {
-        this.lastPrice = lastPrice;
-    }
-
-    public BigDecimal getPercentChange()
-    {
-        return percentChange;
-    }
-
-    public void setPercentChange( final BigDecimal percentChange )
-    {
-        this.percentChange = percentChange;
-    }
-
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockNoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
         sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
@@ -288,10 +221,6 @@ public class StockNoteDTO implements StockService.StockQuoteContainer
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
-        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
-        sb.append( ", percentChange=" ).append( percentChange );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", updateDate='" ).append( updateDate ).append( '\'' );
         sb.append( '}' );

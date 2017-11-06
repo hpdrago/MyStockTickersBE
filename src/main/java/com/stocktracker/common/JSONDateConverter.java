@@ -41,7 +41,7 @@ public class JSONDateConverter
         {
             return "";
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
         return dateFormat.format( utcTimestamp );
     }
 }

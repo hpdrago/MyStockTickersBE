@@ -1,14 +1,17 @@
 package com.stocktracker.weblayer.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDTO implements StockService.StockQuoteContainer
+public class PortfolioStockDTO extends StockTickerQuote implements StockService.StockQuoteContainer
 {
     private Integer id;
     private Integer customerId;
@@ -18,17 +21,15 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
     private BigDecimal averageUnitCost;
     private BigDecimal realizedGains;
     private BigDecimal realizedLosses;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal profitTakingPrice;
     private Integer profitTakingShares;
     private Integer sectorId;
 
     /***** Calculated fields *****/
-    private String companyName;
-    private BigDecimal lastPrice;
-    private String lastPriceChange;
-    private StockQuoteState stockQuoteState;
     private Integer marketValue;
     private Integer costBasis;
 
@@ -62,26 +63,6 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
         this.customerId = customerId;
     }
 
-    public String getCompanyName()
-    {
-        return companyName;
-    }
-
-    public void setCompanyName( String companyName )
-    {
-        this.companyName = companyName;
-    }
-
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
     public Integer getNumberOfShares()
     {
         return numberOfShares;
@@ -103,17 +84,6 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
     {
         this.averageUnitCost = averageUnitCost;
         this.calculateCostBasis();
-    }
-
-    public BigDecimal getLastPrice()
-    {
-        return lastPrice;
-    }
-
-    public void setLastPrice( BigDecimal stockPrice )
-    {
-        this.lastPrice = stockPrice;
-        this.calculateMarketValue();
     }
 
     public BigDecimal getRealizedLosses()
@@ -196,22 +166,12 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
         this.portfolioId = portfolioId;
     }
 
-    public String getLastPriceChange()
-    {
-        return lastPriceChange;
-    }
-
-    public void setLastPriceChange( final String lastPriceChange )
-    {
-        this.lastPriceChange = lastPriceChange;
-    }
-
     private void calculateMarketValue()
     {
-        if ( this.numberOfShares != null && this.lastPrice != null )
+        if ( this.numberOfShares != null && this.getLastPrice() != null )
         {
             this.marketValue = (int) (this.numberOfShares.floatValue() *
-                                      this.lastPrice.floatValue());
+                                      this.getLastPrice().floatValue());
         }
         else
         {
@@ -254,16 +214,17 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
 
 
     @Override
-    public StockQuoteState getStockQuoteState()
+    public String getTickerSymbol()
     {
-        return stockQuoteState;
+        return tickerSymbol;
     }
 
     @Override
-    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    public void setTickerSymbol( final String tickerSymbol )
     {
-        this.stockQuoteState = stockQuoteState;
+        this.tickerSymbol = tickerSymbol;
     }
+
 
     @Override
     public String toString()
@@ -273,11 +234,8 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", portfolioId=" ).append( portfolioId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
         sb.append( ", averageUnitCost=" ).append( averageUnitCost );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
         sb.append( ", realizedGains=" ).append( realizedGains );
         sb.append( ", realizedLosses=" ).append( realizedLosses );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
@@ -285,9 +243,9 @@ public class PortfolioStockDTO implements StockService.StockQuoteContainer
         sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );
         sb.append( ", profitTakingShares=" ).append( profitTakingShares );
         sb.append( ", sectorId=" ).append( sectorId );
-        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
         sb.append( ", marketValue=" ).append( marketValue );
         sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

@@ -212,11 +212,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         stockNoteDTO.setCreateDate( JSONDateConverter.toString( stockNoteEntity.getCreateDate() ));
         stockNoteDTO.setUpdateDate( JSONDateConverter.toString( stockNoteEntity.getUpdateDate() ));
         this.stockService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-        if ( stockNoteDTO.getStockQuoteState().isCurrent() )
-        {
-            stockNoteDTO.setPercentChange( calculatePercentOfChange( stockNoteDTO.getStockPriceWhenCreated(),
-                                                                     stockNoteDTO.getLastPrice() ) );
-        }
         return stockNoteDTO;
     }
 

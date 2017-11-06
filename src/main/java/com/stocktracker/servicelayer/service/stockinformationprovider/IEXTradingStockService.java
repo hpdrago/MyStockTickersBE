@@ -8,6 +8,7 @@ import pl.zankowski.iextrading4j.client.endpoint.stocks.StocksEndpoint;
 import pl.zankowski.iextrading4j.client.endpoint.stocks.request.StockRequest;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 //import pl.zankowski.iextrading4j.client.IEXTradingClient;
 
 /**
@@ -51,20 +52,24 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
         Quote quote = stocksEndpoint.requestQuote( StockRequest.builder()
                                                                .withSymbol( tickerSymbol )
                                                                .build() );
-        StockTickerQuote stockTickerQuote = this.quoteToStockTickerQuote( quote );
+        StockTickerQuote stockTickerQuote = this.quoteToStockTickerQuote( tickerSymbol, quote );
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
 
     /**
      * Converts the IEX Quote into a StockTickerQuote
+     *
+     * @param tickerSymbol
      * @param quote
      * @return
      */
-    private StockTickerQuote quoteToStockTickerQuote( final Quote quote )
+    private StockTickerQuote quoteToStockTickerQuote( final String tickerSymbol, final Quote quote )
     {
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
+        stockTickerQuote.setTickerSymbol( tickerSymbol );
         stockTickerQuote.setLastPrice( new BigDecimal( quote.getLatestPrice() ));
+        stockTickerQuote.setLastPriceChange( new Timestamp( quote.getLatestUpdate() ) );
         stockTickerQuote.setCompanyName( quote.getCompanyName() );
         return stockTickerQuote;
     }

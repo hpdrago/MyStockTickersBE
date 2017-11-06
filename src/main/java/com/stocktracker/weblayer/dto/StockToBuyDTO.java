@@ -1,20 +1,22 @@
 package com.stocktracker.weblayer.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-public class StockToBuyDTO implements StockService.StockQuoteContainer
+public class StockToBuyDTO extends StockTickerQuote implements StockService.StockQuoteContainer
 {
     /*
      * Entity (DB columns)
      */
     private Integer id;
     private Integer customerId;
-    private String tickerSymbol;
     private String comments;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
@@ -26,11 +28,7 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
     /*
      * Calculated columns
      */
-    private BigDecimal lastPrice;
-    private String lastPriceChange;
-    private StockQuoteState stockQuoteState;
     private BigDecimal percentChange;
-    private String companyName;
 
     public static StockToBuyDTO newInstance()
     {
@@ -55,16 +53,6 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
     public void setCustomerId( Integer customerId )
     {
         this.customerId = customerId;
-    }
-
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
     }
 
     public String getComments()
@@ -95,38 +83,6 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
     public void setStockPriceWhenCreated( BigDecimal stockPriceWhenCreated )
     {
         this.stockPriceWhenCreated = stockPriceWhenCreated;
-    }
-
-    public String getLastPriceChange()
-    {
-        return lastPriceChange;
-    }
-
-    public void setLastPriceChange( final String lastPriceChange )
-    {
-        this.lastPriceChange = lastPriceChange;
-    }
-
-    @Override
-    public String getCompanyName()
-    {
-        return this.companyName;
-    }
-
-    @Override
-    public void setCompanyName( final String companyName )
-    {
-        this.companyName = companyName;
-    }
-
-    public BigDecimal getLastPrice()
-    {
-        return lastPrice;
-    }
-
-    public void setLastPrice( final BigDecimal lastPrice )
-    {
-        this.lastPrice = lastPrice;
     }
 
     public String getCreateDate()
@@ -185,18 +141,6 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
     }
 
     @Override
-    public StockQuoteState getStockQuoteState()
-    {
-        return stockQuoteState;
-    }
-
-    @Override
-    public void setStockQuoteState( final StockQuoteState stockQuoteState )
-    {
-        this.stockQuoteState = stockQuoteState;
-    }
-
-    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -226,7 +170,7 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
         final StringBuilder sb = new StringBuilder( "StockToBuyDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
@@ -234,11 +178,7 @@ public class StockToBuyDTO implements StockService.StockQuoteContainer
         sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", tags=" ).append( Arrays.toString( tags ) );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", lastPriceChange='" ).append( lastPriceChange ).append( '\'' );
-        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
         sb.append( ", percentChange=" ).append( percentChange );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

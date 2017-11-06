@@ -47,7 +47,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
             else
             {
                 stockTickerQuoteCacheEntry = StockTickerQuoteCacheEntry.newInstance( tickerSymbol,
-                                                                                     StockQuoteState.NOT_FOUND );
+                                                                                     StockQuoteState.NOT_CACHED );
                 this.asynchronousQuoteFetch( tickerSymbol );
             }
         }

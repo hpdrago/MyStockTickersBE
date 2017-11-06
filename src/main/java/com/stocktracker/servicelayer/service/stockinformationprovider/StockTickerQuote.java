@@ -1,6 +1,11 @@
 package com.stocktracker.servicelayer.service.stockinformationprovider;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.common.JSONTimestampSerializer;
+
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -13,7 +18,9 @@ public class StockTickerQuote implements StockQuote
 {
     private String tickerSymbol;
     private String companyName;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
+    @JsonSerialize( using = JSONTimestampSerializer.class )
     private Timestamp lastPriceChange;
     private StockQuoteState stockQuoteState;
 
@@ -60,7 +67,8 @@ public class StockTickerQuote implements StockQuote
 
     public void setLastPrice( final BigDecimal lastPrice )
     {
-        this.lastPrice = lastPrice;
+        this.lastPrice = lastPrice;// .divide( new BigDecimal( 1 ), 2,  BigDecimal.ROUND_HALF_UP  );
+        lastPrice.setScale( 2, RoundingMode.HALF_UP);
     }
 
     public Timestamp getLastPriceChange()

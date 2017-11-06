@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,10 +37,6 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     private StockRepository stockRepository;
     private StockQuoteCache stockQuoteCache;
 
-    /**
-     * To be implemented by any class containing a ticker symbol and a stock company name to
-     * be used with the {@code setCompanyName} methods
-     */
     public interface StockCompanyNameContainer
     {
         String getTickerSymbol();
@@ -56,10 +53,13 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         String getTickerSymbol();
         void setLastPrice( final BigDecimal stockPrice );
         BigDecimal getLastPrice();
-        void setLastPriceChange( final String lastPriceChange );
-        String getLastPriceChange();
+        void setLastPriceChange( final Timestamp lastPriceChange );
+        Timestamp getLastPriceChange();
     }
 
+    /**
+     * Defines the necessary methods to contain a stock quote and work with the StockQuoteCache
+     */
     public interface StockQuoteContainer extends StockCompanyNameContainer, LastPriceContainer
     {
         void setStockQuoteState( final StockQuoteState stockQuoteState );
@@ -234,7 +234,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         stockDTO.setCompanyName( stockQuote.getCompanyName() );
         stockDTO.setUserEntered( false );
         stockDTO.setExchange( stockQuote.getExchange() );
-        stockDTO.setLastPriceChange( JSONDateConverter.toString( stockQuote.getLastPriceChange() ));
+        stockDTO.setLastPriceChange( stockQuote.getLastPriceChange() );
         stockDTO.setLastPrice( stockQuote.getLastPrice() );
         stockDTO.setStockQuoteState( stockQuote.getStockQuoteState() );
         stockDTO.setCreatedBy( 1 );
@@ -399,7 +399,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
              */
             container.setCompanyName( stockQuote.getCompanyName() );
             container.setLastPrice( stockQuote.getLastPrice() );
-            container.setLastPriceChange( JSONDateConverter.toString( stockQuote.getLastPriceChange() ));
+            container.setStockQuoteState( stockQuote.getStockQuoteState() );
+            container.setLastPriceChange( stockQuote.getLastPriceChange() );
         }
         else
         {
