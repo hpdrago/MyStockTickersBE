@@ -36,26 +36,4 @@ public abstract class BaseService<E,D> implements MyLogger
         return entities;
     }
 
-    /**
-     * Determines the percent of change from the original price to the last price.
-     * @param originalPrice
-     * @param lastPrice
-     * @return A percent of change.
-     */
-    public BigDecimal calculatePercentOfChange( final BigDecimal originalPrice, final BigDecimal lastPrice )
-    {
-        if ( lastPrice == null || lastPrice.floatValue() == 0 )
-        {
-            return new BigDecimal( 0 );
-        }
-        if ( originalPrice == null || originalPrice.floatValue() == 0 )
-        {
-            return new BigDecimal( 0 );
-        }
-        BigDecimal fraction = originalPrice.divide( lastPrice, 4, BigDecimal.ROUND_HALF_UP );
-        BigDecimal percentOfChange = new BigDecimal( 1.0 );
-        percentOfChange = percentOfChange.subtract( fraction );
-        return percentOfChange;
-    }
-
 }

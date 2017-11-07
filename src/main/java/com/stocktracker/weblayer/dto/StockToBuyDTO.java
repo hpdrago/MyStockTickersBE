@@ -25,11 +25,6 @@ public class StockToBuyDTO extends StockTickerQuote implements StockService.Stoc
     private String createDate;
     private String[] tags;
 
-    /*
-     * Calculated columns
-     */
-    private BigDecimal percentChange;
-
     public static StockToBuyDTO newInstance()
     {
         return new StockToBuyDTO();
@@ -130,16 +125,6 @@ public class StockToBuyDTO extends StockTickerQuote implements StockService.Stoc
         this.buyAfterDate = buyAfterDate;
     }
 
-    public BigDecimal getPercentChange()
-    {
-        return percentChange;
-    }
-
-    public void setPercentChange( final BigDecimal percentChange )
-    {
-        this.percentChange = percentChange;
-    }
-
     @Override
     public boolean equals( final Object o )
     {
@@ -178,7 +163,6 @@ public class StockToBuyDTO extends StockTickerQuote implements StockService.Stoc
         sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", tags=" ).append( Arrays.toString( tags ) );
-        sb.append( ", percentChange=" ).append( percentChange );
         sb.append( '}' );
         return sb.toString();
     }

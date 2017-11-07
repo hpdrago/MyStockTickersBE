@@ -126,8 +126,6 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
                                                         stockToBuyDTO.getId() ) );
         stockToBuyDTO.setCreateDate( JSONDateConverter.toString( stockToBuyEntity.getCreateDate() ) );
         stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toString( stockToBuyEntity.getBuyAfterDate() ) );
-        stockToBuyDTO.setPercentChange( calculatePercentOfChange( stockToBuyDTO.getStockPriceWhenCreated(),
-                                                                  stockToBuyDTO.getLastPrice() ) );
         return stockToBuyDTO;
     }
 
