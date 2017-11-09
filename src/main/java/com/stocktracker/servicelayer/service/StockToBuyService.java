@@ -19,11 +19,12 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, StockToBuyDTO> implements MyLogger
+public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
-
     private StockService stockService;
+    private StockTagService stockTagService;
+    private StockNoteSourceService stockNoteSourceService;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -73,6 +74,7 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         logMethodBegin( methodName, stockToBuyDTO );
         Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
         StockToBuyEntity stockToBuyEntity = this.dtoToEntity( stockToBuyDTO );
+        this.stockNoteSourceService.checkForNewSource( stockToBuyDTO.getCustomerId(), stockToBuyEntity, stockToBuyDTO );
         /*
          * The stock price needs to be set the first time as it records the stock price when the record was created.
          */
@@ -89,11 +91,11 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
             stockToBuyEntity.setCreateDate( new Timestamp( System.currentTimeMillis() ) );
         }
         stockToBuyEntity = this.stockToBuyRepository.save( stockToBuyEntity );
-        this.saveStockTags( stockToBuyEntity.getCustomerId(),
-                            stockToBuyEntity.getTickerSymbol(),
-                            StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                            stockToBuyEntity.getId(),
-                            stockToBuyDTO.getTags() );
+        this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerId(),
+                                            stockToBuyEntity.getTickerSymbol(),
+                                            StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                                            stockToBuyEntity.getId(),
+                                            stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.stockService.setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
@@ -121,11 +123,16 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
         StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
         this.stockService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-        stockToBuyDTO.setTagsArray( this.findStockTags( stockToBuyDTO.getCustomerId(),
-                                                        StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                                                        stockToBuyDTO.getId() ) );
+        stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
+                                                                        StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                                                                        stockToBuyDTO.getId() ) );
         stockToBuyDTO.setCreateDate( JSONDateConverter.toString( stockToBuyEntity.getCreateDate() ) );
         stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toString( stockToBuyEntity.getBuyAfterDate() ) );
+        if ( stockToBuyEntity.getStockNoteSourceByNotesSourceId() != null )
+        {
+            stockToBuyDTO.setNotesSourceName( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getName() );
+            stockToBuyDTO.setNotesSourceId( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getId() );
+        }
         return stockToBuyDTO;
     }
 
@@ -152,6 +159,18 @@ public class StockToBuyService extends ServiceWithStockTags<StockToBuyEntity, St
     public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
+    }
+
+    @Autowired
+    public void setStockTagService( final StockTagService stockTagService )
+    {
+        this.stockTagService = stockTagService;
+    }
+
+    @Autowired
+    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    {
+        this.stockNoteSourceService = stockNoteSourceService;
     }
 
 }

@@ -2,17 +2,20 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by mike on 5/7/2017.
  */
-public class StockNoteDTO extends StockTickerQuote implements StockService.StockQuoteContainer
+public class StockNoteDTO extends StockTickerQuote implements StockService.StockQuoteContainer,
+                                                              StockNoteSourceService.StockNoteSourceDTOContainer
 {
     private Integer id;
     private Integer customerId;

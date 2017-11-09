@@ -3,12 +3,9 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
-import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
-import com.stocktracker.servicelayer.service.stockinformationprovider.YahooStockService;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +15,7 @@ import org.springframework.util.Assert;
 
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This is the service class for the StockNotesEntity
@@ -36,9 +31,9 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
      */
     private StockService stockService;
     private StockNoteRepository stockNoteRepository;
-    private StockNoteSourceRepository stockNoteSourceRepository;
     private VStockNoteCountRepository vStockNoteCountRepository;
-    private YahooStockService yahooStockService;
+    private StockTagService stockTagService;
+    private StockNoteSourceService stockNoteSourceService;
 
     /**
      * Get all of the notes for a customer.
@@ -66,22 +61,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     private List<StockNoteDTO> entitiesToDTOs( final int customerId,
                                                final List<StockNoteEntity> entities )
     {
-        /*
-         * For now, maybe until we create a view -- if that makes sense, load the sources and populate the source
-         * values in the DTOs
-         */
-        List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository.findByCustomerIdOrderByTimesUsedDesc( customerId );
-        Map<Integer, String> sourceEntityMap = customerSources.stream()
-                                                              .collect( Collectors.toMap( StockNoteSourceEntity::getId,
-                                                                                          StockNoteSourceEntity::getName ));
         List<StockNoteDTO> stockNoteDTOs = super.entitiesToDTOs( entities );
-        for ( StockNoteDTO stockNoteDTO: stockNoteDTOs )
-        {
-            if ( stockNoteDTO.getNotesSourceId() != null )
-            {
-                stockNoteDTO.setNotesSourceName( sourceEntityMap.get( stockNoteDTO.getNotesSourceId() ) );
-            }
-        }
+        this.stockNoteSourceService.setNotesSourceName( customerId, stockNoteDTOs );
         return stockNoteDTOs;
     }
 
@@ -98,7 +79,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
         StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
-        checkForNewSource( stockNoteEntity, stockNoteDTO );
+        this.stockNoteSourceService.checkForNewSource( stockNoteDTO.getCustomerId(), stockNoteEntity, stockNoteDTO );
         /*
          * Set the stock price when created for one stock note entity
          */
@@ -124,7 +105,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         /*
          * Check for any changes to the sources
          */
-        this.checkForNewSource( dbStockNoteEntity, stockNoteDTO );
+        this.stockNoteSourceService.checkForNewSource( stockNoteDTO.getCustomerId(), dbStockNoteEntity, stockNoteDTO );
         /*
          * Save the stock notes
          */
@@ -138,48 +119,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
 
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
-    }
-
-    /**
-     * Check {@code stockNoteDTO} to see if the user entered a new note source.
-     * If a new source is detected, a new source will be added to the database for the customer.
-     * @param stockNoteEntity
-     * @param stockNoteDTO
-     */
-    private void checkForNewSource( final StockNoteEntity stockNoteEntity, final StockNoteDTO stockNoteDTO )
-    {
-        final String methodName = "checkForNewSource";
-        logMethodEnd( methodName );
-        if ( stockNoteDTO.getNotesSourceId() == 0 &&
-             stockNoteDTO.getNotesSourceName() != null &&
-             stockNoteDTO.getNotesSourceName().length() > 0 )
-        {
-            /*
-             * Make sure it doesn't already exist
-             */
-            StockNoteSourceEntity stockNoteSourceEntity =
-                this.stockNoteSourceRepository.findByCustomerIdAndName( stockNoteDTO.getCustomerId(),
-                                                                        stockNoteDTO.getNotesSourceName() ) ;
-            logDebug( methodName, "stockNoteSourceEntity: {0}", stockNoteSourceEntity );
-            if ( stockNoteSourceEntity != null )
-            {
-                logDebug( methodName, "The source already exists, doing nothing" );
-            }
-            else
-            {
-                logDebug( methodName, "Saving stock note source entity" );
-                stockNoteSourceEntity = new StockNoteSourceEntity();
-                stockNoteSourceEntity.setCustomerId( stockNoteDTO.getCustomerId() );
-                stockNoteSourceEntity.setName( stockNoteDTO.getNotesSourceName() );
-                stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
-                logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
-                /*
-                 * update the reference in the stock note
-                 */
-                stockNoteEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
-            }
-        }
-        logMethodEnd( methodName );
     }
 
     /**
@@ -211,6 +150,11 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
         stockNoteDTO.setCreateDate( JSONDateConverter.toString( stockNoteEntity.getCreateDate() ));
         stockNoteDTO.setUpdateDate( JSONDateConverter.toString( stockNoteEntity.getUpdateDate() ));
+        if ( stockNoteEntity.getStockNoteSourceByNotesSourceId() != null )
+        {
+            stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceId().getName() );
+            stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceId().getId() );
+        }
         this.stockService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         return stockNoteDTO;
     }
@@ -222,12 +166,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
         stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;
-    }
-
-    @Autowired
-    public void setStockNoteSourceRepository( final StockNoteSourceRepository stockNoteSourceRepository )
-    {
-        this.stockNoteSourceRepository = stockNoteSourceRepository;
     }
 
     @Autowired
@@ -253,14 +191,16 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         this.stockService = stockService;
     }
 
-    /**
-     * Autowired service class
-     */
+    @Autowired
+    public void setStockTagService( final StockTagService stockTagService )
+    {
+        this.stockTagService = stockTagService;
+    }
 
     @Autowired
-    public void setYahooStockService( final YahooStockService yahooStockService )
+    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
     {
-        this.yahooStockService = yahooStockService;
+        this.stockNoteSourceService = stockNoteSourceService;
     }
 
 }

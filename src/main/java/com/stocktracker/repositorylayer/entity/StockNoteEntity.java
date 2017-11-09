@@ -1,7 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.service.StockNoteActionTaken;
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,16 +12,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Created by mike on 5/7/2017.
  */
 @Entity
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
-public class StockNoteEntity implements MyLogger
+public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNoteSourceEntityContainer
 {
     private Integer id;
     private String tickerSymbol;
@@ -37,7 +39,6 @@ public class StockNoteEntity implements MyLogger
     private Integer actionTakenShares;
     private BigDecimal actionTakenPrice;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
-    private Integer notesSourceId;
     private BigDecimal stockPriceWhenCreated;
     private Timestamp createDate;
     private Timestamp updateDate;
@@ -156,18 +157,6 @@ public class StockNoteEntity implements MyLogger
         this.bullOrBear = bullOrBear;
     }
 
-    @Basic
-    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false )
-    public Integer getNotesSourceId()
-    {
-        return notesSourceId;
-    }
-
-    public void setNotesSourceId( final Integer notesSourceId )
-    {
-        this.notesSourceId = notesSourceId;
-    }
-
     @ManyToOne
     @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
     public StockNoteSourceEntity getStockNoteSourceByNotesSourceId()
@@ -178,6 +167,29 @@ public class StockNoteEntity implements MyLogger
     public void setStockNoteSourceByNotesSourceId( final StockNoteSourceEntity stockNoteSourceByNotesSourceId )
     {
         this.stockNoteSourceByNotesSourceId = stockNoteSourceByNotesSourceId;
+    }
+
+    @Transient
+    @Override
+    public Optional<StockNoteSourceEntity> getNotesSourceEntity()
+    {
+        return Optional.ofNullable( this.stockNoteSourceByNotesSourceId );
+    }
+
+    @Transient
+    @Override
+    public Optional<Integer> getStockNoteSourceId()
+    {
+        return Optional.ofNullable( this.stockNoteSourceByNotesSourceId == null
+                                    ? null
+                                    : this.stockNoteSourceByNotesSourceId.getId() );
+    }
+
+    @Transient
+    @Override
+    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
+    {
+        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
     }
 
     @Basic
@@ -303,7 +315,6 @@ public class StockNoteEntity implements MyLogger
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
-        sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );

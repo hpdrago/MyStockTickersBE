@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Basic;
@@ -8,23 +9,30 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
-public class StockToBuyEntity
+public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceEntityContainer
 {
     private static final int COMMENTS_LEN = 4096;
     private Integer id;
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
+    private Integer notesSourceId;
+    private String notesSourceName;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
     private String completed;
+    private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Timestamp buyAfterDate;
     private Timestamp createDate;
     private Timestamp updateDate;
@@ -81,6 +89,18 @@ public class StockToBuyEntity
     public void setComments( final String comments )
     {
         this.comments = comments == null ? null : StringUtils.truncate( comments, COMMENTS_LEN );
+    }
+
+    @Basic
+    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false )
+    public Integer getNotesSourceId()
+    {
+        return notesSourceId;
+    }
+
+    public void setNotesSourceId( final Integer notesSourceId )
+    {
+        this.notesSourceId = notesSourceId;
     }
 
     @Basic
@@ -155,6 +175,50 @@ public class StockToBuyEntity
         this.buyAfterDate = buyAfterDate;
     }
 
+    public String getNotesSourceName()
+    {
+        return notesSourceName;
+    }
+
+    public void setNotesSourceName( final String notesSourceName )
+    {
+        this.notesSourceName = notesSourceName;
+    }
+
+    @ManyToOne
+    @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
+    public StockNoteSourceEntity getStockNoteSourceByNotesSourceId()
+    {
+        return stockNoteSourceByNotesSourceId;
+    }
+
+    public void setStockNoteSourceByNotesSourceId( final StockNoteSourceEntity stockNoteSourceByNotesSourceId )
+    {
+        this.stockNoteSourceByNotesSourceId = stockNoteSourceByNotesSourceId;
+    }
+
+    @Transient
+    @Override
+    public Optional<StockNoteSourceEntity> getNotesSourceEntity()
+    {
+        return Optional.ofNullable( this.stockNoteSourceByNotesSourceId );
+    }
+
+    @Transient
+    @Override
+    public Optional<Integer> getStockNoteSourceId()
+    {
+        return Optional.ofNullable( this.stockNoteSourceByNotesSourceId == null
+                                    ? null
+                                    : this.stockNoteSourceByNotesSourceId.getId() );
+    }
+
+    @Transient
+    @Override
+    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
+    {
+        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
+    }
     @Override
     public boolean equals( final Object o )
     {
@@ -184,10 +248,13 @@ public class StockToBuyEntity
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
+        sb.append( ", notesSourceId=" ).append( notesSourceId );
+        sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
+        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );

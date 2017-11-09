@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.CustomerTagEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.VStockTagEntity;
@@ -8,6 +9,7 @@ import com.stocktracker.repositorylayer.repository.StockTagRepository;
 import com.stocktracker.repositorylayer.repository.VStockTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +17,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * This abstract class implements the methods to save and retrieve stock tags to and from the database.
- * @param <E>
- * @param <D>
+ * This service class implements the methods to save and retrieve stock tags to and from the database.
  */
-public abstract class ServiceWithStockTags<E,D> extends BaseService<E,D>
+@Service
+public class StockTagService implements MyLogger
 {
     private StockTagRepository stockTagRepository;
     private CustomerTagRepository customerTagRepository;
-
     private VStockTagRepository vStockTagRepository;
 
     /**

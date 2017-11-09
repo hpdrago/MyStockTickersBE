@@ -24,7 +24,6 @@ public class StockNoteSourceEntity
     private Integer customerId;
     private Integer timesUsed;
     private Timestamp dateCreated;
-    private Collection<StockNoteEntity> stockNotesById;
 
     public static StockNoteSourceEntity newInstance()
     {
@@ -91,17 +90,6 @@ public class StockNoteSourceEntity
     public void setDateCreated( final Timestamp dateCreated )
     {
         this.dateCreated = dateCreated;
-    }
-
-    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceId" )
-    public Collection<StockNoteEntity> getStockNotesById()
-    {
-        return stockNotesById;
-    }
-
-    public void setStockNotesById( final Collection<StockNoteEntity> stockNotesById )
-    {
-        this.stockNotesById = stockNotesById;
     }
 
     @Override

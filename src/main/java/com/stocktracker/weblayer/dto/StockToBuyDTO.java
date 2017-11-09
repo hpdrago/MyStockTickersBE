@@ -1,16 +1,16 @@
 package com.stocktracker.weblayer.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import com.stocktracker.servicelayer.service.StockService;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-public class StockToBuyDTO extends StockTickerQuote implements StockService.StockQuoteContainer
+public class StockToBuyDTO extends StockTickerQuote implements StockService.StockQuoteContainer,
+                                                               StockNoteSourceService.StockNoteSourceDTOContainer
 {
     /*
      * Entity (DB columns)
@@ -18,6 +18,8 @@ public class StockToBuyDTO extends StockTickerQuote implements StockService.Stoc
     private Integer id;
     private Integer customerId;
     private String comments;
+    private Integer notesSourceId;
+    private String notesSourceName;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
     private String completed;
@@ -125,6 +127,27 @@ public class StockToBuyDTO extends StockTickerQuote implements StockService.Stoc
         this.buyAfterDate = buyAfterDate;
     }
 
+    public Integer getNotesSourceId()
+    {
+        return notesSourceId;
+    }
+
+    public void setNotesSourceId( final Integer notesSourceId )
+    {
+        this.notesSourceId = notesSourceId;
+    }
+
+    public String getNotesSourceName()
+    {
+        return notesSourceName;
+    }
+
+    @Override
+    public void setNotesSourceName( final String notesSourceName )
+    {
+        this.notesSourceName = notesSourceName;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -157,6 +180,7 @@ public class StockToBuyDTO extends StockTickerQuote implements StockService.Stoc
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
+        sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );

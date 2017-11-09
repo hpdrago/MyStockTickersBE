@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, StockNoteSourceDTO>
@@ -21,6 +24,97 @@ public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, S
     public void setStockNoteSourceRepository( final StockNoteSourceRepository stockNoteSourceRepository )
     {
         this.stockNoteSourceRepository = stockNoteSourceRepository;
+    }
+
+    public interface StockNoteSourceEntityContainer
+    {
+        Optional<StockNoteSourceEntity> getNotesSourceEntity();
+        Optional<Integer> getStockNoteSourceId();
+        void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity );
+    }
+
+    public interface StockNoteSourceDTOContainer
+    {
+        void setNotesSourceName( final String noteSourceName );
+        String getNotesSourceName();
+        Integer getNotesSourceId();
+
+    }
+
+    /**
+     * Sets the source name for all {@Code StockNoteSourceContainer} entries
+     * @param customerId The customer id is used to retrieve the sources for the customer.
+     * @param stockNoteSourceDTOContainers The list of {@code StockNoteSourceDTOContainer} instances.
+     */
+    public void setNotesSourceName( final Integer customerId,
+                                    final List<? extends StockNoteSourceDTOContainer> stockNoteSourceDTOContainers )
+    {
+        /*
+         * For now, maybe until we create a view -- if that makes sense, load the sources and populate the source
+         * values in the DTOs
+         */
+        List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository
+            .findByCustomerIdOrderByTimesUsedDesc( customerId );
+        Map<Integer, String> sourceEntityMap = customerSources.stream()
+                                                              .collect( Collectors.toMap( StockNoteSourceEntity::getId,
+                                                                                          StockNoteSourceEntity::getName ) );
+        for ( StockNoteSourceDTOContainer stockNoteSourceDTOContainer : stockNoteSourceDTOContainers )
+        {
+            if ( stockNoteSourceDTOContainer.getNotesSourceId() != null )
+            {
+                stockNoteSourceDTOContainer.setNotesSourceName(
+                    sourceEntityMap.get( stockNoteSourceDTOContainer.getNotesSourceId() ) );
+            }
+        }
+    }
+
+    /**
+     * Check {@code stockNoteSourceDTOContainer} to see if the user entered a new note source.
+     * If a new source is detected, a new source will be added to the database for the customer.
+     * @param customerId Need the customer id to look up the sources
+     * @param stockNoteSourceEntityContainer This should be the database entity that contains a notes_source_id.
+     * @param stockNoteSourceDTOContainer This should be the DTO that contains the source id and the source name.
+     */
+    public void checkForNewSource( final Integer customerId,
+                                   final StockNoteSourceEntityContainer stockNoteSourceEntityContainer,
+                                   final StockNoteSourceDTOContainer stockNoteSourceDTOContainer )
+    {
+        final String methodName = "checkForNewSource";
+        logMethodBegin( methodName, customerId );
+        logDebug( methodName, "{0}", stockNoteSourceEntityContainer );
+        logDebug( methodName, "{0}", stockNoteSourceDTOContainer );
+        /*
+         * If the source id is null and there is a name, this means the user assigned a source
+         */
+        if ( !stockNoteSourceEntityContainer.getNotesSourceEntity().isPresent() &&
+             stockNoteSourceDTOContainer.getNotesSourceId() != null &&
+             stockNoteSourceDTOContainer.getNotesSourceName() != null )
+        {
+            /*
+             * Make sure it doesn't already exist
+             */
+            StockNoteSourceEntity stockNoteSourceEntity =
+                this.stockNoteSourceRepository.findByCustomerIdAndName( customerId, stockNoteSourceDTOContainer.getNotesSourceName() ) ;
+            logDebug( methodName, "stockNoteSourceEntity: {0}", stockNoteSourceEntity );
+            if ( stockNoteSourceEntity != null )
+            {
+                logDebug( methodName, "The source already exists, doing nothing" );
+            }
+            else
+            {
+                logDebug( methodName, "Saving stock note source entity" );
+                stockNoteSourceEntity = new StockNoteSourceEntity();
+                stockNoteSourceEntity.setCustomerId( customerId );
+                stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceName() );
+                stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
+                logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
+                /*
+                 * update the reference in the stock note id container
+                 */
+                stockNoteSourceEntityContainer.setNotesSourceEntity( stockNoteSourceEntity );
+            }
+        }
+        logMethodEnd( methodName );
     }
 
     /**
