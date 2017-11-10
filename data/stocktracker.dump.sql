@@ -488,8 +488,9 @@ CREATE TABLE `stock_note` (
   KEY `FK_STOCK_NOTES_STOCK_NOTES_SOURCE_idx` (`notes_source_id`),
   KEY `IDX_CUSTOMER` (`customer_id`),
   KEY `FK_STOCK_NOTES_STOCK_idx` (`ticker_symbol`),
-  CONSTRAINT `FK_STOCK_NOTES_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
-  CONSTRAINT `FK_STOCK_NOTES_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_STOCK_NOTE_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  CONSTRAINT `FK_STOCK_NOTE_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_STOCK_NOTE_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -499,7 +500,7 @@ CREATE TABLE `stock_note` (
 
 LOCK TABLES `stock_note` WRITE;
 /*!40000 ALTER TABLE `stock_note` DISABLE KEYS */;
-INSERT INTO `stock_note` VALUES (42,1,'FEYE','<p>adfadsf</p>',NULL,0,'2016-10-30 17:00:00',0,0,0,NULL,NULL,16.70,1,'2017-10-27 20:41:30',NULL),(43,1,'ABC','<p>adfadsf</p>',NULL,0,'2015-10-30 17:00:00',0,0,0,NULL,NULL,76.38,1,'2017-11-01 22:02:25','2017-11-01 22:02:25'),(44,1,'NYMT','<p>adfadsf</p>',NULL,0,'2016-10-30 17:00:00',0,0,0,NULL,NULL,6.13,1,'2017-10-27 20:41:30',NULL),(46,1,'ABX','my comments',NULL,0,'2016-10-30 17:00:00',1,1,500,'20',NULL,14.68,1,'2017-10-28 18:48:22',NULL),(47,1,'ABX','my comments',NULL,5,'2016-10-30 17:00:00',1,1,500,'20',NULL,14.68,1,'2017-10-28 19:22:12',NULL),(48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',NULL,5,'2016-10-30 17:00:00',1,0,0,NULL,NULL,2.53,1,'2017-10-30 16:35:30',NULL),(49,1,'OMER','<p>https://seekingalpha.com/research/498952-bret-jensen/5063628-revisiting-investment-case-omeros#comments</p>',NULL,5,'2005-10-30 16:00:00',1,0,0,NULL,NULL,15.46,1,'2017-11-01 21:46:04','2017-11-01 21:46:04');
+INSERT INTO `stock_note` VALUES (47,1,'ABX','my comments',NULL,5,'2015-10-30 17:00:00',1,1,500,'20.00',NULL,14.68,2,'2017-11-08 23:33:18','2017-11-08 23:33:18'),(48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',NULL,5,'2014-10-30 17:00:00',1,0,0,NULL,NULL,2.53,3,'2017-11-08 23:49:23','2017-11-08 23:49:23');
 /*!40000 ALTER TABLE `stock_note` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -585,7 +586,7 @@ CREATE TABLE `stock_note_source` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_CUSTOMER_ID_NAME` (`customer_id`,`name`),
   KEY `IDX_CUSTOMER_ID` (`customer_id`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -594,7 +595,7 @@ CREATE TABLE `stock_note_source` (
 
 LOCK TABLES `stock_note_source` WRITE;
 /*!40000 ALTER TABLE `stock_note_source` DISABLE KEYS */;
-INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,1,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55');
+INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,1,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(11,'ZZZZZZZZZZz',1,0,'2017-11-08 16:06:22');
 /*!40000 ALTER TABLE `stock_note_source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -774,6 +775,7 @@ CREATE TABLE `stock_to_buy` (
   `customer_id` int(11) NOT NULL,
   `ticker_symbol` varchar(5) NOT NULL,
   `comments` varchar(4096) DEFAULT NULL,
+  `notes_source_id` int(11) DEFAULT NULL,
   `buy_shares_up_to_price` decimal(7,2) DEFAULT NULL,
   `completed` varchar(1) NOT NULL DEFAULT 'N',
   `stock_price_when_created` decimal(7,2) DEFAULT NULL,
@@ -784,8 +786,10 @@ CREATE TABLE `stock_to_buy` (
   UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
   KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
   KEY `FK_STOCK_TO_BUY_STOCK_idx` (`ticker_symbol`),
+  KEY `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE_idx` (`notes_source_id`),
   CONSTRAINT `FK_STOCK_TO_BUY_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_TO_BUY_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_STOCK_TO_BUY_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -795,7 +799,7 @@ CREATE TABLE `stock_to_buy` (
 
 LOCK TABLES `stock_to_buy` WRITE;
 /*!40000 ALTER TABLE `stock_to_buy` DISABLE KEYS */;
-INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,'N',14.30,NULL,'2017-10-30 19:00:41',NULL),(3,1,'ABX','my comments',16.01,'N',14.46,'2016-10-31 00:00:00','2017-10-30 19:43:21',NULL);
+INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,NULL,'N',14.30,NULL,'2017-10-30 19:00:41',NULL),(3,1,'ABX','my comments',NULL,16.01,'N',14.46,'2016-10-31 00:00:00','2017-10-30 19:43:21',NULL);
 /*!40000 ALTER TABLE `stock_to_buy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -823,6 +827,34 @@ SET character_set_client = utf8;
  1 AS `ticker_symbol`,
  1 AS `company_name`,
  1 AS `last_price`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `v_stock_note`
+--
+
+DROP TABLE IF EXISTS `v_stock_note`;
+/*!50001 DROP VIEW IF EXISTS `v_stock_note`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `v_stock_note` AS SELECT 
+ 1 AS `id`,
+ 1 AS `customer_id`,
+ 1 AS `ticker_symbol`,
+ 1 AS `notes`,
+ 1 AS `notes_source_id`,
+ 1 AS `notes_source_name`,
+ 1 AS `notes_rating`,
+ 1 AS `notes_date`,
+ 1 AS `bull_or_bear`,
+ 1 AS `action_taken`,
+ 1 AS `action_taken_shares`,
+ 1 AS `action_taken_price`,
+ 1 AS `public_ind`,
+ 1 AS `stock_price_when_created`,
+ 1 AS `version`,
+ 1 AS `create_date`,
+ 1 AS `update_date`*/;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -860,6 +892,29 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Temporary view structure for view `v_stock_to_buy`
+--
+
+DROP TABLE IF EXISTS `v_stock_to_buy`;
+/*!50001 DROP VIEW IF EXISTS `v_stock_to_buy`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `v_stock_to_buy` AS SELECT 
+ 1 AS `id`,
+ 1 AS `customer_id`,
+ 1 AS `ticker_symbol`,
+ 1 AS `comments`,
+ 1 AS `notes_source_id`,
+ 1 AS `notes_source_name`,
+ 1 AS `buy_shares_up_to_price`,
+ 1 AS `completed`,
+ 1 AS `stock_price_when_created`,
+ 1 AS `buy_after_date`,
+ 1 AS `create_date`,
+ 1 AS `update_date`*/;
+SET character_set_client = @saved_cs_client;
+
+--
 -- Final view structure for view `v_portfolio_stock`
 --
 
@@ -873,6 +928,24 @@ SET character_set_client = @saved_cs_client;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
 /*!50001 VIEW `v_portfolio_stock` AS select `ps`.`id` AS `id`,`ps`.`portfolio_id` AS `portfolio_id`,`ps`.`customer_id` AS `customer_id`,`ps`.`number_of_shares` AS `number_of_shares`,`ps`.`sector_id` AS `sector_id`,`ps`.`sub_sector_id` AS `sub_sector_id`,`ps`.`realized_gains` AS `realized_gains`,`ps`.`realized_losses` AS `realized_losses`,`ps`.`stop_loss_price` AS `stop_loss_price`,`ps`.`stop_loss_shares` AS `stop_loss_shares`,`ps`.`profit_taking_price` AS `profit_taking_price`,`ps`.`profit_taking_shares` AS `profit_taking_shares`,`s`.`ticker_symbol` AS `ticker_symbol`,`s`.`company_name` AS `company_name`,`s`.`last_price` AS `last_price` from (`portfolio_stock` `ps` join `stock` `s` on((`s`.`ticker_symbol` = `ps`.`ticker_symbol`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `v_stock_note`
+--
+
+/*!50001 DROP VIEW IF EXISTS `v_stock_note`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_stock_note` AS select `sn`.`id` AS `id`,`sn`.`customer_id` AS `customer_id`,`sn`.`ticker_symbol` AS `ticker_symbol`,`sn`.`notes` AS `notes`,`sn`.`notes_source_id` AS `notes_source_id`,`sns`.`name` AS `notes_source_name`,`sn`.`notes_rating` AS `notes_rating`,`sn`.`notes_date` AS `notes_date`,`sn`.`bull_or_bear` AS `bull_or_bear`,`sn`.`action_taken` AS `action_taken`,`sn`.`action_taken_shares` AS `action_taken_shares`,`sn`.`action_taken_price` AS `action_taken_price`,`sn`.`public_ind` AS `public_ind`,`sn`.`stock_price_when_created` AS `stock_price_when_created`,`sn`.`version` AS `version`,`sn`.`create_date` AS `create_date`,`sn`.`update_date` AS `update_date` from (`stock_note` `sn` left join `stock_note_source` `sns` on((`sns`.`id` = `sn`.`notes_source_id`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -912,6 +985,24 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
+-- Final view structure for view `v_stock_to_buy`
+--
+
+/*!50001 DROP VIEW IF EXISTS `v_stock_to_buy`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_stock_to_buy` AS select `stb`.`id` AS `id`,`stb`.`customer_id` AS `customer_id`,`stb`.`ticker_symbol` AS `ticker_symbol`,`stb`.`comments` AS `comments`,`stb`.`notes_source_id` AS `notes_source_id`,`sns`.`name` AS `notes_source_name`,`stb`.`buy_shares_up_to_price` AS `buy_shares_up_to_price`,`stb`.`completed` AS `completed`,`stb`.`stock_price_when_created` AS `stock_price_when_created`,`stb`.`buy_after_date` AS `buy_after_date`,`stb`.`create_date` AS `create_date`,`stb`.`update_date` AS `update_date` from (`stock_to_buy` `stb` left join `stock_note_source` `sns` on((`sns`.`id` = `stb`.`notes_source_id`))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -922,4 +1013,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-03 16:20:44
+-- Dump completed on 2017-11-10  9:26:25
