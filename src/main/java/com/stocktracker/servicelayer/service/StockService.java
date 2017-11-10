@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.repositorylayer.common.BooleanUtils;
@@ -365,7 +364,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
                                           final StockQuoteFetchMode stockQuoteFetchMode )
         throws IOException
     {
-        final String methodName = "setStockInformation";
+        final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, stockQuoteFetchMode );
         Objects.requireNonNull( containers, "stockDomainEntities cannot be null" );
         for ( StockQuoteContainer container : containers )
@@ -385,7 +384,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     public void setStockQuoteInformation( final StockQuoteContainer container,
                                           final StockQuoteFetchMode stockQuoteFetchMode )
     {
-        final String methodName = "setStockInformation";
+        final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, container.getTickerSymbol(), stockQuoteFetchMode );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
