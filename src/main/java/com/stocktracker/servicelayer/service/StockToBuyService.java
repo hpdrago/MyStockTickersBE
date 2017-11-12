@@ -126,8 +126,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
                                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
                                                                         stockToBuyDTO.getId() ) );
-        stockToBuyDTO.setCreateDate( JSONDateConverter.toString( stockToBuyEntity.getCreateDate() ) );
-        stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toString( stockToBuyEntity.getBuyAfterDate() ) );
+        stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
+        stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getBuyAfterDate() ) );
         if ( stockToBuyEntity.getStockNoteSourceByNotesSourceId() != null )
         {
             stockToBuyDTO.setNotesSourceName( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getName() );

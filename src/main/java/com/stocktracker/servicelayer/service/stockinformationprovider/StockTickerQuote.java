@@ -68,7 +68,10 @@ public class StockTickerQuote implements StockQuote
     public void setLastPrice( final BigDecimal lastPrice )
     {
         this.lastPrice = lastPrice;// .divide( new BigDecimal( 1 ), 2,  BigDecimal.ROUND_HALF_UP  );
-        lastPrice.setScale( 2, RoundingMode.HALF_UP);
+        if ( lastPrice != null )
+        {
+            lastPrice.setScale( 2, RoundingMode.HALF_UP );
+        }
     }
 
     public Timestamp getLastPriceChange()

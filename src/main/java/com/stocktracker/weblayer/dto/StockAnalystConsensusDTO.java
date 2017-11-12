@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockService;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
@@ -124,7 +123,7 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockS
         }
         else
         {
-            this.nextCatalystDate = JSONDateConverter.toString( nextCatalystDate );
+            this.nextCatalystDate = JSONDateConverter.toY4MMDD( nextCatalystDate );
         }
     }
 
@@ -223,7 +222,7 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockS
         }
         else
         {
-            this.analystSentimentDate = JSONDateConverter.toString( analystSentimentDate );
+            this.analystSentimentDate = JSONDateConverter.toY4MMDD( analystSentimentDate );
         }
     }
 
@@ -250,7 +249,7 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockS
         }
         else
         {
-            this.analystPriceDate = JSONDateConverter.toString( analystPriceDate );
+            this.analystPriceDate = JSONDateConverter.toY4MMDD( analystPriceDate );
         }
     }
 

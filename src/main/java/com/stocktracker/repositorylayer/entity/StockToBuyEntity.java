@@ -28,7 +28,6 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
     private String tickerSymbol;
     private String comments;
     private Integer notesSourceId;
-    private String notesSourceName;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
     private String completed;
@@ -175,16 +174,6 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
         this.buyAfterDate = buyAfterDate;
     }
 
-    public String getNotesSourceName()
-    {
-        return notesSourceName;
-    }
-
-    public void setNotesSourceName( final String notesSourceName )
-    {
-        this.notesSourceName = notesSourceName;
-    }
-
     @ManyToOne
     @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
     public StockNoteSourceEntity getStockNoteSourceByNotesSourceId()
@@ -249,7 +238,6 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
-        sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );

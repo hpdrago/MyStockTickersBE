@@ -105,13 +105,13 @@ public class StockSectorsDTO
         }
 
         @Override
-        public String toString()
+        public String toY4MMDD()
         {
             final StringBuilder sb = new StringBuilder( "StockSector{" );
             sb.append( "sectorId=" ).append( sectorId );
             sb.append( ", sectorName='" ).append( sectorName ).append( '\'' );
             sb.append( '}' );
-            return sb.toString();
+            return sb.toY4MMDD();
         }
 
         @Override

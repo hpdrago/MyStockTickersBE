@@ -39,11 +39,11 @@ import java.text.MessageFormat;
  * If you pass the list of arguments to the logMethodBegin method, these will also be including after the hashCode in the
  * form of
  *
- * [hashCode] [method name].begin arg1: [arg1.toString()] arg2: [toString()]
+ * [hashCode] [method name].begin arg1: [arg1.toY4MMDD()] arg2: [toY4MMDD()]
  *
  * If you pass a second value to logMethodEnd the output will be in the form of
  *
- * [hashCode] [method name].end return Value: [returnValue.toString()]
+ * [hashCode] [method name].end return Value: [returnValue.toY4MMDD()]
  *
  * When using the logging methods in this class, it is highly encouraged that you create a:
  *
@@ -125,7 +125,7 @@ public interface MyLogger
 
     /**
      * Log the beginning of a method in the form of:
-     * [methodName].begin arg1: [arg1.toString()] arg2: [arg2.toString()]
+     * [methodName].begin arg1: [arg1.toY4MMDD()] arg2: [arg2.toY4MMDD()]
      *
      * @param methodName the name of the method creating the log message
      * @param args method arguments
@@ -201,7 +201,7 @@ public interface MyLogger
 
     /**
      * Log the end of a method including a return value in the form of
-     * [methodName].end return value: [returnValue.toString]
+     * [methodName].end return value: [returnValue.toY4MMDD]
      *
      * @param methodName the name of the method creating the log message
      * @param returnValue the method return value

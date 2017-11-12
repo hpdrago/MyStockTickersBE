@@ -43,6 +43,7 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
      * Gets the stock quote synchronously
      * @param tickerSymbol
      * @return IEXTrading quote
+     * @throws javax.ws.rs.NotFoundException: HTTP 404 Not Found
      */
     public StockTickerQuote getIEXTradingQuote( final String tickerSymbol )
     {

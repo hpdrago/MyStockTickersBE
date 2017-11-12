@@ -84,13 +84,29 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stockQuote/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public StockQuote getStockQuote( @PathVariable final String tickerSymbol )
+    public ResponseEntity<StockQuote> getStockQuote( @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
-        StockQuote stockTickerQuote = this.stockService.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+        StockQuote stockTickerQuote = null;
+        HttpStatus httpStatus = HttpStatus.OK;
+        try
+        {
+            stockTickerQuote = this.stockService.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+        }
+        catch( javax.ws.rs.NotFoundException e )
+        {
+            httpStatus = HttpStatus.NOT_FOUND;
+        }
         logMethodEnd( methodName, stockTickerQuote );
-        return stockTickerQuote;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder
+                                     .fromCurrentRequest()
+                                     .path( "" )
+                                     .buildAndExpand( stockTickerQuote )
+                                     .toUri());
+        logMethodEnd( methodName, stockTickerQuote );
+        return new ResponseEntity<>( stockTickerQuote, httpHeaders, httpStatus );
     }
     /**
      * Get a single stock for {@code tickerSymbol}
@@ -136,8 +152,10 @@ public class StockController extends AbstractController implements MyLogger
         logDebug( methodName, "return stockDTO: {0}", newStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
-                                     .fromCurrentRequest().path( "" )
-                                     .buildAndExpand( newStockDTO ).toUri());
+                                     .fromCurrentRequest()
+                                     .path( "" )
+                                     .buildAndExpand( newStockDTO )
+                                     .toUri());
         logMethodEnd( methodName, newStockDTO );
         return new ResponseEntity<>( stockDTO, httpHeaders, HttpStatus.CREATED );
     }

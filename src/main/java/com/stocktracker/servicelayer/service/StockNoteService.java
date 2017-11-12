@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
+import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
 import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
@@ -147,9 +148,9 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = new StockNoteDTO();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
-        stockNoteDTO.setNotesDate( JSONDateConverter.toString( stockNoteEntity.getNotesDate() ));
-        stockNoteDTO.setCreateDate( JSONDateConverter.toString( stockNoteEntity.getCreateDate() ));
-        stockNoteDTO.setUpdateDate( JSONDateConverter.toString( stockNoteEntity.getUpdateDate() ));
+        stockNoteDTO.setNotesDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getNotesDate() ));
+        stockNoteDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getCreateDate() ));
+        stockNoteDTO.setUpdateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getUpdateDate() ));
         if ( stockNoteEntity.getStockNoteSourceByNotesSourceId() != null )
         {
             stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceId().getName() );
@@ -164,6 +165,12 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     {
         StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
+        if ( stockNoteDTO.getNotesSourceId() != null )
+        {
+            StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
+                                                              .getStockNoteSource( stockNoteDTO.getNotesSourceId() );
+            stockNoteEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
+        }
         stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;
     }

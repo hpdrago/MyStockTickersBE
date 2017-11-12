@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
@@ -18,6 +17,6 @@ public class JSONTimestampSerializer extends JsonSerializer<Timestamp>
         throws IOException
     {
         // put your desired money style here
-        jgen.writeString( JSONDateConverter.toString( timestamp ));
+        jgen.writeString( JSONDateConverter.toY4MMDD( timestamp ));
     }
 }

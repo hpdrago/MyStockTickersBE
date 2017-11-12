@@ -104,7 +104,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
         BeanUtils.copyProperties( stockCatalystEventEntity, stockCatalystEventDTO );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
-            stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toString( stockCatalystEventEntity.getCatalystDate() ));
+            stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));
         }
         this.stockService.setCompanyName( stockCatalystEventDTO );
         return stockCatalystEventDTO;

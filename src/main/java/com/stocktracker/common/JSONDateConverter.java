@@ -35,7 +35,22 @@ public class JSONDateConverter
      * @param utcTimestamp
      * @return null if {@code utcTimestamp} is null
      */
-    public static String toString( final Timestamp utcTimestamp )
+    public static String toY4MMDD( final Timestamp utcTimestamp )
+    {
+        if ( utcTimestamp == null )
+        {
+            return "";
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+        return dateFormat.format( utcTimestamp );
+    }
+
+    /**
+     * Converts a timestamp into a full JSON date and time string
+     * @param utcTimestamp
+     * @return null if {@code utcTimestamp} is null
+     */
+    public static String toDateAndTime( final Timestamp utcTimestamp )
     {
         if ( utcTimestamp == null )
         {
