@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.17-log
+-- Server version	5.7.18-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -312,11 +312,10 @@ CREATE TABLE `stock_analyst_consensus` (
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
-  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
-  KEY `FK_STOCK_ANALYTICS_STOCK_idx` (`ticker_symbol`),
-  CONSTRAINT `FK_STOCK_ANALYTICS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_ANALYTICS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  UNIQUE KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
+  KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_idx` (`ticker_symbol`),
+  CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -329,6 +328,49 @@ LOCK TABLES `stock_analyst_consensus` WRITE;
 INSERT INTO `stock_analyst_consensus` VALUES (3,1,'ABX','A gold company',5,4,3,2,1,'2017-10-24 21:02:44',20.00,18.00,25.00,'2017-10-24 20:16:31','2017-10-24 21:02:44','2017-10-24 21:02:44');
 /*!40000 ALTER TABLE `stock_analyst_consensus` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `stock_analytics`
+--
+
+DROP TABLE IF EXISTS `stock_analytics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stock_analytics` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_id` int(11) NOT NULL,
+  `ticker_symbol` varchar(5) NOT NULL,
+  `comments` varchar(45) DEFAULT NULL,
+  `analyst_strong_buy_count` int(11) DEFAULT NULL,
+  `analyst_buy_count` int(11) DEFAULT NULL,
+  `analyst_hold_count` int(11) DEFAULT NULL,
+  `analyst_under_perform_count` int(11) DEFAULT NULL,
+  `analyst_sell_count` int(11) DEFAULT NULL,
+  `analyst_sentiment_date` timestamp NULL DEFAULT NULL,
+  `avg_analyst_price_target` decimal(7,2) DEFAULT NULL,
+  `low_analyst_price_target` decimal(7,2) DEFAULT NULL,
+  `high_analyst_price_target` decimal(7,2) DEFAULT NULL,
+  `analyst_price_date` timestamp NULL DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
+  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
+  KEY `FK_STOCK_ANALYTICS_STOCK_idx` (`ticker_symbol`),
+  CONSTRAINT `FK_STOCK_ANALYTICS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_STOCK_ANALYTICS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_analytics`
+--
+
+LOCK TABLES `stock_analytics` WRITE;
+/*!40000 ALTER TABLE `stock_analytics` DISABLE KEYS */;
+INSERT INTO `stock_analytics` VALUES (3,1,'ABX','A gold company',5,4,3,2,1,'2017-10-24 21:02:44',20.00,18.00,25.00,'2017-10-24 20:16:31','2017-10-24 21:02:44','2017-10-24 21:02:44');
+/*!40000 ALTER TABLE `stock_analytics` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -338,7 +380,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_analytics_BEFORE_INSERT` BEFORE INSERT ON `stock_analyst_consensus` FOR EACH ROW
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_analytics_BEFORE_INSERT` BEFORE INSERT ON `stock_analytics` FOR EACH ROW
 BEGIN
 	SET NEW.UPDATE_DATE = current_timestamp();
     /*
@@ -378,7 +420,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_analytics_BEFORE_UPDATE` BEFORE UPDATE ON `stock_analyst_consensus` FOR EACH ROW
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_analytics_BEFORE_UPDATE` BEFORE UPDATE ON `stock_analytics` FOR EACH ROW
 BEGIN
 	SET NEW.UPDATE_DATE = current_timestamp();
     /*
@@ -424,11 +466,7 @@ CREATE TABLE `stock_catalyst_event` (
   `catalyst_desc` varchar(60) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
-  KEY `FK_STOCK_CATALYST_STOCK_idx` (`ticker_symbol`),
-  CONSTRAINT `FK_STOCK_CATALYST_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_CATALYST_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -491,7 +529,7 @@ CREATE TABLE `stock_note` (
   CONSTRAINT `FK_STOCK_NOTE_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
   CONSTRAINT `FK_STOCK_NOTE_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_NOTE_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,7 +538,7 @@ CREATE TABLE `stock_note` (
 
 LOCK TABLES `stock_note` WRITE;
 /*!40000 ALTER TABLE `stock_note` DISABLE KEYS */;
-INSERT INTO `stock_note` VALUES (47,1,'ABX','my comments',NULL,5,'2015-10-30 17:00:00',1,1,500,'20.00',NULL,14.68,2,'2017-11-08 23:33:18','2017-11-08 23:33:18'),(48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',NULL,5,'2014-10-30 17:00:00',1,0,0,NULL,NULL,2.53,3,'2017-11-08 23:49:23','2017-11-08 23:49:23');
+INSERT INTO `stock_note` VALUES (48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',8,5,'2011-10-30 17:00:00',1,0,0,NULL,NULL,2.53,6,'2017-11-11 23:21:08','2017-11-11 23:21:08');
 /*!40000 ALTER TABLE `stock_note` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -598,6 +636,60 @@ LOCK TABLES `stock_note_source` WRITE;
 INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,1,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(11,'ZZZZZZZZZZz',1,0,'2017-11-08 16:06:22');
 /*!40000 ALTER TABLE `stock_note_source` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `stock_note_stock`
+--
+
+DROP TABLE IF EXISTS `stock_note_stock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stock_note_stock` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `stock_note_id` int(11) NOT NULL,
+  `ticker_symbol` varchar(5) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `stock_price` decimal(7,2) DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_STOCK_NOTE_STOCK_STOCK_NOTE_idx` (`stock_note_id`),
+  KEY `FK_STOCK_NOTE_STOCK_CUSTOMER_idx` (`customer_id`),
+  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
+  KEY `FK_STOCK_NOTE_STOCK_STOCK_idx` (`ticker_symbol`),
+  CONSTRAINT `FK_STOCK_NOTE_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `FK_STOCK_NOTE_STOCK_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `FK_STOCK_NOTE_STOCK_STOCK_NOTE` FOREIGN KEY (`stock_note_id`) REFERENCES `stock_note` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_note_stock`
+--
+
+LOCK TABLES `stock_note_stock` WRITE;
+/*!40000 ALTER TABLE `stock_note_stock` DISABLE KEYS */;
+INSERT INTO `stock_note_stock` VALUES (14,33,'VKTX',1,2.65,'2017-10-24 21:55:14',NULL);
+/*!40000 ALTER TABLE `stock_note_stock` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_note_stock_BEFORE_UPDATE` BEFORE UPDATE ON `stock_note_stock` FOR EACH ROW
+BEGIN
+	SET NEW.UPDATE_DATE = current_timestamp();
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `stock_sector`
@@ -799,12 +891,12 @@ CREATE TABLE `stock_to_buy` (
 
 LOCK TABLES `stock_to_buy` WRITE;
 /*!40000 ALTER TABLE `stock_to_buy` DISABLE KEYS */;
-INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,NULL,'N',14.30,NULL,'2017-10-30 19:00:41',NULL),(3,1,'ABX','my comments',NULL,16.01,'N',14.46,'2016-10-31 00:00:00','2017-10-30 19:43:21',NULL);
+INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,NULL,'N',14.30,NULL,'2017-10-30 19:00:41',NULL);
 /*!40000 ALTER TABLE `stock_to_buy` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Temporary view structure for view `v_portfolio_stock`
+-- Temporary table structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -830,7 +922,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note`
+-- Temporary table structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -858,7 +950,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note_count`
+-- Temporary table structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -872,7 +964,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_tag`
+-- Temporary table structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -892,7 +984,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_to_buy`
+-- Temporary table structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1013,4 +1105,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-10  9:26:25
+-- Dump completed on 2017-11-13 21:27:14
