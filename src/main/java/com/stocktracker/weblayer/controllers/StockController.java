@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
+import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
@@ -31,6 +32,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class StockController extends AbstractController implements MyLogger
 {
     private StockService stockService;
+    private StockQuoteService stockQuoteService;
 
     /**
      * Get all of the stocks within the pageRequest parameters
@@ -92,7 +94,8 @@ public class StockController extends AbstractController implements MyLogger
         HttpStatus httpStatus = HttpStatus.OK;
         try
         {
-            stockTickerQuote = this.stockService.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+            stockTickerQuote = this.stockQuoteService
+                                   .getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
         }
         catch( javax.ws.rs.NotFoundException e )
         {
@@ -214,4 +217,11 @@ public class StockController extends AbstractController implements MyLogger
     {
         this.stockService = stockService;
     }
+
+    @Autowired
+    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    {
+        this.stockQuoteService = stockQuoteService;
+    }
+
 }

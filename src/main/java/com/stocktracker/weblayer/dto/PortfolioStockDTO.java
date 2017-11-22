@@ -2,8 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.servicelayer.service.StockService;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
@@ -11,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDTO extends StockTickerQuote implements StockService.StockQuoteContainer
+public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer
 {
     private Integer id;
     private Integer customerId;

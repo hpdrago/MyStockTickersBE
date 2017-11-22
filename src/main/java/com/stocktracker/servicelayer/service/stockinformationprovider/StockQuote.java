@@ -10,7 +10,7 @@ public interface StockQuote
 {
     String getTickerSymbol();
     String getCompanyName();
-    String getExchange();
+    String getStockExchange();
     BigDecimal getLastPrice();
     Timestamp getLastPriceChange();
     StockQuoteState getStockQuoteState();

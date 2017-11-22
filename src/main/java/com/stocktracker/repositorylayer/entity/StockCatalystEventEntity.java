@@ -19,6 +19,9 @@ public class StockCatalystEventEntity
     private String tickerSymbol;
     private Timestamp catalystDate;
     private String catalystDesc;
+    private Byte dateOrTimePeriod;
+    private Byte timePeriod;
+    private Short timePeriodYear;
     private Timestamp createDate;
     private Timestamp updateDate;
 
@@ -41,7 +44,7 @@ public class StockCatalystEventEntity
     }
 
     @Basic
-    @Column( name = "customer_id" )
+    @Column( name = "customer_id", nullable = false )
     public Integer getCustomerId()
     {
         return customerId;
@@ -53,7 +56,7 @@ public class StockCatalystEventEntity
     }
 
     @Basic
-    @Column( name = "ticker_symbol" )
+    @Column( name = "ticker_symbol", nullable = false, length = 5 )
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -65,7 +68,7 @@ public class StockCatalystEventEntity
     }
 
     @Basic
-    @Column( name = "catalyst_date", nullable = false )
+    @Column( name = "catalyst_date", nullable = true )
     public Timestamp getCatalystDate()
     {
         return catalystDate;
@@ -77,7 +80,7 @@ public class StockCatalystEventEntity
     }
 
     @Basic
-    @Column( name = "catalyst_desc", nullable = false, length = 60 )
+    @Column( name = "catalyst_desc", nullable = false, length = 1000 )
     public String getCatalystDesc()
     {
         return catalystDesc;
@@ -112,6 +115,42 @@ public class StockCatalystEventEntity
         this.updateDate = updateDate;
     }
 
+
+    @Basic
+    @Column( name = "date_or_time_period", nullable = false )
+    public Byte getDateOrTimePeriod()
+    {
+        return dateOrTimePeriod;
+    }
+
+    public void setDateOrTimePeriod( final Byte dateOrTimePeriod )
+    {
+        this.dateOrTimePeriod = dateOrTimePeriod;
+    }
+
+    @Basic
+    @Column( name = "time_period", nullable = true, length = 10 )
+    public Byte getTimePeriod()
+    {
+        return timePeriod;
+    }
+
+    public void setTimePeriod( final Byte timePeriod )
+    {
+        this.timePeriod = timePeriod;
+    }
+
+    @Basic
+    @Column( name = "time_period_year", nullable = true )
+    public Short getTimePeriodYear()
+    {
+        return timePeriodYear;
+    }
+
+    public void setTimePeriodYear( final Short timePeriodYear )
+    {
+        this.timePeriodYear = timePeriodYear;
+    }
     @Override
     public boolean equals( final Object o )
     {
@@ -136,7 +175,7 @@ public class StockCatalystEventEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusEntity{" );
+        final StringBuilder sb = new StringBuilder( "StockCatalystEventEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
@@ -144,8 +183,10 @@ public class StockCatalystEventEntity
         sb.append( ", catalystDesc='" ).append( catalystDesc ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );
+        sb.append( ", timePeriod='" ).append( timePeriod ).append( '\'' );
+        sb.append( ", timePeriodYear=" ).append( timePeriodYear );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

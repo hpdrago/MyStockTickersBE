@@ -30,6 +30,11 @@ public class StockQuoteServiceExecutor
         handleStockQuoteResult.handleStockQuoteReturn( stockTickerQuote );
     }
 
+    /**
+     * Fetch the stock quote synchronously.
+     * @param tickerSymbol
+     * @return
+     */
     public StockTickerQuote synchronousGetStockQuote( final String tickerSymbol )
     {
         StockTickerQuote stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );

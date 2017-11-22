@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
+import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
@@ -31,6 +32,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
      * Autowired service classes
      */
     private StockService stockService;
+    private StockQuoteService stockQuoteService;
     private StockNoteRepository stockNoteRepository;
     private VStockNoteCountRepository vStockNoteCountRepository;
     private StockTagService stockTagService;
@@ -79,12 +81,17 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
+        this.stockNoteSourceService.checkForNewSource( stockNoteDTO );
+        /*
+         * Check to see if the stock exists
+         */
+        StockEntity stockEntity = this.stockService.getStockEntity( stockNoteDTO.getTickerSymbol() );
         StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
-        this.stockNoteSourceService.checkForNewSource( stockNoteDTO.getCustomerId(), stockNoteEntity, stockNoteDTO );
         /*
          * Set the stock price when created for one stock note entity
          */
-        stockNoteEntity.setStockPriceWhenCreated( this.stockService.getStockPrice( stockNoteEntity.getTickerSymbol() ));
+        stockNoteEntity.setStockPriceWhenCreated( this.stockQuoteService
+                                                      .getStockPrice( stockNoteEntity.getTickerSymbol() ));
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );
@@ -102,11 +109,11 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, stockNoteDTO );
         Objects.requireNonNull( stockNoteDTO );
-        StockNoteEntity dbStockNoteEntity = this.dtoToEntity( stockNoteDTO );
         /*
          * Check for any changes to the sources
          */
-        this.stockNoteSourceService.checkForNewSource( stockNoteDTO.getCustomerId(), dbStockNoteEntity, stockNoteDTO );
+        this.stockNoteSourceService.checkForNewSource( stockNoteDTO );
+        StockNoteEntity dbStockNoteEntity = this.dtoToEntity( stockNoteDTO );
         /*
          * Save the stock notes
          */
@@ -156,7 +163,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
             stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceId().getName() );
             stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceId().getId() );
         }
-        this.stockService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockQuoteService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         return stockNoteDTO;
     }
 
@@ -165,7 +172,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     {
         StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
-        if ( stockNoteDTO.getNotesSourceId() != null )
+        if ( stockNoteDTO.getNotesSourceId() != null &&
+             stockNoteDTO.getNotesSourceId() > 0 )
         {
             StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
                                                               .getStockNoteSource( stockNoteDTO.getNotesSourceId() );
@@ -208,6 +216,12 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
+    }
+
+    @Autowired
+    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    {
+        this.stockQuoteService = stockQuoteService;
     }
 
 }

@@ -22,14 +22,7 @@ import java.util.Objects;
 public class StockCatalystEventService extends BaseService<StockCatalystEventEntity, StockCatalystEventDTO> implements MyLogger
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
-
-    @Autowired
-    public void setStockService( final StockService stockService )
-    {
-        this.stockService = stockService;
-    }
-
-    private StockService stockService;
+    private StockQuoteService stockQuoteService;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -106,7 +99,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
         {
             stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));
         }
-        this.stockService.setCompanyName( stockCatalystEventDTO );
+        this.stockQuoteService.setCompanyName( stockCatalystEventDTO );
         return stockCatalystEventDTO;
     }
 
@@ -128,4 +121,11 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     {
         this.stockCatalystEventRepository = stockCatalystEventRepository;
     }
+
+    @Autowired
+    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    {
+        this.stockQuoteService = stockQuoteService;
+    }
+
 }

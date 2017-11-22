@@ -20,8 +20,7 @@ import java.util.Objects;
 public class StockAnalystConsensusService extends BaseService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
-
-    private StockService stockService;
+    private StockQuoteService stockQuoteService;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -99,7 +98,7 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         Objects.requireNonNull( stockAnalystConsensusEntity );
         StockAnalystConsensusDTO stockAnalystConsensusDTO = StockAnalystConsensusDTO.newInstance();
         BeanUtils.copyProperties( stockAnalystConsensusEntity, stockAnalystConsensusDTO );
-        this.stockService.setStockQuoteInformation( stockAnalystConsensusDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockQuoteService.setStockQuoteInformation( stockAnalystConsensusDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         performCalculations( stockAnalystConsensusDTO );
         stockAnalystConsensusDTO.setAnalystPriceDate( stockAnalystConsensusEntity.getAnalystPriceDate() );
         stockAnalystConsensusDTO.setAnalystSentimentDate( stockAnalystConsensusEntity.getAnalystSentimentDate() );
@@ -141,9 +140,9 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockQuoteService( final StockQuoteService stockQuoteService )
     {
-        this.stockService = stockService;
+        this.stockQuoteService = stockQuoteService;
     }
 
 }

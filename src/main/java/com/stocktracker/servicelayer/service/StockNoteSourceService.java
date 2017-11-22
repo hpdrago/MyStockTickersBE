@@ -35,7 +35,9 @@ public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, S
 
     public interface StockNoteSourceDTOContainer
     {
+        Integer getCustomerId();
         void setNotesSourceName( final String noteSourceName );
+        void setNotesSourceId( final Integer notesSourceId );
         String getNotesSourceName();
         Integer getNotesSourceId();
 
@@ -71,30 +73,25 @@ public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, S
     /**
      * Check {@code stockNoteSourceDTOContainer} to see if the user entered a new note source.
      * If a new source is detected, a new source will be added to the database for the customer.
-     * @param customerId Need the customer id to look up the sources
-     * @param stockNoteSourceEntityContainer This should be the database entity that contains a notes_source_id.
      * @param stockNoteSourceDTOContainer This should be the DTO that contains the source id and the source name.
      */
-    public void checkForNewSource( final Integer customerId,
-                                   final StockNoteSourceEntityContainer stockNoteSourceEntityContainer,
-                                   final StockNoteSourceDTOContainer stockNoteSourceDTOContainer )
+    public void checkForNewSource( final StockNoteSourceDTOContainer stockNoteSourceDTOContainer )
     {
         final String methodName = "checkForNewSource";
-        logMethodBegin( methodName, customerId );
-        logDebug( methodName, "{0}", stockNoteSourceEntityContainer );
         logDebug( methodName, "{0}", stockNoteSourceDTOContainer );
         /*
          * If the source id is null and there is a name, this means the user assigned a source
          */
-        if ( !stockNoteSourceEntityContainer.getNotesSourceEntity().isPresent() &&
-             stockNoteSourceDTOContainer.getNotesSourceId() != null &&
-             stockNoteSourceDTOContainer.getNotesSourceName() != null )
+        if ( stockNoteSourceDTOContainer.getNotesSourceId() != null &&
+             stockNoteSourceDTOContainer.getNotesSourceName() != null &&
+             !stockNoteSourceDTOContainer.getNotesSourceName().isEmpty() )
         {
             /*
              * Make sure it doesn't already exist
              */
             StockNoteSourceEntity stockNoteSourceEntity =
-                this.stockNoteSourceRepository.findByCustomerIdAndName( customerId, stockNoteSourceDTOContainer.getNotesSourceName() ) ;
+                this.stockNoteSourceRepository.findByCustomerIdAndName( stockNoteSourceDTOContainer.getCustomerId(),
+                                                                        stockNoteSourceDTOContainer.getNotesSourceName() ) ;
             logDebug( methodName, "stockNoteSourceEntity: {0}", stockNoteSourceEntity );
             if ( stockNoteSourceEntity != null )
             {
@@ -104,14 +101,14 @@ public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, S
             {
                 logDebug( methodName, "Saving stock note source entity" );
                 stockNoteSourceEntity = new StockNoteSourceEntity();
-                stockNoteSourceEntity.setCustomerId( customerId );
+                stockNoteSourceEntity.setCustomerId( stockNoteSourceDTOContainer.getCustomerId() );
                 stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceName() );
                 stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
                 logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
                 /*
                  * update the reference in the stock note id container
                  */
-                stockNoteSourceEntityContainer.setNotesSourceEntity( stockNoteSourceEntity );
+                stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getId() );
             }
         }
         logMethodEnd( methodName );

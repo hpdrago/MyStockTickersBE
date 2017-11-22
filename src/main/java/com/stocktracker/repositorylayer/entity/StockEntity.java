@@ -23,7 +23,6 @@ public class StockEntity
     private String companyName;
     //private String exchange;
     private Integer createdBy;
-    private Character userEntered;
     private BigDecimal lastPrice;
     private Timestamp lastPriceUpdate;
     private Timestamp lastPriceChange;
@@ -37,7 +36,7 @@ public class StockEntity
     /*
     @Basic
     @Column( name = "exchange", nullable = true, length = 10 )
-    public String getExchange()
+    public String getStockExchange()
     {
         return exchange;
     }
@@ -57,12 +56,6 @@ public class StockEntity
     {
         StockEntity stockEntity = new StockEntity();
         return stockEntity;
-    }
-
-    public void setUserEntered( final String userEntered )
-    {
-        if ( userEntered == null )
-        this.userEntered = userEntered == null ? 'N' : userEntered.equals( "Y" ) ? 'Y' : 'N';
     }
 
     @Id
@@ -99,18 +92,6 @@ public class StockEntity
     public void setCreatedBy( Integer createdBy )
     {
         this.createdBy = createdBy;
-    }
-
-    @Basic
-    @Column( name = "user_entered", nullable = true, length = 1 )
-    public Character getUserEntered()
-    {
-        return userEntered;
-    }
-
-    public void setUserEntered( final Character downloaded )
-    {
-        this.userEntered = downloaded;
     }
 
     @Basic
@@ -257,7 +238,6 @@ public class StockEntity
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", createdBy=" ).append( createdBy );
-        sb.append( ", userEntered=" ).append( userEntered );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceUpdate=" ).append( lastPriceUpdate );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );

@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     private static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
     private Map<String, StockTickerQuoteCacheEntry> cacheEntryMap = Collections.synchronizedMap( new HashMap<>( ) );
     private StockQuoteServiceExecutor stockQuoteServiceExecutor;
+    private StockService stockService;
 
     public StockQuoteCache()
     {
@@ -38,6 +40,9 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( fetchMode, "fetchMode cannot be null" );
         StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheEntryMap.get( tickerSymbol );
+        /*
+         * If null, the stock is not in the cache
+         */
         if ( stockTickerQuoteCacheEntry == null )
         {
             if ( fetchMode == StockQuoteFetchMode.SYNCHRONOUS )
@@ -137,5 +142,11 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     public void setStockQuoteServiceExecutor( final StockQuoteServiceExecutor stockQuoteServiceExecutor )
     {
         this.stockQuoteServiceExecutor = stockQuoteServiceExecutor;
+    }
+
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        this.stockService = stockService;
     }
 }

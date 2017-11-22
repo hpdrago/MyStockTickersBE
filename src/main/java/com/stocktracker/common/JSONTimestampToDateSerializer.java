@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 /**
  * This class formats Timestamp into JSON dates
  */
-public class JSONTimestampSerializer extends JsonSerializer<Timestamp>
+public class JSONTimestampToDateSerializer extends JsonSerializer<Timestamp>
 {
     @Override
     public void serialize( Timestamp timestamp, JsonGenerator jgen, SerializerProvider provider)

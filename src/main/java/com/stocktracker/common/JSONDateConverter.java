@@ -14,7 +14,15 @@ public class JSONDateConverter
 {
     public static Timestamp toTimestamp( final String jsonUTCDate )
     {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd" );
+        SimpleDateFormat dateFormat;
+        if ( jsonUTCDate.contains( "T" ) )
+        {
+            dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+        }
+        else
+        {
+            dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+        }
         dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
         Date parsedDate = null;
         Timestamp timestamp = null;

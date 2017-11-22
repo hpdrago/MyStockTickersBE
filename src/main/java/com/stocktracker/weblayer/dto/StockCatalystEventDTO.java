@@ -1,8 +1,8 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.StockQuoteService;
 
-public class StockCatalystEventDTO implements StockService.StockCompanyNameContainer
+public class StockCatalystEventDTO implements StockQuoteService.StockCompanyNameContainer
 {
     private Integer id;
     private Integer customerId;
@@ -10,6 +10,9 @@ public class StockCatalystEventDTO implements StockService.StockCompanyNameConta
     private String companyName;
     private String catalystDate;
     private String catalystDesc;
+    private Byte dateOrTimePeriod;
+    private Byte timePeriod;
+    private Short timePeriodYear;
 
     public static StockCatalystEventDTO newInstance()
     {
@@ -77,6 +80,36 @@ public class StockCatalystEventDTO implements StockService.StockCompanyNameConta
         this.catalystDesc = catalystDesc;
     }
 
+    public Byte getDateOrTimePeriod()
+    {
+        return dateOrTimePeriod;
+    }
+
+    public void setDateOrTimePeriod( final Byte dateOrTimePeriod )
+    {
+        this.dateOrTimePeriod = dateOrTimePeriod;
+    }
+
+    public Byte getTimePeriod()
+    {
+        return timePeriod;
+    }
+
+    public void setTimePeriod( final Byte timePeriod )
+    {
+        this.timePeriod = timePeriod;
+    }
+
+    public Short getTimePeriodYear()
+    {
+        return timePeriodYear;
+    }
+
+    public void setTimePeriodYear( final Short timePeriodYear )
+    {
+        this.timePeriodYear = timePeriodYear;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -103,14 +136,18 @@ public class StockCatalystEventDTO implements StockService.StockCompanyNameConta
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockCatalystEventDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", catalystDate=" ).append( catalystDate );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", catalystDate='" ).append( catalystDate ).append( '\'' );
         sb.append( ", catalystDesc='" ).append( catalystDesc ).append( '\'' );
+        sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );
+        sb.append( ", timePeriod=" ).append( timePeriod );
+        sb.append( ", timePeriodYear=" ).append( timePeriodYear );
         sb.append( '}' );
         return sb.toString();
     }
+
 }

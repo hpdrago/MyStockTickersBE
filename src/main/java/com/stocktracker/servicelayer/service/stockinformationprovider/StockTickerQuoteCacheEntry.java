@@ -74,7 +74,7 @@ public class StockTickerQuoteCacheEntry implements StockQuote
     }
 
     @Override
-    public String getExchange()
+    public String getStockExchange()
     {
         return null;
     }

@@ -1,15 +1,14 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockNoteSourceService;
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-public class StockToBuyDTO extends StockTickerQuote implements StockService.StockQuoteContainer,
+public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
                                                                StockNoteSourceService.StockNoteSourceDTOContainer
 {
     /*

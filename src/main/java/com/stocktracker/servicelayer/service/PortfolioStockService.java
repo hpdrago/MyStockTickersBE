@@ -26,20 +26,9 @@ import java.util.Objects;
 @Transactional
 public class PortfolioStockService extends BaseService<PortfolioStockEntity, PortfolioStockDTO> implements MyLogger
 {
-    private StockService stockService;
+    private StockQuoteService stockQuoteService;
     private PortfolioStockRepository portfolioStockRepository;
 
-    @Autowired
-    public void setPortfolioStockRepository( final PortfolioStockRepository portfolioStockRepository )
-    {
-        this.portfolioStockRepository = portfolioStockRepository;
-    }
-
-    @Autowired
-    public void setStockService( final StockService stockService )
-    {
-        this.stockService = stockService;
-    }
     /**
      * Get the customer stock entry for the customer id and the ticker symbol
      * @param customerId
@@ -61,7 +50,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
             throw new PortfolioStockNotFound( customerId, portfolioId, tickerSymbol );
         }
         PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
-        this.stockService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
     }
@@ -123,7 +112,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         logDebug( methodName, "inserting: {0}", portfolioStockEntity );
         PortfolioStockEntity returnCustomerStockEntity = this.portfolioStockRepository.save( portfolioStockEntity );
         PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
-        this.stockService.setStockQuoteInformation( returnPortfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockQuoteService.setStockQuoteInformation( returnPortfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnPortfolioStockDTO );
         return returnPortfolioStockDTO;
     }
@@ -168,7 +157,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance();
         portfolioStockEntity.setPortfolioId( portfolioStockDTO.getPortfolioId() );
         BeanUtils.copyProperties( portfolioStockDTO, portfolioStockEntity );
-        this.stockService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockEntity );
         return portfolioStockEntity;
     }
@@ -203,7 +192,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         final String methodName = "setStockInformation";
         portfolioStockDTOList.forEach( portfolioStockDTO ->
         {
-            this.stockService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+            this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         } );
     }
 
@@ -221,5 +210,17 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         PortfolioStockEntity entity = PortfolioStockEntity.newInstance();
         BeanUtils.copyProperties( entity, dto );
         return entity;
+    }
+
+    @Autowired
+    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    {
+        this.stockQuoteService = stockQuoteService;
+    }
+
+    @Autowired
+    public void setPortfolioStockRepository( final PortfolioStockRepository portfolioStockRepository )
+    {
+        this.portfolioStockRepository = portfolioStockRepository;
     }
 }

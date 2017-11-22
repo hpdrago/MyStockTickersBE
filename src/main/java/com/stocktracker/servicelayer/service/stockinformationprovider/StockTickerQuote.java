@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.common.JSONTimestampSerializer;
+import com.stocktracker.common.JSONTimestampToDateTimeSerializer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,9 +18,10 @@ public class StockTickerQuote implements StockQuote
 {
     private String tickerSymbol;
     private String companyName;
+    private String stockExchange;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
-    @JsonSerialize( using = JSONTimestampSerializer.class )
+    @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
     private Timestamp lastPriceChange;
     private StockQuoteState stockQuoteState;
 
@@ -91,9 +92,9 @@ public class StockTickerQuote implements StockQuote
     }
 
     @Override
-    public String getExchange()
+    public String getStockExchange()
     {
-        return null;
+        return stockExchange;
     }
 
     public void setCompanyName( final String companyName )
@@ -101,6 +102,10 @@ public class StockTickerQuote implements StockQuote
         this.companyName = companyName;
     }
 
+    public void setStockExchange( final String stockExchange )
+    {
+        this.stockExchange = stockExchange;
+    }
 
     @Override
     public boolean equals( final Object o )
@@ -129,6 +134,7 @@ public class StockTickerQuote implements StockQuote
         final StringBuilder sb = new StringBuilder( "StockTickerQuote{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", stockExchange='" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", stockQuoteState=" ).append( stockQuoteState );
