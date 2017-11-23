@@ -24,6 +24,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     private StockToBuyRepository stockToBuyRepository;
     private StockQuoteService stockQuoteService;
     private StockTagService stockTagService;
+    private StockService stockService;
     private StockNoteSourceService stockNoteSourceService;
 
     /**
@@ -75,6 +76,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         logMethodBegin( methodName, stockToBuyDTO );
         Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
+        this.stockService.checkStock( stockToBuyDTO.getTickerSymbol() );
         StockToBuyEntity stockToBuyEntity = this.dtoToEntity( stockToBuyDTO );
         /*
          * The stock price needs to be set the first time as it records the stock price when the record was created.
@@ -124,6 +126,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         Objects.requireNonNull( stockToBuyEntity );
         StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
+        stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
         this.stockQuoteService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
                                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
@@ -148,6 +151,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         {
             stockToBuyEntity.setBuyAfterDate( JSONDateConverter.toTimestamp( stockToBuyDTO.getBuyAfterDate() ));
         }
+        stockToBuyEntity.setCompleted( stockToBuyDTO.isCompleted() ? "Y" : "N" );
         return stockToBuyEntity;
     }
 
@@ -173,6 +177,12 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     public void setStockQuoteService( final StockQuoteService stockQuoteService )
     {
         this.stockQuoteService = stockQuoteService;
+    }
+
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        this.stockService = stockService;
     }
 
 }

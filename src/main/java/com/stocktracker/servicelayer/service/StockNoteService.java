@@ -2,7 +2,6 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
-import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
@@ -85,7 +84,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         /*
          * Check to see if the stock exists
          */
-        StockEntity stockEntity = this.stockService.getStockEntity( stockNoteDTO.getTickerSymbol() );
+        this.stockService.checkStock( stockNoteDTO.getTickerSymbol() );
         StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
         /*
          * Set the stock price when created for one stock note entity

@@ -21,7 +21,7 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
     private String notesSourceName;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
-    private String completed;
+    private Boolean completed;
     private String buyAfterDate;
     private String createDate;
     private String[] tags;
@@ -106,12 +106,12 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
         this.tags = stockTags.toArray(new String[stockTags.size()]);
     }
 
-    public String getCompleted()
+    public Boolean isCompleted()
     {
-        return completed;
+        return completed == null ? false : completed;
     }
 
-    public void setCompleted( final String completed )
+    public void setCompleted( final Boolean completed )
     {
         this.completed = completed;
     }

@@ -226,6 +226,21 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
     }
 
     /**
+     * This method will validate that the ticker symbol exists in the database.  If it doesn't, it will
+     * attempt to get a stock quote and create the database entry.  This method simply calls {@code getStockEntity}
+     * but is provided for readability purposes.
+     * @param tickerSymbol
+     * @throws com.stocktracker.common.exceptions.StockNotFoundException If the {@code tickerSymbol} cannot be found.
+     */
+    public void checkStock( final String tickerSymbol )
+    {
+        final String methodName = "checkStock";
+        logMethodBegin( methodName, tickerSymbol );
+        StockEntity stockEntity = this.getStockEntity( tickerSymbol );
+        logMethodEnd( methodName );
+    }
+
+    /**
      * Retrieves a {@code StockEntity} from the database.
      * If the stock is not found in the database, a stock quote will be attempted to validated that this is a valid
      * ticker symbol. If a quote cannot be found, StockNoteFoundException will be thrown
