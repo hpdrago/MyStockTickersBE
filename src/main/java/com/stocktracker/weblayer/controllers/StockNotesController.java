@@ -123,7 +123,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         Objects.requireNonNull( stockNotesDTO.getCustomerId(), "customer id cannot be null" );
         Assert.isTrue( stockNotesDTO.getCustomerId() > 0, "customer id must be > 0" );
         Objects.requireNonNull( stockNotesDTO.getNotes(),"notes cannot be null" );
-        Assert.isTrue( stockNotesDTO.getNotes().length() > 0, "customer id must be > 0" );
+        Assert.isTrue( stockNotesDTO.getNotes().length() > 0, "notes length must be > 0" );
     }
 
     /**
