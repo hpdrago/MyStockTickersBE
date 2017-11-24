@@ -68,6 +68,8 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         logMethodBegin( methodName, stockAnalystConsensusDTO );
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
+        stockAnalystConsensusEntity.setStockPriceWhenCreated( this.stockQuoteService
+                                                                  .getStockPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
         /*
          * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
          * or update triggers.

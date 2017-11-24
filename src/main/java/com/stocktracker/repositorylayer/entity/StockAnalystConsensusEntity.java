@@ -31,6 +31,7 @@ public class StockAnalystConsensusEntity
     private Timestamp analystPriceDate;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private BigDecimal stockPriceWhenCreated;
 
     public static StockAnalystConsensusEntity newInstance()
     {
@@ -75,7 +76,7 @@ public class StockAnalystConsensusEntity
     }
 
     @Basic
-    @Column( name = "comments", nullable = true, length = 45 )
+    @Column( name = "comments", nullable = true, length = 1000 )
     public String getComments()
     {
         return comments;
@@ -269,10 +270,22 @@ public class StockAnalystConsensusEntity
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", lastAnalystPriceDate=" ).append( analystPriceDate );
+        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }
 
+    @Basic
+    @Column( name = "stock_price_when_created" )
+    public BigDecimal getStockPriceWhenCreated()
+    {
+        return stockPriceWhenCreated;
+    }
+
+    public void setStockPriceWhenCreated( final BigDecimal stockPriceWhenCreated )
+    {
+        this.stockPriceWhenCreated = stockPriceWhenCreated;
+    }
 }

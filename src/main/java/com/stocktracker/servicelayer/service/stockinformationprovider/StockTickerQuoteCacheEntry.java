@@ -11,6 +11,7 @@ public class StockTickerQuoteCacheEntry implements StockQuote
 {
     private StockTickerQuote stockTickerQuote;
     private long lastQuoteRefreshTime;
+    private boolean stockTableEntryValidated;
 
     /**
      * Create a new instance with only the ticker symbol and stock quote state.  This method is used to return a

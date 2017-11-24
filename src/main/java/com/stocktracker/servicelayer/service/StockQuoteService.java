@@ -17,6 +17,9 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This service manages all of the methods to obtain stock quote information.
+ */
 @Service
 public class StockQuoteService implements MyLogger
 {
