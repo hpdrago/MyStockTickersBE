@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.18-log
+-- Server version	5.7.17-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -297,7 +297,7 @@ CREATE TABLE `stock_analyst_consensus` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
   `ticker_symbol` varchar(5) NOT NULL,
-  `comments` varchar(45) DEFAULT NULL,
+  `comments` varchar(1000) DEFAULT NULL,
   `analyst_strong_buy_count` int(11) DEFAULT NULL,
   `analyst_buy_count` int(11) DEFAULT NULL,
   `analyst_hold_count` int(11) DEFAULT NULL,
@@ -308,6 +308,7 @@ CREATE TABLE `stock_analyst_consensus` (
   `low_analyst_price_target` decimal(7,2) DEFAULT NULL,
   `high_analyst_price_target` decimal(7,2) DEFAULT NULL,
   `analyst_price_date` timestamp NULL DEFAULT NULL,
+  `stock_price_when_created` decimal(7,2) DEFAULT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -315,7 +316,7 @@ CREATE TABLE `stock_analyst_consensus` (
   KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_idx` (`ticker_symbol`),
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -324,7 +325,7 @@ CREATE TABLE `stock_analyst_consensus` (
 
 LOCK TABLES `stock_analyst_consensus` WRITE;
 /*!40000 ALTER TABLE `stock_analyst_consensus` DISABLE KEYS */;
-INSERT INTO `stock_analyst_consensus` VALUES (3,1,'ABX','A gold company',5,4,3,2,1,'2017-10-24 21:02:44',20.00,18.00,25.00,'2017-10-24 20:16:31','2017-10-24 21:02:44','2017-10-24 21:02:44');
+INSERT INTO `stock_analyst_consensus` VALUES (3,1,'ABX','A gold company',5,4,3,2,1,'2017-10-24 21:02:44',20.00,18.00,25.00,'2017-10-24 20:16:31',NULL,'2017-10-24 21:02:44','2017-10-24 21:02:44');
 /*!40000 ALTER TABLE `stock_analyst_consensus` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -893,12 +894,12 @@ CREATE TABLE `stock_to_buy` (
 
 LOCK TABLES `stock_to_buy` WRITE;
 /*!40000 ALTER TABLE `stock_to_buy` DISABLE KEYS */;
-INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,NULL,'N',14.30,NULL,'2017-10-30 19:00:41',NULL);
+INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,16.50,'N',14.30,NULL,'2017-11-24 03:18:03',NULL);
 /*!40000 ALTER TABLE `stock_to_buy` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Temporary table structure for view `v_portfolio_stock`
+-- Temporary view structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -924,7 +925,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note`
+-- Temporary view structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -952,7 +953,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note_count`
+-- Temporary view structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -966,7 +967,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_tag`
+-- Temporary view structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -986,7 +987,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_to_buy`
+-- Temporary view structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1107,4 +1108,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-23 10:26:23
+-- Dump completed on 2017-11-24 10:03:19
