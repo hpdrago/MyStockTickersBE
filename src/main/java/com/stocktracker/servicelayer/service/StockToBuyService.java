@@ -76,7 +76,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         logMethodBegin( methodName, stockToBuyDTO );
         Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
-        this.stockService.checkStock( stockToBuyDTO.getTickerSymbol() );
+        this.stockService.checkStockTableEntry( stockToBuyDTO.getTickerSymbol() );
         StockToBuyEntity stockToBuyEntity = this.dtoToEntity( stockToBuyDTO );
         /*
          * The stock price needs to be set the first time as it records the stock price when the record was created.

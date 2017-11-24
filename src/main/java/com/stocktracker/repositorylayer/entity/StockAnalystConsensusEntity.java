@@ -76,7 +76,7 @@ public class StockAnalystConsensusEntity
     }
 
     @Basic
-    @Column( name = "comments", nullable = true, length = 1000 )
+    @Column( name = "comments", nullable = true, length = 4000 )
     public String getComments()
     {
         return comments;

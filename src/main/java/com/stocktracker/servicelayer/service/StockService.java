@@ -232,12 +232,13 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @param tickerSymbol
      * @throws com.stocktracker.common.exceptions.StockNotFoundException If the {@code tickerSymbol} cannot be found.
      */
-    public void checkStock( final String tickerSymbol )
+    public StockEntity checkStockTableEntry( final String tickerSymbol )
     {
         final String methodName = "checkStock";
         logMethodBegin( methodName, tickerSymbol );
         StockEntity stockEntity = this.getStockEntity( tickerSymbol );
-        logMethodEnd( methodName );
+        logMethodEnd( methodName, stockEntity );
+        return stockEntity;
     }
 
     /**
@@ -264,7 +265,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
             }
             else
             {
-                logDebug( methodName, "Create new stock table entry" );
+                logDebug( methodName, "Creating new stock table entry" );
                 stockEntity = stockQuoteToStockEntity( stockQuote );
                 this.stockRepository.save( stockEntity );
             }

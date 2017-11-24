@@ -84,7 +84,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         /*
          * Check to see if the stock exists
          */
-        this.stockService.checkStock( stockNoteDTO.getTickerSymbol() );
+        this.stockService.checkStockTableEntry( stockNoteDTO.getTickerSymbol() );
         StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
         /*
          * Set the stock price when created for one stock note entity

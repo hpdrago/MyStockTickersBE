@@ -107,6 +107,9 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
         final String methodName = "handleStockQuoteReturn";
         logMethodBegin( methodName, stockTickerQuote );
         this.cacheStockQuote( stockTickerQuote );
+        this.stockService.checkStockTableEntry( stockTickerQuote.getTickerSymbol() );
+        StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheEntryMap.get( stockTickerQuote.getTickerSymbol() );
+        stockTickerQuoteCacheEntry.setStockTableEntryValidated( true );
         logMethodEnd( methodName );
     }
 
@@ -121,6 +124,11 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
         logMethodBegin( methodName, tickerSymbol );
         StockTickerQuote stockTickerQuote = this.stockQuoteServiceExecutor.synchronousGetStockQuote( tickerSymbol );
         StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheStockQuote( stockTickerQuote );
+        if ( !stockTickerQuoteCacheEntry.isStockTableEntryValidated() )
+        {
+            this.stockService.checkStockTableEntry( stockTickerQuote.getTickerSymbol() );
+            stockTickerQuoteCacheEntry.setStockTableEntryValidated( true );
+        }
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuoteCacheEntry;
     }

@@ -98,6 +98,16 @@ public class StockTickerQuoteCacheEntry implements StockQuote
         return this.stockTickerQuote.getStockQuoteState();
     }
 
+    public boolean isStockTableEntryValidated()
+    {
+        return stockTableEntryValidated;
+    }
+
+    public void setStockTableEntryValidated( final boolean stockTableEntryValidated )
+    {
+        this.stockTableEntryValidated = stockTableEntryValidated;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -125,6 +135,7 @@ public class StockTickerQuoteCacheEntry implements StockQuote
         final StringBuilder sb = new StringBuilder( "StockTickerQuoteCacheEntry{" );
         sb.append( "stockTickerQuote=" ).append( stockTickerQuote );
         sb.append( ", lastQuoteRefreshTime=" ).append( lastQuoteRefreshTime );
+        sb.append( ", stockTableEntryValidated=" ).append( stockTableEntryValidated );
         sb.append( '}' );
         return sb.toString();
     }

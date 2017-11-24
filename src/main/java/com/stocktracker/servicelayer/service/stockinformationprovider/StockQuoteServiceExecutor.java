@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * This class provides synchronous and asynchronous methods to obtain stock quotes.  A call to {@code asynchronousGetStockQuote}
+ * will result in the request being run on a separate thread.
+ */
 @Service
 public class StockQuoteServiceExecutor
 {
@@ -46,5 +50,4 @@ public class StockQuoteServiceExecutor
     {
         this.iexTradingStockService = iexTradingStockService;
     }
-
 }

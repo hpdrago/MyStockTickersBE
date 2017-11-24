@@ -23,6 +23,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockQuoteService stockQuoteService;
+    private StockService stockService;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -68,6 +69,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventDTO );
         Objects.requireNonNull( stockCatalystEventDTO, "stockCatalystEventDTO cannot be null" );
+        this.stockService.checkStockTableEntry( stockCatalystEventDTO.getTickerSymbol() );
         StockCatalystEventEntity stockCatalystEventEntity = this.dtoToEntity( stockCatalystEventDTO );
         stockCatalystEventEntity = this.stockCatalystEventRepository.save( stockCatalystEventEntity );
         logDebug( methodName, "saved {0}", stockCatalystEventEntity );
@@ -128,4 +130,9 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
         this.stockQuoteService = stockQuoteService;
     }
 
+    @Autowired
+    public void setStockService( final StockService stockService )
+    {
+        this.stockService = stockService;
+    }
 }
