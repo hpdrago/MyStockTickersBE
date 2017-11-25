@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.17-log
+-- Server version	5.7.18-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -308,17 +308,17 @@ CREATE TABLE `stock_analyst_consensus` (
   `low_analyst_price_target` decimal(7,2) DEFAULT NULL,
   `high_analyst_price_target` decimal(7,2) DEFAULT NULL,
   `analyst_price_date` timestamp NULL DEFAULT NULL,
-  `note_source_id` int(11) DEFAULT NULL,
+  `notes_source_id` int(11) DEFAULT NULL,
   `stock_price_when_created` decimal(7,2) DEFAULT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
   KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_idx` (`ticker_symbol`),
-  KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE_idx` (`note_source_id`),
+  KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE_idx` (`notes_source_id`),
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE` FOREIGN KEY (`note_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -975,12 +975,12 @@ CREATE TABLE `stock_to_buy` (
 
 LOCK TABLES `stock_to_buy` WRITE;
 /*!40000 ALTER TABLE `stock_to_buy` DISABLE KEYS */;
-INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',NULL,16.50,'N',14.30,NULL,'2017-11-24 03:18:03',NULL);
+INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',15,16.50,'N',14.30,NULL,'2017-11-25 23:08:53',NULL);
 /*!40000 ALTER TABLE `stock_to_buy` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Temporary view structure for view `v_portfolio_stock`
+-- Temporary table structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -1006,7 +1006,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note`
+-- Temporary table structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -1034,7 +1034,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note_count`
+-- Temporary table structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -1048,7 +1048,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_tag`
+-- Temporary table structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -1068,7 +1068,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_to_buy`
+-- Temporary table structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1189,4 +1189,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-25  8:54:59
+-- Dump completed on 2017-11-25 15:09:29
