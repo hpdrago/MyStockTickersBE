@@ -1,7 +1,10 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
+import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
@@ -22,6 +25,8 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
     private StockQuoteService stockQuoteService;
+
+    private StockNoteSourceService stockNoteSourceService;
 
     /**
      * Get the list of all stock summaries for the customer
@@ -64,10 +69,13 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
      * @return
      */
     public StockAnalystConsensusDTO saveStockAnalystConsensus( @NotNull final StockAnalystConsensusDTO stockAnalystConsensusDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusDTO );
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
+        this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
         stockAnalystConsensusEntity.setStockPriceWhenCreated( this.stockQuoteService
                                                                   .getStockPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
@@ -98,13 +106,30 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
     @Override
     protected StockAnalystConsensusDTO entityToDTO( final StockAnalystConsensusEntity stockAnalystConsensusEntity )
     {
+        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockAnalystConsensusEntity );
         StockAnalystConsensusDTO stockAnalystConsensusDTO = StockAnalystConsensusDTO.newInstance();
         BeanUtils.copyProperties( stockAnalystConsensusEntity, stockAnalystConsensusDTO );
-        this.stockQuoteService.setStockQuoteInformation( stockAnalystConsensusDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        try
+        {
+            this.stockQuoteService.setStockQuoteInformation( stockAnalystConsensusDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        }
+        catch ( StockQuoteUnavailableException e )
+        {
+            logError( methodName, e );
+        }
+        catch ( StockNotFoundException e )
+        {
+            logError( methodName, e );
+        }
         performCalculations( stockAnalystConsensusDTO );
         stockAnalystConsensusDTO.setAnalystPriceDate( stockAnalystConsensusEntity.getAnalystPriceDate() );
         stockAnalystConsensusDTO.setAnalystSentimentDate( stockAnalystConsensusEntity.getAnalystSentimentDate() );
+        if ( stockAnalystConsensusEntity.getStockNoteSourceByNoteSourceId() != null )
+        {
+            stockAnalystConsensusDTO.setNotesSourceName( stockAnalystConsensusEntity.getStockNoteSourceByNoteSourceId().getName() );
+            stockAnalystConsensusDTO.setNotesSourceId( stockAnalystConsensusEntity.getStockNoteSourceByNoteSourceId().getId() );
+        }
         return stockAnalystConsensusDTO;
     }
 
@@ -133,6 +158,13 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         Objects.requireNonNull( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = StockAnalystConsensusEntity.newInstance();
         BeanUtils.copyProperties( stockAnalystConsensusDTO, stockAnalystConsensusEntity );
+        if ( stockAnalystConsensusDTO.getNotesSourceId() != null &&
+             stockAnalystConsensusDTO.getNotesSourceId() > 0 )
+        {
+            StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
+                .getStockNoteSource( stockAnalystConsensusDTO.getNotesSourceId() );
+            stockAnalystConsensusEntity.setStockNoteSourceByNoteSourceId( stockNoteSourceEntity );
+        }
         return stockAnalystConsensusEntity;
     }
 
@@ -146,6 +178,12 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
     public void setStockQuoteService( final StockQuoteService stockQuoteService )
     {
         this.stockQuoteService = stockQuoteService;
+    }
+
+    @Autowired
+    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    {
+        this.stockNoteSourceService = stockNoteSourceService;
     }
 
 }

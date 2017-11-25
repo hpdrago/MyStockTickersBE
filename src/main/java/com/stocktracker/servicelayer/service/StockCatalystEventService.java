@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
@@ -65,6 +67,8 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
      * @return
      */
     public StockCatalystEventDTO saveStockCatalystEvent( @NotNull final StockCatalystEventDTO stockCatalystEventDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventDTO );
@@ -94,6 +98,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     @Override
     protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
+        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockCatalystEventEntity );
         StockCatalystEventDTO stockCatalystEventDTO = StockCatalystEventDTO.newInstance();
         BeanUtils.copyProperties( stockCatalystEventEntity, stockCatalystEventDTO );
@@ -101,7 +106,18 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
         {
             stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));
         }
-        this.stockQuoteService.setCompanyName( stockCatalystEventDTO );
+        try
+        {
+            this.stockQuoteService.setCompanyName( stockCatalystEventDTO );
+        }
+        catch ( StockNotFoundException e )
+        {
+            logError( methodName, e );
+        }
+        catch ( StockQuoteUnavailableException e )
+        {
+            logError( methodName, e );
+        }
         return stockCatalystEventDTO;
     }
 

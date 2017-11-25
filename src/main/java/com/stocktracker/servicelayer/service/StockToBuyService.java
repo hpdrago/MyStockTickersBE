@@ -2,6 +2,9 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
@@ -33,6 +36,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
      * @return
      */
     public List<StockToBuyDTO> getStockToBuyList( @NotNull final Integer customerId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuyList";
         logMethodBegin( methodName, customerId );
@@ -40,9 +45,12 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
             .findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( stockToBuyEntities );
-        stockToBuyDTOs.forEach( stockToBuyDTO ->  this.stockQuoteService
-                                                      .setStockQuoteInformation( stockToBuyDTO,
-                                                                                 StockQuoteFetchMode.ASYNCHRONOUS ));
+        for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
+        {
+            this.stockQuoteService
+                .setStockQuoteInformation( stockToBuyDTO,
+                                           StockQuoteFetchMode.ASYNCHRONOUS );
+        }
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " summaries" );
         return stockToBuyDTOs;
@@ -54,6 +62,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
      * @return StockToBuyDTO instance
      */
     public StockToBuyDTO getStockToBuy( @NotNull final Integer stockToBuyId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId );
@@ -71,6 +81,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
      * @return
      */
     public StockToBuyDTO saveStockToBuy( @NotNull final StockToBuyDTO stockToBuyDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "saveStockToBuy";
         logMethodBegin( methodName, stockToBuyDTO );
@@ -123,11 +135,23 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     @Override
     protected StockToBuyDTO entityToDTO( final StockToBuyEntity stockToBuyEntity )
     {
+        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockToBuyEntity );
         StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
         stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
-        this.stockQuoteService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        try
+        {
+            this.stockQuoteService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        }
+        catch ( StockQuoteUnavailableException e )
+        {
+            logError( methodName, e );
+        }
+        catch ( StockNotFoundException e )
+        {
+            logError( methodName, e );
+        }
         stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
                                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
                                                                         stockToBuyDTO.getId() ) );
@@ -152,6 +176,13 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
             stockToBuyEntity.setBuyAfterDate( JSONDateConverter.toTimestamp( stockToBuyDTO.getBuyAfterDate() ));
         }
         stockToBuyEntity.setCompleted( stockToBuyDTO.isCompleted() ? "Y" : "N" );
+        if ( stockToBuyDTO.getNotesSourceId() != null &&
+             stockToBuyDTO.getNotesSourceId() > 0 )
+        {
+            StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
+                .getStockNoteSource( stockToBuyDTO.getNotesSourceId() );
+            stockToBuyEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
+        }
         return stockToBuyEntity;
     }
 

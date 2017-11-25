@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
@@ -36,7 +38,9 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @return
      */
     public PortfolioStockDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
-        throws PortfolioStockNotFound
+        throws PortfolioStockNotFound,
+               StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
@@ -62,6 +66,8 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @return
      */
     public List<PortfolioStockDTO> getPortfolioStocks( final int customerId, final int portfolioId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -104,6 +110,8 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @return
      */
     public PortfolioStockDTO addPortfolioStock( final PortfolioStockDTO portfolioStockDE )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
@@ -135,6 +143,8 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @param portfolioStockDE
      */
     public void deletePortfolioStock( final PortfolioStockDTO portfolioStockDE )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
@@ -150,6 +160,8 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @return
      */
     public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "createPortfolioStockEntity";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -168,6 +180,8 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @return
      */
     public List<PortfolioStockDTO> getPortfolioStocks( final int portfolioId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
@@ -188,12 +202,14 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
      * @param portfolioStockDTOList
      */
     private void setStockInformation( final List<PortfolioStockDTO> portfolioStockDTOList )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "setStockInformation";
-        portfolioStockDTOList.forEach( portfolioStockDTO ->
+        for ( PortfolioStockDTO portfolioStockDTO : portfolioStockDTOList )
         {
             this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-        } );
+        }
     }
 
     @Override

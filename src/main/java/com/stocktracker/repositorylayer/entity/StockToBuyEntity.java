@@ -91,18 +91,6 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
     }
 
     @Basic
-    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false )
-    public Integer getNotesSourceId()
-    {
-        return notesSourceId;
-    }
-
-    public void setNotesSourceId( final Integer notesSourceId )
-    {
-        this.notesSourceId = notesSourceId;
-    }
-
-    @Basic
     @Column( name = "buy_shares_up_to_price", nullable = true, precision = 2 )
     public BigDecimal getBuySharesUpToPrice()
     {
@@ -172,6 +160,18 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
     public void setBuyAfterDate( final Timestamp buyAfterDate )
     {
         this.buyAfterDate = buyAfterDate;
+    }
+
+    @Basic
+    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false )
+    public Integer getNotesSourceId()
+    {
+        return notesSourceId;
+    }
+
+    public void setNotesSourceId( final Integer notesSourceId )
+    {
+        this.notesSourceId = notesSourceId;
     }
 
     @ManyToOne

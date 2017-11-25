@@ -7,5 +7,5 @@ import com.stocktracker.common.MyLogger;
  */
 public abstract class AbstractHandler<I,O> implements MyLogger
 {
-    public abstract O handleRequest( I i );
+    public abstract O handleRequest( I i ) throws Exception;
 }

@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
@@ -40,6 +41,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      */
     private Page<StockDTO> mapStockEntityPageIntoStockDTOPage( final Pageable pageRequest, Page<StockEntity> source,
                                                                final boolean updateStockPrices )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "mapStockEntityPageIntoStockDTOPage";
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
@@ -64,6 +67,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @return
      */
     public Page<StockDTO> getPage( final Pageable pageRequest, final boolean withStockPrices )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "getPage";
         logMethodBegin( methodName, pageRequest );
@@ -89,6 +94,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      */
     public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike,
                                            final boolean withStockPrices )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "getCompaniesLike";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -233,6 +240,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @throws com.stocktracker.common.exceptions.StockNotFoundException If the {@code tickerSymbol} cannot be found.
      */
     public StockEntity checkStockTableEntry( final String tickerSymbol )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "checkStock";
         logMethodBegin( methodName, tickerSymbol );
@@ -250,6 +259,8 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @throws com.stocktracker.common.exceptions.StockNotFoundException
      */
     public StockEntity getStockEntity( final String tickerSymbol )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "getStockEntity";
         logMethodBegin( methodName, tickerSymbol );

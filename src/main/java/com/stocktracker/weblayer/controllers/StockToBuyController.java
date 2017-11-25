@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockToBuyService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ public class StockToBuyController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<StockToBuyDTO> getStockStockToBuy( @PathVariable int customerId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockStockToBuy";
         logMethodBegin( methodName );
@@ -51,6 +55,8 @@ public class StockToBuyController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName );
@@ -84,6 +90,8 @@ public class StockToBuyController implements MyLogger
     @RequestMapping( value = "/stockToBuy",
                      method = RequestMethod.POST )
     public ResponseEntity<StockToBuyDTO> addStockToBuy( @RequestBody StockToBuyDTO stockToBuyDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "addStockToBuy";
         logMethodBegin( methodName, stockToBuyDTO );
@@ -100,6 +108,8 @@ public class StockToBuyController implements MyLogger
     @RequestMapping( value = "/stockToBuy",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockToBuyDTO> saveStockToBuy( @RequestBody StockToBuyDTO portfolioStockDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "saveStockToBuy";
         logMethodBegin( methodName, portfolioStockDTO );

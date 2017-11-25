@@ -2,7 +2,9 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
@@ -44,6 +46,8 @@ public class StockController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStocks( final Pageable pageRequest )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, pageRequest );
@@ -63,6 +67,8 @@ public class StockController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStockCompaniesMatching( final Pageable pageRequest,
                                                      final @PathVariable( "companiesLike" ) String companiesLike )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockCompaniesMatching";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -87,6 +93,8 @@ public class StockController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<StockQuote> getStockQuote( @PathVariable final String tickerSymbol )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );

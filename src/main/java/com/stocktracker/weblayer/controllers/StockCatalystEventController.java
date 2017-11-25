@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockCatalystEventService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,10 +86,13 @@ public class StockCatalystEventController implements MyLogger
     @RequestMapping( value = "/stockCatalystEvent",
                      method = RequestMethod.POST )
     public ResponseEntity<StockCatalystEventDTO> addStockCatalystEvent( @RequestBody StockCatalystEventDTO stockCatalystEventDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "addStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventDTO );
-        StockCatalystEventDTO newStockCatalystEventDTO = this.stockCatalystEventService.saveStockCatalystEvent( stockCatalystEventDTO );
+        StockCatalystEventDTO newStockCatalystEventDTO = this.stockCatalystEventService
+                                                             .saveStockCatalystEvent( stockCatalystEventDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -100,13 +105,16 @@ public class StockCatalystEventController implements MyLogger
     @RequestMapping( value = "/stockCatalystEvent",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @RequestBody StockCatalystEventDTO portfolioStockDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, portfolioStockDTO );
         /*
          * Save the stock
          */
-        StockCatalystEventDTO returnStockCatalystEventDTO = this.stockCatalystEventService.saveStockCatalystEvent( portfolioStockDTO );
+        StockCatalystEventDTO returnStockCatalystEventDTO = this.stockCatalystEventService
+                                                                .saveStockCatalystEvent( portfolioStockDTO );
         /*
          * send the response
          */

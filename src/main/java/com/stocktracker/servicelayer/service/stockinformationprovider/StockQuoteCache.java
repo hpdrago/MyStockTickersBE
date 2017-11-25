@@ -1,6 +1,8 @@
 package com.stocktracker.servicelayer.service.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      * @return
      */
     public StockQuote getStockQuote( @NotNull String tickerSymbol, final StockQuoteFetchMode fetchMode )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol, fetchMode );
@@ -89,6 +93,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      * @param tickerSymbol
      */
     private void asynchronousQuoteFetch( final @NotNull String tickerSymbol )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "asynchronousQuoteFetch";
         logMethodBegin( methodName, tickerSymbol );
@@ -103,6 +109,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      */
     @Override
     public void handleStockQuoteReturn( final StockTickerQuote stockTickerQuote )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "handleStockQuoteReturn";
         logMethodBegin( methodName, stockTickerQuote );
@@ -119,6 +127,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      * @return
      */
     private StockTickerQuoteCacheEntry synchronousQuoteFetch( final @NotNull String tickerSymbol )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "synchronousQuoteFetch";
         logMethodBegin( methodName, tickerSymbol );

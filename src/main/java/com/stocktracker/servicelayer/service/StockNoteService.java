@@ -1,7 +1,9 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
@@ -76,6 +78,8 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
      * @param stockNoteDTO
      */
     public StockNoteDTO createStockNote( final StockNoteDTO stockNoteDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
@@ -151,6 +155,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     @Override
     protected StockNoteDTO entityToDTO( final StockNoteEntity stockNoteEntity )
     {
+        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = new StockNoteDTO();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
@@ -162,7 +167,18 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
             stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceId().getName() );
             stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceId().getId() );
         }
-        this.stockQuoteService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        try
+        {
+            this.stockQuoteService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        }
+        catch ( StockQuoteUnavailableException e )
+        {
+            logError( methodName, e );
+        }
+        catch ( StockNotFoundException e )
+        {
+            e.printStackTrace();
+        }
         return stockNoteDTO;
     }
 

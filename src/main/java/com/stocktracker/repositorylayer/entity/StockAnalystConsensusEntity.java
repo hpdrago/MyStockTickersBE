@@ -248,7 +248,7 @@ public class StockAnalystConsensusEntity
     }
 
     @ManyToOne
-    @JoinColumn( name = "note_source_id", referencedColumnName = "id" )
+    @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
     public StockNoteSourceEntity getStockNoteSourceByNoteSourceId()
     {
         return stockNoteSourceByNoteSourceId;
@@ -260,7 +260,7 @@ public class StockAnalystConsensusEntity
     }
 
     @Basic
-    @Column( name = "note_source_id" )
+    @Column( name = "notes_source_id", insertable = false, updatable = false )
     public Integer getNoteSourceId()
     {
         return noteSourceId;
@@ -270,6 +270,7 @@ public class StockAnalystConsensusEntity
     {
         this.noteSourceId = noteSourceId;
     }
+
     @Override
     public boolean equals( final Object o )
     {

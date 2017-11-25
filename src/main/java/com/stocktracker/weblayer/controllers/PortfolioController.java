@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.PortfolioService;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -40,6 +42,8 @@ public class PortfolioController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PortfolioDTO> getPortfoliosByCustomerId( @PathVariable int customerId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
@@ -58,6 +62,8 @@ public class PortfolioController extends AbstractController implements MyLogger
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
@@ -97,6 +103,8 @@ public class PortfolioController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping(value = "/portfolios/{portfolioId}", method = RequestMethod.DELETE)
     public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) int portfolioId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, portfolioId );
@@ -115,6 +123,8 @@ public class PortfolioController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping(value = "/portfolios/portfolio/{portfolioId}", method = RequestMethod.GET)
     public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable( "portfolioId" ) int portfolioId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolio";
         logMethodBegin( methodName, portfolioId );

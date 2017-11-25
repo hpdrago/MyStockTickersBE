@@ -2,6 +2,8 @@ package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractController;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
@@ -47,7 +49,9 @@ public class PortfolioStockController extends AbstractController
     public PortfolioStockDTO getPortfolioStock( @PathVariable int customerId,
                                                 @PathVariable int portfolioId,
                                                 @PathVariable String tickerSymbol )
-        throws PortfolioStockNotFound
+        throws PortfolioStockNotFound,
+               StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
@@ -72,7 +76,9 @@ public class PortfolioStockController extends AbstractController
     public ResponseEntity<Void> deletePortfolioStock( @PathVariable int customerId,
                                                       @PathVariable int portfolioId,
                                                       @PathVariable String tickerSymbol )
-        throws PortfolioStockNotFound
+        throws PortfolioStockNotFound,
+               StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
@@ -118,7 +124,9 @@ public class PortfolioStockController extends AbstractController
         produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int customerId,
                                                        @PathVariable int portfolioId )
-        throws PortfolioStockNotFound
+        throws PortfolioStockNotFound,
+               StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -136,6 +144,7 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = "/portfolioStock",
                      method = RequestMethod.POST )
     public ResponseEntity<PortfolioStockDTO> addPortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO )
+        throws Exception
     {
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDTO );

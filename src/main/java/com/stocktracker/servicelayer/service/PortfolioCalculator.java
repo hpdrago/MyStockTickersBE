@@ -1,6 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class PortfolioCalculator implements MyLogger
      * @param portfolios
      */
     public void calculate( final List<PortfolioDTO> portfolios )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "calculate";
         logMethodBegin( methodName );
@@ -29,7 +33,10 @@ public class PortfolioCalculator implements MyLogger
         if ( portfolios.size() > 0 )
         {
             logDebug( methodName, "Customer: {0}", portfolios.get( 0 ).getCustomerId() );
-            portfolios.forEach( portfolioDTO -> this.calculate( portfolioDTO ) );
+            for ( PortfolioDTO portfolio : portfolios )
+            {
+                calculate( portfolio );
+            }
         }
         logMethodBegin( methodName );
     }
@@ -39,8 +46,11 @@ public class PortfolioCalculator implements MyLogger
      * @param portfolioDTO
      */
     public void calculate( final PortfolioDTO portfolioDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
-        List<PortfolioStockDTO> portfolioStocks = this.portfolioStockService.getPortfolioStocks( portfolioDTO.getId() );
+        List<PortfolioStockDTO> portfolioStocks = this.portfolioStockService
+                                                      .getPortfolioStocks( portfolioDTO.getId() );
         int portfolioRealizedGL = 0;
         int portfolioUnRealizedGL = 0;
         int marketValue = 0;

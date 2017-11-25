@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockNoteCountService;
 import com.stocktracker.servicelayer.service.StockNoteService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
@@ -42,6 +44,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = "/stockNotes",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, stockNotesDTO );

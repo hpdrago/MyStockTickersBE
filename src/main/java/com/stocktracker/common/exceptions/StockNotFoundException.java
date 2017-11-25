@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Created by mike on 11/21/2017.
  */
 @ResponseStatus(value= HttpStatus.NOT_FOUND)  // 404
-public class StockNotFoundException extends RuntimeException
+public class StockNotFoundException extends Exception
 {
     public StockNotFoundException( final String tickerSymbol )
     {

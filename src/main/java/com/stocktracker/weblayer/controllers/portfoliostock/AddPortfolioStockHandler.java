@@ -24,6 +24,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
      *         portfolio in an instance of {@code AddPortfolioStockDTO}
      */
     public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
+        throws Exception
     {
         final String methodName = "handleRequest";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -32,7 +33,8 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
         /*
          * Add to the database
          */
-        PortfolioStockDTO newPotfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        PortfolioStockDTO newPortfolioStockDTO = null;
+        newPortfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
         logDebug( methodName, "return addPortfolioStockDTO: {0}", portfolioStockDTO );
         /*
          * Gather the rest of the return data
@@ -52,8 +54,8 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
                                                                                       portfolioDTO,
                                                                                       portfolioStockDTOList );
         */
-        logMethodEnd( methodName, newPotfolioStockDTO );
-        return newPotfolioStockDTO;
+        logMethodEnd( methodName, newPortfolioStockDTO );
+        return newPortfolioStockDTO;
     }
 
     /**

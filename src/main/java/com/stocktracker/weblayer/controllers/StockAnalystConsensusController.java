@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockAnalystConsensusService;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,10 +86,13 @@ public class StockAnalystConsensusController implements MyLogger
     @RequestMapping( value = "/stockAnalystConsensus",
                      method = RequestMethod.POST )
     public ResponseEntity<StockAnalystConsensusDTO> addStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "addStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusDTO );
-        StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService.saveStockAnalystConsensus( stockAnalystConsensusDTO );
+        StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
+                                                                   .saveStockAnalystConsensus( stockAnalystConsensusDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -100,6 +105,8 @@ public class StockAnalystConsensusController implements MyLogger
     @RequestMapping( value = "/stockAnalystConsensus",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockAnalystConsensusDTO> saveStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO portfolioStockDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, portfolioStockDTO );
@@ -107,7 +114,7 @@ public class StockAnalystConsensusController implements MyLogger
          * Save the stock
          */
         StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.stockAnalystConsensusService
-            .saveStockAnalystConsensus( portfolioStockDTO );
+                                                                      .saveStockAnalystConsensus( portfolioStockDTO );
         /*
          * send the response
          */

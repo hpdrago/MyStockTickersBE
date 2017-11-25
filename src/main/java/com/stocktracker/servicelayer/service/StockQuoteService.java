@@ -1,7 +1,9 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteCache;
@@ -70,7 +72,9 @@ public class StockQuoteService implements MyLogger
      */
     public StockQuote getStockQuote( final String tickerSymbol,
                                      final StockQuoteFetchMode stockQuoteFetchMode )
-        throws StockNotFoundInDatabaseException
+        throws StockNotFoundInDatabaseException,
+               StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
@@ -89,6 +93,8 @@ public class StockQuoteService implements MyLogger
      */
     public void setStockQuoteInformation( final StockQuoteContainer container,
                                           final StockQuoteFetchMode stockQuoteFetchMode )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, container.getTickerSymbol(), stockQuoteFetchMode );
@@ -122,8 +128,12 @@ public class StockQuoteService implements MyLogger
     /**
      * Saves the stock information in {@code container} to the stock table.
      * @param stockQuote
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
      */
     public void persistStockQuote( final StockQuote stockQuote )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "persistStockQuote";
         Objects.requireNonNull( stockQuote, "container cannot be null" );
@@ -145,6 +155,8 @@ public class StockQuoteService implements MyLogger
      * @param stockTickerQuote
      */
     private void updateStockPrice( final String tickerSymbol, final StockTickerQuote stockTickerQuote )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         StockEntity stockEntity = this.stockService.getStockEntity( tickerSymbol );
         stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
@@ -157,12 +169,13 @@ public class StockQuoteService implements MyLogger
      * @param container
      */
     public void setCompanyName( final StockCompanyNameContainer container )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "setCompanyName";
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
         logMethodBegin( methodName, container.getTickerSymbol() );
-        StockEntity stockEntity = this.stockService
-            .getStockEntity( container.getTickerSymbol() );
+        StockEntity stockEntity = this.stockService.getStockEntity( container.getTickerSymbol() );
         final String companyName = stockEntity.getCompanyName();
         container.setCompanyName( companyName );
         logMethodEnd( methodName, companyName );
@@ -174,6 +187,8 @@ public class StockQuoteService implements MyLogger
      * @return Null if there are any exceptions
      */
     public BigDecimal getStockPrice( final String tickerSymbol )
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol );
@@ -197,7 +212,8 @@ public class StockQuoteService implements MyLogger
      */
     public void setStockQuoteInformation( final List<StockQuoteContainer> containers,
                                           final StockQuoteFetchMode stockQuoteFetchMode )
-        throws IOException
+        throws StockQuoteUnavailableException,
+               StockNotFoundException
     {
         final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, stockQuoteFetchMode );

@@ -1,6 +1,8 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.PortfolioStockService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
@@ -35,7 +37,19 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
                                               portfolioStockDTO.getTickerSymbol() );
         }
         logDebug( methodName, "call addPorfolioStockDTO: {0}", portfolioStockDTO );
-        PortfolioStockDTO newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        PortfolioStockDTO newPortfolioStockDTO = null;
+        try
+        {
+            newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        }
+        catch ( StockNotFoundException e )
+        {
+            logError( methodName, e );
+        }
+        catch ( StockQuoteUnavailableException e )
+        {
+            logError( methodName, e );
+        }
         logDebug( methodName, "return addPorfolioStockDTO: {0}", portfolioStockDTO );
         return newPortfolioStockDTO;
     }

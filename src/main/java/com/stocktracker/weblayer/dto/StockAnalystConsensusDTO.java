@@ -3,13 +3,15 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer
+public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
+                                                                          StockNoteSourceService.StockNoteSourceDTOContainer
 {
     /*
      * Entity (DB columns)
@@ -32,6 +34,8 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal highAnalystPriceTarget;
     private String analystPriceDate;
+    private Integer notesSourceId;
+    private String notesSourceName;
 
     /*
      * Calculated columns
@@ -253,6 +257,27 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         }
     }
 
+    public Integer getNotesSourceId()
+    {
+        return notesSourceId;
+    }
+
+    public void setNotesSourceId( final Integer notesSourceId )
+    {
+        this.notesSourceId = notesSourceId;
+    }
+
+    public String getNotesSourceName()
+    {
+        return notesSourceName;
+    }
+
+    public void setNotesSourceName( final String notesSourceName )
+    {
+        this.notesSourceName = notesSourceName;
+    }
+
+
     @Override
     public boolean equals( final Object o )
     {
@@ -282,20 +307,21 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", super=" ).append( super.toString() );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
         sb.append( ", analystBuyCount=" ).append( analystBuyCount );
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
-        sb.append( ", analystSentimentDate=" ).append( analystSentimentDate );
-        sb.append( ", nextCatalystDate=" ).append( nextCatalystDate );
+        sb.append( ", analystSentimentDate='" ).append( analystSentimentDate ).append( '\'' );
+        sb.append( ", nextCatalystDate='" ).append( nextCatalystDate ).append( '\'' );
         sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
-        sb.append( ", analystPriceDate=" ).append( analystPriceDate );
+        sb.append( ", analystPriceDate='" ).append( analystPriceDate ).append( '\'' );
+        sb.append( ", notesSourceId=" ).append( notesSourceId );
+        sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
         sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );

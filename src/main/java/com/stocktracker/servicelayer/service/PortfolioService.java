@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
+import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -36,6 +38,8 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
      * @return
      */
     public PortfolioDTO getPortfolioById( final int portfolioId )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioById";
         logMethodBegin( methodName, portfolioId );
@@ -58,7 +62,9 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
      * @throws PortfolioNotFoundException
      */
     public List<PortfolioDTO> getPortfoliosByCustomerId( final int customerId )
-        throws PortfolioNotFoundException
+        throws PortfolioNotFoundException,
+               StockNotFoundException,
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
