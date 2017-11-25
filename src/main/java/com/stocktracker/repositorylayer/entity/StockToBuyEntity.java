@@ -27,10 +27,10 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
     private Integer customerId;
     private String tickerSymbol;
     private String comments;
-    private Integer notesSourceId;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
     private String completed;
+    private Integer notesSourceId;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Timestamp buyAfterDate;
     private Timestamp createDate;
@@ -195,6 +195,13 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
 
     @Transient
     @Override
+    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
+    {
+        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
+    }
+
+    @Transient
+    @Override
     public Optional<Integer> getStockNoteSourceId()
     {
         return Optional.ofNullable( this.stockNoteSourceByNotesSourceId == null
@@ -202,12 +209,6 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
                                     : this.stockNoteSourceByNotesSourceId.getId() );
     }
 
-    @Transient
-    @Override
-    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
-    {
-        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
-    }
     @Override
     public boolean equals( final Object o )
     {

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
@@ -118,9 +119,9 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
             /*
              * 1 - (last price / avg target price)
              */
-            stockAnalystConsensusDTO.setAvgUpsidePercent( new BigDecimal( 1 ).subtract( (stockAnalystConsensusDTO.getLastPrice()
-                                                                                                                 .divide( stockAnalystConsensusDTO
-                                                                                                                              .getAvgAnalystPriceTarget() ))));
+            stockAnalystConsensusDTO.setAvgUpsidePercent( new BigDecimal( 1 )
+                                    .subtract( (stockAnalystConsensusDTO.getLastPrice()
+                                    .divide( stockAnalystConsensusDTO.getAvgAnalystPriceTarget(), 2, RoundingMode.HALF_UP ))));
         }
         logMethodEnd( methodName, stockAnalystConsensusDTO.getAvgUpsidePercent() );
     }

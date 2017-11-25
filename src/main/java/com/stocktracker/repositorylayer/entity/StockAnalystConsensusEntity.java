@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -32,6 +34,8 @@ public class StockAnalystConsensusEntity
     private Timestamp createDate;
     private Timestamp updateDate;
     private BigDecimal stockPriceWhenCreated;
+    private StockNoteSourceEntity stockNoteSourceByNoteSourceId;
+    private Integer noteSourceId;
 
     public static StockAnalystConsensusEntity newInstance()
     {
@@ -231,6 +235,41 @@ public class StockAnalystConsensusEntity
         this.analystPriceDate = analystPriceDate;
     }
 
+    @Basic
+    @Column( name = "stock_price_when_created" )
+    public BigDecimal getStockPriceWhenCreated()
+    {
+        return stockPriceWhenCreated;
+    }
+
+    public void setStockPriceWhenCreated( final BigDecimal stockPriceWhenCreated )
+    {
+        this.stockPriceWhenCreated = stockPriceWhenCreated;
+    }
+
+    @ManyToOne
+    @JoinColumn( name = "note_source_id", referencedColumnName = "id" )
+    public StockNoteSourceEntity getStockNoteSourceByNoteSourceId()
+    {
+        return stockNoteSourceByNoteSourceId;
+    }
+
+    public void setStockNoteSourceByNoteSourceId( final StockNoteSourceEntity stockNoteSourceByNoteSourceId )
+    {
+        this.stockNoteSourceByNoteSourceId = stockNoteSourceByNoteSourceId;
+    }
+
+    @Basic
+    @Column( name = "note_source_id" )
+    public Integer getNoteSourceId()
+    {
+        return noteSourceId;
+    }
+
+    public void setNoteSourceId( final Integer noteSourceId )
+    {
+        this.noteSourceId = noteSourceId;
+    }
     @Override
     public boolean equals( final Object o )
     {
@@ -265,27 +304,17 @@ public class StockAnalystConsensusEntity
         sb.append( ", analystHoldCount=" ).append( analystHoldCount );
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
-        sb.append( ", lastAnalystSentimentDate=" ).append( analystSentimentDate );
+        sb.append( ", analystSentimentDate=" ).append( analystSentimentDate );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
-        sb.append( ", lastAnalystPriceDate=" ).append( analystPriceDate );
-        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
+        sb.append( ", analystPriceDate=" ).append( analystPriceDate );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
+        sb.append( ", noteSourceId=" ).append( noteSourceId );
+        sb.append( ", stockNoteSourceByNoteSourceId=" ).append( stockNoteSourceByNoteSourceId );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    @Basic
-    @Column( name = "stock_price_when_created" )
-    public BigDecimal getStockPriceWhenCreated()
-    {
-        return stockPriceWhenCreated;
-    }
-
-    public void setStockPriceWhenCreated( final BigDecimal stockPriceWhenCreated )
-    {
-        this.stockPriceWhenCreated = stockPriceWhenCreated;
     }
 }

@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.18-log
+-- Server version	5.7.17-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -328,6 +328,84 @@ LOCK TABLES `stock_analyst_consensus` WRITE;
 INSERT INTO `stock_analyst_consensus` VALUES (6,1,'ADMA','<p>There is very sparse analyst coverage on this small cap name.&nbsp;In mid-November the stock&nbsp;<a href=\"https://www.benzinga.com/news/17/11/10778171/raymond-james-upgrades-adma-biologics-to-outperform\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">was upgraded to Outperform at Raymond James</a>&nbsp;with a $5 price target, as the analyst cited increased confidence that RI-002 would be eventually approved and lowered risk after the recent equity raise.&nbsp;Maxim Group issued a Buy rating and a $13 price target some five months ago.</p><p>Insiders have been purchasing shares recently, including beneficial owner Biotest AG scooping up 5,813,954 shares in the latest secondary. CMO James Mond&nbsp;<a href=\"https://www.chaffeybreeze.com/2017/11/14/adma-biologics-inc-adma-cmo-james-mond-purchases-10000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">picked up</a>&nbsp;10,000 shares and director Eric Richman&nbsp;<a href=\"https://www.tickerreport.com/banking-finance/3031799/adma-biologics-inc-adma-director-eric-i-richman-acquires-25000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">bought</a>&nbsp;25,000 shares. All transactions occurred on November 9th.</p><p><br></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,NULL,5.00,0.00,13.00,NULL,3.19,'2017-11-24 22:02:10',NULL);
 /*!40000 ALTER TABLE `stock_analyst_consensus` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`stock_analyst_consensus_BEFORE_INSERT` BEFORE INSERT ON `stock_analyst_consensus` FOR EACH ROW
+BEGIN    
+    SET NEW.UPDATE_DATE = current_timestamp();
+    /*
+     * If any sentient changes, then change the last sentiment date
+     */
+	IF NEW.ANALYST_STRONG_BUY_COUNT > 0 OR
+       NEW.ANALYST_BUY_COUNT > 0  OR
+       NEW.ANALYST_HOLD_COUNT > 0  OR
+       NEW.ANALYST_UNDER_PERFORM_COUNT > 0  OR
+       NEW.ANALYST_SELL_COUNT > 0 
+    THEN
+		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
+	END IF;
+		
+    /*
+     * If any price sentient changes, then change the last price sentiment date
+     */    
+    IF NEW.AVG_ANALYST_PRICE_TARGET > 0 OR
+       NEW.LOW_ANALYST_PRICE_TARGET > 0 OR
+       NEW.HIGH_ANALYST_PRICE_TARGET > 0
+	THEN
+       SET NEW.ANALYST_PRICE_DATE = CURRENT_TIMESTAMP();
+	END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`stock_analyst_consensus_BEFORE_UPDATE` BEFORE UPDATE ON `stock_analyst_consensus` FOR EACH ROW
+BEGIN
+    SET NEW.UPDATE_DATE = current_timestamp();
+    /*
+     * If any sentient changes, then change the last sentiment date
+     */
+	IF NEW.ANALYST_STRONG_BUY_COUNT    <> OLD.ANALYST_STRONG_BUY_COUNT OR
+       NEW.ANALYST_BUY_COUNT           <> OLD.ANALYST_BUY_COUNT OR
+       NEW.ANALYST_HOLD_COUNT          <> OLD.ANALYST_HOLD_COUNT OR
+       NEW.ANALYST_UNDER_PERFORM_COUNT <> OLD.ANALYST_UNDER_PERFORM_COUNT OR
+       NEW.ANALYST_SELL_COUNT          <> OLD.ANALYST_SELL_COUNT
+    THEN
+		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
+	END IF;
+		
+    /*
+     * If any price target changes, then change the last price date
+     */    
+    IF NEW.AVG_ANALYST_PRICE_TARGET  <> OLD.AVG_ANALYST_PRICE_TARGET OR
+       NEW.LOW_ANALYST_PRICE_TARGET  <> OLD.LOW_ANALYST_PRICE_TARGET OR
+       NEW.HIGH_ANALYST_PRICE_TARGET <> OLD.HIGH_ANALYST_PRICE_TARGET
+	THEN
+       SET NEW.ANALYST_PRICE_DATE = CURRENT_TIMESTAMP();
+	END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `stock_analytics`
@@ -532,7 +610,7 @@ CREATE TABLE `stock_note` (
   CONSTRAINT `FK_STOCK_NOTE_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
   CONSTRAINT `FK_STOCK_NOTE_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_NOTE_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -541,7 +619,7 @@ CREATE TABLE `stock_note` (
 
 LOCK TABLES `stock_note` WRITE;
 /*!40000 ALTER TABLE `stock_note` DISABLE KEYS */;
-INSERT INTO `stock_note` VALUES (48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',8,5,'2011-10-30 17:00:00',1,0,0,NULL,NULL,2.53,6,'2017-11-11 23:21:08','2017-11-11 23:21:08'),(49,1,'TTOO','<p>https://finance.yahoo.com/news/t2-biosystems-announces-t2bacteria-ruo-142616938.html</p>',8,3,'2017-11-19 16:00:00',1,0,0,'0.00',NULL,4.02,10,'2017-11-21 22:26:50','2017-11-21 22:26:50'),(50,1,'EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">I have initiated a small ‘watch item’ position in Epizyme.&nbsp;The company is now well-funded and has upcoming and definable catalysts.&nbsp;Epizyme is heavily leveraged to the success or failure of tazemetostat.&nbsp;The company does not intrigue me as much as a couple of other previous ‘busted IPOs’ in the oncology space,&nbsp;</span><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Ignyta (</strong><a href=\"https://seekingalpha.com/symbol/RXDX\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>RXDX</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;and&nbsp;</span><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Mirati Therapeutics (</strong><a href=\"https://seekingalpha.com/symbol/MRTX\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>MRTX</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;which I&nbsp;</span><a href=\"https://seekingalpha.com/instablog/498952-bret-jensen/5066903-overlooked-niche-market\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">noted</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;recently.&nbsp;However, the stock does seem to have a favorable risk/reward profile at current levels so I have initiated a ‘starter’ position.</span></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5074614-epizyme-upcoming-catalysts-horizon?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',15,3,'2017-11-20 16:00:00',1,0,0,'0.00',NULL,12.85,6,'2017-11-21 22:29:55','2017-11-21 22:29:55'),(51,1,'OTIC','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074715-deep-dive-otonomy#comments</p>',15,3,'2017-11-20 16:00:00',1,0,0,'0.00',NULL,5.36,7,'2017-11-21 22:26:40','2017-11-21 22:26:40'),(53,1,'NVAX','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Ultimately, the fate of NVAX in 2018 rests on the success of the maternal RSV vaccine trial. The Phase 3 trial will report interim results in H2 2018; after the failure of the older adult population, faith has been shaken in the vaccine as whole. Yet, the maternal trial\'s design looks like it will successfully eliminate some of the issues that dragged down the last trial. A successful data reading in 2018 will send NVAX shares rocketing, but another failure would severely damage the share price - and likely result in a painful dilution to keep the company going.</span></p>',17,3,'2017-11-22 09:51:38',1,0,0,'0',NULL,1.42,1,'2017-11-22 17:53:57',NULL),(54,1,'DVAX','<p>https://seekingalpha.com/article/4127235-dynavax-now-fun-begins?app=1&amp;auth_param=1ba2vi:1d1bmps:51ac4cc805ebf72329bc9fb14da2c02d&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-22 15:01:09',1,0,0,'0',NULL,18.55,1,'2017-11-22 23:01:27',NULL),(55,1,'VYGR','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Voyager is well-funded, has multiple \'shots on goal\' and a strategic partnership. The stock also has some analyst support. That being said, this intriguing concern is at least a few years away from successful commercialization. For aggressive investors, a small purchase might be warranted within a well-diversified biotech portfolio. This is what I have recently done as I do think this \"Busted IPO\" deserves to be on my \'watch list\' until it reaches later stage trial development.</span></p><p>https://seekingalpha.com/article/4099396-voyager-therapeutics-next-busted-ipo</p>',15,3,'2017-11-22 15:14:09',1,2,0,'0',NULL,14.18,1,'2017-11-22 23:15:13',NULL);
+INSERT INTO `stock_note` VALUES (48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',8,5,'2011-10-30 17:00:00',1,0,0,NULL,NULL,2.53,6,'2017-11-11 23:21:08','2017-11-11 23:21:08'),(49,1,'TTOO','<p>https://finance.yahoo.com/news/t2-biosystems-announces-t2bacteria-ruo-142616938.html</p>',8,3,'2017-11-19 16:00:00',1,0,0,'0.00',NULL,4.02,10,'2017-11-21 22:26:50','2017-11-21 22:26:50'),(50,1,'EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">I have initiated a small ‘watch item’ position in Epizyme.&nbsp;The company is now well-funded and has upcoming and definable catalysts.&nbsp;Epizyme is heavily leveraged to the success or failure of tazemetostat.&nbsp;The company does not intrigue me as much as a couple of other previous ‘busted IPOs’ in the oncology space,&nbsp;</span><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Ignyta (</strong><a href=\"https://seekingalpha.com/symbol/RXDX\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>RXDX</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;and&nbsp;</span><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Mirati Therapeutics (</strong><a href=\"https://seekingalpha.com/symbol/MRTX\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>MRTX</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;which I&nbsp;</span><a href=\"https://seekingalpha.com/instablog/498952-bret-jensen/5066903-overlooked-niche-market\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">noted</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;recently.&nbsp;However, the stock does seem to have a favorable risk/reward profile at current levels so I have initiated a ‘starter’ position.</span></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5074614-epizyme-upcoming-catalysts-horizon?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',15,3,'2017-11-20 16:00:00',1,0,0,'0.00',NULL,12.85,6,'2017-11-21 22:29:55','2017-11-21 22:29:55'),(51,1,'OTIC','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074715-deep-dive-otonomy#comments</p>',15,3,'2017-11-20 16:00:00',1,0,0,'0.00',NULL,5.36,7,'2017-11-21 22:26:40','2017-11-21 22:26:40'),(53,1,'NVAX','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Ultimately, the fate of NVAX in 2018 rests on the success of the maternal RSV vaccine trial. The Phase 3 trial will report interim results in H2 2018; after the failure of the older adult population, faith has been shaken in the vaccine as whole. Yet, the maternal trial\'s design looks like it will successfully eliminate some of the issues that dragged down the last trial. A successful data reading in 2018 will send NVAX shares rocketing, but another failure would severely damage the share price - and likely result in a painful dilution to keep the company going.</span></p>',17,3,'2017-11-22 09:51:38',1,0,0,'0',NULL,1.42,1,'2017-11-22 17:53:57',NULL),(54,1,'DVAX','<p>https://seekingalpha.com/article/4127235-dynavax-now-fun-begins?app=1&amp;auth_param=1ba2vi:1d1bmps:51ac4cc805ebf72329bc9fb14da2c02d&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-22 15:01:09',1,0,0,'0',NULL,18.55,1,'2017-11-22 23:01:27',NULL),(55,1,'VYGR','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Voyager is well-funded, has multiple \'shots on goal\' and a strategic partnership. The stock also has some analyst support. That being said, this intriguing concern is at least a few years away from successful commercialization. For aggressive investors, a small purchase might be warranted within a well-diversified biotech portfolio. This is what I have recently done as I do think this \"Busted IPO\" deserves to be on my \'watch list\' until it reaches later stage trial development.</span></p><p>https://seekingalpha.com/article/4099396-voyager-therapeutics-next-busted-ipo</p>',15,3,'2017-11-22 15:14:09',1,2,0,'0',NULL,14.18,1,'2017-11-22 23:15:13',NULL),(56,1,'ADMA','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-24 15:53:00',1,0,0,'0',NULL,3.19,1,'2017-11-24 23:53:22',NULL);
 /*!40000 ALTER TABLE `stock_note` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -636,7 +714,7 @@ CREATE TABLE `stock_note_source` (
 
 LOCK TABLES `stock_note_source` WRITE;
 /*!40000 ALTER TABLE `stock_note_source` DISABLE KEYS */;
-INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,1,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(15,'BUSTED IPO EMAIL',1,1,'2017-11-21 13:45:56'),(17,'SEEKING ALPHA',1,2,'2017-11-22 09:53:56');
+INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,2,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(15,'BUSTED IPO EMAIL',1,1,'2017-11-21 13:45:56'),(17,'SEEKING ALPHA',1,2,'2017-11-22 09:53:56');
 /*!40000 ALTER TABLE `stock_note_source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -899,7 +977,7 @@ INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research
 UNLOCK TABLES;
 
 --
--- Temporary table structure for view `v_portfolio_stock`
+-- Temporary view structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -925,7 +1003,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note`
+-- Temporary view structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -953,7 +1031,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note_count`
+-- Temporary view structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -967,7 +1045,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_tag`
+-- Temporary view structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -987,7 +1065,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_to_buy`
+-- Temporary view structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1108,4 +1186,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-24 15:36:02
+-- Dump completed on 2017-11-24 16:05:39

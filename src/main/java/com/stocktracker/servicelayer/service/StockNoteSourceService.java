@@ -103,12 +103,20 @@ public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, S
                 stockNoteSourceEntity = new StockNoteSourceEntity();
                 stockNoteSourceEntity.setCustomerId( stockNoteSourceDTOContainer.getCustomerId() );
                 stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceName() );
-                stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
-                logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
-                /*
-                 * update the reference in the stock note id container
-                 */
-                stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getId() );
+                try
+                {
+                    stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
+                    logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
+                    /*
+                     * update the reference in the stock note id container
+                     */
+                    stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getId() );
+                }
+                catch( org.springframework.dao.DataIntegrityViolationException e )
+                {
+                    logWarn( methodName, "duplicate source insert attempt: " +
+                                         stockNoteSourceDTOContainer.getNotesSourceName() );
+                }
             }
         }
         logMethodEnd( methodName );

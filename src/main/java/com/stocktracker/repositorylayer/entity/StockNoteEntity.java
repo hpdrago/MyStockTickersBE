@@ -42,6 +42,7 @@ public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNo
     private BigDecimal stockPriceWhenCreated;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     public static StockNoteEntity newInstance()
     {
@@ -178,18 +179,18 @@ public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNo
 
     @Transient
     @Override
+    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
+    {
+        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
+    }
+
+    @Transient
+    @Override
     public Optional<Integer> getStockNoteSourceId()
     {
         return Optional.ofNullable( this.stockNoteSourceByNotesSourceId == null
                                     ? null
                                     : this.stockNoteSourceByNotesSourceId.getId() );
-    }
-
-    @Transient
-    @Override
-    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
-    {
-        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
     }
 
     @Basic
@@ -320,5 +321,17 @@ public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNo
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
     }
 }

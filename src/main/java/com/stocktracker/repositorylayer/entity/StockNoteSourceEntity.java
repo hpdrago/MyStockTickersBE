@@ -24,6 +24,9 @@ public class StockNoteSourceEntity
     private Integer customerId;
     private Integer timesUsed;
     private Timestamp dateCreated;
+    private Collection<StockAnalystConsensusEntity> stockAnalystConsensusesById;
+    private Collection<StockNoteEntity> stockNotesById;
+    private Collection<StockToBuyEntity> stockToBuysById;
 
     public static StockNoteSourceEntity newInstance()
     {
@@ -127,5 +130,38 @@ public class StockNoteSourceEntity
         sb.append( ", dateCreated=" ).append( dateCreated );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @OneToMany( mappedBy = "stockNoteSourceByNoteSourceId" )
+    public Collection<StockAnalystConsensusEntity> getStockAnalystConsensusesById()
+    {
+        return stockAnalystConsensusesById;
+    }
+
+    public void setStockAnalystConsensusesById( final Collection<StockAnalystConsensusEntity> stockAnalystConsensusesById )
+    {
+        this.stockAnalystConsensusesById = stockAnalystConsensusesById;
+    }
+
+    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceId" )
+    public Collection<StockNoteEntity> getStockNotesById()
+    {
+        return stockNotesById;
+    }
+
+    public void setStockNotesById( final Collection<StockNoteEntity> stockNotesById )
+    {
+        this.stockNotesById = stockNotesById;
+    }
+
+    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceId" )
+    public Collection<StockToBuyEntity> getStockToBuysById()
+    {
+        return stockToBuysById;
+    }
+
+    public void setStockToBuysById( final Collection<StockToBuyEntity> stockToBuysById )
+    {
+        this.stockToBuysById = stockToBuysById;
     }
 }
