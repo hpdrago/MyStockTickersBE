@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,6 +62,35 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
     }
 
     /**
+     * Creates a new Stock Analyst Consensus
+     * @param stockAnalystConsensusDTO
+     * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     */
+    public StockAnalystConsensusDTO createStockAnalystConsensus( final StockAnalystConsensusDTO stockAnalystConsensusDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
+    {
+        final String methodName = "createStockAnalystConsensus";
+        logMethodBegin( methodName, stockAnalystConsensusDTO );
+        Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
+        this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
+        StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
+        stockAnalystConsensusEntity.setStockPriceWhenCreated( this.stockQuoteService
+                                                                  .getStockPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
+        /*
+         * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
+         * or update triggers.
+         */
+        stockAnalystConsensusEntity = this.stockAnalystConsensusRepository.saveAndFlush( stockAnalystConsensusEntity );
+        logDebug( methodName, "saved {0}", stockAnalystConsensusEntity );
+        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
+        logMethodEnd( methodName, returnStockAnalystConsensusDTO );
+        return returnStockAnalystConsensusDTO;
+    }
+
+    /**
      * Add a new stock analytics to the database
      * @param stockAnalystConsensusDTO
      * @return
@@ -77,8 +104,6 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
-        stockAnalystConsensusEntity.setStockPriceWhenCreated( this.stockQuoteService
-                                                                  .getStockPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
         /*
          * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
          * or update triggers.
@@ -122,7 +147,6 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         {
             logError( methodName, e );
         }
-        performCalculations( stockAnalystConsensusDTO );
         stockAnalystConsensusDTO.setAnalystPriceDate( stockAnalystConsensusEntity.getAnalystPriceDate() );
         stockAnalystConsensusDTO.setAnalystSentimentDate( stockAnalystConsensusEntity.getAnalystSentimentDate() );
         if ( stockAnalystConsensusEntity.getStockNoteSourceByNoteSourceId() != null )
@@ -131,24 +155,6 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
             stockAnalystConsensusDTO.setNotesSourceId( stockAnalystConsensusEntity.getStockNoteSourceByNoteSourceId().getId() );
         }
         return stockAnalystConsensusDTO;
-    }
-
-    private void performCalculations( final StockAnalystConsensusDTO stockAnalystConsensusDTO )
-    {
-        final String methodName = "performCalculations";
-        logMethodBegin( methodName, stockAnalystConsensusDTO );
-        if ( stockAnalystConsensusDTO.getLastPrice() != null &&
-             stockAnalystConsensusDTO.getAvgAnalystPriceTarget() != null &&
-             stockAnalystConsensusDTO.getAvgAnalystPriceTarget().floatValue() > 0.0 )
-        {
-            /*
-             * 1 - (last price / avg target price)
-             */
-            stockAnalystConsensusDTO.setAvgUpsidePercent( new BigDecimal( 1 )
-                                    .subtract( (stockAnalystConsensusDTO.getLastPrice()
-                                    .divide( stockAnalystConsensusDTO.getAvgAnalystPriceTarget(), 2, RoundingMode.HALF_UP ))));
-        }
-        logMethodEnd( methodName, stockAnalystConsensusDTO.getAvgUpsidePercent() );
     }
 
     @Override
@@ -185,5 +191,4 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }
-
 }

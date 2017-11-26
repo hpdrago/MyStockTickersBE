@@ -31,6 +31,7 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
     private BigDecimal stockPriceWhenCreated;
     private String completed;
     private Integer notesSourceId;
+    private Integer version;
     private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
     private Timestamp buyAfterDate;
     private Timestamp createDate;
@@ -209,6 +210,18 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
                                     : this.stockNoteSourceByNotesSourceId.getId() );
     }
 
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -244,6 +257,7 @@ public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceE
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
         sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
+        sb.append( ", version=" ).append( version );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );

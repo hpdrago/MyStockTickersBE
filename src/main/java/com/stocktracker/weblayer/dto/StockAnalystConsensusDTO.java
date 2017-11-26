@@ -41,7 +41,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
      * Calculated columns
      */
     @JsonSerialize( using = JSONMoneySerializer.class )
-    private BigDecimal avgUpsidePercent;
     private String companyName;
 
     public static StockAnalystConsensusDTO newInstance()
@@ -183,16 +182,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         this.companyName = companyName;
     }
 
-    public BigDecimal getAvgUpsidePercent()
-    {
-        return avgUpsidePercent;
-    }
-
-    public void setAvgUpsidePercent( BigDecimal avgUpsidePercent )
-    {
-        this.avgUpsidePercent = avgUpsidePercent;
-    }
-
     public Integer getAnalystStrongBuyCount()
     {
         return analystStrongBuyCount;
@@ -322,7 +311,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         sb.append( ", analystPriceDate='" ).append( analystPriceDate ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
-        sb.append( ", avgUpsidePercent=" ).append( avgUpsidePercent );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

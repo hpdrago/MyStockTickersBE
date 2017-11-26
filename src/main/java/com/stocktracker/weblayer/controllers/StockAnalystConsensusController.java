@@ -92,7 +92,7 @@ public class StockAnalystConsensusController implements MyLogger
         final String methodName = "addStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusDTO );
         StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                   .saveStockAnalystConsensus( stockAnalystConsensusDTO );
+                                                                   .createStockAnalystConsensus( stockAnalystConsensusDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )

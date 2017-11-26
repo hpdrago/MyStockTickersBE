@@ -95,6 +95,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
          */
         stockNoteEntity.setStockPriceWhenCreated( this.stockQuoteService
                                                       .getStockPrice( stockNoteEntity.getTickerSymbol() ));
+        stockNoteEntity.setVersion( 1 );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );

@@ -277,6 +277,18 @@ public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNo
         this.stockPriceWhenCreated = stockPriceWhenCreated;
     }
 
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -317,21 +329,10 @@ public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNo
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
+        sb.append( ", version=" ).append( version );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    @Basic
-    @Column( name = "version" )
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
     }
 }

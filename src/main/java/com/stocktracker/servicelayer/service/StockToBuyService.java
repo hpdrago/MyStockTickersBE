@@ -76,15 +76,17 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     }
 
     /**
-     * Add a new stock toBuy to the database
+     * Creates a new StockToBuy table entry
      * @param stockToBuyDTO
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
      */
-    public StockToBuyDTO saveStockToBuy( @NotNull final StockToBuyDTO stockToBuyDTO )
+    public StockToBuyDTO createStockToBuy( final StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
-        final String methodName = "saveStockToBuy";
+        final String methodName = "createStockToBuy";
         logMethodBegin( methodName, stockToBuyDTO );
         Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
@@ -106,6 +108,35 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         {
             stockToBuyEntity.setCreateDate( new Timestamp( System.currentTimeMillis() ) );
         }
+        stockToBuyEntity.setVersion( 1 );
+        stockToBuyEntity = this.stockToBuyRepository.save( stockToBuyEntity );
+        this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerId(),
+                                            stockToBuyEntity.getTickerSymbol(),
+                                            StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                                            stockToBuyEntity.getId(),
+                                            stockToBuyDTO.getTags() );
+        logDebug( methodName, "saved {0}", stockToBuyEntity );
+        StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
+        this.stockQuoteService.setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        logMethodEnd( methodName, returnStockToBuyDTO );
+        return returnStockToBuyDTO;
+    }
+
+    /**
+     * Add a new stock toBuy to the database
+     * @param stockToBuyDTO
+     * @return
+     */
+    public StockToBuyDTO saveStockToBuy( @NotNull final StockToBuyDTO stockToBuyDTO )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
+    {
+        final String methodName = "saveStockToBuy";
+        logMethodBegin( methodName, stockToBuyDTO );
+        Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
+        this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
+        this.stockService.checkStockTableEntry( stockToBuyDTO.getTickerSymbol() );
+        StockToBuyEntity stockToBuyEntity = this.dtoToEntity( stockToBuyDTO );
         stockToBuyEntity = this.stockToBuyRepository.save( stockToBuyEntity );
         this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerId(),
                                             stockToBuyEntity.getTickerSymbol(),
@@ -215,5 +246,4 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     {
         this.stockService = stockService;
     }
-
 }

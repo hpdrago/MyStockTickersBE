@@ -95,7 +95,7 @@ public class StockToBuyController implements MyLogger
     {
         final String methodName = "addStockToBuy";
         logMethodBegin( methodName, stockToBuyDTO );
-        StockToBuyDTO newStockToBuyDTO = this.stockToBuyService.saveStockToBuy( stockToBuyDTO );
+        StockToBuyDTO newStockToBuyDTO = this.stockToBuyService.createStockToBuy( stockToBuyDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
