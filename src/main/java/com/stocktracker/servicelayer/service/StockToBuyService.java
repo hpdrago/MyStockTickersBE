@@ -31,15 +31,15 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     private StockNoteSourceService stockNoteSourceService;
 
     /**
-     * Get the list of all stock summaries for the customer
+     * Get the list of all stock to buy for the customer
      * @param customerId
      * @return
      */
-    public List<StockToBuyDTO> getStockToBuyList( @NotNull final Integer customerId )
+    public List<StockToBuyDTO> getStockToBuyListForCustomerId( @NotNull final Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
-        final String methodName = "getStockToBuyList";
+        final String methodName = "getStockToBuyListForCustomerId";
         logMethodBegin( methodName, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
@@ -52,7 +52,35 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
                                            StockQuoteFetchMode.ASYNCHRONOUS );
         }
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
-        logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " summaries" );
+        logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " to buy" );
+        return stockToBuyDTOs;
+    }
+
+    /**
+     * Get the list of all stock to buy for the customer and the ticker symbol
+     * @param customerId
+     * @return
+     */
+    public List<StockToBuyDTO> getStockToBuyListForCustomerIdAndTickerSymbol( @NotNull final Integer customerId,
+                                                                              @NotNull final String tickerSymbol )
+        throws StockNotFoundException,
+               StockQuoteUnavailableException
+    {
+        final String methodName = "getStockToBuyListForCustomerIdAndTickerSymbol";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
+            .findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
+        List<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( stockToBuyEntities );
+        for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
+        {
+            this.stockQuoteService
+                .setStockQuoteInformation( stockToBuyDTO,
+                                           StockQuoteFetchMode.ASYNCHRONOUS );
+        }
+        logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
+        logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " to buy" );
         return stockToBuyDTOs;
     }
 

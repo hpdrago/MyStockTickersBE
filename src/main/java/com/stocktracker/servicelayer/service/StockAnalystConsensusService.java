@@ -31,13 +31,34 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
      * @param customerId
      * @return
      */
-    public List<StockAnalystConsensusDTO> getStockAnalystConsensusList( @NotNull final Integer customerId )
+    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull final Integer customerId )
     {
-        final String methodName = "getStockAnalystConsensusList";
+        final String methodName = "getStockAnalystConsensusListForCustomerId";
         logMethodBegin( methodName, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
             .findByCustomerIdOrderByTickerSymbol( customerId );
+        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
+        logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
+        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " summaries" );
+        return stockAnalystConsensusDTOS;
+    }
+
+    /**
+     * Get a list of analyst consensus records for the customer and ticker symbol.
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     */
+    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerIdAndTickerSymbol( final int customerId,
+                                                                                                    final String tickerSymbol )
+    {
+        final String methodName = "getStockAnalystConsensusListForCustomerIdAndTickerSymbol";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+            .findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
         List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
         logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " summaries" );

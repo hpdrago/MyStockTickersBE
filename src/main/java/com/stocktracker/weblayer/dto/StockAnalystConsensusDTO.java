@@ -25,8 +25,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
     private String analystSentimentDate;
-    private String nextCatalystDate;
-    private String nextCatalystDesc;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal avgAnalystPriceTarget;
     @JsonSerialize( using = JSONMoneySerializer.class )
@@ -40,7 +38,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     /*
      * Calculated columns
      */
-    @JsonSerialize( using = JSONMoneySerializer.class )
     private String companyName;
 
     public static StockAnalystConsensusDTO newInstance()
@@ -106,38 +103,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     public void setAnalystHoldCount( Integer analystHoldCount )
     {
         this.analystHoldCount = analystHoldCount;
-    }
-
-    public String getNextCatalystDate()
-    {
-        return nextCatalystDate;
-    }
-
-    public void setNextCatalystDate( String nextCatalystDate )
-    {
-        this.nextCatalystDate = nextCatalystDate;
-    }
-
-    public void setNextCatalystDate( Timestamp nextCatalystDate )
-    {
-        if ( nextCatalystDate == null )
-        {
-            this.nextCatalystDate = null;
-        }
-        else
-        {
-            this.nextCatalystDate = JSONDateConverter.toY4MMDD( nextCatalystDate );
-        }
-    }
-
-    public String getNextCatalystDesc()
-    {
-        return nextCatalystDesc;
-    }
-
-    public void setNextCatalystDesc( String nextCatalystDesc )
-    {
-        this.nextCatalystDesc = nextCatalystDesc;
     }
 
     public BigDecimal getAvgAnalystPriceTarget()
@@ -303,8 +268,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         sb.append( ", analystUnderPerformCount=" ).append( analystUnderPerformCount );
         sb.append( ", analystSellCount=" ).append( analystSellCount );
         sb.append( ", analystSentimentDate='" ).append( analystSentimentDate ).append( '\'' );
-        sb.append( ", nextCatalystDate='" ).append( nextCatalystDate ).append( '\'' );
-        sb.append( ", nextCatalystDesc='" ).append( nextCatalystDesc ).append( '\'' );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );

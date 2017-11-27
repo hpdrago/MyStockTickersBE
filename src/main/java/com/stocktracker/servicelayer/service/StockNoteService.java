@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.validation.constraints.NotNull;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
@@ -44,13 +45,32 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
      * @param customerId
      * @return
      */
-    public List<StockNoteDTO> getStockNotes( final int customerId )
+    public List<StockNoteDTO> getStockNotesForCustomerId( @NotNull final int customerId )
     {
-        final String methodName = "getStockNotes";
+        final String methodName = "getStockNotesForCustomerId";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<StockNoteEntity> stockNoteEntities =
             this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
+        List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( customerId, stockNoteEntities );
+        logMethodEnd( methodName, stockNoteDTOs );
+        return stockNoteDTOs;
+    }
+
+    /**
+     * Get all of the notes for a customer and ticker symbol.
+     * @param customerId
+     * @return
+     */
+    public List<StockNoteDTO> getStockNotesForCustomerIdAndTickerSymbol( @NotNull final int customerId,
+                                                                         @NotNull final String tickerSymbol )
+    {
+        final String methodName = "getStockNotes";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol );
+        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        List<StockNoteEntity> stockNoteEntities =
+            this.stockNoteRepository.findByCustomerIdAndTickerSymbolOrderByNotesDateDesc( customerId, tickerSymbol );
         List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( customerId, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;

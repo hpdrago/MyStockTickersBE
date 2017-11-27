@@ -144,7 +144,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotes( customerId );
+        List<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerId( customerId );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.size() );
         return stockNoteDTOs;
@@ -154,22 +154,24 @@ public class StockNotesController extends AbstractController implements MyLogger
      * Get all of the stocks notes for a customer and ticker symbol
      *
      * @return
+     */
     @CrossOrigin
     @RequestMapping( value = "/stockNotes/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteStockDTO> getStockNotes( @PathVariable final int customerId,
-                                                  @PathVariable final String tickerSymbol )
+    public List<StockNoteDTO> getStockNotes( @PathVariable final int customerId,
+                                             @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteStockDTO> stockNoteStockDTOs = stockNoteStockService.getStockNoteStocks( customerId, tickerSymbol );
-        logMethodEnd( methodName, stockNoteStockDTOs.size() );
-        return stockNoteStockDTOs;
+        List<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerIdAndTickerSymbol( customerId,
+                                                                                                       tickerSymbol );
+        //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
+        logMethodEnd( methodName, stockNoteDTOs.size() );
+        return stockNoteDTOs;
     }
-     */
 
     /**
      * Get all of the ticker symbols and number of notes for each ticker

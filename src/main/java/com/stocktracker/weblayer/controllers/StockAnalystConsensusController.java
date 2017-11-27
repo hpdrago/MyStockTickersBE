@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -30,23 +31,42 @@ public class StockAnalystConsensusController implements MyLogger
     private StockAnalystConsensusService stockAnalystConsensusService;
 
     /**
-     * Get all of the stock summaries for a customer
+     * Get all of the stock analyst consensus for a customer
      * @return
      */
     @RequestMapping( value = "/stockAnalystConsensus/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockAnalystConsensusDTO> getStockSummaries( @PathVariable int customerId )
+    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull @PathVariable int customerId )
     {
-        final String methodName = "getStockSummaries";
-        logMethodBegin( methodName );
-        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService.getStockAnalystConsensusList( customerId );
-        logMethodEnd( methodName, "stockSummaries size: " + stockAnalystConsensusDTOs.size() );
+        final String methodName = "getStockAnalystConsensusForCustomerId";
+        logMethodBegin( methodName, customerId );
+        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+                                                                       .getStockAnalystConsensusListForCustomerId( customerId );
+        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.size() );
         return stockAnalystConsensusDTOs;
     }
 
     /**
-     * Get a single stock summary
+     * Get all of the stock analyst consensus for a customer id and ticker symbol
+     * @return
+     */
+    @RequestMapping( value = "/stockAnalystConsensus/customer/{customerId}/{tickerSymbol}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull @PathVariable int customerId,
+                                                                                     @NotNull @PathVariable String tickerSymbol )
+    {
+        final String methodName = "getStockAnalystConsensusForCustomerIdAndTickerSymbol";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+            .getStockAnalystConsensusListForCustomerIdAndTickerSymbol( customerId, tickerSymbol );
+        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.size() );
+        return stockAnalystConsensusDTOs;
+    }
+
+    /**
+     * Get a single stock analyst consensus
      * @return
      */
     @RequestMapping( value = "/stockAnalystConsensus/{stockAnalystConsensusId}",
@@ -56,7 +76,8 @@ public class StockAnalystConsensusController implements MyLogger
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName );
-        StockAnalystConsensusDTO stockAnalystConsensusDTO = this.stockAnalystConsensusService.getStockAnalystConsensus( stockAnalystConsensusId );
+        StockAnalystConsensusDTO stockAnalystConsensusDTO = this.stockAnalystConsensusService
+                                                                .getStockAnalystConsensus( stockAnalystConsensusId );
         logMethodEnd( methodName, stockAnalystConsensusDTO );
         return stockAnalystConsensusDTO;
     }

@@ -11,9 +11,17 @@ import java.util.List;
 public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity, Integer>
 {
     /**
-     * Get all of the stock analytics records for a customer
+     * Get all of the stocks to buy records for a customer
      * @param customerId
      * @return
      */
     List<StockToBuyEntity> findByCustomerIdOrderByTickerSymbol( final int customerId );
+
+    /**
+     * Get all of the stocks to buy for the customer and the ticker symbol
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     */
+    List<StockToBuyEntity> findByCustomerIdAndTickerSymbol( final int customerId, final String tickerSymbol );
 }

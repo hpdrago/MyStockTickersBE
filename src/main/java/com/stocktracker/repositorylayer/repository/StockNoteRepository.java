@@ -16,4 +16,13 @@ public interface StockNoteRepository extends JpaRepository<StockNoteEntity, Inte
      * @return
      */
     List<StockNoteEntity> findByCustomerIdOrderByNotesDateDesc( final int customerId );
+
+    /**
+     * Get all of the notes for a customer and ticker symbol.
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     */
+    List<StockNoteEntity> findByCustomerIdAndTickerSymbolOrderByNotesDateDesc( final int customerId,
+                                                                               final String tickerSymbol );
 }
