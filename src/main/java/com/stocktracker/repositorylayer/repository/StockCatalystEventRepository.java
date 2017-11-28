@@ -16,4 +16,13 @@ public interface StockCatalystEventRepository extends JpaRepository<StockCatalys
      * @return
      */
     List<StockCatalystEventEntity> findByCustomerIdOrderByTickerSymbol( final int customerId );
+
+    /**
+     * Get the catalyst events for a customer and a ticker symbol.
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     */
+    List<StockCatalystEventEntity> findByCustomerIdAndTickerSymbolOrderByTickerSymbol( final int customerId,
+                                                                                       final String tickerSymbol );
 }

@@ -21,7 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 
 /**
- * This is the REST Controller for all Stock CatalystEvent methods.
+ * This is the REST Controller for all Stock Catalyst Event methods.
  */
 @RestController
 @CrossOrigin
@@ -30,23 +30,42 @@ public class StockCatalystEventController implements MyLogger
     private StockCatalystEventService stockCatalystEventService;
 
     /**
-     * Get all of the stock summaries for a customer
+     * Get all of the stock catalyst events for a single customer.
      * @return
      */
     @RequestMapping( value = "/stockCatalystEvent/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockCatalystEventDTO> getStockCatalystEventList( @PathVariable int customerId )
+    public List<StockCatalystEventDTO> getStockCatalystEventsForCustomerId( @PathVariable int customerId )
     {
-        final String methodName = "getStockCatalystEventList";
-        logMethodBegin( methodName );
-        List<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService.getStockCatalystEventList( customerId );
+        final String methodName = "getStockCatalystEventsForCustomerId";
+        logMethodBegin( methodName, customerId );
+        List<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
+                                                                 .getStockCatalystEventsForCustomerId( customerId );
         logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.size() );
         return stockCatalystEventDTOs;
     }
 
     /**
-     * Get a single stock summary
+     * Get all of the stock catalyst events for a customer and a ticker symbol
+     * @return
+     */
+    @RequestMapping( value = "/stockCatalystEvent/customer/{customerId}/{tickerSymbol}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public List<StockCatalystEventDTO> getStockCatalystEventsForCustomerIdAndTickerSymbol( @PathVariable int customerId,
+                                                                                           @PathVariable String tickerSymbol )
+    {
+        final String methodName = "getStockCatalystEventsForCustomerIdAndTickerSymbol";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        List<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
+            .getStockCatalystEventsForCustomerIdAndTickerSymbol( customerId, tickerSymbol );
+        logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.size() );
+        return stockCatalystEventDTOs;
+    }
+
+    /**
+     * Get a single stock catalyst event
      * @return
      */
     @RequestMapping( value = "/stockCatalystEvent/{stockCatalystEventId}",

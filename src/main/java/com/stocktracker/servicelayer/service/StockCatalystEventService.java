@@ -28,20 +28,42 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     private StockService stockService;
 
     /**
-     * Get the list of all stock summaries for the customer
+     * Get the list of all stock catalyst event for the customer
      * @param customerId
      * @return
      */
-    public List<StockCatalystEventDTO> getStockCatalystEventList( @NotNull final Integer customerId )
+    public List<StockCatalystEventDTO> getStockCatalystEventsForCustomerId( @NotNull final Integer customerId )
     {
-        final String methodName = "getStockCatalystEventList";
+        final String methodName = "getStockCatalystEventsForCustomerId";
         logMethodBegin( methodName, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         List<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
             .findByCustomerIdOrderByTickerSymbol( customerId );
         List<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( stockCatalystEventEntities );
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
-        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.size() + " summaries" );
+        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.size() + " catalyst event" );
+        return stockCatalystEventDTOs;
+    }
+
+
+    /**
+     * Get the list of all stock catalyst event for the customer and ticker symbol
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     */
+    public List<StockCatalystEventDTO> getStockCatalystEventsForCustomerIdAndTickerSymbol( @NotNull final int customerId,
+                                                                                           @NotNull final String tickerSymbol )
+    {
+        final String methodName = "getStockCatalystEventsForCustomerIdAndTickerSymbol";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        List<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
+            .findByCustomerIdAndTickerSymbolOrderByTickerSymbol( customerId, tickerSymbol );
+        List<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( stockCatalystEventEntities );
+        logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
+        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.size() + " catalyst event" );
         return stockCatalystEventDTOs;
     }
 
