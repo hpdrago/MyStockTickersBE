@@ -12,6 +12,8 @@ import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -42,51 +44,54 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
 
     /**
      * Get all of the notes for a customer.
+     * @param pageRequest
      * @param customerId
      * @return
      */
-    public List<StockNoteDTO> getStockNotesForCustomerId( @NotNull final int customerId )
+    public Page<StockNoteDTO> getStockNotesForCustomerId( @NotNull final Pageable pageRequest,
+                                                          @NotNull final int customerId )
     {
         final String methodName = "getStockNotesForCustomerId";
-        logMethodBegin( methodName, customerId );
+        logMethodBegin( methodName, pageRequest, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteEntity> stockNoteEntities =
-            this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( customerId );
-        List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( customerId, stockNoteEntities );
+        Page<StockNoteEntity> stockNoteEntities =
+            this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( pageRequest, customerId );
+        Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }
-
     /**
      * Get all of the notes for a customer and ticker symbol.
      * @param customerId
      * @return
      */
-    public List<StockNoteDTO> getStockNotesForCustomerIdAndTickerSymbol( @NotNull final int customerId,
+    public Page<StockNoteDTO> getStockNotesForCustomerIdAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                         @NotNull final int customerId,
                                                                          @NotNull final String tickerSymbol )
     {
         final String methodName = "getStockNotes";
-        logMethodBegin( methodName, customerId, tickerSymbol );
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteEntity> stockNoteEntities =
-            this.stockNoteRepository.findByCustomerIdAndTickerSymbolOrderByNotesDateDesc( customerId, tickerSymbol );
-        List<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( customerId, stockNoteEntities );
+        Page<StockNoteEntity> stockNoteEntities =
+            this.stockNoteRepository.findByCustomerIdAndTickerSymbolOrderByNotesDateDesc( pageRequest, customerId, tickerSymbol );
+        Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }
 
     /**
-     * Converts the list of entities to DTOs
+     * Converts the list of entities to DTOs and also populates the notes source values.
      * @param customerId
      * @param entities
      * @return
      */
-    private List<StockNoteDTO> entitiesToDTOs( final int customerId,
-                                               final List<StockNoteEntity> entities )
+    private Page<StockNoteDTO> entitiesToDTOs( final @NotNull Pageable pageRequest,
+                                               final int customerId,
+                                               final @NotNull Page<StockNoteEntity> entities )
     {
-        List<StockNoteDTO> stockNoteDTOs = super.entitiesToDTOs( entities );
-        this.stockNoteSourceService.setNotesSourceName( customerId, stockNoteDTOs );
+        Page<StockNoteDTO> stockNoteDTOs = super.entitiesToDTOs( pageRequest, entities );
+        this.stockNoteSourceService.setNotesSourceName( customerId, stockNoteDTOs.getContent() );
         return stockNoteDTOs;
     }
 

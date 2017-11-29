@@ -26,40 +26,10 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockService extends BaseService<StockEntity, StockDTO> implements MyLogger
+public class StockService extends BaseStockQuoteService<StockEntity, StockDTO> implements MyLogger
 {
     private StockRepository stockRepository;
     private StockQuoteService stockQuoteService;
-
-    /**
-     * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
-     *
-     * @param pageRequest The information of the requested page.
-     * @param source      The {@code Page<ENTITY>} object.
-     * @param updateStockPrices If true, the last stock price will be updated
-     * @return The created {@code Page<DTO>} object.
-     */
-    private Page<StockDTO> mapStockEntityPageIntoStockDTOPage( final Pageable pageRequest, Page<StockEntity> source,
-                                                               final boolean updateStockPrices )
-        throws StockQuoteUnavailableException,
-               StockNotFoundException
-    {
-        final String methodName = "mapStockEntityPageIntoStockDTOPage";
-        Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
-        Objects.requireNonNull( source, "source cannot be null" );
-        logMethodBegin( methodName );
-        List<StockDTO> stockDTOs = this.entitiesToDTOs( source.getContent() );
-        if ( updateStockPrices )
-        {
-            for ( StockDTO stockDTO : stockDTOs )
-            {
-                this.stockQuoteService
-                    .setStockQuoteInformation( stockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-            }
-        }
-        logMethodEnd( methodName );
-        return new PageImpl<>( stockDTOs, pageRequest, source.getTotalElements() );
-    }
 
     /**
      * Get a page of StockDomainEntities's
@@ -80,7 +50,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockDTO> stockDTOPage = mapStockEntityPageIntoStockDTOPage( pageRequest, stockEntities, withStockPrices );
+        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
         logMethodEnd( methodName );
         return stockDTOPage;
     }
@@ -93,7 +63,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
      * @return
      */
     public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike,
-                                           final boolean withStockPrices )
+                                            final boolean withStockPrices )
         throws StockQuoteUnavailableException,
                StockNotFoundException
     {
@@ -109,7 +79,7 @@ public class StockService extends BaseService<StockEntity, StockDTO> implements 
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockDTO> stockDTOPage = mapStockEntityPageIntoStockDTOPage( pageRequest, stockEntities, withStockPrices );
+        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
         logMethodEnd( methodName );
         return stockDTOPage;
     }
