@@ -17,15 +17,9 @@ import java.util.Objects;
  * @param <E>
  * @param <D>
  */
-public abstract class BaseStockQuoteService<E,D extends StockQuoteService.StockQuoteContainer> extends BaseService<E,D>
+public abstract class BaseStockQuoteContainerService<E,D extends StockQuoteService.StockQuoteContainer> extends BaseService<E,D>
 {
     private StockQuoteService stockQuoteService;
-
-    @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
-    {
-        this.stockQuoteService = stockQuoteService;
-    }
 
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
@@ -60,4 +54,17 @@ public abstract class BaseStockQuoteService<E,D extends StockQuoteService.StockQ
         logMethodEnd( methodName );
         return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
     }
+
+    @Autowired
+    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    {
+        logInfo( "setStockQuoteService", "Dependency Injection of " + stockQuoteService );
+        this.stockQuoteService = stockQuoteService;
+    }
+
+    public StockQuoteService getStockQuoteService()
+    {
+        return stockQuoteService;
+    }
+
 }

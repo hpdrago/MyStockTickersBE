@@ -1,8 +1,11 @@
 package com.stocktracker.repositorylayer.repository;
 
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -15,7 +18,8 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
      * @param customerId
      * @return
      */
-    List<StockAnalystConsensusEntity> findByCustomerIdOrderByTickerSymbol( final int customerId );
+    Page<StockAnalystConsensusEntity> findByCustomerIdOrderByTickerSymbol( final Pageable pageRequest,
+                                                                           final int customerId );
 
     /**
      * Get the list of analyst consensus by customer and ticker symbol.
@@ -23,5 +27,6 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
      * @param tickerSymbol
      * @return
      */
-    List<StockAnalystConsensusEntity> findByCustomerIdAndTickerSymbol( final int customerId, final String tickerSymbol );
+    Page<StockAnalystConsensusEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest,
+                                                                       final int customerId, final String tickerSymbol );
 }

@@ -6,6 +6,8 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockToBuyService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,24 +30,26 @@ import java.util.List;
 @CrossOrigin
 public class StockToBuyController implements MyLogger
 {
+    private static final String CONTEXT_URL = "/stockToBuy";
     private StockToBuyService stockToBuyService;
 
     /**
      * Get all of the stock to buy for a customer
      * @return
      */
-    @RequestMapping( value = "/stockToBuy/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockToBuyDTO> getStockStockToBuy( @NotNull @PathVariable int customerId )
+    public Page<StockToBuyDTO> getStockStockToBuy( final Pageable pageRequest,
+                                                   final @NotNull @PathVariable int customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getStockStockToBuy";
-        logMethodBegin( methodName, customerId );
-        List<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
-                                                 .getStockToBuyListForCustomerId( customerId );
-        logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.size() );
+        logMethodBegin( methodName, pageRequest, customerId );
+        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
+                                                 .getStockToBuyListForCustomerId( pageRequest, customerId );
+        logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
     }
 
@@ -53,19 +57,20 @@ public class StockToBuyController implements MyLogger
      * Get all of the stock to buy for a customer and a
      * @return
      */
-    @RequestMapping( value = "/stockToBuy/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockToBuyDTO> getStockStockToBuy( @NotNull @PathVariable int customerId,
+    public Page<StockToBuyDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
+                                                   @NotNull @PathVariable int customerId,
                                                    @NotNull @PathVariable String tickerSymbol )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getStockStockToBuyForTickerSymbol";
-        logMethodBegin( methodName, customerId, tickerSymbol );
-        List<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
-                                                 .getStockToBuyListForCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.size() );
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
+        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
+                                                 .getStockToBuyListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+        logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
     }
 
@@ -73,15 +78,16 @@ public class StockToBuyController implements MyLogger
      * Get a single stock summary
      * @return
      */
-    @RequestMapping( value = "/stockToBuy/{stockToBuyId}",
+    @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId )
+    public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId,
+                                        @PathVariable int customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuy";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, stockToBuyId, customerId );
         StockToBuyDTO stockToBuyDTO = this.stockToBuyService.getStockToBuy( stockToBuyId );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
@@ -92,13 +98,14 @@ public class StockToBuyController implements MyLogger
      * @param stockToBuyId
      * @return
      */
-    @RequestMapping( value = "/stockToBuy/{stockToBuyId}",
+    @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deleteStockToBuy( @PathVariable int stockToBuyId )
+    public ResponseEntity<Void> deleteStockToBuy( @PathVariable int stockToBuyId,
+                                                  @PathVariable int customerId )
     {
         final String methodName = "deleteStockToBuy";
-        logMethodBegin( methodName, stockToBuyId );
+        logMethodBegin( methodName, stockToBuyId, customerId );
         this.stockToBuyService.deleteStockToBuy( stockToBuyId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -109,14 +116,15 @@ public class StockToBuyController implements MyLogger
      * @param stockToBuyDTO
      * @return
      */
-    @RequestMapping( value = "/stockToBuy",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockToBuyDTO> addStockToBuy( @RequestBody StockToBuyDTO stockToBuyDTO )
+    public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable int customerId,
+                                                        @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "addStockToBuy";
-        logMethodBegin( methodName, stockToBuyDTO );
+        logMethodBegin( methodName, customerId, stockToBuyDTO );
         StockToBuyDTO newStockToBuyDTO = this.stockToBuyService.createStockToBuy( stockToBuyDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
@@ -134,9 +142,10 @@ public class StockToBuyController implements MyLogger
      * @throws StockQuoteUnavailableException
      */
     @CrossOrigin
-    @RequestMapping( value = "/stockToBuy",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @RequestBody StockToBuyDTO stockToBuyDTO )
+    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int customerId,
+                                                         @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {

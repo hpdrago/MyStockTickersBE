@@ -3,9 +3,11 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockAnalystConsensusService;
+import com.stocktracker.servicelayer.service.StockAnalystConsensusContainerService;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -28,22 +29,24 @@ import java.util.List;
 @CrossOrigin
 public class StockAnalystConsensusController implements MyLogger
 {
-    private StockAnalystConsensusService stockAnalystConsensusService;
+    private static final String CONTEXT_URL = "stockAnalystConsensus";
+    private StockAnalystConsensusContainerService stockAnalystConsensusService;
 
     /**
      * Get all of the stock analyst consensus for a customer
      * @return
      */
-    @RequestMapping( value = "/stockAnalystConsensus/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull @PathVariable int customerId )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( final Pageable pageRequest,
+                                                                                     @PathVariable Integer customerId )
     {
         final String methodName = "getStockAnalystConsensusForCustomerId";
         logMethodBegin( methodName, customerId );
-        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
-                                                                       .getStockAnalystConsensusListForCustomerId( customerId );
-        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.size() );
+        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+                                                                       .getStockAnalystConsensusListForCustomerId( pageRequest, customerId );
+        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }
 
@@ -51,17 +54,18 @@ public class StockAnalystConsensusController implements MyLogger
      * Get all of the stock analyst consensus for a customer id and ticker symbol
      * @return
      */
-    @RequestMapping( value = "/stockAnalystConsensus/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull @PathVariable int customerId,
-                                                                                     @NotNull @PathVariable String tickerSymbol )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( final Pageable pageRequest,
+                                                                                     @PathVariable int customerId,
+                                                                                     @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockAnalystConsensusForCustomerIdAndTickerSymbol";
         logMethodBegin( methodName, customerId, tickerSymbol );
-        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
-            .getStockAnalystConsensusListForCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.size() );
+        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+            .getStockAnalystConsensusListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }
 
@@ -69,13 +73,14 @@ public class StockAnalystConsensusController implements MyLogger
      * Get a single stock analyst consensus
      * @return
      */
-    @RequestMapping( value = "/stockAnalystConsensus/{stockAnalystConsensusId}",
+    @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockAnalystConsensusDTO getStockAnalystConsensus( @PathVariable int stockAnalystConsensusId )
+    public StockAnalystConsensusDTO getStockAnalystConsensus( @PathVariable int stockAnalystConsensusId,
+                                                              @PathVariable int customerId )
     {
         final String methodName = "getStockAnalystConsensus";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, stockAnalystConsensusId, customerId );
         StockAnalystConsensusDTO stockAnalystConsensusDTO = this.stockAnalystConsensusService
                                                                 .getStockAnalystConsensus( stockAnalystConsensusId );
         logMethodEnd( methodName, stockAnalystConsensusDTO );
@@ -87,7 +92,7 @@ public class StockAnalystConsensusController implements MyLogger
      * @param stockAnalystConsensusId
      * @return
      */
-    @RequestMapping( value = "/stockAnalystConsensus/{stockAnalystConsensusId}",
+    @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockAnalystConsensus( @PathVariable int stockAnalystConsensusId )
@@ -104,14 +109,15 @@ public class StockAnalystConsensusController implements MyLogger
      * @param stockAnalystConsensusDTO
      * @return
      */
-    @RequestMapping( value = "/stockAnalystConsensus",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockAnalystConsensusDTO> addStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO )
+    public ResponseEntity<StockAnalystConsensusDTO> addStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
+                                                                              @PathVariable Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "addStockAnalystConsensus";
-        logMethodBegin( methodName, stockAnalystConsensusDTO );
+        logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
         StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
                                                                    .createStockAnalystConsensus( stockAnalystConsensusDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -123,19 +129,20 @@ public class StockAnalystConsensusController implements MyLogger
     }
 
     @CrossOrigin
-    @RequestMapping( value = "/stockAnalystConsensus",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockAnalystConsensusDTO> saveStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO portfolioStockDTO )
+    public ResponseEntity<StockAnalystConsensusDTO> saveStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
+                                                                               @PathVariable Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "saveStockAnalystConsensus";
-        logMethodBegin( methodName, portfolioStockDTO );
+        logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
         /*
          * Save the stock
          */
         StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                      .saveStockAnalystConsensus( portfolioStockDTO );
+                                                                      .saveStockAnalystConsensus( stockAnalystConsensusDTO );
         /*
          * send the response
          */
@@ -144,11 +151,11 @@ public class StockAnalystConsensusController implements MyLogger
                                      .fromCurrentRequest().path( "" )
                                      .buildAndExpand( returnStockAnalystConsensusDTO ).toUri());
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
-        return new ResponseEntity<>( portfolioStockDTO, httpHeaders, HttpStatus.CREATED );
+        return new ResponseEntity<>( stockAnalystConsensusDTO, httpHeaders, HttpStatus.CREATED );
     }
 
     @Autowired
-    public void setStockAnalystConsensusService( final StockAnalystConsensusService stockAnalystConsensusService )
+    public void setStockAnalystConsensusService( final StockAnalystConsensusContainerService stockAnalystConsensusService )
     {
         this.stockAnalystConsensusService = stockAnalystConsensusService;
     }

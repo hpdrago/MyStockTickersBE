@@ -1,6 +1,8 @@
 package com.stocktracker.repositorylayer.repository;
 
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,7 +17,8 @@ public interface StockCatalystEventRepository extends JpaRepository<StockCatalys
      * @param customerId
      * @return
      */
-    List<StockCatalystEventEntity> findByCustomerIdOrderByTickerSymbol( final int customerId );
+    Page<StockCatalystEventEntity> findByCustomerIdOrderByTickerSymbol( final Pageable pageRequest,
+                                                                        final int customerId );
 
     /**
      * Get the catalyst events for a customer and a ticker symbol.
@@ -23,6 +26,7 @@ public interface StockCatalystEventRepository extends JpaRepository<StockCatalys
      * @param tickerSymbol
      * @return
      */
-    List<StockCatalystEventEntity> findByCustomerIdAndTickerSymbolOrderByTickerSymbol( final int customerId,
+    Page<StockCatalystEventEntity> findByCustomerIdAndTickerSymbolOrderByTickerSymbol( final Pageable pageRequest,
+                                                                                       final int customerId,
                                                                                        final String tickerSymbol );
 }

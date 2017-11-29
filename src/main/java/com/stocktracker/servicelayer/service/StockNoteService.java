@@ -20,7 +20,6 @@ import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -30,13 +29,12 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
+public class StockNoteService extends BaseStockQuoteContainerService<StockNoteEntity, StockNoteDTO>
 {
     /**
      * Autowired service classes
      */
-    private StockService stockService;
-    private StockQuoteService stockQuoteService;
+    private StockContainerService stockService;
     private StockNoteRepository stockNoteRepository;
     private VStockNoteCountRepository vStockNoteCountRepository;
     private StockTagService stockTagService;
@@ -118,7 +116,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         /*
          * Set the stock price when created for one stock note entity
          */
-        stockNoteEntity.setStockPriceWhenCreated( this.stockQuoteService
+        stockNoteEntity.setStockPriceWhenCreated( this.getStockQuoteService()
                                                       .getStockPrice( stockNoteEntity.getTickerSymbol() ));
         stockNoteEntity.setVersion( 1 );
         stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
@@ -195,7 +193,7 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
         }
         try
         {
-            this.stockQuoteService.setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+            this.getStockQuoteService().setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         }
         catch ( StockQuoteUnavailableException e )
         {
@@ -237,12 +235,12 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     }
 
     /**
-     * Allow DI to set the StockService
+     * Allow DI to set the StockContainerService
      *
      * @param stockService
      */
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockContainerService stockService )
     {
         this.stockService = stockService;
     }
@@ -257,12 +255,6 @@ public class StockNoteService extends BaseService<StockNoteEntity, StockNoteDTO>
     public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
-    }
-
-    @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
-    {
-        this.stockQuoteService = stockQuoteService;
     }
 
 }

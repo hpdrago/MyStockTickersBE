@@ -28,7 +28,7 @@ import java.util.Objects;
 public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO> implements MyLogger
 {
     private PortfolioRepository portfolioRepository;
-    private StockService stockService;
+    private StockContainerService stockService;
     private PortfolioStockService portfolioStockService;
     private PortfolioCalculator portfolioCalculator;
 
@@ -147,7 +147,7 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
     }
 
     @Autowired
-    public void setStockService( StockService stockService )
+    public void setStockService( StockContainerService stockService )
     {
         this.stockService = stockService;
     }

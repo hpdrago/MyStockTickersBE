@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by mike on 9/11/2016.
@@ -29,6 +30,7 @@ import java.util.List;
 @CrossOrigin
 public class PortfolioController extends AbstractController implements MyLogger
 {
+    private static final String CONTEXT_URL = "/portfolio";
     private PortfolioService portfolioService;
     private PortfolioStockService portfolioStockService;
 
@@ -38,7 +40,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolios/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PortfolioDTO> getPortfoliosByCustomerId( @PathVariable int customerId )
@@ -58,15 +60,18 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolios/{portfolioId}",
+    @RequestMapping( value = CONTEXT_URL + "/{portfolioId}/customer/{customerId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
+                                                       @PathVariable Integer portfolioId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
-        logMethodBegin( methodName, portfolioId );
+        logMethodBegin( methodName, customerId, portfolioId );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
         List<PortfolioStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
         logMethodEnd( methodName, portfolioStockDTOs );
         return portfolioStockDTOs;
@@ -78,9 +83,10 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolios/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
         method = RequestMethod.POST )
-    public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable int customerId, @RequestBody PortfolioDTO portfolioDto )
+    public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable Integer customerId,
+                                                      @RequestBody PortfolioDTO portfolioDto )
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDto );
@@ -101,13 +107,16 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/portfolios/{portfolioId}", method = RequestMethod.DELETE)
-    public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) int portfolioId )
+    @RequestMapping(value = CONTEXT_URL + "/{portfolioId}/customer/{customerId}", method = RequestMethod.DELETE)
+    public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
+                                                         @PathVariable( "customerId" ) Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "deletePortfolio";
-        logMethodBegin( methodName, portfolioId );
+        logMethodBegin( methodName, customerId, portfolioId );
+        Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
         PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
         logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
         portfolioDTO = portfolioService.deletePortfolio( portfolioId );
@@ -116,18 +125,21 @@ public class PortfolioController extends AbstractController implements MyLogger
     }
 
     /**
-     * Get a single portfoliio
+     * Get a single portfolio
      * @param portfolioId
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = "/portfolios/portfolio/{portfolioId}", method = RequestMethod.GET)
-    public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable( "portfolioId" ) int portfolioId )
+    @RequestMapping(value = CONTEXT_URL + "/{portfolioId}/customer/{customerId}", method = RequestMethod.GET)
+    public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable int portfolioId,
+                                                      @PathVariable int customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getPortfolio";
-        logMethodBegin( methodName, portfolioId );
+        logMethodBegin( methodName, customerId, portfolioId );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
         PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
         logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
         logMethodBegin( methodName, portfolioDTO );

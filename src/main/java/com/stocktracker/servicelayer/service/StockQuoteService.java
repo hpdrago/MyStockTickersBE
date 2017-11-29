@@ -26,7 +26,7 @@ import java.util.Objects;
 public class StockQuoteService implements MyLogger
 {
     private StockQuoteCache stockQuoteCache;
-    private StockService stockService;
+    private StockContainerService stockService;
 
     public interface StockCompanyNameContainer
     {
@@ -251,7 +251,7 @@ public class StockQuoteService implements MyLogger
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockContainerService stockService )
     {
         this.stockService = stockService;
     }

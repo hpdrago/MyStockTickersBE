@@ -23,6 +23,7 @@ import java.util.List;
 @CrossOrigin
 public class CustomerController extends AbstractController implements MyLogger
 {
+    private static final String CONTEXT_URL = "/customer";
     private CustomerService customerService;
 
     @Autowired
@@ -36,7 +37,7 @@ public class CustomerController extends AbstractController implements MyLogger
      *
      * @return
      */
-    @RequestMapping( value = "/customers",
+    @RequestMapping( value = CONTEXT_URL,
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<CustomerDTO> getCustomers()
@@ -54,7 +55,7 @@ public class CustomerController extends AbstractController implements MyLogger
      * @param id
      * @return
      */
-    @RequestMapping( value = "/customer/{id}",
+    @RequestMapping( value = CONTEXT_URL + "/{id}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public CustomerDTO getCustomer( @PathVariable int id )
@@ -72,7 +73,7 @@ public class CustomerController extends AbstractController implements MyLogger
      * @param email
      * @return
      */                                   // Added :.+ so that the extension is not truncated
-    @RequestMapping( value = "/customer/email/{email:.+}",
+    @RequestMapping( value = CONTEXT_URL + "/email/{email:.+}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public CustomerDTO getCustomer( @PathVariable String email )

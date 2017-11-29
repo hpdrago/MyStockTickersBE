@@ -31,6 +31,7 @@ import java.util.Objects;
 @RestController
 public class PortfolioStockController extends AbstractController
 {
+    private static final String CONTEXT_URL = "/portfolioStock";
     private PortfolioStockService portfolioStockService;
     private AddPortfolioStockHandler addPortfolioStockHandler;
     private SavePortfolioStockHandler savePortfolioStockHandler;
@@ -43,11 +44,11 @@ public class PortfolioStockController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public PortfolioStockDTO getPortfolioStock( @PathVariable int customerId,
-                                                @PathVariable int portfolioId,
+    public PortfolioStockDTO getPortfolioStock( @PathVariable Integer customerId,
+                                                @PathVariable Integer portfolioId,
                                                 @PathVariable String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
@@ -70,11 +71,11 @@ public class PortfolioStockController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
         method = RequestMethod.DELETE,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deletePortfolioStock( @PathVariable int customerId,
-                                                      @PathVariable int portfolioId,
+    public ResponseEntity<Void> deletePortfolioStock( @PathVariable Integer customerId,
+                                                      @PathVariable Integer portfolioId,
                                                       @PathVariable String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
@@ -98,14 +99,15 @@ public class PortfolioStockController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolioStock/{portfolioStockId}",
+    @RequestMapping( value = CONTEXT_URL + "/{portfolioStockId}/customer/{customerId}",
         method = RequestMethod.DELETE,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deletePortfolioStock( @PathVariable int portfolioStockId )
+    public ResponseEntity<Void> deletePortfolioStock( @PathVariable Integer portfolioStockId,
+                                                      @PathVariable Integer customerId )
         throws PortfolioStockNotFound
     {
         final String methodName = "deletePortfolioStock";
-        logMethodBegin( methodName, portfolioStockId );
+        logMethodBegin( methodName, customerId, portfolioStockId );
         this.portfolioStockService.deletePortfolioStock( portfolioStockId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -119,11 +121,11 @@ public class PortfolioStockController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/portfolio/{portfolioId}/stocks",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stocks",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable int customerId,
-                                                       @PathVariable int portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
+                                                       @PathVariable Integer portfolioId )
         throws PortfolioStockNotFound,
                StockNotFoundException,
                StockQuoteUnavailableException
@@ -141,13 +143,14 @@ public class PortfolioStockController extends AbstractController
      * @return The customer stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolioStock",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<PortfolioStockDTO> addPortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO )
+    public ResponseEntity<PortfolioStockDTO> addPortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
+                                                                @PathVariable Integer customerId )
         throws Exception
     {
         final String methodName = "addPortfolioStock";
-        logMethodBegin( methodName, portfolioStockDTO );
+        logMethodBegin( methodName, customerId, portfolioStockDTO );
         checkRequiredFields( portfolioStockDTO );
         /*
          * Do the work
@@ -170,12 +173,13 @@ public class PortfolioStockController extends AbstractController
      * @return The customer stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/portfolioStock",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
         method = RequestMethod.PUT )
-    public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO )
+    public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
+                                                                 @PathVariable Integer customerId )
     {
         final String methodName = "savePortfolioStock";
-        logMethodBegin( methodName, portfolioStockDTO );
+        logMethodBegin( methodName, customerId, portfolioStockDTO );
         checkRequiredFields( portfolioStockDTO );
         /*
          * Save the stock

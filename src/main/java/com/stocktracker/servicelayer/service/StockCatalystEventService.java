@@ -9,6 +9,8 @@ import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,23 +27,26 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockQuoteService stockQuoteService;
-    private StockService stockService;
+    private StockContainerService stockService;
 
     /**
      * Get the list of all stock catalyst event for the customer
+     *
+     * @param pageRequest
      * @param customerId
      * @return
      */
-    public List<StockCatalystEventDTO> getStockCatalystEventsForCustomerId( @NotNull final Integer customerId )
+    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerId( @NotNull final Pageable pageRequest,
+                                                                            @NotNull final Integer customerId )
     {
         final String methodName = "getStockCatalystEventsForCustomerId";
-        logMethodBegin( methodName, customerId );
+        logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        List<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
-            .findByCustomerIdOrderByTickerSymbol( customerId );
-        List<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( stockCatalystEventEntities );
+        Page<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
+            .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
+        Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
-        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.size() + " catalyst event" );
+        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.getContent().size() + " catalyst events" );
         return stockCatalystEventDTOs;
     }
 
@@ -52,18 +57,19 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
      * @param tickerSymbol
      * @return
      */
-    public List<StockCatalystEventDTO> getStockCatalystEventsForCustomerIdAndTickerSymbol( @NotNull final int customerId,
+    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerIdAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                                           @NotNull final int customerId,
                                                                                            @NotNull final String tickerSymbol )
     {
         final String methodName = "getStockCatalystEventsForCustomerIdAndTickerSymbol";
-        logMethodBegin( methodName, customerId, tickerSymbol );
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        List<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
-            .findByCustomerIdAndTickerSymbolOrderByTickerSymbol( customerId, tickerSymbol );
-        List<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( stockCatalystEventEntities );
+        Page<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
+            .findByCustomerIdAndTickerSymbolOrderByTickerSymbol( pageRequest, customerId, tickerSymbol );
+        Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
-        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.size() + " catalyst event" );
+        logMethodEnd( methodName, "Found " + stockCatalystEventEntities.getContent().size() + " catalyst events" );
         return stockCatalystEventDTOs;
     }
 
@@ -169,7 +175,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockContainerService stockService )
     {
         this.stockService = stockService;
     }

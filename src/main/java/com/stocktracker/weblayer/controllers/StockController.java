@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.StockContainerService;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
 import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockDTO;
@@ -33,7 +33,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @CrossOrigin
 public class StockController extends AbstractController implements MyLogger
 {
-    private StockService stockService;
+    private static final String CONTEXT_URL = "/stocks";
+    private StockContainerService stockService;
     private StockQuoteService stockQuoteService;
 
     /**
@@ -42,7 +43,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocks",
+    @RequestMapping( value = CONTEXT_URL,
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStocks( final Pageable pageRequest )
@@ -62,7 +63,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocks/companiesLike/{companiesLike}",
+    @RequestMapping( value = CONTEXT_URL + "/companiesLike/{companiesLike}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStockCompaniesMatching( final Pageable pageRequest,
@@ -89,7 +90,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stockQuote/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/stockQuote/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<StockQuote> getStockQuote( @PathVariable final String tickerSymbol )
@@ -125,7 +126,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocks/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public StockDTO getStock( @PathVariable final String tickerSymbol )
@@ -147,7 +148,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocks",
+    @RequestMapping( value = CONTEXT_URL,
                       method = RequestMethod.POST )
     public ResponseEntity<StockDTO> addStock( @RequestBody final StockDTO stockDTO )
     {
@@ -178,7 +179,7 @@ public class StockController extends AbstractController implements MyLogger
      * @throws StockNotFoundInDatabaseException if the stock does not exist
      */
     @CrossOrigin
-    @RequestMapping( value = "/stocks/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/{tickerSymbol}",
                      method = RequestMethod.DELETE )
     public ResponseEntity<Void> deleteStock( @PathVariable( "tickerSymbol" ) final String tickerSymbol )
     {
@@ -203,7 +204,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/stockSectors",
+    @RequestMapping( value = CONTEXT_URL + "/stockSectors",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public StockSectorsDTO getStockSectors()
@@ -221,7 +222,7 @@ public class StockController extends AbstractController implements MyLogger
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockContainerService stockService )
     {
         this.stockService = stockService;
     }

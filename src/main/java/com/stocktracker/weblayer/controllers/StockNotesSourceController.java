@@ -27,13 +27,14 @@ import java.util.Objects;
 public class StockNotesSourceController extends AbstractController
 {
     private StockNoteSourceService stockNoteSourceService;
+    private static final String CONTEXT_URL = "/stockNotesSource";
 
     /**
      * Get all of the stocks notes sources for a customer
      *
      * @return
      */
-    @RequestMapping( value = "/stockNotesSource/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<StockNoteSourceDTO> getStockNotesSources( final @PathVariable int customerId )
@@ -52,7 +53,7 @@ public class StockNotesSourceController extends AbstractController
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/stockNotesSource",
+    @RequestMapping( value = CONTEXT_URL + "/customer/customerId",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteSourceDTO> addStockNoteSource( @RequestBody StockNoteSourceDTO stockNoteSourceDTO )
     {

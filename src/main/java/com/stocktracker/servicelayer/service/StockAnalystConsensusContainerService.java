@@ -10,6 +10,8 @@ import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,28 +21,30 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockAnalystConsensusService extends BaseService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
+public class StockAnalystConsensusContainerService extends BaseStockQuoteContainerService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
-    private StockQuoteService stockQuoteService;
-
     private StockNoteSourceService stockNoteSourceService;
 
     /**
      * Get the list of all stock summaries for the customer
+     *
+     * @param pageRequest
      * @param customerId
      * @return
      */
-    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull final Integer customerId )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull final Pageable pageRequest,
+                                                                                     @NotNull final Integer customerId )
     {
         final String methodName = "getStockAnalystConsensusListForCustomerId";
-        logMethodBegin( methodName, customerId );
+        logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
-            .findByCustomerIdOrderByTickerSymbol( customerId );
-        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
+        Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+            .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
+        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
+                                                                                        stockAnalystConsensusEntities );
         logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
-        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " summaries" );
+        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
         return stockAnalystConsensusDTOS;
     }
 
@@ -50,18 +54,19 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
      * @param tickerSymbol
      * @return
      */
-    public List<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerIdAndTickerSymbol( final int customerId,
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerIdAndTickerSymbol( final Pageable pageRequest,
+                                                                                                    final int customerId,
                                                                                                     final String tickerSymbol )
     {
         final String methodName = "getStockAnalystConsensusListForCustomerIdAndTickerSymbol";
-        logMethodBegin( methodName, customerId, tickerSymbol );
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
-            .findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
+        Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+            .findByCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest, stockAnalystConsensusEntities );
         logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
-        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " summaries" );
+        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
         return stockAnalystConsensusDTOS;
     }
 
@@ -98,7 +103,7 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
-        stockAnalystConsensusEntity.setStockPriceWhenCreated( this.stockQuoteService
+        stockAnalystConsensusEntity.setStockPriceWhenCreated( this.getStockQuoteService()
                                                                   .getStockPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
         /*
          * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
@@ -158,7 +163,8 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
         BeanUtils.copyProperties( stockAnalystConsensusEntity, stockAnalystConsensusDTO );
         try
         {
-            this.stockQuoteService.setStockQuoteInformation( stockAnalystConsensusDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+            this.getStockQuoteService()
+                .setStockQuoteInformation( stockAnalystConsensusDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         }
         catch ( StockQuoteUnavailableException e )
         {
@@ -199,12 +205,6 @@ public class StockAnalystConsensusService extends BaseService<StockAnalystConsen
     public void setStockAnalystConsensusRepository( final StockAnalystConsensusRepository stockAnalystConsensusRepository )
     {
         this.stockAnalystConsensusRepository = stockAnalystConsensusRepository;
-    }
-
-    @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
-    {
-        this.stockQuoteService = stockQuoteService;
     }
 
     @Autowired

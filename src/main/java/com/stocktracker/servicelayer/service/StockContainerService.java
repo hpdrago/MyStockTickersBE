@@ -13,12 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -26,10 +24,9 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockService extends BaseStockQuoteService<StockEntity, StockDTO> implements MyLogger
+public class StockContainerService extends BaseStockQuoteContainerService<StockEntity, StockDTO> implements MyLogger
 {
     private StockRepository stockRepository;
-    private StockQuoteService stockQuoteService;
 
     /**
      * Get a page of StockDomainEntities's
@@ -238,7 +235,7 @@ public class StockService extends BaseStockQuoteService<StockEntity, StockDTO> i
         if ( stockEntity == null )
         {
             logDebug( methodName, tickerSymbol + " does note exist in the database, getting quote..." );
-            StockQuote stockQuote = this.stockQuoteService.getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+            StockQuote stockQuote = this.getStockQuoteService().getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
             if ( stockQuote == null )
             {
                 logDebug( methodName, "Cannot get a quote for stock " + tickerSymbol );
@@ -295,12 +292,7 @@ public class StockService extends BaseStockQuoteService<StockEntity, StockDTO> i
     @Autowired
     public void setStockRepository( final StockRepository stockRepository )
     {
+        logInfo( "setStockRepository", "Dependency Injection of " + stockRepository );
         this.stockRepository = stockRepository;
-    }
-
-    @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
-    {
-        this.stockQuoteService = stockQuoteService;
     }
 }

@@ -1,6 +1,8 @@
 package com.stocktracker.repositorylayer.repository;
 
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,7 +17,7 @@ public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity, In
      * @param customerId
      * @return
      */
-    List<StockToBuyEntity> findByCustomerIdOrderByTickerSymbol( final int customerId );
+    Page<StockToBuyEntity> findByCustomerIdOrderByTickerSymbol( final Pageable pageRequest, final int customerId );
 
     /**
      * Get all of the stocks to buy for the customer and the ticker symbol
@@ -23,5 +25,5 @@ public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity, In
      * @param tickerSymbol
      * @return
      */
-    List<StockToBuyEntity> findByCustomerIdAndTickerSymbol( final int customerId, final String tickerSymbol );
+    Page<StockToBuyEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest, final int customerId, final String tickerSymbol );
 }

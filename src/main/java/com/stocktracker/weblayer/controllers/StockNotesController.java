@@ -36,6 +36,7 @@ public class StockNotesController extends AbstractController implements MyLogger
 {
     private StockNoteCountService stockNoteCountService;
     private StockNoteService stockNoteService;
+    private static final String URL_CONTEXT = "/stockNotes";
 
     /**
      * Add a stock note to the database
@@ -43,7 +44,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return The stock note that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/stockNotes",
+    @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                       @PathVariable( "customerId") final int customerId )
@@ -68,7 +69,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/stockNotes/{stockNotesId}",
+    @RequestMapping( value = URL_CONTEXT + "/{stockNotesId}/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                          @PathVariable( "customerId" ) final int customerId,
@@ -110,7 +111,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/stockNotes/{stockNotesId}",
+    @RequestMapping( value = URL_CONTEXT + "/{stockNotesId}/customer/{customerId}",
                      method = RequestMethod.DELETE )
     public ResponseEntity<StockNoteDTO> deleteStockNote( @PathVariable( "customerId" ) final int customerId,
                                                          @PathVariable( "stockNotesId" ) final int stockNotesId )
@@ -141,7 +142,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/stockNotes",
+    @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
@@ -162,7 +163,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/stockNotes/{tickerSymbol}",
+    @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
@@ -187,7 +188,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = "/customer/{customerId}/stockNotes/tickerSymbols",
+    @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}/tickerSymbols",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( @PathVariable final int customerId )

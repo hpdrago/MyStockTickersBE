@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service.stockinformationprovider;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.StockContainerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     private static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
     private Map<String, StockTickerQuoteCacheEntry> cacheEntryMap = Collections.synchronizedMap( new HashMap<>( ) );
     private StockQuoteServiceExecutor stockQuoteServiceExecutor;
-    private StockService stockService;
+    private StockContainerService stockService;
 
     public StockQuoteCache()
     {
@@ -133,6 +133,10 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
         final String methodName = "synchronousQuoteFetch";
         logMethodBegin( methodName, tickerSymbol );
         StockTickerQuote stockTickerQuote = this.stockQuoteServiceExecutor.synchronousGetStockQuote( tickerSymbol );
+        if ( stockTickerQuote == null )
+        {
+            throw new StockNotFoundException( tickerSymbol + " is not a valid ticker symbol" );
+        }
         StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheStockQuote( stockTickerQuote );
         if ( !stockTickerQuoteCacheEntry.isStockTableEntryValidated() )
         {
@@ -150,6 +154,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      */
     public StockTickerQuoteCacheEntry cacheStockQuote( final @NotNull StockTickerQuote stockTickerQuote )
     {
+        Objects.requireNonNull( stockTickerQuote, "stockTickerQuote cannot be null" );
         stockTickerQuote.setStockQuoteState( StockQuoteState.CURRENT );
         StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = StockTickerQuoteCacheEntry.newInstance( stockTickerQuote );
         this.cacheEntryMap.put( stockTickerQuoteCacheEntry.getTickerSymbol(), stockTickerQuoteCacheEntry );
@@ -163,7 +168,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockContainerService stockService )
     {
         this.stockService = stockService;
     }

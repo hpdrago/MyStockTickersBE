@@ -12,6 +12,8 @@ import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +24,11 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
+public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
-    private StockQuoteService stockQuoteService;
     private StockTagService stockTagService;
-    private StockService stockService;
+    private StockContainerService stockService;
     private StockNoteSourceService stockNoteSourceService;
 
     /**
@@ -35,24 +36,25 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
      * @param customerId
      * @return
      */
-    public List<StockToBuyDTO> getStockToBuyListForCustomerId( @NotNull final Integer customerId )
+    public Page<StockToBuyDTO> getStockToBuyListForCustomerId( final Pageable pageRequest,
+                                                               @NotNull final Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuyListForCustomerId";
         logMethodBegin( methodName, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
-            .findByCustomerIdOrderByTickerSymbol( customerId );
-        List<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( stockToBuyEntities );
+        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
+            .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
+        Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
         {
-            this.stockQuoteService
+            this.getStockQuoteService()
                 .setStockQuoteInformation( stockToBuyDTO,
                                            StockQuoteFetchMode.ASYNCHRONOUS );
         }
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
-        logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " to buy" );
+        logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
         return stockToBuyDTOs;
     }
 
@@ -61,7 +63,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
      * @param customerId
      * @return
      */
-    public List<StockToBuyDTO> getStockToBuyListForCustomerIdAndTickerSymbol( @NotNull final Integer customerId,
+    public Page<StockToBuyDTO> getStockToBuyListForCustomerIdAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                              @NotNull final Integer customerId,
                                                                               @NotNull final String tickerSymbol )
         throws StockNotFoundException,
                StockQuoteUnavailableException
@@ -70,17 +73,17 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         logMethodBegin( methodName, customerId, tickerSymbol );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        List<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
-            .findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        List<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( stockToBuyEntities );
+        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
+            .findByCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+        Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
         {
-            this.stockQuoteService
+            this.getStockQuoteService()
                 .setStockQuoteInformation( stockToBuyDTO,
                                            StockQuoteFetchMode.ASYNCHRONOUS );
         }
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
-        logMethodEnd( methodName, "Found " + stockToBuyEntities.size() + " to buy" );
+        logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
         return stockToBuyDTOs;
     }
 
@@ -98,7 +101,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
         StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
         StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockQuoteService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.getStockQuoteService()
+            .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -125,7 +129,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
          */
         if ( stockToBuyEntity.getStockPriceWhenCreated() == null )
         {
-            stockToBuyEntity.setStockPriceWhenCreated( this.stockQuoteService
+            stockToBuyEntity.setStockPriceWhenCreated( this.getStockQuoteService()
                                                            .getStockPrice( stockToBuyEntity.getTickerSymbol() ) );
         }
         /*
@@ -145,7 +149,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
                                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockQuoteService.setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.getStockQuoteService()
+            .setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnStockToBuyDTO );
         return returnStockToBuyDTO;
     }
@@ -173,7 +178,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
                                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
-        this.stockQuoteService.setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.getStockQuoteService()
+            .setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnStockToBuyDTO );
         return returnStockToBuyDTO;
     }
@@ -201,7 +207,8 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
         stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
         try
         {
-            this.stockQuoteService.setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+            this.getStockQuoteService()
+                .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         }
         catch ( StockQuoteUnavailableException e )
         {
@@ -264,13 +271,7 @@ public class StockToBuyService extends BaseService<StockToBuyEntity, StockToBuyD
     }
 
     @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
-    {
-        this.stockQuoteService = stockQuoteService;
-    }
-
-    @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockContainerService stockService )
     {
         this.stockService = stockService;
     }
