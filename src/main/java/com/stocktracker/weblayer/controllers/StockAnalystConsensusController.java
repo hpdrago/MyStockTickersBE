@@ -129,15 +129,16 @@ public class StockAnalystConsensusController implements MyLogger
     }
 
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockAnalystConsensusDTO> saveStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
+                                                                               @PathVariable Integer stockAnalystConsensusId,
                                                                                @PathVariable Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "saveStockAnalystConsensus";
-        logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
+        logMethodBegin( methodName, stockAnalystConsensusId, customerId, stockAnalystConsensusDTO );
         /*
          * Save the stock
          */

@@ -24,7 +24,11 @@ public enum StockQuoteState
     /**
      * The stock ticker symbol was not found
      */
-    NOT_FOUND;
+    NOT_FOUND,
+    /**
+     * Identifies when there are issues updating the stock quote
+     */
+    FAILURE;
 
     public boolean isCurrent() { return this == CURRENT; }
     public boolean isStale() { return this == STALE; }
