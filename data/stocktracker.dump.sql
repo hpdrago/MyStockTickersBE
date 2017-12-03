@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.17-log
+-- Server version	5.7.18-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -315,10 +315,8 @@ CREATE TABLE `stock_analyst_consensus` (
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
-  KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_idx` (`ticker_symbol`),
   KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE_idx` (`notes_source_id`),
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -329,7 +327,7 @@ CREATE TABLE `stock_analyst_consensus` (
 
 LOCK TABLES `stock_analyst_consensus` WRITE;
 /*!40000 ALTER TABLE `stock_analyst_consensus` DISABLE KEYS */;
-INSERT INTO `stock_analyst_consensus` VALUES (6,1,'ADMA','<p>There is very sparse analyst coverage on this small cap name.&nbsp;In mid-November the stock&nbsp;<a href=\"https://www.benzinga.com/news/17/11/10778171/raymond-james-upgrades-adma-biologics-to-outperform\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">was upgraded to Outperform at Raymond James</a>&nbsp;with a $5 price target, as the analyst cited increased confidence that RI-002 would be eventually approved and lowered risk after the recent equity raise.&nbsp;Maxim Group issued a Buy rating and a $13 price target some five months ago.</p><p>Insiders have been purchasing shares recently, including beneficial owner Biotest AG scooping up 5,813,954 shares in the latest secondary. CMO James Mond&nbsp;<a href=\"https://www.chaffeybreeze.com/2017/11/14/adma-biologics-inc-adma-cmo-james-mond-purchases-10000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">picked up</a>&nbsp;10,000 shares and director Eric Richman&nbsp;<a href=\"https://www.tickerreport.com/banking-finance/3031799/adma-biologics-inc-adma-director-eric-i-richman-acquires-25000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">bought</a>&nbsp;25,000 shares. All transactions occurred on November 9th.</p><p><br></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,NULL,5.00,0.00,13.00,NULL,NULL,3.19,1,'2017-11-24 22:02:10',NULL),(7,1,'ADMS','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075911-behind-adamas-big-month-long-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,6,0,0,0,'2017-11-25 00:40:39',35.00,0.00,48.00,'2017-11-25 00:40:39',NULL,33.68,1,'2017-11-25 00:40:39','2017-11-25 00:40:39'),(10,1,'EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">The median analyst price target on EPZM is just over $22.00 a share by the ten or so analysts that cover the company. A slew of analyst commentary came out earlier this month. HC Wainwright reiterated their buy rating and price target of $25 a share. Also, on Nov. 2, 2017, Leerink also came out and reiterated their outperform rating, but lowered their price target from $28 to $22 a share. The analyst over at&nbsp;</span><a href=\"https://thefly.com/landingPageNews.php?id=2634655&amp;headline=EPZM-Epizyme-price-target-lowered-to--from--at-Leerink\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">Leerink stated</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;that \"the most significant disclosure concerned regulatory timelines for its lead asset, tazemetostat, which is now likely to be approved for its first indication in 2019, rather than 2018, and for its most important indication, NHL, in 2020, rather than 2018.\" RBC Capital seems to be the only analyst firm with a negative view on the stock, recently reissuing their Hold rating and $16 price target.</span></p><p>https://seekingalpha.com/article/4127139-initiating-epizyme-watch-item-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',1,1,1,0,0,'2017-11-25 16:12:06',22.00,16.00,0.00,'2017-11-25 16:12:06',NULL,11.90,1,'2017-11-25 16:12:06','2017-11-25 16:12:06'),(13,1,'ACAD','<p><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Acadia Pharmaceuticals (</strong><a href=\"https://seekingalpha.com/symbol/ACAD\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>ACAD</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;got several positive mentions after earnings results last week. JP Morgan ($50 price target) and H.C. Wainwright ($60 price target) reiterated their Buy ratings last Wednesday. Friday, Cowen &amp; Co. ($50 price target). I have to agree with these analyst firms. The stock\'s over 10% pullback last week seem more than overdone given the company easily&nbsp;</span><a href=\"https://seekingalpha.com/news/3309283-acadia-pharma-beats-0_09-beats-revenue\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">beat</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;top and bottom line expectations.</span></p><p><br></p><p><span class=\"ql-cursor\">﻿</span>https://seekingalpha.com/article/4124394-biotech-forum-daily-digest-behind-omeros-blowout-results?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,52.00,47.00,61.00,'2017-11-27 19:22:18',22,NULL,3,'2017-11-27 19:22:18','2017-11-27 19:22:18'),(14,1,'TGTX','<p>TGTX............H.C. Wainwright analyst Edward White assigned a Buy rating to TG Therapeutics (NASDAQ: TGTX) today and set a price target of $33. The company’s shares opened today at $7.70.</p><p><br></p><p>White said:</p><p><br></p><p>“TG Announces New Phase 2 Trial in Follicular Lymphoma for Umbralisib New trial in FL. TG Therapeutics announced this morning that it, along with SWOG, the global cancer clinical trials group funded by the National Cancer Institute, has initiated a three arm Phase 2 trial evaluating the combination of umbralisib (TGR-1202), TG’s oral PI3K delta inhibitor, plus obinutuzumab (Gazyva), compared to the combination of obinutuzumab plus lenalidomide, and obinituzumab plus CHOP, in patients with early relapsing or refractory Grade I, II, or IIIa follicular lymphoma (FL). The study, which will be run independently by SWOG, expects to enroll 50 patients per arm. The study is now open at over 100 sites in the US. The goal of the study is to assess CR following six cycles of treatment. Secondary endpoints include ORR, DOR and PFS. Safety will also be evaluated.”</p>',1,0,0,0,0,'2017-11-27 16:49:21',33.00,0.00,33.00,'2017-11-27 16:49:21',9,7.78,1,'2017-11-27 16:49:21','2017-11-27 16:49:21'),(15,1,'BNFT','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074021-portfolio-change-alert-adding-benefitfocus-portfolio#comments</p>',4,1,3,0,0,'2017-11-27 17:52:57',35.50,33.00,43.00,'2017-11-27 17:52:57',15,26.65,1,'2017-11-27 17:52:57','2017-11-27 17:52:57'),(16,1,'SGYP','<p>https://www.tipranks.com/stocks/sgyp/price-target</p>',0,0,0,0,0,NULL,7.75,2.50,13.00,'2017-11-27 19:10:43',21,1.89,1,'2017-11-27 19:10:43','2017-11-27 19:10:43'),(17,1,'FLXN','<p>https://www.tipranks.com/stocks/flxn/price-target</p>',0,6,0,0,0,'2017-11-27 19:40:35',36.40,34.00,44.00,'2017-11-27 19:41:00',21,NULL,2,'2017-11-27 19:41:00','2017-11-27 19:41:00'),(18,1,'ZYNE','',0,4,2,0,0,'2017-11-27 20:16:25',14.00,7.00,20.00,'2017-11-27 20:16:25',21,13.74,1,'2017-11-27 20:16:25','2017-11-27 20:16:25'),(19,1,'NEOS','',6,0,0,0,0,'2017-12-01 14:15:28',18.00,12.00,30.00,'2017-12-01 14:15:28',21,10.30,1,'2017-12-01 14:15:28','2017-12-01 14:15:28'),(20,1,'OMER','',4,0,0,0,0,'2017-12-01 14:18:38',30.00,19.00,47.00,'2017-12-01 14:18:38',21,20.75,1,'2017-12-01 14:18:38','2017-12-01 14:18:38'),(23,1,'PGNX','',2,0,0,0,0,'2017-12-01 14:21:20',13.50,12.00,15.00,'2017-12-01 14:21:20',21,5.78,1,'2017-12-01 14:21:20','2017-12-01 14:21:20'),(25,1,'REPH','',2,0,0,0,0,'2017-12-01 14:49:14',14.50,11.00,18.00,'2017-12-01 14:49:14',21,9.68,1,'2017-12-01 14:49:14','2017-12-01 14:49:14');
+INSERT INTO `stock_analyst_consensus` VALUES (6,1,'ADMA','<p>There is very sparse analyst coverage on this small cap name.&nbsp;In mid-November the stock&nbsp;<a href=\"https://www.benzinga.com/news/17/11/10778171/raymond-james-upgrades-adma-biologics-to-outperform\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">was upgraded to Outperform at Raymond James</a>&nbsp;with a $5 price target, as the analyst cited increased confidence that RI-002 would be eventually approved and lowered risk after the recent equity raise.&nbsp;Maxim Group issued a Buy rating and a $13 price target some five months ago.</p><p>Insiders have been purchasing shares recently, including beneficial owner Biotest AG scooping up 5,813,954 shares in the latest secondary. CMO James Mond&nbsp;<a href=\"https://www.chaffeybreeze.com/2017/11/14/adma-biologics-inc-adma-cmo-james-mond-purchases-10000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">picked up</a>&nbsp;10,000 shares and director Eric Richman&nbsp;<a href=\"https://www.tickerreport.com/banking-finance/3031799/adma-biologics-inc-adma-director-eric-i-richman-acquires-25000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">bought</a>&nbsp;25,000 shares. All transactions occurred on November 9th.</p><p><br></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,NULL,5.00,0.00,13.00,NULL,NULL,3.19,1,'2017-11-24 22:02:10',NULL),(7,1,'ADMS','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075911-behind-adamas-big-month-long-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,6,0,0,0,'2017-11-25 00:40:39',35.00,0.00,48.00,'2017-11-25 00:40:39',NULL,33.68,1,'2017-11-25 00:40:39','2017-11-25 00:40:39'),(10,1,'EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">The median analyst price target on EPZM is just over $22.00 a share by the ten or so analysts that cover the company. A slew of analyst commentary came out earlier this month. HC Wainwright reiterated their buy rating and price target of $25 a share. Also, on Nov. 2, 2017, Leerink also came out and reiterated their outperform rating, but lowered their price target from $28 to $22 a share. The analyst over at&nbsp;</span><a href=\"https://thefly.com/landingPageNews.php?id=2634655&amp;headline=EPZM-Epizyme-price-target-lowered-to--from--at-Leerink\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">Leerink stated</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;that \"the most significant disclosure concerned regulatory timelines for its lead asset, tazemetostat, which is now likely to be approved for its first indication in 2019, rather than 2018, and for its most important indication, NHL, in 2020, rather than 2018.\" RBC Capital seems to be the only analyst firm with a negative view on the stock, recently reissuing their Hold rating and $16 price target.</span></p><p>https://seekingalpha.com/article/4127139-initiating-epizyme-watch-item-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',1,1,1,0,0,'2017-11-25 16:12:06',22.00,16.00,0.00,'2017-11-25 16:12:06',NULL,11.90,1,'2017-11-25 16:12:06','2017-11-25 16:12:06'),(13,1,'ACAD','<p><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Acadia Pharmaceuticals (</strong><a href=\"https://seekingalpha.com/symbol/ACAD\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>ACAD</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;got several positive mentions after earnings results last week. JP Morgan ($50 price target) and H.C. Wainwright ($60 price target) reiterated their Buy ratings last Wednesday. Friday, Cowen &amp; Co. ($50 price target). I have to agree with these analyst firms. The stock\'s over 10% pullback last week seem more than overdone given the company easily&nbsp;</span><a href=\"https://seekingalpha.com/news/3309283-acadia-pharma-beats-0_09-beats-revenue\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">beat</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;top and bottom line expectations.</span></p><p><br></p><p><span class=\"ql-cursor\">﻿</span>https://seekingalpha.com/article/4124394-biotech-forum-daily-digest-behind-omeros-blowout-results?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,52.00,47.00,61.00,'2017-11-27 19:22:18',22,NULL,3,'2017-11-27 19:22:18','2017-11-27 19:22:18'),(14,1,'TGTX','<p>TGTX............H.C. Wainwright analyst Edward White assigned a Buy rating to TG Therapeutics (NASDAQ: TGTX) today and set a price target of $33. The company’s shares opened today at $7.70.</p><p><br></p><p>White said:</p><p><br></p><p>“TG Announces New Phase 2 Trial in Follicular Lymphoma for Umbralisib New trial in FL. TG Therapeutics announced this morning that it, along with SWOG, the global cancer clinical trials group funded by the National Cancer Institute, has initiated a three arm Phase 2 trial evaluating the combination of umbralisib (TGR-1202), TG’s oral PI3K delta inhibitor, plus obinutuzumab (Gazyva), compared to the combination of obinutuzumab plus lenalidomide, and obinituzumab plus CHOP, in patients with early relapsing or refractory Grade I, II, or IIIa follicular lymphoma (FL). The study, which will be run independently by SWOG, expects to enroll 50 patients per arm. The study is now open at over 100 sites in the US. The goal of the study is to assess CR following six cycles of treatment. Secondary endpoints include ORR, DOR and PFS. Safety will also be evaluated.”</p>',5,0,0,0,0,'2017-12-01 16:00:29',24.88,21.50,33.00,'2017-12-01 16:00:29',21,NULL,2,'2017-12-01 16:00:29','2017-12-01 16:00:29'),(15,1,'BNFT','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074021-portfolio-change-alert-adding-benefitfocus-portfolio#comments</p>',4,1,3,0,0,'2017-11-27 17:52:57',35.50,33.00,43.00,'2017-11-27 17:52:57',15,26.65,1,'2017-11-27 17:52:57','2017-11-27 17:52:57'),(16,1,'SGYP','<p>https://www.tipranks.com/stocks/sgyp/price-target</p>',0,0,0,0,0,NULL,7.75,2.50,13.00,'2017-11-27 19:10:43',21,1.89,1,'2017-11-27 19:10:43','2017-11-27 19:10:43'),(17,1,'FLXN','<p>https://www.tipranks.com/stocks/flxn/price-target</p>',0,6,0,0,0,'2017-11-27 19:40:35',36.40,34.00,44.00,'2017-11-27 19:41:00',21,NULL,2,'2017-11-27 19:41:00','2017-11-27 19:41:00'),(18,1,'ZYNE','',0,4,2,0,0,'2017-11-27 20:16:25',14.00,7.00,20.00,'2017-11-27 20:16:25',21,13.74,1,'2017-11-27 20:16:25','2017-11-27 20:16:25'),(19,1,'NEOS','',6,0,0,0,0,'2017-12-01 14:15:28',18.00,12.00,30.00,'2017-12-01 14:15:28',21,10.30,1,'2017-12-01 14:15:28','2017-12-01 14:15:28'),(20,1,'OMER','',4,0,0,0,0,'2017-12-01 14:18:38',30.00,19.00,47.00,'2017-12-01 14:18:38',21,20.75,1,'2017-12-01 14:18:38','2017-12-01 14:18:38'),(23,1,'PGNX','',2,0,0,0,0,'2017-12-01 14:21:20',13.50,12.00,15.00,'2017-12-01 14:21:20',21,5.78,1,'2017-12-01 14:21:20','2017-12-01 14:21:20'),(25,1,'REPH','',2,0,0,0,0,'2017-12-01 14:49:14',14.50,11.00,18.00,'2017-12-01 14:49:14',21,9.68,1,'2017-12-01 14:49:14','2017-12-01 14:49:14');
 /*!40000 ALTER TABLE `stock_analyst_consensus` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -431,11 +429,11 @@ BEGIN
 	IF NEW.notes_source_id <> OLD.notes_source_id 
     THEN
 		UPDATE stock_note_source
-		   SET used_count = used_count - 1
+		   SET times_used = times_used - 1
 		 WHERE id = OLD.notes_source_id;
          
 		UPDATE stock_note_source
-		   SET used_count = used_count + 1
+		   SET times_used = times_used + 1
 		 WHERE id = NEW.notes_source_id;
     END IF;
     /*
@@ -462,128 +460,6 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Table structure for table `stock_analytics`
---
-
-DROP TABLE IF EXISTS `stock_analytics`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stock_analytics` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `customer_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
-  `comments` varchar(45) DEFAULT NULL,
-  `analyst_strong_buy_count` int(11) DEFAULT NULL,
-  `analyst_buy_count` int(11) DEFAULT NULL,
-  `analyst_hold_count` int(11) DEFAULT NULL,
-  `analyst_under_perform_count` int(11) DEFAULT NULL,
-  `analyst_sell_count` int(11) DEFAULT NULL,
-  `analyst_sentiment_date` timestamp NULL DEFAULT NULL,
-  `avg_analyst_price_target` decimal(7,2) DEFAULT NULL,
-  `low_analyst_price_target` decimal(7,2) DEFAULT NULL,
-  `high_analyst_price_target` decimal(7,2) DEFAULT NULL,
-  `analyst_price_date` timestamp NULL DEFAULT NULL,
-  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_date` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
-  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
-  KEY `FK_STOCK_ANALYTICS_STOCK_idx` (`ticker_symbol`),
-  CONSTRAINT `FK_STOCK_ANALYTICS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_ANALYTICS_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `stock_analytics`
---
-
-LOCK TABLES `stock_analytics` WRITE;
-/*!40000 ALTER TABLE `stock_analytics` DISABLE KEYS */;
-INSERT INTO `stock_analytics` VALUES (3,1,'ABX','A gold company',5,4,3,2,1,'2017-10-24 21:02:44',20.00,18.00,25.00,'2017-10-24 20:16:31','2017-10-24 21:02:44','2017-10-24 21:02:44');
-/*!40000 ALTER TABLE `stock_analytics` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_analytics_BEFORE_INSERT` BEFORE INSERT ON `stock_analytics` FOR EACH ROW
-BEGIN
-	SET NEW.UPDATE_DATE = current_timestamp();
-    /*
-     * If any sentient changes, then change the last sentiment date
-     */
-	IF NEW.ANALYST_STRONG_BUY_COUNT > 0 OR
-       NEW.ANALYST_BUY_COUNT > 0  OR
-       NEW.ANALYST_HOLD_COUNT > 0  OR
-       NEW.ANALYST_UNDER_PERFORM_COUNT > 0  OR
-       NEW.ANALYST_SELL_COUNT > 0 
-    THEN
-		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
-	END IF;
-		
-    /*
-     * If any price sentient changes, then change the last price sentiment date
-     */    
-    IF NEW.AVG_ANALYST_PRICE_TARGET > 0 OR
-       NEW.LOW_ANALYST_PRICE_TARGET > 0 OR
-       NEW.HIGH_ANALYST_PRICE_TARGET > 0
-	THEN
-       SET NEW.ANALYST_PRICE_DATE = CURRENT_TIMESTAMP();
-	END IF;
-    
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_analytics_BEFORE_UPDATE` BEFORE UPDATE ON `stock_analytics` FOR EACH ROW
-BEGIN
-	SET NEW.UPDATE_DATE = current_timestamp();
-    /*
-     * If any sentient changes, then change the last sentiment date
-     */
-	IF NEW.ANALYST_STRONG_BUY_COUNT    <> OLD.ANALYST_STRONG_BUY_COUNT OR
-       NEW.ANALYST_BUY_COUNT           <> OLD.ANALYST_BUY_COUNT OR
-       NEW.ANALYST_HOLD_COUNT          <> OLD.ANALYST_HOLD_COUNT OR
-       NEW.ANALYST_UNDER_PERFORM_COUNT <> OLD.ANALYST_UNDER_PERFORM_COUNT OR
-       NEW.ANALYST_SELL_COUNT          <> OLD.ANALYST_SELL_COUNT
-    THEN
-		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
-	END IF;
-		
-    /*
-     * If any price target changes, then change the last price date
-     */    
-    IF NEW.AVG_ANALYST_PRICE_TARGET  <> OLD.AVG_ANALYST_PRICE_TARGET OR
-       NEW.LOW_ANALYST_PRICE_TARGET  <> OLD.LOW_ANALYST_PRICE_TARGET OR
-       NEW.HIGH_ANALYST_PRICE_TARGET <> OLD.HIGH_ANALYST_PRICE_TARGET
-	THEN
-       SET NEW.ANALYST_PRICE_DATE = CURRENT_TIMESTAMP();
-	END IF;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-
---
 -- Table structure for table `stock_catalyst_event`
 --
 
@@ -601,7 +477,9 @@ CREATE TABLE `stock_catalyst_event` (
   `date_or_time_period` tinyint(1) NOT NULL,
   `time_period` tinyint(1) DEFAULT NULL,
   `time_period_year` smallint(2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `FK_STOCK_CATALYST_EVENT_idx` (`customer_id`),
+  CONSTRAINT `FK_STOCK_CATALYST_EVENT` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -660,9 +538,7 @@ CREATE TABLE `stock_note` (
   PRIMARY KEY (`id`),
   KEY `FK_STOCK_NOTES_STOCK_NOTES_SOURCE_idx` (`notes_source_id`),
   KEY `IDX_CUSTOMER` (`customer_id`),
-  KEY `FK_STOCK_NOTES_STOCK_idx` (`ticker_symbol`),
   CONSTRAINT `FK_STOCK_NOTE_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
-  CONSTRAINT `FK_STOCK_NOTE_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_NOTE_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -676,6 +552,26 @@ LOCK TABLES `stock_note` WRITE;
 INSERT INTO `stock_note` VALUES (48,1,'SRNE','<p>https://seekingalpha.com/article/4113371-sorrento-therapeutics-buy-sell-hold-big-rally</p>',8,5,'2011-10-30 17:00:00',1,0,0,NULL,NULL,2.53,6,'2017-11-11 23:21:08','2017-11-11 23:21:08'),(49,1,'TTOO','<p>https://finance.yahoo.com/news/t2-biosystems-announces-t2bacteria-ruo-142616938.html</p>',8,3,'2017-11-19 16:00:00',1,0,0,'0.00',NULL,4.02,10,'2017-11-21 22:26:50','2017-11-21 22:26:50'),(50,1,'EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">I have initiated a small ‘watch item’ position in Epizyme.&nbsp;The company is now well-funded and has upcoming and definable catalysts.&nbsp;Epizyme is heavily leveraged to the success or failure of tazemetostat.&nbsp;The company does not intrigue me as much as a couple of other previous ‘busted IPOs’ in the oncology space,&nbsp;</span><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Ignyta (</strong><a href=\"https://seekingalpha.com/symbol/RXDX\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>RXDX</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;and&nbsp;</span><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Mirati Therapeutics (</strong><a href=\"https://seekingalpha.com/symbol/MRTX\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>MRTX</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;which I&nbsp;</span><a href=\"https://seekingalpha.com/instablog/498952-bret-jensen/5066903-overlooked-niche-market\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">noted</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;recently.&nbsp;However, the stock does seem to have a favorable risk/reward profile at current levels so I have initiated a ‘starter’ position.</span></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5074614-epizyme-upcoming-catalysts-horizon?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',15,3,'2017-11-20 16:00:00',1,0,0,'0.00',NULL,12.85,6,'2017-11-21 22:29:55','2017-11-21 22:29:55'),(51,1,'OTIC','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074715-deep-dive-otonomy#comments</p>',15,3,'2017-11-20 16:00:00',1,0,0,'0.00',NULL,5.36,7,'2017-11-21 22:26:40','2017-11-21 22:26:40'),(53,1,'NVAX','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Ultimately, the fate of NVAX in 2018 rests on the success of the maternal RSV vaccine trial. The Phase 3 trial will report interim results in H2 2018; after the failure of the older adult population, faith has been shaken in the vaccine as whole. Yet, the maternal trial\'s design looks like it will successfully eliminate some of the issues that dragged down the last trial. A successful data reading in 2018 will send NVAX shares rocketing, but another failure would severely damage the share price - and likely result in a painful dilution to keep the company going.</span></p>',17,3,'2017-11-22 09:51:38',1,0,0,'0',NULL,1.42,1,'2017-11-22 17:53:57',NULL),(54,1,'DVAX','<p>https://seekingalpha.com/article/4127235-dynavax-now-fun-begins?app=1&amp;auth_param=1ba2vi:1d1bmps:51ac4cc805ebf72329bc9fb14da2c02d&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-22 15:01:09',1,0,0,'0',NULL,18.55,1,'2017-11-22 23:01:27',NULL),(55,1,'VYGR','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Voyager is well-funded, has multiple \'shots on goal\' and a strategic partnership. The stock also has some analyst support. That being said, this intriguing concern is at least a few years away from successful commercialization. For aggressive investors, a small purchase might be warranted within a well-diversified biotech portfolio. This is what I have recently done as I do think this \"Busted IPO\" deserves to be on my \'watch list\' until it reaches later stage trial development.</span></p><p>https://seekingalpha.com/article/4099396-voyager-therapeutics-next-busted-ipo</p>',15,3,'2017-11-22 15:14:09',1,2,0,'0',NULL,14.18,1,'2017-11-22 23:15:13',NULL),(56,1,'ADMA','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-24 15:53:00',1,0,0,'0',NULL,3.19,1,'2017-11-24 23:53:22',NULL),(57,1,'AUPH','<p>https://seekingalpha.com/article/4127547-3-reasons-buy-aurinia-pharmaceuticals?app=1&amp;auth_param=1ba2vi:1d1gr77:90c8ee3e35ca2feb3beccc17652629f5&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-24 16:06:30',1,0,0,'0',NULL,5.26,1,'2017-11-25 00:06:53',NULL),(58,1,'ADMS','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075911-behind-adamas-big-month-long-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-24 16:37:49',1,0,0,'0',NULL,33.68,1,'2017-11-25 00:38:08',NULL),(59,1,'RVNC','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">I am going to take a small position in RVNC and watch for further developments.&nbsp;It is not a stock we will place in the Insiders Forum at this particular time.&nbsp;The portfolio is already top heavy with holdings in this sector. The company will probably have to do one more capital raise and I worry somewhat about the rollout upon approval given it will have to go up against an established and deep pocketed competitor with a good brand name in their targeted space.&nbsp;That said, I do think RVNC\'s risk/reward profile is favorable and merits a small investment within a well-diversified biotech portfolio.</span></p><p>https://seekingalpha.com/research/498952-bret-jensen/5075307-deeper-look-revance-therapeutics#comments</p>',8,3,'2017-11-23 16:00:00',1,0,0,'0.00',NULL,26.50,2,'2017-11-25 01:25:22','2017-11-25 01:25:22'),(60,1,'NVAX','<p>https://seekingalpha.com/article/4127148-novavaxs-november-jump-start-something-bigger?app=1&amp;auth_param=1ba2vi:1d1bagc:81c92a0ad257cd58b07f0dd7b92d7530&amp;uprof=45&amp;dr=1#alt1</p>',17,3,'2017-11-24 17:32:48',1,0,0,'0',NULL,1.54,1,'2017-11-25 01:33:04',NULL),(61,1,'TACO','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5076230-del-taco-insiders-signaling-recent-indigestion?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',18,3,'2017-11-25 08:01:49',1,0,0,'0',NULL,12.07,1,'2017-11-25 16:02:50',NULL),(62,1,'UNIT','<p>15% Yield </p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5075185-tims-corner-big-upside-15-percent-yield-play?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',19,3,'2017-11-25 08:14:55',1,2,0,'0',NULL,16.26,1,'2017-11-25 16:16:28',NULL),(63,1,'SGYP','<p>https://seekingalpha.com/article/4127672-synergy-pharmas-trulance-best-class-drug-really?app=1&amp;auth_param=1ba2vi:1d1lmp1:62f036aa554eb44bb0862120c9384b04&amp;uprof=45&amp;dr=1</p>',8,3,'2017-11-26 10:27:04',1,0,0,'0',NULL,1.90,1,'2017-11-26 22:12:47',NULL),(64,1,'REPH','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5076470-update-recro-pharma?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p><p><br></p><p>more detiled analysis</p><p>https://seekingalpha.com/article/4124888-recro-pharmaceuticals-prescriptions-pain-prescription-gain</p>',8,3,'2017-11-26 14:36:16',1,0,0,'0',NULL,9.38,1,'2017-11-26 22:38:18',NULL),(66,1,'OMER','<p>https://seekingalpha.com/article/4124394-biotech-forum-daily-digest-behind-omeros-blowout-results?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-26 14:46:43',1,0,0,'0',NULL,19.18,1,'2017-11-26 22:47:51',NULL),(67,1,'GNMX','<p>http://markets.businessinsider.com/stock/gnmx/company-profile</p>',9,3,'2017-11-27 08:17:21',1,0,0,'0',NULL,1.23,1,'2017-11-27 16:17:40',NULL),(68,1,'ARLZ','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">Paul, ARLZ, they got Zontivity from Merck for $25-million-- an approved heart drug. They\'ve focused on it, and promoted it. Done a good job; scripts rapidly growing. If you read their recent earnings report, and / or better yet, listen to the CC; you\'ll hear very positive forecasts for 2018 revenue growth. Not just Zontivity, but one or two other drugs they have.</span></p><p><br></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">According to Goldman, CEO has been very successful at generating value, and then flipping cos. Seems that management has done a good job with turnaround thus far.</span></p><p><br></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">Sizable debt lingers at high interest, but if revenue growth is in line with forward guidance, refinancing should not be difficult, and at much better rates.</span></p><p><br></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">The only real downside that I see is that Zontivity sales waffle, but given trend, that seems unlikely. There is some possible competition from another drug on the horizon, but it appears to be a year away from being approved / commercial... and it\'s not clear that it is much better. With a multi-year head-start, Zontivity should be well positioned-- look at the Linzess vs. Trulance battle... clearly being first matters.</span></p><p><br></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">Meanwhile the limited analyst coverage pegs the value at the mid-$4s, which would be a nice run.</span></p>',9,3,'2017-11-27 08:23:20',1,0,0,'0',NULL,1.63,1,'2017-11-27 16:23:32',NULL),(70,1,'TTOO','<p>https://finance.yahoo.com/news/t2-biosystems-announces-t2bacteria-ruo-142616938.html</p>',9,3,'2017-11-27 08:25:43',1,0,0,'0',NULL,4.29,1,'2017-11-27 16:25:54',NULL),(73,1,'EARS','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">TDM -- Looked at EARS and the area they are working in [ the ear ] as shown by their ticker symbol is certainly an area of huge interest and will say need. if reports are correct about all the damage the various digital devices and ears buds will do is correct, then the need for meds to treat the problems will be enormous. I looked at the chart on the stock and several interesting tech indicators -- positive ones.</span></p><p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">Both RSI and OBV have really spiked up, and the MACD looks like short time line will cross the longer and still all below the ) line. Broke 50 day moving average at .85 Will look at more and also interested to see what you find. Gotta be out for good while but check back later.</span></p>',9,3,'2017-11-27 09:30:28',1,0,0,'0',NULL,0.84,1,'2017-11-27 17:30:47',NULL),(74,1,'ADMS','<p>https://seekingalpha.com/article/4127869-can-big-rally-adamas-pharmaceuticals-continue?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-27 09:31:07',1,0,0,'0',NULL,32.51,1,'2017-11-27 17:32:13',NULL),(75,1,'ADMS','<p>https://seekingalpha.com/article/4127869-can-big-rally-adamas-pharmaceuticals-continue?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-27 09:31:07',1,0,0,'0',NULL,32.51,1,'2017-11-27 17:32:13',NULL),(76,1,'BNFT','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074021-portfolio-change-alert-adding-benefitfocus-portfolio#comments</p>',15,3,'2017-11-27 09:58:13',1,1,0,'0',NULL,26.60,1,'2017-11-27 17:58:43',NULL),(77,1,'MRNS','<p>https://seekingalpha.com/article/4118234-marinus-pharmaceuticals-next-big-thing-cns?app=1&amp;auth_param=1ba2vi:1cvhjji:3c872f4b4f9e4abdb445c373df3ebec3&amp;uprof=45&amp;dr=1</p>',17,3,'2017-10-30 00:00:00',1,0,0,'0',NULL,7.20,1,'2017-11-27 18:01:02',NULL),(78,1,'MRNS','<p>https://seekingalpha.com/article/4118234-marinus-pharmaceuticals-next-big-thing-cns?app=1&amp;auth_param=1ba2vi:1cvhjji:3c872f4b4f9e4abdb445c373df3ebec3&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-27 10:22:45',1,0,0,'0',NULL,7.36,1,'2017-11-27 18:23:00',NULL),(79,1,'IMDZ','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5068083-portolio-change-alert-immune-design-11th-selection</p>',15,3,'2017-11-27 10:24:04',1,1,0,'0',NULL,4.38,1,'2017-11-27 18:24:44',NULL),(80,1,'ACAD','<p>https://seekingalpha.com/article/4127888-buyout-still-cards-acadia-pharmaceuticals?app=1&amp;auth_param=1ba2vi:1d1olnj:c6485021a6bcfaffd87ffc3c666acef7&amp;uprof=45&amp;dr=1#alt1</p>',17,3,'2017-11-27 10:34:48',1,0,0,'0',NULL,27.70,1,'2017-11-27 18:35:02',NULL),(81,1,'RVNC','<p>https://www.tipranks.com/stocks/sgyp/price-target</p>',NULL,3,'2017-11-27 11:27:05',1,0,0,'0',NULL,26.25,1,'2017-11-27 19:27:28',NULL),(82,1,'EPZM','<p>https://seekingalpha.com/article/4127139-initiating-epizyme-watch-item-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',15,3,'2017-11-27 11:30:00',1,1,0,'0',NULL,11.97,1,'2017-11-27 19:31:09',NULL),(83,1,'VTL','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5070965-busted-ipo-deep-dive-week?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-27 11:55:58',1,0,0,'0',NULL,5.22,1,'2017-11-27 19:56:27',NULL),(84,1,'EARS','<p>https://www.smarteranalyst.com/2017/11/28/heres-triggered-auris-medical-holding-ag-ears-selloff/</p>',17,3,'2017-11-28 09:53:13',1,0,0,'0',NULL,0.41,1,'2017-11-28 17:53:23',NULL),(85,1,'EGLT','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5077691-hope-egalet?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',8,3,'2017-11-28 10:44:33',1,0,0,'0',NULL,1.30,1,'2017-11-28 18:44:45',NULL),(86,1,'SGYP','<p>https://seekingalpha.com/article/4127999-synergy-pharmas-trulance-best-class-drug-really?app=1&amp;auth_param=1ba2vi:1d1q4v3:280dff01679861dfea141d06e2d87f3a&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-28 11:00:59',1,0,0,'0',NULL,1.87,1,'2017-11-28 19:01:13',NULL),(87,1,'OMER','<p>https://seekingalpha.com/article/4128335-daily-pharma-scoop-omeros-buts-egalets-oxycodone-success-auris-flunks-study?app=1&amp;auth_param=1ba2vi:1d1tabp:87c9697b40fd1cac7f73daadeeb32e04&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-29 16:00:40',1,0,0,'0',NULL,20.15,1,'2017-11-30 00:01:19',NULL),(88,1,'EGLT','<p>https://seekingalpha.com/article/4128335-daily-pharma-scoop-omeros-buts-egalets-oxycodone-success-auris-flunks-study?app=1&amp;auth_param=1ba2vi:1d1tabp:87c9697b40fd1cac7f73daadeeb32e04&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-29 16:00:40',1,0,0,'0',NULL,1.25,1,'2017-11-30 00:01:19',NULL),(89,1,'OMER','<p>https://seekingalpha.com/article/4128212-next-billion-dollar-blockbuster-value-investors-look-omeros-part-2?app=1&amp;auth_param=1ba2vi:1d1rkvk:661e3ed0d1a0e5628b7cd341ad3442cb&amp;uprof=45&amp;dr=1</p>',17,3,'2017-11-28 16:00:00',1,0,0,'0.00',NULL,20.15,2,'2017-11-30 00:11:32','2017-11-30 00:11:32');
 /*!40000 ALTER TABLE `stock_note` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_note_AFTER_INSERT` AFTER INSERT ON `stock_note` FOR EACH ROW
+BEGIN
+	UPDATE stock_note_source
+       SET times_used = times_used + 1
+	 WHERE id = NEW.notes_source_id;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -748,7 +644,7 @@ CREATE TABLE `stock_note_source` (
 
 LOCK TABLES `stock_note_source` WRITE;
 /*!40000 ALTER TABLE `stock_note_source` DISABLE KEYS */;
-INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,5,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,2,'2017-10-25 07:49:55'),(15,'BUSTED IPO EMAIL',1,2,'2017-11-21 13:45:56'),(17,'SEEKING ALPHA',1,4,'2017-11-22 09:53:56'),(18,'INSIDERS FORUM EMAIL',1,1,'2017-11-25 08:02:49'),(19,'TIM\'S CORNER',1,1,'2017-11-25 08:16:28'),(21,'TIPRANKS',1,7,'2017-11-27 11:10:43'),(22,'null',1,0,'2017-11-27 11:22:18');
+INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,5,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(15,'BUSTED IPO EMAIL',1,2,'2017-11-21 13:45:56'),(17,'SEEKING ALPHA',1,4,'2017-11-22 09:53:56'),(18,'INSIDERS FORUM EMAIL',1,1,'2017-11-25 08:02:49'),(19,'TIM\'S CORNER',1,1,'2017-11-25 08:16:28'),(21,'TIPRANKS',1,8,'2017-11-27 11:10:43'),(22,'null',1,0,'2017-11-27 11:22:18');
 /*!40000 ALTER TABLE `stock_note_source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -807,137 +703,6 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Table structure for table `stock_sector`
---
-
-DROP TABLE IF EXISTS `stock_sector`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stock_sector` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sector` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `stock_sector`
---
-
-LOCK TABLES `stock_sector` WRITE;
-/*!40000 ALTER TABLE `stock_sector` DISABLE KEYS */;
-/*!40000 ALTER TABLE `stock_sector` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `stock_sub_sector`
---
-
-DROP TABLE IF EXISTS `stock_sub_sector`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stock_sub_sector` (
-  `sector_id` int(11) NOT NULL,
-  `sub_sector_id` int(11) NOT NULL,
-  `sub_sector` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `stock_sub_sector`
---
-
-LOCK TABLES `stock_sub_sector` WRITE;
-/*!40000 ALTER TABLE `stock_sub_sector` DISABLE KEYS */;
-/*!40000 ALTER TABLE `stock_sub_sector` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `stock_summary`
---
-
-DROP TABLE IF EXISTS `stock_summary`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `stock_summary` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `customer_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
-  `comments` varchar(45) DEFAULT NULL,
-  `analyst_strong_buy_count` int(11) DEFAULT NULL,
-  `analyst_buy_count` int(11) DEFAULT NULL,
-  `analyst_hold_count` int(11) DEFAULT NULL,
-  `analyst_under_perform_count` int(11) DEFAULT NULL,
-  `analyst_sell_count` int(11) DEFAULT NULL,
-  `analyst_sentiment_date` timestamp NULL DEFAULT NULL,
-  `next_catalyst_date` timestamp NULL DEFAULT NULL,
-  `next_catalyst_desc` varchar(30) DEFAULT NULL,
-  `avg_analyst_price_target` decimal(7,2) DEFAULT NULL,
-  `low_analyst_price_target` decimal(7,2) DEFAULT NULL,
-  `high_analyst_price_target` decimal(7,2) DEFAULT NULL,
-  `analyst_price_date` timestamp NULL DEFAULT NULL,
-  `buy_shares_below` decimal(7,2) DEFAULT NULL,
-  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_date` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
-  KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
-  KEY `FK_STOCK_SUMMARY_STOCK_idx` (`ticker_symbol`),
-  CONSTRAINT `FK_STOCK_SUMMARY_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_SUMMARY_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `stock_summary`
---
-
-LOCK TABLES `stock_summary` WRITE;
-/*!40000 ALTER TABLE `stock_summary` DISABLE KEYS */;
-INSERT INTO `stock_summary` VALUES (2,1,'ABX','',5,4,3,2,1,'2016-10-31 00:00:00','2014-10-31 00:00:00','Holloween',18.00,16.01,22.00,'2017-10-22 17:18:36',16.00,'2017-10-22 17:18:36','2017-10-22 17:18:36');
-/*!40000 ALTER TABLE `stock_summary` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`stock_summary_BEFORE_UPDATE` BEFORE UPDATE ON `stock_summary` FOR EACH ROW
-BEGIN
-	SET NEW.UPDATE_DATE = current_timestamp();
-    /*
-     * If any sentient changes, then change the last sentiment date
-     */
-	IF NEW.ANALYST_STRONG_BUY_COUNT <> OLD.ANALYST_STRONG_BUY_COUNT OR
-       NEW.ANALYST_BUY_COUNT <> OLD.ANALYST_BUY_COUNT OR
-       NEW.ANALYST_HOLD_COUNT <> OLD.ANALYST_HOLD_COUNT OR
-       NEW.ANALYST_UNDER_PERFORM_COUNT <> OLD.ANALYST_UNDER_PERFORM_COUNT OR
-       NEW.ANALYST_SELL_COUNT <> OLD.ANALYST_SELL_COUNT
-    THEN
-		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
-	END IF;
-		
-    /*
-     * If any price sentient changes, then change the last price sentiment date
-     */    
-    IF NEW.AVG_ANALYST_PRICE_TARGET <> OLD.AVG_ANALYST_PRICE_TARGET OR
-       NEW.LOW_ANALYST_PRICE_TARGET <> OLD.LOW_ANALYST_PRICE_TARGET OR
-       NEW.HIGH_ANALYST_PRICE_TARGET <> OLD.HIGH_ANALYST_PRICE_TARGET
-	THEN
-       SET NEW.ANALYST_PRICE_DATE = CURRENT_TIMESTAMP();
-	END IF;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-
---
 -- Table structure for table `stock_tag`
 --
 
@@ -953,10 +718,8 @@ CREATE TABLE `stock_tag` (
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FK_STOCK_TAG_STOCK_idx` (`ticker_symbol`),
   KEY `FK_STOCK_TAG_CUSTOMER_TAG_idx` (`customer_tag_id`),
-  CONSTRAINT `FK_STOCK_TAG_CUSTOMER_TAG` FOREIGN KEY (`customer_tag_id`) REFERENCES `customer_tag` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_TAG_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_STOCK_TAG_CUSTOMER_TAG` FOREIGN KEY (`customer_tag_id`) REFERENCES `customer_tag` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -993,10 +756,8 @@ CREATE TABLE `stock_to_buy` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `customer_id_UNIQUE` (`customer_id`,`ticker_symbol`),
   KEY `IDX_CUSTOMER_ID_TICKER_SYMBOL` (`customer_id`,`ticker_symbol`),
-  KEY `FK_STOCK_TO_BUY_STOCK_idx` (`ticker_symbol`),
   KEY `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE_idx` (`notes_source_id`),
   CONSTRAINT `FK_STOCK_TO_BUY_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_STOCK_TO_BUY_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1078,7 +839,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Temporary view structure for view `v_portfolio_stock`
+-- Temporary table structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -1104,7 +865,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note`
+-- Temporary table structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -1132,7 +893,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note_count`
+-- Temporary table structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -1146,7 +907,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_tag`
+-- Temporary table structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -1166,7 +927,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_to_buy`
+-- Temporary table structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1287,4 +1048,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-01  7:43:26
+-- Dump completed on 2017-12-03 15:57:40
