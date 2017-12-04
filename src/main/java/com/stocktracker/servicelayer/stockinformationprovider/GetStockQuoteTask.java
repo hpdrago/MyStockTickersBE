@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.stockinformationprovider;
+package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
 import org.springframework.context.annotation.Scope;

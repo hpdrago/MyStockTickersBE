@@ -5,11 +5,11 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockEntity;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuote;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteCache;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteState;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuote;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteCache;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

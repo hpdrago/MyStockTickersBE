@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

@@ -1,7 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 
 /**
  * Created by mike on 9/11/2016.

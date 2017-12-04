@@ -6,8 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -22,6 +24,7 @@ public class CustomerEntity
     private String password;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Collection<AccountEntity> accountsById;
 
     public CustomerEntity()
     {
@@ -91,6 +94,17 @@ public class CustomerEntity
     public void setUpdateDate( final Timestamp updateDate )
     {
         this.updateDate = updateDate;
+    }
+
+    @OneToMany( mappedBy = "customerByCustomerId" )
+    public Collection<AccountEntity> getAccountsById()
+    {
+        return accountsById;
+    }
+
+    public void setAccountsById( final Collection<AccountEntity> accountsById )
+    {
+        this.accountsById = accountsById;
     }
 
     @Override

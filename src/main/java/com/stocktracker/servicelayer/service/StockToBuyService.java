@@ -8,7 +8,7 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Objects;
 
 @Service

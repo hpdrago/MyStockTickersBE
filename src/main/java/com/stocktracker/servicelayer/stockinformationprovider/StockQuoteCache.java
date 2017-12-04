@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.stockinformationprovider;
+package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;

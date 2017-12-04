@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Objects;
 
 @Service

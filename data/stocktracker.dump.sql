@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.18-log
+-- Server version	5.7.17-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,55 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `account`
+--
+
+DROP TABLE IF EXISTS `account`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `account` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `customer_id` int(11) NOT NULL,
+  `login_token` varchar(20) DEFAULT NULL,
+  `brokerage` varchar(15) NOT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `idx_account_customer_id` (`customer_id`),
+  CONSTRAINT `FK_ACCOUNT_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `account`
+--
+
+LOCK TABLES `account` WRITE;
+/*!40000 ALTER TABLE `account` DISABLE KEYS */;
+/*!40000 ALTER TABLE `account` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`account_BEFORE_UPDATE` BEFORE UPDATE ON `account` FOR EACH ROW
+BEGIN
+	SET NEW.UPDATE_DATE = current_timestamp();
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `customer`
@@ -839,7 +888,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Temporary table structure for view `v_portfolio_stock`
+-- Temporary view structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -865,7 +914,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note`
+-- Temporary view structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -893,7 +942,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note_count`
+-- Temporary view structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -907,7 +956,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_tag`
+-- Temporary view structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -927,7 +976,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_to_buy`
+-- Temporary view structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1048,4 +1097,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-03 15:57:40
+-- Dump completed on 2017-12-04 14:21:09

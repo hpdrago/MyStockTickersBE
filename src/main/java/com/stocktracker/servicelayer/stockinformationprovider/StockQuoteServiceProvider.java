@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.stockinformationprovider;
+package com.stocktracker.servicelayer.stockinformationprovider;
 
 /**
  * Defines the methods required for a stock quote provider.

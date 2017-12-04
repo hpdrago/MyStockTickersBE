@@ -8,7 +8,7 @@ import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
 import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

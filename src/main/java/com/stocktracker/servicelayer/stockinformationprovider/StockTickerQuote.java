@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.stockinformationprovider;
+package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;

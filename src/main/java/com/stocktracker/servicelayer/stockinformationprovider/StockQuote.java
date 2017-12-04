@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.stockinformationprovider;
+package com.stocktracker.servicelayer.stockinformationprovider;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

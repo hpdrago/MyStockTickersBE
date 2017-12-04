@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockNoteSourceService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.service.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 
 import java.math.BigDecimal;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.stockinformationprovider;
+package com.stocktracker.servicelayer.stockinformationprovider;
 
 /**
  * This enum defines how this class will behave when a stock quote is not found in the cache or found in the cache
