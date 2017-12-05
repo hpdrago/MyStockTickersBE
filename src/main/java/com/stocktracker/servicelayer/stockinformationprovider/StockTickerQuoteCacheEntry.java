@@ -45,16 +45,12 @@ public class StockTickerQuoteCacheEntry implements StockQuote
     {
         this.lastQuoteRefreshTime = System.currentTimeMillis();
         this.stockTickerQuote = stockTickerQuote;
+        this.stockTickerQuote.setExpiration( new Timestamp( this.lastQuoteRefreshTime + StockQuoteCache.EXPIRATION_TIME ));
     }
 
     public long getLastQuoteRefreshTime()
     {
         return this.lastQuoteRefreshTime;
-    }
-
-    public void setLastQuoteRefreshTime( long lastQuoteRefreshTime )
-    {
-        this.lastQuoteRefreshTime = lastQuoteRefreshTime;
     }
 
     public void setStockQuoteState( final StockQuoteState stockQuoteState )
@@ -96,6 +92,12 @@ public class StockTickerQuoteCacheEntry implements StockQuote
     public StockQuoteState getStockQuoteState()
     {
         return this.stockTickerQuote.getStockQuoteState();
+    }
+
+    @Override
+    public Timestamp getExpiration()
+    {
+        return new Timestamp( this.lastQuoteRefreshTime + StockQuoteCache.EXPIRATION_TIME );
     }
 
     public boolean isStockTableEntryValidated()

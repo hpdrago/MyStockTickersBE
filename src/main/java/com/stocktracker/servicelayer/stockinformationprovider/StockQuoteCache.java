@@ -19,7 +19,7 @@ import java.util.Objects;
 @Service
 public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
 {
-    private static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
+    public static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
     private Map<String, StockTickerQuoteCacheEntry> cacheEntryMap = Collections.synchronizedMap( new HashMap<>( ) );
     private StockQuoteServiceExecutor stockQuoteServiceExecutor;
     private StockContainerService stockService;

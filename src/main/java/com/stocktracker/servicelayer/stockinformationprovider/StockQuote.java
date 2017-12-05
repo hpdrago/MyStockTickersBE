@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 /**
- * This interface defines the methods to extract the values from a cached stock
+ * This interface defines the properties of a class that contains stock quote properties.
  */
 public interface StockQuote
 {
@@ -14,4 +14,5 @@ public interface StockQuote
     BigDecimal getLastPrice();
     Timestamp getLastPriceChange();
     StockQuoteState getStockQuoteState();
+    Timestamp getExpiration();
 }

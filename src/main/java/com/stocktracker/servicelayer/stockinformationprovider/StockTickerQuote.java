@@ -24,6 +24,8 @@ public class StockTickerQuote implements StockQuote
     @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
     private Timestamp lastPriceChange;
     private StockQuoteState stockQuoteState;
+    @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
+    private Timestamp expiration;
 
     /**
      * Create a new instance with the ticker and the state.
@@ -44,6 +46,17 @@ public class StockTickerQuote implements StockQuote
     public StockQuoteState getStockQuoteState()
     {
         return stockQuoteState;
+    }
+
+    @Override
+    public Timestamp getExpiration()
+    {
+        return expiration;
+    }
+
+    public void setExpiration( final Timestamp expiration )
+    {
+        this.expiration = expiration;
     }
 
     public void setStockQuoteState( final StockQuoteState stockQuoteState )
@@ -138,6 +151,7 @@ public class StockTickerQuote implements StockQuote
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", stockQuoteState=" ).append( stockQuoteState );
+        sb.append( ", expiration=" ).append( expiration );
         sb.append( '}' );
         return sb.toString();
     }

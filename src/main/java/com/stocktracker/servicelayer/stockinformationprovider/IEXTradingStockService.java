@@ -50,10 +50,18 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
         final String methodName = "getIEXTradingQuote";
         logMethodBegin( methodName, tickerSymbol );
         StocksEndpoint stocksEndpoint = this.iexTradingClient.getStocksEndpoint();
-        Quote quote = stocksEndpoint.requestQuote( StockRequest.builder()
-                                                               .withSymbol( tickerSymbol )
-                                                               .build() );
-        StockTickerQuote stockTickerQuote = this.quoteToStockTickerQuote( tickerSymbol, quote );
+        StockTickerQuote stockTickerQuote = null;
+        try
+        {
+            Quote quote = stocksEndpoint.requestQuote( StockRequest.builder()
+                                                                   .withSymbol( tickerSymbol )
+                                                                   .build() );
+            stockTickerQuote = this.quoteToStockTickerQuote( tickerSymbol, quote );
+        }
+        catch( javax.ws.rs.ProcessingException e )
+        {
+            logError( methodName, "Error for ticker symbol: " + tickerSymbol );
+        }
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
