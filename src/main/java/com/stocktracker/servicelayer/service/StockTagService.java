@@ -43,51 +43,56 @@ public class StockTagService implements MyLogger
         /*
          * Remove any duplicates from the tags
          */
-        Set<String> uniqueTags = new TreeSet<>();
-        for ( String tag: tags )
+        logMethodBegin( methodName, customerId, tickerSymbol, referenceType, entityId, tags );
+        if ( tags != null )
         {
-            uniqueTags.add( tag );
-        }
-
-        for ( String tag: uniqueTags )
-        {
-            /*
-             * Set the unique key values to see if the tag exists
-             */
-            StockTagEntity stockTagEntity = new StockTagEntity();
-            stockTagEntity.setReferenceId( entityId );
-            stockTagEntity.setReferenceType( referenceType.getReferenceType() );
-            Example<StockTagEntity> stockTagEntityExample = Example.of( stockTagEntity );
-            /*
-             * Check if the stock tag exists or not, if it exists, then we assume the
-             * customer tag exists as well.
-             */
-            if ( !this.stockTagRepository.exists( stockTagEntityExample ) )
+            Set<String> uniqueTags = new TreeSet<>();
+            for ( String tag : tags )
             {
-                logDebug( methodName, "stockTagEntity does not exist: {0}", stockTagEntity );
+                uniqueTags.add( tag );
+            }
+
+            for ( String tag : uniqueTags )
+            {
                 /*
-                 * Check to see if the customer tag needs to be created
+                 * Set the unique key values to see if the tag exists
                  */
-                CustomerTagEntity customerTagEntity = new CustomerTagEntity();
-                customerTagEntity.setCustomerId( customerId );
-                customerTagEntity.setTagName( tag );
-                Example<CustomerTagEntity> customerTagEntityExample = Example.of( customerTagEntity );
-                customerTagEntity = this.customerTagRepository.findOne( customerTagEntityExample );
-                if ( customerTagEntity == null)
+                StockTagEntity stockTagEntity = new StockTagEntity();
+                stockTagEntity.setReferenceId( entityId );
+                stockTagEntity.setReferenceType( referenceType.getReferenceType() );
+                Example<StockTagEntity> stockTagEntityExample = Example.of( stockTagEntity );
+                /*
+                 * Check if the stock tag exists or not, if it exists, then we assume the
+                 * customer tag exists as well.
+                 */
+                if ( !this.stockTagRepository.exists( stockTagEntityExample ) )
                 {
-                    customerTagEntity = new CustomerTagEntity();
+                    logDebug( methodName, "stockTagEntity does not exist: {0}", stockTagEntity );
+                    /*
+                     * Check to see if the customer tag needs to be created
+                     */
+                    CustomerTagEntity customerTagEntity = new CustomerTagEntity();
                     customerTagEntity.setCustomerId( customerId );
                     customerTagEntity.setTagName( tag );
-                    logDebug( methodName, "adding customer tag: {0}", customerTagEntity );
-                    customerTagEntity = this.customerTagRepository.save( customerTagEntity );
-                    logDebug( methodName, "added customer tag: {0}", customerTagEntity );
+                    Example<CustomerTagEntity> customerTagEntityExample = Example.of( customerTagEntity );
+                    customerTagEntity = this.customerTagRepository.findOne( customerTagEntityExample );
+                    if ( customerTagEntity == null )
+                    {
+                        customerTagEntity = new CustomerTagEntity();
+                        customerTagEntity.setCustomerId( customerId );
+                        customerTagEntity.setTagName( tag );
+                        logDebug( methodName, "adding customer tag: {0}", customerTagEntity );
+                        customerTagEntity = this.customerTagRepository.save( customerTagEntity );
+                        logDebug( methodName, "added customer tag: {0}", customerTagEntity );
+                    }
+                    stockTagEntity.setTickerSymbol( tickerSymbol );
+                    stockTagEntity.setCustomerTagId( customerTagEntity.getId() );
+                    logDebug( methodName, "adding stock tag: {0}", stockTagEntity );
+                    this.stockTagRepository.save( stockTagEntity );
                 }
-                stockTagEntity.setTickerSymbol( tickerSymbol );
-                stockTagEntity.setCustomerTagId( customerTagEntity.getId() );
-                logDebug( methodName, "adding stock tag: {0}", stockTagEntity );
-                this.stockTagRepository.save( stockTagEntity );
             }
         }
+        logMethodEnd( methodName );
     }
 
     /**

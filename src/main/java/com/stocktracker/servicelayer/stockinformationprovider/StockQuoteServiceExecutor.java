@@ -35,10 +35,24 @@ public class StockQuoteServiceExecutor
     @Async( "stockQuoteThreadPool")
     public void asynchronousGetStockQuote( final String tickerSymbol,
                                            final HandleStockQuoteReturn handleStockQuoteResult )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
+        throws StockQuoteUnavailableException, StockNotFoundException
     {
-        StockTickerQuote stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );
+        final String methodName = "asynchronousGetStockQuote";
+        logger.debug( methodName + " " + tickerSymbol );
+        StockTickerQuote stockTickerQuote;
+        try
+        {
+            stockTickerQuote = this.getQuoteFromIEXTrading( tickerSymbol );
+            if ( stockTickerQuote == null )
+            {
+                stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+            }
+        }
+        catch( Exception e )
+        {
+            logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage() );
+            stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+        }
         handleStockQuoteResult.handleStockQuoteReturn( stockTickerQuote );
     }
 
@@ -52,27 +66,85 @@ public class StockQuoteServiceExecutor
     {
         final String methodName = "synchronousGetStockQuote";
         logger.debug( methodName + " " + tickerSymbol );
-        StockTickerQuote stockTickerQuote = null;
+        StockTickerQuote stockTickerQuote;
         try
         {
-           stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );
+            stockTickerQuote = this.getQuoteFromIEXTrading( tickerSymbol );
+            if ( stockTickerQuote == null )
+            {
+                stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+            }
         }
         catch( Exception e )
         {
             logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage() );
-            try
+            stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+            if ( stockTickerQuote == null )
             {
-                stockTickerQuote = this.yahooStockService.getStockTickerQuote( tickerSymbol );
-                logger.debug( methodName + " Stock quote obtained from Yahoo." );
-            }
-            catch( Exception e2 )
-            {
-                logger.error( methodName + " Failed to get quote from Yahoo: " + e.getMessage() );
-                throw new StockQuoteUnavailableException( e2 );
+                logger.error( methodName + " Failed to get quote(null) from IEXTrading for " + tickerSymbol );
             }
         }
         return stockTickerQuote;
     }
+
+    /**
+     * Get a quote from Yahoo
+     * @param tickerSymbol
+     * @return
+     */
+    private StockTickerQuote getQuoteFromYahoo( final String tickerSymbol )
+    {
+        final String methodName = "getQuoteFromYahoo";
+        logger.debug( methodName + " " + tickerSymbol );
+        StockTickerQuote stockTickerQuote = null;
+        try
+        {
+            stockTickerQuote = this.yahooStockService.getStockTickerQuote( tickerSymbol );
+            if ( stockTickerQuote == null )
+            {
+                logger.error( methodName + " Failed to get quote(null) from Yahoo for " + tickerSymbol );
+            }
+            else
+            {
+                logger.debug( methodName + " Stock quote obtained from Yahoo for " + tickerSymbol );
+            }
+        }
+        catch( Exception e )
+        {
+            logger.error( methodName + " Failed to get quote(exception) from Yahoo for " + tickerSymbol, e );
+        }
+        return stockTickerQuote;
+    }
+
+    /**
+     * Get a quote from IEXTrading
+     * @param tickerSymbol
+     * @return
+     */
+    private StockTickerQuote getQuoteFromIEXTrading( final String tickerSymbol )
+    {
+        final String methodName = "getQuoteFromIEXTrading";
+        logger.debug( methodName + " " + tickerSymbol );
+        StockTickerQuote stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );
+        try
+        {
+            stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );
+            if ( stockTickerQuote == null )
+            {
+                logger.error( methodName + " Failed to get quote(null) from IEXTrading for " + tickerSymbol );
+            }
+            else
+            {
+                logger.debug( methodName + " Stock quote obtained from IEXTrading for " + tickerSymbol );
+            }
+        }
+        catch( Exception e )
+        {
+            logger.error( methodName + " Failed to get quote(exception) from IEXTrading for " + tickerSymbol, e );
+        }
+        return stockTickerQuote;
+    }
+
 
     @Autowired
     public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )

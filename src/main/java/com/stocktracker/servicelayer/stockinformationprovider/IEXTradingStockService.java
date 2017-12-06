@@ -60,7 +60,7 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
         }
         catch( javax.ws.rs.ProcessingException e )
         {
-            logError( methodName, "Error for ticker symbol: " + tickerSymbol );
+            logError( methodName, "Error for ticker symbol: " + tickerSymbol, e );
         }
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
