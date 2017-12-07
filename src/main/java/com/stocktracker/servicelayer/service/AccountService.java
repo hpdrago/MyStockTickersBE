@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +37,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
      * @param accountId
      * @return
      */
-    public AccountDTO getAccountById( final int customerId, final int accountId )
+    public AccountDTO getAccountById( @NotNull final int customerId, @NotNull final int accountId )
     {
         final String methodName = "getAccountById";
         logMethodBegin( methodName, customerId, accountId );
@@ -87,7 +88,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
      * @param customerId
      * @param accountDTO
      */
-    public AccountDTO updateAccount( final int customerId, final AccountDTO accountDTO )
+    public AccountDTO updateAccount( final int customerId, @NotNull final AccountDTO accountDTO )
     {
         final String methodName = "updateAccount";
         logMethodBegin( methodName, customerId, accountDTO );
@@ -97,6 +98,21 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         AccountDTO returnAccountDTO = this.entityToDTO( accountEntity );
         logMethodEnd( methodName, returnAccountDTO );
         return returnAccountDTO;
+    }
+
+    /**
+     * Get the list of customer accounts.
+     * @param customerId
+     * @return
+     */
+    public List<AccountDTO> getAccounts( final int customerId )
+    {
+        final String methodName = "getAccounts";
+        logMethodBegin( methodName, customerId );
+        List<AccountEntity> accountEntities = this.accountRepository.findAllByCustomerByCustomerId( customerId );
+        List<AccountDTO> accountDTOs = this.entitiesToDTOs( accountEntities );
+        logMethodEnd( methodName, accountDTOs );
+        return accountDTOs;
     }
 
     /**

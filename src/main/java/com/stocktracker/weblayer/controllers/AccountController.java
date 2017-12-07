@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
+
 
 /**
  * This class contains all of the AccountDTO related REST weblayer service call mapping and handling
@@ -118,5 +120,21 @@ public class AccountController extends AbstractController implements MyLogger
                                      .buildAndExpand( returnAccountDTO ).toUri());
         logMethodEnd( methodName, returnAccountDTO );
         return new ResponseEntity<>( returnAccountDTO, httpHeaders, HttpStatus.CREATED );
+    }
+
+    /**
+     * Get all of the stock to buy for a customer and a
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public List<AccountDTO> getCustomerAccounts( final @PathVariable int customerId )
+    {
+        final String methodName = "getCustomerAccounts";
+        logMethodBegin( methodName, customerId );
+        List<AccountDTO> accounts = this.accountService.getAccounts( customerId );
+        logMethodEnd( methodName, "accounts size: " + accounts.size() );
+        return accounts;
     }
 }
