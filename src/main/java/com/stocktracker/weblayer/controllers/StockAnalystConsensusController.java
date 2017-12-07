@@ -119,7 +119,7 @@ public class StockAnalystConsensusController implements MyLogger
         final String methodName = "addStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
         StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                   .createStockAnalystConsensus( stockAnalystConsensusDTO );
+                                                                   .createStockAnalystConsensus( customerId, stockAnalystConsensusDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -128,12 +128,21 @@ public class StockAnalystConsensusController implements MyLogger
         return new ResponseEntity<>( newStockAnalystConsensusDTO, httpHeaders, HttpStatus.CREATED );
     }
 
+    /**
+     *
+     * @param stockAnalystConsensusDTO
+     * @param stockAnalystConsensusId
+     * @param customerId
+     * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockAnalystConsensusDTO> saveStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
-                                                                               @PathVariable Integer stockAnalystConsensusId,
-                                                                               @PathVariable Integer customerId )
+    public ResponseEntity<StockAnalystConsensusDTO> updateStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
+                                                                                 @PathVariable Integer stockAnalystConsensusId,
+                                                                                 @PathVariable Integer customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {

@@ -26,7 +26,7 @@ CREATE TABLE `account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `customer_id` int(11) NOT NULL,
-  `login_token` varchar(20) DEFAULT NULL,
+  `login_token` varchar(40) DEFAULT NULL,
   `brokerage` varchar(15) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
@@ -367,7 +367,7 @@ CREATE TABLE `stock_analyst_consensus` (
   KEY `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE_idx` (`notes_source_id`),
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -684,7 +684,7 @@ CREATE TABLE `stock_note_source` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `IDX_CUSTOMER_ID_NAME` (`customer_id`,`name`),
   KEY `IDX_CUSTOMER_ID` (`customer_id`,`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -693,7 +693,7 @@ CREATE TABLE `stock_note_source` (
 
 LOCK TABLES `stock_note_source` WRITE;
 /*!40000 ALTER TABLE `stock_note_source` DISABLE KEYS */;
-INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,5,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(15,'BUSTED IPO EMAIL',1,2,'2017-11-21 13:45:56'),(17,'SEEKING ALPHA',1,4,'2017-11-22 09:53:56'),(18,'INSIDERS FORUM EMAIL',1,1,'2017-11-25 08:02:49'),(19,'TIM\'S CORNER',1,1,'2017-11-25 08:16:28'),(21,'TIPRANKS',1,8,'2017-11-27 11:10:43'),(22,'null',1,0,'2017-11-27 11:22:18');
+INSERT INTO `stock_note_source` VALUES (6,'NEW SOURCE',1,1,'2017-09-17 14:59:05'),(7,'GOLD WRITER',1,1,'2017-09-17 15:02:14'),(8,'BIOTECH FORUM EMAIL',1,5,'2017-09-17 15:10:37'),(9,'BIOTECH FORUM',1,1,'2017-10-25 07:49:55'),(15,'BUSTED IPO EMAIL',1,2,'2017-11-21 13:45:56'),(17,'SEEKING ALPHA',1,4,'2017-11-22 09:53:56'),(18,'INSIDERS FORUM EMAIL',1,1,'2017-11-25 08:02:49'),(19,'TIM\'S CORNER',1,1,'2017-11-25 08:16:28'),(21,'TIPRANKS',1,8,'2017-11-27 11:10:43'),(22,'null',1,0,'2017-11-27 11:22:18'),(23,'undefined',1,0,'2017-12-06 07:30:15');
 /*!40000 ALTER TABLE `stock_note_source` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -808,7 +808,7 @@ CREATE TABLE `stock_to_buy` (
   KEY `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE_idx` (`notes_source_id`),
   CONSTRAINT `FK_STOCK_TO_BUY_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_id`) REFERENCES `stock_note_source` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -817,7 +817,7 @@ CREATE TABLE `stock_to_buy` (
 
 LOCK TABLES `stock_to_buy` WRITE;
 /*!40000 ALTER TABLE `stock_to_buy` DISABLE KEYS */;
-INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',17,16.50,'N',14.30,NULL,1,'2017-11-25 23:10:53',NULL),(2,1,'VYGR','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Voyager is well-funded, has multiple \'shots on goal\' and a strategic partnership. The stock also has some analyst support. That being said, this intriguing concern is at least a few years away from successful commercialization. For aggressive investors, a small purchase might be warranted within a well-diversified biotech portfolio. This is what I have recently done as I do think this \"Busted IPO\" deserves to be on my \'watch list\' until it reaches later stage trial development.</span></p><p>https://seekingalpha.com/article/4099396-voyager-therapeutics-next-busted-ipo</p>',8,0.00,'N',14.40,NULL,1,'2017-11-26 22:41:22',NULL);
+INSERT INTO `stock_to_buy` VALUES (1,1,'ENVA','https://seekingalpha.com/research/48630172-busted-ipo-forum/5058914-portfolio-change-alert-adding-enova-international-portfolio#comments',17,16.50,'N',14.30,NULL,1,'2017-11-25 23:10:53',NULL),(2,1,'VYGR','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Voyager is well-funded, has multiple \'shots on goal\' and a strategic partnership. The stock also has some analyst support. That being said, this intriguing concern is at least a few years away from successful commercialization. For aggressive investors, a small purchase might be warranted within a well-diversified biotech portfolio. This is what I have recently done as I do think this \"Busted IPO\" deserves to be on my \'watch list\' until it reaches later stage trial development.</span></p><p>https://seekingalpha.com/article/4099396-voyager-therapeutics-next-busted-ipo</p>',8,0.00,'N',14.40,NULL,1,'2017-11-26 22:41:22',NULL),(4,1,'ASPN','sold in 475 to buy admp',NULL,0.00,'N',5.07,NULL,1,'2017-12-06 16:36:52',NULL),(7,1,'NEOS','Sold to buy ADMP',NULL,0.00,'N',9.20,NULL,1,'2017-12-06 17:12:54',NULL);
 /*!40000 ALTER TABLE `stock_to_buy` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1097,4 +1097,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-04 14:21:09
+-- Dump completed on 2017-12-07 13:37:32

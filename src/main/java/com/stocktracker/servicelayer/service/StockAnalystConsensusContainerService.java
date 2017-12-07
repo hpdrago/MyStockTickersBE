@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.DuplicateAnalystConsensusException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
@@ -88,18 +89,26 @@ public class StockAnalystConsensusContainerService extends BaseStockQuoteContain
 
     /**
      * Creates a new Stock Analyst Consensus
+     *
+     * @param customerId
      * @param stockAnalystConsensusDTO
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
      */
-    public StockAnalystConsensusDTO createStockAnalystConsensus( final StockAnalystConsensusDTO stockAnalystConsensusDTO )
+    public StockAnalystConsensusDTO createStockAnalystConsensus( final Integer customerId,
+                                                                 final StockAnalystConsensusDTO stockAnalystConsensusDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "createStockAnalystConsensus";
-        logMethodBegin( methodName, stockAnalystConsensusDTO );
+        logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
+        if ( this.stockAnalystConsensusRepository
+                 .findByCustomerIdAndTickerSymbol( customerId, stockAnalystConsensusDTO.getTickerSymbol() ) != null )
+        {
+            throw new DuplicateAnalystConsensusException( stockAnalystConsensusDTO.getTickerSymbol() ) ;
+        }
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
         stockAnalystConsensusEntity.setStockPriceWhenCreated( this.getStockQuoteService()

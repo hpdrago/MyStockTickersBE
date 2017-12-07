@@ -75,7 +75,7 @@ public class StockToBuyController implements MyLogger
     }
 
     /**
-     * Get a single stock summary
+     * Get a single stock to buy
      * @return
      */
     @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
@@ -94,7 +94,7 @@ public class StockToBuyController implements MyLogger
     }
 
     /**
-     * Deletes a stock summary entity
+     * Deletes a stock to buy entity
      * @param stockToBuyId
      * @return
      */
@@ -112,7 +112,7 @@ public class StockToBuyController implements MyLogger
     }
 
     /**
-     * Create a stock summary entity.
+     * Create a stock to buy entity.
      * @param stockToBuyDTO
      * @return
      */

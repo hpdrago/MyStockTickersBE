@@ -18,4 +18,8 @@ public class AccountNotFoundException extends RuntimeException
         super( "Account id: " + id + " was not found" );
     }
 
+    public AccountNotFoundException( final int customerId, final int accountId )
+    {
+        super( "Account " + accountId + " was not found for customer " + customerId );
+    }
 }

@@ -32,20 +32,19 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
 
     /**
      * Get the account by id request
-     * @param id
+     * @param customerId
+     * @param accountId
      * @return
      */
-    public AccountDTO getAccountById( final int id )
+    public AccountDTO getAccountById( final int customerId, final int accountId )
     {
         final String methodName = "getAccountById";
-        logMethodBegin( methodName, id );
-        /*
-         * Get the account entity
-         */
-        AccountEntity accountEntity = accountRepository.findOne( id );
+        logMethodBegin( methodName, customerId, accountId );
+        this.validateAccountId( customerId, accountId );
+        AccountEntity accountEntity = accountRepository.findOne( accountId );
         if ( accountEntity == null )
         {
-            throw new AccountNotFoundException( id );
+            throw new AccountNotFoundException( customerId, accountId );
         }
         AccountDTO accountDTO = this.entityToDTO( accountEntity );
         logMethodEnd( methodName, accountDTO );
@@ -53,38 +52,67 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     }
 
     /**
-     * Updates the database with the information in {@code accountDTO}
+     * Create the account for the customer.
+     * @param customerId
      * @param accountDTO
+     * @return AccountDTO
      */
-    public void updateAccount( final AccountDTO accountDTO )
+    public AccountDTO createAccount( final int customerId, final AccountDTO accountDTO )
     {
-        final String methodName = "updateAccount";
-        logMethodBegin( methodName, accountDTO );
+        final String methodName = "createAccount";
+        logMethodBegin( methodName, customerId, accountDTO );
         AccountEntity accountEntity = this.dtoToEntity( accountDTO );
-        this.accountRepository.save( accountEntity );
+        accountEntity = this.accountRepository.save( accountEntity );
+        AccountDTO returnAccountDTO = this.entityToDTO( accountEntity );
+        logMethodEnd( methodName, returnAccountDTO );
+        return returnAccountDTO;
+    }
+
+    /**
+     * Delete the account for the customer.
+     * @param customerId
+     * @param accountId
+     */
+    public void deleteAccount( final int customerId, final int accountId )
+    {
+        final String methodName = "createAccount";
+        logMethodBegin( methodName, customerId, accountId );
+        this.validateAccountId( customerId, accountId );
+        this.accountRepository.delete( accountId );
         logMethodEnd( methodName );
     }
 
     /**
-     * Get all of the accounts for a accounts
-     * @param accountId
-     * @return
+     * Updates the database with the information in {@code accountDTO}
+     * @param customerId
+     * @param accountDTO
      */
-    /*
-    public List<AccountDTO> getAccounts( final int accountId )
+    public AccountDTO updateAccount( final int customerId, final AccountDTO accountDTO )
     {
-        final String methodName = "getAllAccounts";
-        logMethodBegin( methodName, accountId );
-        List<AccountEntity> accountEntities = accountRepository.();
-        if ( accountEntities == null )
-        {
-            throw new AccountNotFoundException( "There are no accounts" );
-        }
-        List<AccountDTO> accountDTOs = this.entitiesToDTOs( accountEntities );
-        logMethodEnd( methodName, accountDTOs );
-        return accountDTOs;
+        final String methodName = "updateAccount";
+        logMethodBegin( methodName, customerId, accountDTO );
+        this.validateAccountId( customerId, accountDTO.getId() );
+        AccountEntity accountEntity = this.dtoToEntity( accountDTO );
+        accountEntity = this.accountRepository.save( accountEntity );
+        AccountDTO returnAccountDTO = this.entityToDTO( accountEntity );
+        logMethodEnd( methodName, returnAccountDTO );
+        return returnAccountDTO;
     }
-    */
+
+    /**
+     * Determines if the account exists for {@code accountId}
+     * @param customerId
+     * @param accountId
+     * @throws AccountNotFoundException
+     */
+    private void validateAccountId( final int customerId, final int accountId )
+    {
+        AccountEntity accountEntity = this.accountRepository.findById( accountId );
+        if ( accountEntity == null )
+        {
+            throw new AccountNotFoundException( customerId, accountId ) ;
+        }
+    }
 
     @Override
     protected AccountDTO entityToDTO( final AccountEntity entity )
@@ -121,5 +149,4 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     {
         this.portfolioService = portfolioService;
     }
-
 }

@@ -29,4 +29,12 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
      */
     Page<StockAnalystConsensusEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest,
                                                                        final int customerId, final String tickerSymbol );
+
+    /**
+     * Get the list of analyst consensus by customer and ticker symbol.
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     */
+    StockAnalystConsensusEntity findByCustomerIdAndTickerSymbol( final int customerId, final String tickerSymbol );
 }

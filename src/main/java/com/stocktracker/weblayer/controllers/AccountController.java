@@ -1,17 +1,21 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.AccountNotFoundException;
 import com.stocktracker.servicelayer.service.AccountService;
 import com.stocktracker.weblayer.dto.AccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 /**
@@ -33,40 +37,86 @@ public class AccountController extends AbstractController implements MyLogger
     }
 
     /**
-     * Get all of the accounts
-     *
-     * @return
-     */
-    /*
-    @RequestMapping( value = CONTEXT_URL,
-                     method = RequestMethod.GET,
-                     produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<AccountDTO> getAccounts()
-    {
-        final String methodName = "getAccounts";
-        logMethodBegin( methodName );
-        List<AccountDTO> accountDTOs = accountService.getAllAccounts();
-        logMethodEnd( methodName, accountDTOs );
-        return accountDTOs;
-    }
-    */
-
-    /**
      * Get the account by the account id
      *
-     * @param id
+     * @param accountId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{id}",
+    @RequestMapping( value = CONTEXT_URL + "/{accountId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public AccountDTO getAccount( @PathVariable int id )
+    public AccountDTO getAccount( @PathVariable int accountId,
+                                  @PathVariable int customerId )
     {
         final String methodName = "getAccount";
-        logMethodBegin( methodName, id );
-        AccountDTO accountDTO = accountService.getAccountById( id );
+        logMethodBegin( methodName, accountId );
+        AccountDTO accountDTO = accountService.getAccountById( customerId, accountId );
         logMethodEnd( methodName, accountDTO );
         return accountDTO;
     }
 
+    /**
+     * Add the account to the database
+     *
+     * @return The account that was added
+     */
+    @CrossOrigin
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+                     method = RequestMethod.POST )
+    public ResponseEntity<AccountDTO> createAccount( @RequestBody final AccountDTO accountDTO,
+                                                     @PathVariable final int customerId )
+        throws AccountNotFoundException
+    {
+        final String methodName = "createAccount";
+        logMethodBegin( methodName, customerId, accountDTO );
+        AccountDTO returnStockDTO = this.accountService.createAccount( customerId, accountDTO );
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder
+                                     .fromCurrentRequest().path( "" )
+                                     .buildAndExpand( accountDTO ).toUri());
+        logMethodEnd( methodName, returnStockDTO );
+        return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
+    }
+
+    /**
+     * Deletes an account
+     * @param customerId
+     * @param accountId
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/{accountId}/customer/{customerId}",
+                     method = RequestMethod.DELETE,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public ResponseEntity<Void> deleteAccount( @PathVariable int accountId,
+                                               @PathVariable int customerId )
+    {
+        final String methodName = "deleteAccount";
+        logMethodBegin( methodName, accountId, customerId );
+        this.accountService.deleteAccount( customerId, accountId );
+        logMethodEnd( methodName );
+        return new ResponseEntity<>( HttpStatus.OK );
+    }
+
+    /**
+     * Save the account
+     * @param customerId
+     * @param accountDTO
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+                     method = RequestMethod.PUT )
+    public ResponseEntity<AccountDTO> saveAccount( @PathVariable int customerId,
+                                                   @RequestBody AccountDTO accountDTO )
+    {
+        final String methodName = "saveAccount";
+        logMethodBegin( methodName, customerId, accountDTO );
+        AccountDTO returnAccountDTO = this.accountService.updateAccount( customerId, accountDTO );
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder
+                                     .fromCurrentRequest().path( "" )
+                                     .buildAndExpand( returnAccountDTO ).toUri());
+        logMethodEnd( methodName, returnAccountDTO );
+        return new ResponseEntity<>( returnAccountDTO, httpHeaders, HttpStatus.CREATED );
+    }
 }
