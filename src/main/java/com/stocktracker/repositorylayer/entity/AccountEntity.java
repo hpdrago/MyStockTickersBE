@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 public class AccountEntity
 {
     private Integer id;
+    private Integer customerId;
     private String name;
     private String loginToken;
     private String brokerage;
@@ -40,6 +41,17 @@ public class AccountEntity
     public void setId( final Integer id )
     {
         this.id = id;
+    }
+
+    @Column( name = "customer_id", insertable = false, updatable = false )
+    public Integer getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( final Integer CustomerId )
+    {
+        this.customerId = customerId;
     }
 
     @Basic
@@ -142,6 +154,7 @@ public class AccountEntity
     {
         final StringBuilder sb = new StringBuilder( "AccountEntity{" );
         sb.append( "id=" ).append( id );
+        sb.append( ", customerId" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", loginToken='" ).append( loginToken ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );

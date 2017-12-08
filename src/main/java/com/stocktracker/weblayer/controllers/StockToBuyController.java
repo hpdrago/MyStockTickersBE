@@ -1,6 +1,5 @@
 package com.stocktracker.weblayer.controllers;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockToBuyService;
@@ -21,14 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * This is the REST Controller for all Stock ToBuy methods.
  */
 @RestController
 @CrossOrigin
-public class StockToBuyController implements MyLogger
+public class StockToBuyController extends AbstractController
 {
     private static final String CONTEXT_URL = "/stockToBuy";
     private StockToBuyService stockToBuyService;

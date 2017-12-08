@@ -109,7 +109,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     {
         final String methodName = "getAccounts";
         logMethodBegin( methodName, customerId );
-        List<AccountEntity> accountEntities = this.accountRepository.findAllByCustomerByCustomerId( customerId );
+        List<AccountEntity> accountEntities = this.accountRepository.findByCustomerId( customerId );
         List<AccountDTO> accountDTOs = this.entitiesToDTOs( accountEntities );
         logMethodEnd( methodName, accountDTOs );
         return accountDTOs;
