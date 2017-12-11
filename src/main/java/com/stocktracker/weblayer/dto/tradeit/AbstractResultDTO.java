@@ -1,6 +1,6 @@
-package com.stocktracker.weblayer.dto;
+package com.stocktracker.weblayer.dto.tradeit;
 
-public abstract class TradeItResult
+public abstract class AbstractResultDTO
 {
     public String status;
     public String token;
