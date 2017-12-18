@@ -96,6 +96,7 @@ public class StockQuoteServiceExecutor
     {
         final String methodName = "getQuoteFromYahoo";
         logger.debug( methodName + " " + tickerSymbol );
+
         StockTickerQuote stockTickerQuote = null;
         try
         {

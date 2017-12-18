@@ -140,15 +140,16 @@ public class StockToBuyController extends AbstractController
      * @throws StockQuoteUnavailableException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int customerId,
+    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int stockToBuyId,
+                                                         @PathVariable int customerId,
                                                          @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "saveStockToBuy";
-        logMethodBegin( methodName, stockToBuyDTO );
+        logMethodBegin( methodName, customerId, stockToBuyId, stockToBuyDTO );
         /*
          * Save the stock
          */

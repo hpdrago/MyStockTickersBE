@@ -36,13 +36,21 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         try
         {
             Stock stock = getStock( tickerSymbol );
-            stockTickerQuote = getStockTickerQuote( stock );
-            logMethodEnd( methodName, String.format( "{0} {1}", tickerSymbol, stockTickerQuote.getLastPrice() ));
+            if ( stock == null )
+            {
+                logError( methodName, "Failed to get quote for " + tickerSymbol + " from Yahoo." );
+            }
+            else
+            {
+                stockTickerQuote = getStockTickerQuote( stock );
+                logDebug( methodName, "{0} {1}", tickerSymbol, stockTickerQuote.getLastPrice() );
+            }
         }
         catch( Exception e )
         {
             logError( methodName, e );
         }
+        logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
 
@@ -55,6 +63,8 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
     {
         final String methodName = "getStockTickerQuote";
         logMethodBegin( methodName, stock );
+        Objects.requireNonNull( stock, "stock cannot be null" );
+        Objects.requireNonNull( stock.getSymbol(), "stock cannot be null" );
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
         stockTickerQuote.setTickerSymbol( stock.getSymbol() );
         stockTickerQuote.setLastPrice( stock.getQuote().getPrice() );
