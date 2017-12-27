@@ -34,6 +34,7 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
     /**
      * Get the customer stock entry for the customer id and the ticker symbol
      * @param customerId
+     * @param portfolioId
      * @param tickerSymbol
      * @return
      */
@@ -60,25 +61,25 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
     }
 
     /**
-     * Get the stocks for a portfolio
-     * @param customerId
+     * Get all of the stocks for a portfolio
      * @param portfolioId
      * @return
      */
-    public List<PortfolioStockDTO> getPortfolioStocks( final int customerId, final int portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( final int portfolioId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
-        logMethodBegin( methodName, customerId, portfolioId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Assert.isTrue( portfolioId > 0, "portfolioId must be > 0" );
-        List<PortfolioStockEntity> portfolioStockEntities = portfolioStockRepository.
-            findByCustomerIdAndPortfolioIdOrderByTickerSymbol( customerId, portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOList = this.entitiesToDTOs( portfolioStockEntities );
-        this.setStockInformation( portfolioStockDTOList );
-        logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ));
-        return portfolioStockDTOList;
+        logMethodBegin( methodName, portfolioId );
+        List<PortfolioStockEntity> stocks = portfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOs = new ArrayList<>();
+        if ( stocks != null )
+        {
+            portfolioStockDTOs = entitiesToDTOs( stocks );
+            this.setStockInformation( portfolioStockDTOs );
+        }
+        logMethodEnd( methodName, portfolioStockDTOs );
+        return portfolioStockDTOs;
     }
 
     /**
@@ -172,29 +173,6 @@ public class PortfolioStockService extends BaseService<PortfolioStockEntity, Por
         this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockEntity );
         return portfolioStockEntity;
-    }
-
-    /**
-     * Get all of the stocks for a portfolio
-     * @param portfolioId
-     * @return
-     */
-    public List<PortfolioStockDTO> getPortfolioStocks( final int portfolioId )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
-    {
-        final String methodName = "getPortfolioStocks";
-        logMethodBegin( methodName, portfolioId );
-        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
-        List<PortfolioStockEntity> stocks = portfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOs = new ArrayList<>();
-        if ( stocks != null )
-        {
-            portfolioStockDTOs = entitiesToDTOs( stocks );
-            this.setStockInformation( portfolioStockDTOs );
-        }
-        logMethodEnd( methodName, portfolioStockDTOs );
-        return portfolioStockDTOs;
     }
 
     /**

@@ -132,7 +132,7 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( customerId, portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( portfolioId );
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ) );
         return portfolioStockDTOList;
     }

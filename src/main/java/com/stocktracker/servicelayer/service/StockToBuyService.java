@@ -27,7 +27,7 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
 {
     private StockToBuyRepository stockToBuyRepository;
     private StockTagService stockTagService;
-    private StockContainerService stockService;
+    private StockService stockService;
     private StockNoteSourceService stockNoteSourceService;
 
     /**
@@ -49,8 +49,7 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
         for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
         {
             this.getStockQuoteService()
-                .setStockQuoteInformation( stockToBuyDTO,
-                                           StockQuoteFetchMode.ASYNCHRONOUS );
+                .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         }
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
@@ -78,8 +77,7 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
         for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
         {
             this.getStockQuoteService()
-                .setStockQuoteInformation( stockToBuyDTO,
-                                           StockQuoteFetchMode.ASYNCHRONOUS );
+                .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         }
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
@@ -91,7 +89,7 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
      * @param stockToBuyId
      * @return StockToBuyDTO instance
      */
-    public StockToBuyDTO getStockToBuy( @NotNull final Integer stockToBuyId )
+    public StockToBuyDTO getStockToBuy( final int stockToBuyId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
@@ -101,7 +99,7 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
         StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
         StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockQuoteService()
-            .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+            .setStockQuoteInformation(  stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -270,7 +268,7 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
     }
 
     @Autowired
-    public void setStockService( final StockContainerService stockService )
+    public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
     }

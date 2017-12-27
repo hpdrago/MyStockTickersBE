@@ -34,7 +34,7 @@ public class StockNoteService extends BaseStockQuoteContainerService<StockNoteEn
     /**
      * Autowired service classes
      */
-    private StockContainerService stockService;
+    private StockService stockService;
     private StockNoteRepository stockNoteRepository;
     private VStockNoteCountRepository vStockNoteCountRepository;
     private StockTagService stockTagService;
@@ -240,7 +240,7 @@ public class StockNoteService extends BaseStockQuoteContainerService<StockNoteEn
      * @param stockService
      */
     @Autowired
-    public void setStockService( final StockContainerService stockService )
+    public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
     }

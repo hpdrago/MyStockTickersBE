@@ -3,7 +3,7 @@ package com.stocktracker.task;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
-import com.stocktracker.servicelayer.service.StockContainerService;
+import com.stocktracker.servicelayer.service.StockService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 import com.stocktracker.servicelayer.stockinformationprovider.YahooStockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class UpdateStockPricesTask implements MyLogger
     private static final long ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
     private boolean updateStockPrices = false;
     private StockRepository stockRepository;
-    private StockContainerService stockService;
+    private StockService stockService;
     private YahooStockService yahooStockService;
 
     @Scheduled( initialDelay = 0, fixedRate = ONE_HOUR_MILLIS )
@@ -71,7 +71,7 @@ public class UpdateStockPricesTask implements MyLogger
     }
 
     @Autowired
-    public void setStockService( final StockContainerService stockService )
+    public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
         logDebug( "setStockService", "Dependency Injection of: " + stockRepository );

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,7 +26,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockQuoteService stockQuoteService;
-    private StockContainerService stockService;
+    private StockService stockService;
 
     /**
      * Get the list of all stock catalyst event for the customer
@@ -175,7 +174,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     }
 
     @Autowired
-    public void setStockService( final StockContainerService stockService )
+    public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
     }

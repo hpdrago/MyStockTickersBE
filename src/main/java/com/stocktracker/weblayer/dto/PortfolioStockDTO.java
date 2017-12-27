@@ -27,6 +27,8 @@ public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteSer
     private BigDecimal profitTakingPrice;
     private Integer profitTakingShares;
     private Integer sectorId;
+    private BigDecimal avgAnalystPriceTarget;
+
 
     /***** Calculated fields *****/
     private Integer marketValue;
@@ -224,7 +226,18 @@ public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteSer
         this.tickerSymbol = tickerSymbol;
     }
 
+    @Override
+    public BigDecimal getAvgAnalystPriceTarget()
+    {
+        return avgAnalystPriceTarget;
+    }
 
+    @Override
+    public void setAvgAnalystPriceTarget( final BigDecimal avgAnalystPriceTarget )
+    {
+        this.avgAnalystPriceTarget = avgAnalystPriceTarget;
+    }
+    
     @Override
     public String toString()
     {
@@ -244,6 +257,7 @@ public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteSer
         sb.append( ", sectorId=" ).append( sectorId );
         sb.append( ", marketValue=" ).append( marketValue );
         sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

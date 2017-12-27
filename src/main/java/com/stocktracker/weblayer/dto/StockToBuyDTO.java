@@ -25,6 +25,7 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
     private String buyAfterDate;
     private String createDate;
     private String[] tags;
+    private BigDecimal avgAnalystPriceTarget;
 
     public static StockToBuyDTO newInstance()
     {
@@ -147,6 +148,16 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
         this.notesSourceName = notesSourceName;
     }
 
+    public BigDecimal getAvgAnalystPriceTarget()
+    {
+        return avgAnalystPriceTarget;
+    }
+
+    public void setAvgAnalystPriceTarget( final BigDecimal avgAnalystPriceTarget )
+    {
+        this.avgAnalystPriceTarget = avgAnalystPriceTarget;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -182,6 +193,7 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
+        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );

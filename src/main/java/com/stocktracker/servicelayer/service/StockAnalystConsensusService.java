@@ -15,16 +15,41 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Service
 @Transactional
-public class StockAnalystConsensusContainerService extends BaseStockQuoteContainerService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
+public class StockAnalystConsensusService extends BaseStockQuoteContainerService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
     private StockNoteSourceService stockNoteSourceService;
+
+    /**
+     * Get the DTO for the stock ticker symbol.
+     * @param customerId
+     * @param tickerSymbol
+     * @return
+     * @Throws IllegalArgumentException when customerId <= 0 and if tickerSymbol is null
+     */
+    public StockAnalystConsensusDTO getStockAnalystConsensus( final int customerId, final String tickerSymbol )
+    {
+        final String methodName = "getStockAnalystConsensus";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        Assert.isTrue( customerId > 0, "customerId must be > 0");
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        StockAnalystConsensusEntity stockAnalystConsensusEntity = this.stockAnalystConsensusRepository
+                                                                      .findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
+        StockAnalystConsensusDTO stockAnalystConsensusDTO = null;
+        if ( stockAnalystConsensusEntity != null )
+        {
+            stockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
+        }
+        logMethodEnd( methodName, stockAnalystConsensusDTO );
+        return stockAnalystConsensusDTO;
+    }
 
     /**
      * Get the list of all stock summaries for the customer

@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockContainerService;
+import com.stocktracker.servicelayer.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     public static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
     private Map<String, StockTickerQuoteCacheEntry> cacheEntryMap = Collections.synchronizedMap( new HashMap<>( ) );
     private StockQuoteServiceExecutor stockQuoteServiceExecutor;
-    private StockContainerService stockService;
+    private StockService stockService;
 
     public StockQuoteCache()
     {
@@ -172,7 +172,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     }
 
     @Autowired
-    public void setStockService( final StockContainerService stockService )
+    public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
     }
