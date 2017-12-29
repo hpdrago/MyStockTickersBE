@@ -107,6 +107,11 @@ public class CustomerEntity
         this.accountsById = accountsById;
     }
 
+    public void addAccount( final AccountEntity accountEntity )
+    {
+        this.accountsById.add( accountEntity );
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -137,6 +142,7 @@ public class CustomerEntity
         sb.append( ", password='" ).append( password ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", accountsById=" ).append( accountsById );
         sb.append( '}' );
         return sb.toString();
     }

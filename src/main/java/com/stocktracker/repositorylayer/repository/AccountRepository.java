@@ -20,4 +20,6 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
     AccountEntity findById( final int id );
 
     List<AccountEntity> findByCustomerId( final int customerId );
+
+    AccountEntity findByCustomerIdAndName( final int customerId, final String name );
 }

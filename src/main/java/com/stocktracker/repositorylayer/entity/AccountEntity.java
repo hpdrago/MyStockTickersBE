@@ -167,7 +167,7 @@ public class AccountEntity
     {
         final StringBuilder sb = new StringBuilder( "AccountEntity{" );
         sb.append( "id=" ).append( id );
-        sb.append( ", customerId" ).append( customerId );
+        sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userToken ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );

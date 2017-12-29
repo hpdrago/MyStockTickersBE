@@ -27,8 +27,7 @@ CREATE TABLE `account` (
   `name` varchar(20) NOT NULL,
   `customer_id` int(11) NOT NULL,
   `user_id` varchar(40) DEFAULT NULL,
-  `user_token` varchar(40) DEFAULT NULL,
-  `login_token` varchar(40) DEFAULT NULL,
+  `user_token` varchar(512) DEFAULT NULL,
   `brokerage` varchar(15) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
@@ -36,7 +35,7 @@ CREATE TABLE `account` (
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `idx_account_customer_id` (`customer_id`),
   CONSTRAINT `FK_ACCOUNT_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,6 +44,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
+INSERT INTO `account` VALUES (1,'26305475',1,'8fa1514586995790a0e8','ODVkLMmIIlc%2F6WOIcr8%2FxCakhnDCXSETTVb0ZTInKSR8mXzm3mAQMeFFs4eWzVFSvKz%2FaVsHdlBIrcTVSASjDRcwCQly7b6C4B5Iy8%2FYBvMw6zMlCR43pB8ITUu0ErBPBwkBpG9pe3BwQoTM1xjp6Q%3D%3D','Scottrade','2017-12-29 22:36:37',NULL);
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1099,4 +1099,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-12-29 11:26:45
+-- Dump completed on 2017-12-29 14:39:19

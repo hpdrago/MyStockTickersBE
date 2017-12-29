@@ -2,9 +2,12 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.repositorylayer.entity.AccountEntity;
+import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.AccountRepository;
+import com.stocktracker.repositorylayer.repository.CustomerRepository;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.AccountDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -27,9 +30,8 @@ import java.util.Objects;
 @Transactional
 public class AccountService extends BaseService<AccountEntity, AccountDTO> implements MyLogger
 {
-    private PortfolioService portfolioService;
     private AccountRepository accountRepository;
-    private PortfolioRepository portfolioRepository;
+    private CustomerRepository customerRepository;
 
     /**
      * Get the account by id request
@@ -63,8 +65,15 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, accountDTO );
         AccountEntity accountEntity = this.dtoToEntity( accountDTO );
-        accountEntity.setCustomerId( customerId );
+        CustomerEntity customerEntity = this.customerRepository.findById( customerId );
+        if ( customerEntity == null )
+        {
+            throw new CustomerNotFoundException( customerId );
+        }
+        logDebug( methodName, "customerEntity: {0}", customerEntity );
+        accountEntity.setCustomerByCustomerId( customerEntity );
         accountEntity = this.accountRepository.save( accountEntity );
+        logDebug( methodName, "accountEntity: {0}", accountEntity );
         AccountDTO returnAccountDTO = this.entityToDTO( accountEntity );
         logMethodEnd( methodName, returnAccountDTO );
         return returnAccountDTO;
@@ -150,20 +159,14 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     }
 
     @Autowired
-    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
-    {
-        this.portfolioRepository = portfolioRepository;
-    }
-
-    @Autowired
     public void setAccountRepository( final AccountRepository accountRepository )
     {
         this.accountRepository = accountRepository;
     }
 
     @Autowired
-    public void setPortfolioService( final PortfolioService portfolioService )
+    public void setCustomerRepository( final CustomerRepository customerRepository )
     {
-        this.portfolioService = portfolioService;
+        this.customerRepository = customerRepository;
     }
 }
