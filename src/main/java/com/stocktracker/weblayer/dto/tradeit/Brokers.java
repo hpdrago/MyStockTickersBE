@@ -1,11 +1,10 @@
 package com.stocktracker.weblayer.dto.tradeit;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
 
-public class BrokersDTO extends AbstractResultDTO
+public class Brokers extends TradeItAPIResult
 {
     @JsonProperty("brokerList")
     private TradeItBroker[] brokers;
@@ -15,10 +14,10 @@ public class BrokersDTO extends AbstractResultDTO
     {
         final StringBuilder sb = new StringBuilder( "TradeItBrokers{" );
         sb.append( "brokers=" ).append( Arrays.toString( brokers ) );
-        sb.append( ", status='" ).append( status ).append( '\'' );
-        sb.append( ", token='" ).append( token ).append( '\'' );
-        sb.append( ", shortMessage='" ).append( shortMessage ).append( '\'' );
-        sb.append( ", longMessages='" ).append( longMessages ).append( '\'' );
+        sb.append( ", status='" ).append( getStatus() ).append( '\'' );
+        sb.append( ", token='" ).append( getToken() ).append( '\'' );
+        sb.append( ", shortMessage='" ).append( getShortMessage() ).append( '\'' );
+        sb.append( ", longMessages='" ).append( getLongMessages() ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

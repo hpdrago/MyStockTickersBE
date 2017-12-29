@@ -63,6 +63,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, accountDTO );
         AccountEntity accountEntity = this.dtoToEntity( accountDTO );
+        accountEntity.setCustomerId( customerId );
         accountEntity = this.accountRepository.save( accountEntity );
         AccountDTO returnAccountDTO = this.entityToDTO( accountEntity );
         logMethodEnd( methodName, returnAccountDTO );

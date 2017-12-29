@@ -7,10 +7,11 @@ package com.stocktracker.weblayer.dto;
  */
 public class AccountDTO
 {
-    private int id;
-    private int customerId;
+    private Integer id;
+    private Integer customerId;
     private String name;
-    private String loginToken;
+    private String userId;
+    private String userToken;
     private String brokerage;
 
     /**
@@ -27,22 +28,22 @@ public class AccountDTO
     {
     }
 
-    public int getId()
+    public Integer getId()
     {
         return id;
     }
 
-    public void setId( int id )
+    public void setId( Integer id )
     {
         this.id = id;
     }
 
-    public int getCustomerId()
+    public Integer getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( final int customerId )
+    public void setCustomerId( final Integer customerId )
     {
         this.customerId = customerId;
     }
@@ -57,14 +58,14 @@ public class AccountDTO
         this.name = name;
     }
 
-    public String getLoginToken()
+    public String getUserToken()
     {
-        return loginToken;
+        return userToken;
     }
 
-    public void setLoginToken( final String loginToken )
+    public void setUserToken( final String userToken )
     {
-        this.loginToken = loginToken;
+        this.userToken = userToken;
     }
 
     public String getBrokerage()
@@ -77,6 +78,16 @@ public class AccountDTO
         this.brokerage = brokerage;
     }
 
+    public String getUserId()
+    {
+        return userId;
+    }
+
+    public void setUserId( final String userId )
+    {
+        this.userId = userId;
+    }
+
     @Override
     public String toString()
     {
@@ -84,7 +95,8 @@ public class AccountDTO
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", loginToken='" ).append( loginToken ).append( '\'' );
+        sb.append( ", userId='" ).append( userToken ).append( '\'' );
+        sb.append( ", userToken='" ).append( userToken ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

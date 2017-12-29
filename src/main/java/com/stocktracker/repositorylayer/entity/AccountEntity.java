@@ -20,7 +20,8 @@ public class AccountEntity
     private Integer id;
     private Integer customerId;
     private String name;
-    private String loginToken;
+    private String userId;
+    private String userToken;
     private String brokerage;
     private Timestamp createDate;
     private Timestamp updateDate;
@@ -49,7 +50,7 @@ public class AccountEntity
         return customerId;
     }
 
-    public void setCustomerId( final Integer CustomerId )
+    public void setCustomerId( final Integer customerId )
     {
         this.customerId = customerId;
     }
@@ -67,15 +68,15 @@ public class AccountEntity
     }
 
     @Basic
-    @Column( name = "login_token" )
-    public String getLoginToken()
+    @Column( name = "user_token" )
+    public String getUserToken()
     {
-        return loginToken;
+        return userToken;
     }
 
-    public void setLoginToken( final String loginToken )
+    public void setUserToken( final String loginToken )
     {
-        this.loginToken = loginToken;
+        this.userToken = loginToken;
     }
 
     @Basic
@@ -126,6 +127,18 @@ public class AccountEntity
         this.customerByCustomerId = customerByCustomerId;
     }
 
+    @Basic
+    @Column( name = "user_id" )
+    public String getUserId()
+    {
+        return userId;
+    }
+
+    public void setUserId( final String userId )
+    {
+        this.userId = userId;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -156,7 +169,8 @@ public class AccountEntity
         sb.append( "id=" ).append( id );
         sb.append( ", customerId" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", loginToken='" ).append( loginToken ).append( '\'' );
+        sb.append( ", userId='" ).append( userToken ).append( '\'' );
+        sb.append( ", userToken='" ).append( userToken ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
