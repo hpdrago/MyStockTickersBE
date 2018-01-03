@@ -2,12 +2,26 @@ package com.stocktracker.weblayer.dto.tradeit;
 
 import java.util.Arrays;
 
-public abstract class TradeItAPIResult
+public class TradeItAPIResult
 {
     private String status;
     private String token;
     private String shortMessage;
     private String[] longMessages;
+
+    public TradeItAPIResult()
+    {
+    }
+
+    public TradeItAPIResult( final TradeItAPIResult otherResult )
+    {
+        this.status = otherResult.status;
+        this.token = otherResult.token;
+        this.shortMessage = otherResult.shortMessage;
+        this.longMessages = otherResult.longMessages;
+    }
+
+    public boolean isSuccessful() { return this.status == null ? false : this.status.equals( "SUCCESS" );}
 
     public String getStatus()
     {

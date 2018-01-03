@@ -52,7 +52,7 @@ public class AccountController extends AbstractController implements MyLogger
     {
         final String methodName = "getAccount";
         logMethodBegin( methodName, accountId );
-        AccountDTO accountDTO = accountService.getAccountById( customerId, accountId );
+        AccountDTO accountDTO = accountService.getAccountDTO( customerId, accountId );
         logMethodEnd( methodName, accountDTO );
         return accountDTO;
     }

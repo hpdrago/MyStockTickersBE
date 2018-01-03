@@ -142,7 +142,6 @@ public class CustomerEntity
         sb.append( ", password='" ).append( password ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", accountsById=" ).append( accountsById );
         sb.append( '}' );
         return sb.toString();
     }

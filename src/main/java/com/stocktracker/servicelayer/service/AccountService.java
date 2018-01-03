@@ -31,7 +31,7 @@ import java.util.Objects;
 public class AccountService extends BaseService<AccountEntity, AccountDTO> implements MyLogger
 {
     private AccountRepository accountRepository;
-    private CustomerRepository customerRepository;
+    private CustomerService customerService;
 
     /**
      * Get the account by id request
@@ -39,19 +39,24 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
      * @param accountId
      * @return
      */
-    public AccountDTO getAccountById( @NotNull final int customerId, @NotNull final int accountId )
+    public AccountDTO getAccountDTO( final int customerId, final int accountId )
     {
-        final String methodName = "getAccountById";
+        final String methodName = "getAccountDTO";
         logMethodBegin( methodName, customerId, accountId );
-        this.validateAccountId( customerId, accountId );
+        AccountEntity accountEntity = this.getAccountEntity( customerId, accountId );
+        AccountDTO accountDTO = this.entityToDTO( accountEntity );
+        logMethodEnd( methodName, accountDTO );
+        return accountDTO;
+    }
+
+    public AccountEntity getAccountEntity( final int customerId, final int accountId )
+    {
         AccountEntity accountEntity = accountRepository.findOne( accountId );
         if ( accountEntity == null )
         {
             throw new AccountNotFoundException( customerId, accountId );
         }
-        AccountDTO accountDTO = this.entityToDTO( accountEntity );
-        logMethodEnd( methodName, accountDTO );
-        return accountDTO;
+        return accountEntity;
     }
 
     /**
@@ -65,11 +70,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, accountDTO );
         AccountEntity accountEntity = this.dtoToEntity( accountDTO );
-        CustomerEntity customerEntity = this.customerRepository.findById( customerId );
-        if ( customerEntity == null )
-        {
-            throw new CustomerNotFoundException( customerId );
-        }
+        CustomerEntity customerEntity = this.customerService.getCustomerEntity( customerId );
         logDebug( methodName, "customerEntity: {0}", customerEntity );
         accountEntity.setCustomerByCustomerId( customerEntity );
         accountEntity = this.accountRepository.save( accountEntity );
@@ -77,6 +78,37 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         AccountDTO returnAccountDTO = this.entityToDTO( accountEntity );
         logMethodEnd( methodName, returnAccountDTO );
         return returnAccountDTO;
+    }
+
+    /**
+     * This method is called during the GetOAuthAccessToken TradeIt call
+     * @param customerId
+     * @param broker
+     * @param accountName
+     * @param userId
+     * @param userToken
+     * @return
+     */
+    public AccountDTO createAccount( final int customerId, final String broker, final String accountName,
+                                        final String userId, final String userToken )
+    {
+        final String methodName = "createAccount";
+        logMethodBegin( methodName, customerId, broker, accountName );
+        Objects.requireNonNull( broker, "broker cannot be null" );
+        Objects.requireNonNull( accountName, "accountName cannot be null" );
+        Objects.requireNonNull( userId, "userId cannot be null" );
+        Objects.requireNonNull( userToken, "userToken cannot be null" );
+        AccountEntity accountEntity = AccountEntity.newInstance();
+        accountEntity.setCustomerId( customerId );
+        accountEntity.setBrokerage( broker );
+        accountEntity.setName( accountName );
+        accountEntity.setUserId( userId );
+        accountEntity.setUserToken( userToken );
+        accountEntity.setCustomerByCustomerId( this.customerService.getCustomerEntity( customerId ) );
+        accountEntity = this.accountRepository.save( accountEntity );
+        AccountDTO accountDTO = this.entityToDTO( accountEntity );
+        logMethodEnd( methodName, accountDTO );
+        return accountDTO;
     }
 
     /**
@@ -165,8 +197,8 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     }
 
     @Autowired
-    public void setCustomerRepository( final CustomerRepository customerRepository )
+    public void setCustomerService( final CustomerService customerService )
     {
-        this.customerRepository = customerRepository;
+        this.customerService = customerService;
     }
 }

@@ -10,8 +10,6 @@ public class AccountDTO
     private Integer id;
     private Integer customerId;
     private String name;
-    private String userId;
-    private String userToken;
     private String brokerage;
 
     /**
@@ -58,16 +56,6 @@ public class AccountDTO
         this.name = name;
     }
 
-    public String getUserToken()
-    {
-        return userToken;
-    }
-
-    public void setUserToken( final String userToken )
-    {
-        this.userToken = userToken;
-    }
-
     public String getBrokerage()
     {
         return brokerage;
@@ -78,16 +66,6 @@ public class AccountDTO
         this.brokerage = brokerage;
     }
 
-    public String getUserId()
-    {
-        return userId;
-    }
-
-    public void setUserId( final String userId )
-    {
-        this.userId = userId;
-    }
-
     @Override
     public String toString()
     {
@@ -95,8 +73,6 @@ public class AccountDTO
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", userId='" ).append( userToken ).append( '\'' );
-        sb.append( ", userToken='" ).append( userToken ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

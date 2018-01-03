@@ -1,15 +1,17 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.servicelayer.tradeit.TradeItService;
+import com.stocktracker.weblayer.dto.AccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.Authenticate;
+import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.Brokers;
-import com.stocktracker.weblayer.dto.tradeit.OAuthAccessToken;
+import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessToken;
+import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -72,34 +74,46 @@ public class TradeItController extends AbstractController
     /**
      * After obtaining an OAuth Verifier when the user successfully logged into their broker account, the oAuthVerifier
      * token returned from that process is then used to get the user id and user token to be used for later authentication.
-     * @return
+     * @return GetOAuthAccessTokenDTO that contains the newly created account
      */
-    @RequestMapping( value = CONTEXT_URL + "/getOAuthAccessToken/oAuthVerifier/{oAuthVerifier}",
+    @RequestMapping( value = CONTEXT_URL + "/getOAuthAccessToken"
+                                         + "/customerId/{customerId}"
+                                         + "/broker/{broker}"
+                                         + "/accountName/{accountName}"
+                                         + "/oAuthVerifier/{oAuthVerifier}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public OAuthAccessToken getOAuthAccessToken( @PathVariable final String oAuthVerifier )
+    public GetOAuthAccessTokenDTO getOAuthAccessToken( @PathVariable final int customerId,
+                                                       @PathVariable final String broker,
+                                                       @PathVariable final String accountName,
+                                                       @PathVariable final String oAuthVerifier )
     {
         final String methodName = "getOAuthAccessToken";
-        logMethodBegin( methodName );
-        OAuthAccessToken oAuthAccessTokenDTO = this.tradeItService.getOAuthAccessToken( oAuthVerifier );
-        logMethodEnd( methodName, oAuthAccessTokenDTO );
-        return oAuthAccessTokenDTO;
+        logMethodBegin( methodName, customerId, oAuthVerifier );
+        GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = this.tradeItService.getOAuthAccessToken( customerId, broker, accountName,
+                                                                                                 oAuthVerifier );
+        logMethodEnd( methodName, getOAuthAccessTokenDTO );
+        return getOAuthAccessTokenDTO;
     }
 
     /**
-     * Using the {@code OAuthAcccessTokenDTO} from {@code getOAuthAccessToken}, authenticate the user
-     * @param oAuthAccessTokenDTO
+     * Using the {@code OAuthAccessTokenDTO} from {@code getOAuthAccessToken}, authenticate the user
+     * @param customerId
+     * @param accountId
      * @return Authenticate - contains the session token and standard TradeIt results.
      */
-    @RequestMapping( value = CONTEXT_URL + "/authenticate",
+    @RequestMapping( value = CONTEXT_URL + "/authenticate/"
+                                         + "/customerId/{customerId}"
+                                         + "/accountId/{accountId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Authenticate authenticate( @RequestBody final OAuthAccessToken oAuthAccessTokenDTO )
+    public AuthenticateDTO authenticate( @PathVariable final int customerId,
+                                      @PathVariable final int accountId )
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName );
-        Authenticate authenticateDTO = null;// this.tradeItService.authenticate( oAuthAccessTokenDTO );
-        logMethodEnd( methodName, oAuthAccessTokenDTO );
+        AuthenticateDTO authenticateDTO = this.tradeItService.authenticate( customerId, accountId );
+        logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
     }
 

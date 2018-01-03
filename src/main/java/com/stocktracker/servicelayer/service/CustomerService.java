@@ -53,21 +53,30 @@ public class CustomerService extends BaseService<CustomerEntity, CustomerDTO> im
      * @param id
      * @return
      */
-    public CustomerDTO getCustomerById( final int id )
+    public CustomerDTO getCustomerDTO( final int id )
     {
-        final String methodName = "getCustomerById";
+        final String methodName = "getCustomerDTO";
         logMethodBegin( methodName, id );
-        /*
-         * Get the customer entity
-         */
-        CustomerEntity customerEntity = customerRepository.findOne( id );
-        if ( customerEntity == null )
-        {
-            throw new CustomerNotFoundException( id );
-        }
+        CustomerEntity customerEntity = getCustomerEntity( id );
         CustomerDTO customerDE = loadCustomerDTO( customerEntity );
         logMethodEnd( methodName, customerDE );
         return customerDE;
+    }
+
+    /**
+     * Gets the customer entity for the {@code customerId}
+     * @param customerId
+     * @return
+     * @throws CustomerNotFoundException
+     */
+    public CustomerEntity getCustomerEntity( final int customerId )
+    {
+        CustomerEntity customerEntity = customerRepository.findOne( customerId );
+        if ( customerEntity == null )
+        {
+            throw new CustomerNotFoundException( customerId );
+        }
+        return customerEntity;
     }
 
     /**
@@ -148,5 +157,4 @@ public class CustomerService extends BaseService<CustomerEntity, CustomerDTO> im
         BeanUtils.copyProperties( dto, customerEntity );
         return customerEntity;
     }
-
 }

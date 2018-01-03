@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto.tradeit;
 
-public class OAuthAccessToken extends TradeItAPIResult
+public class GetOAuthAccessToken extends TradeItAPIResult
 {
     private String userId;
     private String userToken;
@@ -25,15 +25,15 @@ public class OAuthAccessToken extends TradeItAPIResult
         this.userToken = userToken;
     }
 
+
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "OAuthAccessToken{" );
+        final StringBuilder sb = new StringBuilder( "GetOAuthAccessToken{" );
         sb.append( "userId='" ).append( userId ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
         sb.append( ", super={" ).append( super.toString() ).append( '}' );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

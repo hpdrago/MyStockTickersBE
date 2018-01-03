@@ -62,7 +62,7 @@ public class CustomerController extends AbstractController implements MyLogger
     {
         final String methodName = "getCustomer";
         logMethodBegin( methodName, id );
-        CustomerDTO customerDTO = customerService.getCustomerById( id );
+        CustomerDTO customerDTO = customerService.getCustomerDTO( id );
         logMethodEnd( methodName, customerDTO );
         return customerDTO;
     }

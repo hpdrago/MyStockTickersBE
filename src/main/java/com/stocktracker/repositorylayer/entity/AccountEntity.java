@@ -3,6 +3,8 @@ package com.stocktracker.repositorylayer.entity;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,6 +24,7 @@ public class AccountEntity
     private String name;
     private String userId;
     private String userToken;
+    private String sessionToken;
     private String brokerage;
     private Timestamp createDate;
     private Timestamp updateDate;
@@ -33,6 +36,7 @@ public class AccountEntity
     }
 
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
     @Column( name = "id" )
     public Integer getId()
     {
@@ -139,6 +143,19 @@ public class AccountEntity
         this.userId = userId;
     }
 
+    @Basic
+    @Column( name = "session_token" )
+    public String getSessionToken()
+    {
+        return sessionToken;
+    }
+
+    public void setSessionToken( final String sessionToken )
+    {
+        this.sessionToken = sessionToken;
+    }
+
+
     @Override
     public boolean equals( final Object o )
     {
@@ -171,6 +188,7 @@ public class AccountEntity
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userToken ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
+        sb.append( ", sessionToken='" ).append( userToken ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
