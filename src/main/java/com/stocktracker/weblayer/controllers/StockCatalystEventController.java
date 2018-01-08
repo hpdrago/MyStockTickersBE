@@ -54,7 +54,7 @@ public class StockCatalystEventController implements MyLogger
      * Get all of the stock catalyst events for a customer and a ticker symbol
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerIdAndTickerSymbol( final Pageable pageRequest,
@@ -73,7 +73,7 @@ public class StockCatalystEventController implements MyLogger
      * Get a single stock catalyst event
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{stockCatalystEventId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockCatalystEventDTO getStockCatalystEvent( @PathVariable int stockCatalystEventId )
@@ -90,7 +90,7 @@ public class StockCatalystEventController implements MyLogger
      * @param stockCatalystEventId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{stockCatalystEventId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable int stockCatalystEventId,

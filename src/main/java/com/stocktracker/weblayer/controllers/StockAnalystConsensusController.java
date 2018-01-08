@@ -52,7 +52,7 @@ public class StockAnalystConsensusController implements MyLogger
      * Get all of the stock analyst consensus for a customer id and ticker symbol
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( final Pageable pageRequest,
@@ -71,7 +71,7 @@ public class StockAnalystConsensusController implements MyLogger
      * Get a single stock analyst consensus
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockAnalystConsensusDTO getStockAnalystConsensus( @PathVariable int stockAnalystConsensusId,
@@ -90,13 +90,14 @@ public class StockAnalystConsensusController implements MyLogger
      * @param stockAnalystConsensusId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deleteStockAnalystConsensus( @PathVariable int stockAnalystConsensusId )
+    public ResponseEntity<Void> deleteStockAnalystConsensus( @PathVariable int stockAnalystConsensusId,
+                                                             @PathVariable int customerId )
     {
         final String methodName = "deleteStockAnalystConsensus";
-        logMethodBegin( methodName, stockAnalystConsensusId );
+        logMethodBegin( methodName, customerId, stockAnalystConsensusId );
         this.stockAnalystConsensusService.deleteStockAnalystConsensus( stockAnalystConsensusId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -136,7 +137,7 @@ public class StockAnalystConsensusController implements MyLogger
      * @throws StockQuoteUnavailableException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/{stockAnalystConsensusId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockAnalystConsensusDTO> updateStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
                                                                                  @PathVariable Integer stockAnalystConsensusId,

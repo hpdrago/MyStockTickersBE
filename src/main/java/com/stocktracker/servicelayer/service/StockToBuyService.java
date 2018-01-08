@@ -4,6 +4,7 @@ import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
@@ -91,12 +92,17 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
      */
     public StockToBuyDTO getStockToBuy( final int stockToBuyId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               StockToBuyNoteFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId );
         Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
         StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
+        if ( stockToBuyEntity == null )
+        {
+            throw new StockToBuyNoteFoundException( stockToBuyId );
+        }
         StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockQuoteService()
             .setStockQuoteInformation(  stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );

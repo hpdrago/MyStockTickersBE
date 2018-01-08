@@ -69,7 +69,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = URL_CONTEXT + "/{stockNotesId}/customer/{customerId}",
+    @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                          @PathVariable( "customerId" ) final int customerId,
@@ -111,7 +111,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = URL_CONTEXT + "/{stockNotesId}/customer/{customerId}",
+    @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
                      method = RequestMethod.DELETE )
     public ResponseEntity<StockNoteDTO> deleteStockNote( @PathVariable( "customerId" ) final int customerId,
                                                          @PathVariable( "stockNotesId" ) final int stockNotesId )
@@ -163,7 +163,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = URL_CONTEXT + "/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,

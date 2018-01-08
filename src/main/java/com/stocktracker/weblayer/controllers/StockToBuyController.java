@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
 import com.stocktracker.servicelayer.service.StockToBuyService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,13 +77,14 @@ public class StockToBuyController extends AbstractController
      * Get a single stock to buy
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId,
                                         @PathVariable int customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               StockToBuyNoteFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId, customerId );
@@ -96,7 +98,7 @@ public class StockToBuyController extends AbstractController
      * @param stockToBuyId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockToBuy( @PathVariable int stockToBuyId,
@@ -140,7 +142,7 @@ public class StockToBuyController extends AbstractController
      * @throws StockQuoteUnavailableException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/{stockToBuyId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int stockToBuyId,
                                                          @PathVariable int customerId,
