@@ -38,6 +38,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
      * @param customerId
      * @param accountId
      * @return
+     * @throws AccountNotFoundException
      */
     public AccountDTO getAccountDTO( final int customerId, final int accountId )
     {
@@ -49,6 +50,13 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         return accountDTO;
     }
 
+    /**
+     * Get the account for the customer and account id.
+     * @param customerId
+     * @param accountId
+     * @return
+     * @throws AccountNotFoundException
+     */
     public AccountEntity getAccountEntity( final int customerId, final int accountId )
     {
         AccountEntity accountEntity = accountRepository.findOne( accountId );
@@ -81,7 +89,7 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     }
 
     /**
-     * This method is called during the GetOAuthAccessToken TradeIt call
+     * This method is called during the GetOAuthAccessTokenAPIResult TradeIt call
      * @param customerId
      * @param broker
      * @param accountName

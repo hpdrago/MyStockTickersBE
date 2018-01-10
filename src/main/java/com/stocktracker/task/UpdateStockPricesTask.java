@@ -66,7 +66,7 @@ public class UpdateStockPricesTask implements MyLogger
     public void setStockRepository( final StockRepository stockRepository )
     {
         final String methodName = "setStockRepository";
-        logDebug( methodName, "Dependency Injection of: " + stockRepository );
+        logInfo( methodName, "Dependency Injection of: " + stockRepository );
         this.stockRepository = stockRepository;
     }
 
@@ -74,13 +74,13 @@ public class UpdateStockPricesTask implements MyLogger
     public void setStockService( final StockService stockService )
     {
         this.stockService = stockService;
-        logDebug( "setStockService", "Dependency Injection of: " + stockRepository );
+        logInfo( "setStockService", "Dependency Injection of: " + stockRepository );
     }
 
     @Autowired
     public void setYahooStockService( final YahooStockService yahooStockService )
     {
         this.yahooStockService = yahooStockService;
-        logDebug( "setYahooStockService", "Dependency Injection of: " + yahooStockService );
+        logInfo( "setYahooStockService", "Dependency Injection of: " + yahooStockService );
     }
 }

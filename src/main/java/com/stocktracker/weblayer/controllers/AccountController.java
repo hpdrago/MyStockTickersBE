@@ -44,7 +44,7 @@ public class AccountController extends AbstractController implements MyLogger
      * @param accountId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{accountId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public AccountDTO getAccount( @PathVariable int accountId,
@@ -86,7 +86,7 @@ public class AccountController extends AbstractController implements MyLogger
      * @param accountId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{accountId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteAccount( @PathVariable int accountId,

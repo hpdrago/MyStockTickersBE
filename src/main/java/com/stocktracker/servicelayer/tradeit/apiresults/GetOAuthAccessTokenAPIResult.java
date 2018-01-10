@@ -1,6 +1,9 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.apiresults;
 
-public class GetOAuthAccessToken extends TradeItAPIResult
+/**
+ * This class contains the results from calling TradeIt to obtain the userId and userToken using the oAuthVerifier.
+ */
+public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult
 {
     private String userId;
     private String userToken;
@@ -29,7 +32,7 @@ public class GetOAuthAccessToken extends TradeItAPIResult
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "GetOAuthAccessToken{" );
+        final StringBuilder sb = new StringBuilder( "GetOAuthAccessTokenAPIResult{" );
         sb.append( "userId='" ).append( userId ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
         sb.append( ", super={" ).append( super.toString() ).append( '}' );

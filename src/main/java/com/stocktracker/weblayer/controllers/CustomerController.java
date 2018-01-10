@@ -55,7 +55,7 @@ public class CustomerController extends AbstractController implements MyLogger
      * @param id
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/{id}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{id}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public CustomerDTO getCustomer( @PathVariable int id )

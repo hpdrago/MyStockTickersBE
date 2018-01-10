@@ -1,7 +1,10 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.apiresults;
 
 import java.util.Arrays;
 
+/**
+ * This is the base class for all TradeItAPI calls.  It contains the common result values.
+ */
 public class TradeItAPIResult
 {
     private String status;

@@ -26,6 +26,7 @@ public class AccountEntity
     private String userToken;
     private String sessionToken;
     private String brokerage;
+    private String srv;
     private Timestamp createDate;
     private Timestamp updateDate;
     private CustomerEntity customerByCustomerId;
@@ -155,6 +156,17 @@ public class AccountEntity
         this.sessionToken = sessionToken;
     }
 
+    @Basic
+    @Column( name = "srv" )
+    public String getSrv()
+    {
+        return srv;
+    }
+
+    public void setSrv( final String srv )
+    {
+        this.srv = srv;
+    }
 
     @Override
     public boolean equals( final Object o )

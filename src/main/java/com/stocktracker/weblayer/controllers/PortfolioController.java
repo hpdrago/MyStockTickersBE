@@ -60,7 +60,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/{portfolioId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
@@ -107,7 +107,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = CONTEXT_URL + "/{portfolioId}/customer/{customerId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.DELETE)
     public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
                                                          @PathVariable( "customerId" ) Integer customerId )
         throws StockNotFoundException,
@@ -130,7 +130,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping(value = CONTEXT_URL + "/{portfolioId}/customer/{customerId}", method = RequestMethod.GET)
+    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.GET)
     public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable int portfolioId,
                                                       @PathVariable int customerId )
         throws StockNotFoundException,

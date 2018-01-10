@@ -1,10 +1,11 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.apiresults;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.stocktracker.weblayer.dto.tradeit.TradeItBroker;
 
 import java.util.Arrays;
 
-public class Brokers extends TradeItAPIResult
+public class GetBrokersAPIResult extends TradeItAPIResult
 {
     @JsonProperty("brokerList")
     private TradeItBroker[] brokers;

@@ -1,6 +1,6 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.apiresults;
 
-public class RequestOAuthPopUpURLDTO extends TradeItAPIResult
+public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult
 {
     private String oAuthURL;
 
@@ -17,7 +17,7 @@ public class RequestOAuthPopUpURLDTO extends TradeItAPIResult
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "RequestOAuthPopUpURLDTO{" );
+        final StringBuilder sb = new StringBuilder( "RequestOAuthPopUpURLAPIResult{" );
         sb.append( "oAuthURL='" ).append( oAuthURL ).append( '\'' );
         sb.append( "super={" ).append( super.toString() ).append( '}' );
         sb.append( '}' );

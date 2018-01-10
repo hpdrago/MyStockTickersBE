@@ -1,13 +1,10 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.servicelayer.tradeit.TradeItService;
-import com.stocktracker.weblayer.dto.AccountDTO;
-import com.stocktracker.weblayer.dto.tradeit.Authenticate;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
-import com.stocktracker.weblayer.dto.tradeit.Brokers;
-import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessToken;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
-import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
+import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +26,7 @@ public class TradeItController extends AbstractController
     /**
      * Cache this result as it should hardly change
      */
-    private Brokers brokersDTO;
+    private GetBrokersAPIResult getBrokersAPIResultDTO;
 
     /**
      * Get all of the stock to buy for a customer
@@ -38,21 +35,21 @@ public class TradeItController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/brokers",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Brokers getBrokers()
+    public GetBrokersAPIResult getBrokers()
     {
         final String methodName = "getBrokers";
         logMethodBegin( methodName );
-        if ( this.brokersDTO == null )
+        if ( this.getBrokersAPIResultDTO == null )
         {
-            logDebug( methodName, "Brokers not cached, retrieving now" );
-            this.brokersDTO = this.tradeItService.getBrokers();
+            logDebug( methodName, "GetBrokersAPIResult not cached, retrieving now" );
+            this.getBrokersAPIResultDTO = this.tradeItService.getBrokers();
         }
         else
         {
             logDebug( methodName, "returning cached broker list");
         }
         logMethodEnd( methodName );
-        return this.brokersDTO;
+        return this.getBrokersAPIResultDTO;
     }
 
     /**
@@ -62,13 +59,13 @@ public class TradeItController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/requestOAuthPopUpURL/broker/{broker}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public RequestOAuthPopUpURLDTO getRequestOAuthPopUpURL( @PathVariable final String broker )
+    public RequestOAuthPopUpURLAPIResult getRequestOAuthPopUpURL( @PathVariable final String broker )
     {
         final String methodName = "getRequestOAuthPopUpURL";
         logMethodBegin( methodName );
-        RequestOAuthPopUpURLDTO requestOAuthPopUpURLDTO = this.tradeItService.requestOAuthPopUpURL( broker );
-        logMethodEnd( methodName, requestOAuthPopUpURLDTO );
-        return requestOAuthPopUpURLDTO;
+        RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult = this.tradeItService.requestOAuthPopUpURL( broker );
+        logMethodEnd( methodName, requestOAuthPopUpURLAPIResult );
+        return requestOAuthPopUpURLAPIResult;
     }
 
     /**
@@ -100,18 +97,18 @@ public class TradeItController extends AbstractController
      * Using the {@code OAuthAccessTokenDTO} from {@code getOAuthAccessToken}, authenticate the user
      * @param customerId
      * @param accountId
-     * @return Authenticate - contains the session token and standard TradeIt results.
+     * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
-                                         + "/customerId/{customerId}"
-                                         + "/accountId/{accountId}",
+                                         + "/accountId/{accountId}"
+                                         + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public AuthenticateDTO authenticate( @PathVariable final int customerId,
-                                      @PathVariable final int accountId )
+                                         @PathVariable final int accountId )
     {
         final String methodName = "authenticate";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, accountId, customerId );
         AuthenticateDTO authenticateDTO = this.tradeItService.authenticate( customerId, accountId );
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
