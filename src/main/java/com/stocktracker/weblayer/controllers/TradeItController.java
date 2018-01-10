@@ -39,7 +39,7 @@ public class TradeItController extends AbstractController
     {
         final String methodName = "getBrokers";
         logMethodBegin( methodName );
-        if ( this.getBrokersAPIResultDTO == null )
+        if ( this.getBrokersAPIResultDTO == null || getBrokersAPIResultDTO.brokerCount() == 0 )
         {
             logDebug( methodName, "GetBrokersAPIResult not cached, retrieving now" );
             this.getBrokersAPIResultDTO = this.tradeItService.getBrokers();

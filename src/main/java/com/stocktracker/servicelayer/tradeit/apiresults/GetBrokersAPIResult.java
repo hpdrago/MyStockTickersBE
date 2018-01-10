@@ -10,6 +10,11 @@ public class GetBrokersAPIResult extends TradeItAPIResult
     @JsonProperty("brokerList")
     private TradeItBroker[] brokers;
 
+    public int brokerCount()
+    {
+        return this.brokers.length;
+    }
+
     @Override
     public String toString()
     {

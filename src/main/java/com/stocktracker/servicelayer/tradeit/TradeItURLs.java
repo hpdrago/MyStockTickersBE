@@ -15,32 +15,14 @@ import java.util.Objects;
 public class TradeItURLs
 {
     private static final String BASE_URL = "https://ems.qa.tradingticket.com/api/v1";
-    public static final String KEY_TAG = "<API_KEY>";
     public static final String SRV_TAG = "<SRV_KEY>";
-    public static final String BROKER_TAG = "<BROKER>";
-    public static final String USER_ID_TAG = "<USER_ID>";
-    public static final String USER_TOKEN_TAG = "<USER_TOKEN>";
-    public static final String OAUTH_VERIFIER_TAG = "<OAUTHVERIFIER>";
-    private static final String GET_BROKER_LIST = BASE_URL + "/preference/getBrokerList"
-                                                 + "?apiKey=" + KEY_TAG;
-    private static final String REQUEST_OAUTH_POPUP_URL = BASE_URL + "/user/getOAuthLoginPopupUrlForWebApp"
-                                                         + "?apiKey=" + KEY_TAG +
-                                                         "&broker=" + BROKER_TAG;
-    private static final String GET_OAUTH_ACCESS_TOKEN_URL = BASE_URL + "/user/getOAuthAccessToken"
-                                                            + "?apiKey=" + KEY_TAG
-                                                            + "&oAuthVerifier=" + OAUTH_VERIFIER_TAG;
-    private static final String AUTHENTICATE_URL = BASE_URL + "/user/authenticate"
-                                                  + "?srv=" + SRV_TAG
-                                                  + "&apiKey=" + KEY_TAG;
-
-    public static final String BROKER_PARAM = "broker";
-    public static final String USER_ID_PARAM = "userId";
-    public static final String USER_TOKEN_PARAM = "userToken";
-    public static final String API_KEY_PARAM = "apiKey";
+    private static final String GET_BROKER_LIST = BASE_URL + "/preference/getBrokerList";
+    private static final String REQUEST_OAUTH_POPUP_URL = BASE_URL + "/user/getOAuthLoginPopupUrlForWebApp";
+    private static final String GET_OAUTH_ACCESS_TOKEN_URL = BASE_URL + "/user/getOAuthAccessToken";
+    private static final String AUTHENTICATE_URL = BASE_URL + "/user/authenticate" + "?srv=" + SRV_TAG;
 
     @Autowired
     private TradeItProperties tradeItProperties;
-
 
     /**
      * Get the URL for to authenticate a user's account.
@@ -59,8 +41,8 @@ public class TradeItURLs
      */
     public String getBrokersURL()
     {
-        this.checkProperties();
-        return this.replaceAPIKeyTag( GET_BROKER_LIST );
+        //return this.replaceAPIKeyTag( GET_BROKER_LIST );
+        return this.GET_BROKER_LIST;
     }
 
     /**
@@ -80,7 +62,7 @@ public class TradeItURLs
     public String getOauthAccessTokenURL( final String oAuthVerifier )
     {
         this.checkProperties();
-        return this.replaceAPIKeyTag( GET_OAUTH_ACCESS_TOKEN_URL ).replace( OAUTH_VERIFIER_TAG, oAuthVerifier );
+        return GET_OAUTH_ACCESS_TOKEN_URL;
     }
 
     /**
@@ -91,10 +73,6 @@ public class TradeItURLs
     private String replaceAPIKeyTag( @NotNull final String url )
     {
         Objects.requireNonNull( url, "url cannot be null" );
-        if ( !url.contains( KEY_TAG ))
-        {
-            throw new IllegalArgumentException( "url " + url + " must contain " + KEY_TAG );
-        }
         return url.replace( "<API_KEY>", this.tradeItProperties.getApiKey() );
     }
 

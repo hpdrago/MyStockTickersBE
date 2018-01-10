@@ -6,10 +6,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import static com.stocktracker.servicelayer.tradeit.TradeItURLs.BROKER_PARAM;
-import static com.stocktracker.servicelayer.tradeit.TradeItURLs.USER_ID_PARAM;
-import static com.stocktracker.servicelayer.tradeit.TradeItURLs.USER_TOKEN_PARAM;
-
 /**
  * This class encapsulates the Authenticate API call.
  */
@@ -17,7 +13,6 @@ import static com.stocktracker.servicelayer.tradeit.TradeItURLs.USER_TOKEN_PARAM
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
 public class AuthenticateAPICall extends TradeItAPIRestCall<AuthenticateAPIResult>
 {
-
     /**
      * Authenticate the user's account.
      * @param accountEntity
@@ -28,9 +23,9 @@ public class AuthenticateAPICall extends TradeItAPIRestCall<AuthenticateAPIResul
         final String methodName = "execute";
         logMethodBegin( methodName, accountEntity );
         final String authenticateURL = this.tradeItURLs.getAuthenticateUrl( accountEntity.getSrv() );
-        this.addPostParameter( USER_ID_PARAM, accountEntity.getUserId() );
-        this.addPostParameter( USER_TOKEN_PARAM, accountEntity.getUserToken() );
-        this.addPostParameter( BROKER_PARAM, accountEntity.getBrokerage() );
+        this.addPostParameter( this.tradeItProperties.USER_ID_PARAM, accountEntity.getUserId() );
+        this.addPostParameter( this.tradeItProperties.USER_TOKEN_PARAM, accountEntity.getUserToken() );
+        this.addPostParameter( this.tradeItProperties.BROKER_PARAM, accountEntity.getBrokerage() );
         AuthenticateAPIResult authenticateAPIResult = this.callTradeIt( authenticateURL );
         logMethodBegin( methodName, authenticateAPIResult );
         return authenticateAPIResult;

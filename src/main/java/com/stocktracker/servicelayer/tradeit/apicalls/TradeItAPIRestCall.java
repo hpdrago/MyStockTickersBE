@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,16 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     private HttpHeaders headers;
     private MultiValueMap<String, String> parameterMap;
 
+    /**
+     * This class contains the getURL methods and URL configurations.
+     */
     protected TradeItURLs tradeItURLs;
+
+    /**
+     * This class contains the API parameter strings for the POST parameters.
+     */
+    @Autowired
+    protected TradeItProperties tradeItProperties;
 
     /**
      * Creates a new instance.
@@ -52,7 +62,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     {
         final String methodName = "callTradeIt";
         logMethodBegin( methodName, url );
-        this.addPostParameter( TradeItURLs.API_KEY_PARAM, tradeItURLs.getAPIKey() );
+        this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, tradeItURLs.getAPIKey() );
         final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
         final RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getApiResponseClass() );
