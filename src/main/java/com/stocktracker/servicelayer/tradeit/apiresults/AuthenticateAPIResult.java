@@ -1,45 +1,47 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
-import com.stocktracker.weblayer.dto.tradeit.Account;
+import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 
 import java.util.Arrays;
 
 /**
- * This class contains the result from the API call to authenticate a user's account.
+ * This is the base class for the Authenticate API Result.  Depending on the result status of SUCCESS or
+ * INFORMATION_NEDED, different field values will be set.
+ *
+ * @author mike 1/10/2018
  */
 public class AuthenticateAPIResult extends TradeItAPIResult
 {
+    /*
+     * status == SUCCESS
+     */
+    private TradeItAccount[] tradeItAccounts;
+
+    /*
+     * status = INFORMATION_NEEDED
+     */
     private String informationType;
     private String securityQuestion;
     private String securityOptions[];
-    private Account[] accounts;
 
     /**
-     * Provide a more readable get method to indicate that the token is actually the session token.
-     * @return
+     * Default constructor.
      */
-    public String getSessionToken()
+    public AuthenticateAPIResult()
     {
-        return super.getToken();
-    }
-
-    public void setSessionToken( final String sessionToken )
-    {
-        super.setToken( sessionToken );
     }
 
     /**
-     * Get the user's account.
-     * @return
+     * Copy constructor.
+     * @param authenticateAPIResult
      */
-    public Account[] getAccounts()
+    public AuthenticateAPIResult( final AuthenticateAPIResult authenticateAPIResult )
     {
-        return accounts;
-    }
-
-    public void setAccounts( Account[] accounts )
-    {
-        this.accounts = accounts;
+        super( authenticateAPIResult );
+        this.tradeItAccounts = authenticateAPIResult.tradeItAccounts;
+        this.informationType = authenticateAPIResult.informationType;
+        this.securityOptions = authenticateAPIResult.securityOptions;
+        this.securityQuestion = authenticateAPIResult.securityQuestion;
     }
 
     public String getInformationType()
@@ -72,14 +74,43 @@ public class AuthenticateAPIResult extends TradeItAPIResult
         this.securityOptions = securityOptions;
     }
 
+    /**
+     * Provide a more readable get method to indicate that the token is actually the session token.
+     * @return
+     */
+    public String getSessionToken()
+    {
+        return super.getToken();
+    }
+
+    public void setSessionToken( final String sessionToken )
+    {
+        super.setToken( sessionToken );
+    }
+
+    /**
+     * Get the user's account.
+     * @return
+     */
+    public TradeItAccount[] getTradeItAPIAccounts()
+    {
+        return tradeItAccounts;
+    }
+
+    public void setTradeItAPIAccounts( TradeItAccount[] tradeItAccounts )
+    {
+        this.tradeItAccounts = tradeItAccounts;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AuthenticateAPIResult{" );
-        sb.append( "informationType='" ).append( informationType ).append( '\'' );
+        sb.append( "tradeItAccounts=" ).append( Arrays.toString( tradeItAccounts ) );
+        sb.append( ", informationType='" ).append( informationType ).append( '\'' );
         sb.append( ", securityQuestion='" ).append( securityQuestion ).append( '\'' );
-        sb.append( ", securityOptions='" ).append( securityOptions ).append( '\'' );
-        sb.append( ", accounts=" ).append( Arrays.toString( accounts ) );
+        sb.append( ", securityOptions=" ).append( Arrays.toString( securityOptions ) );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

@@ -19,7 +19,7 @@ public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult
     {
         final StringBuilder sb = new StringBuilder( "RequestOAuthPopUpURLAPIResult{" );
         sb.append( "oAuthURL='" ).append( oAuthURL ).append( '\'' );
-        sb.append( "super={" ).append( super.toString() ).append( '}' );
+        sb.append( "super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

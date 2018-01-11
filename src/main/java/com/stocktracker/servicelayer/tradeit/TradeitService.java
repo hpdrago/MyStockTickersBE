@@ -7,11 +7,11 @@ import com.stocktracker.servicelayer.tradeit.apicalls.AuthenticateAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetBrokersAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.RequestOAuthPopUpURLAPICall;
-import com.stocktracker.weblayer.dto.AccountDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
-import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
+import com.stocktracker.weblayer.dto.AccountDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
+import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ public class TradeItService implements MyLogger
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( oAuthVerifier, "oAuthVerifier cannot be null" );
         final GetOAuthAccessTokenAPICall getOAuthAccessTokenAPICall = this.context.getBean( GetOAuthAccessTokenAPICall.class );
-        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = getOAuthAccessTokenAPICall.execute( oAuthVerifier );
+        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = getOAuthAccessTokenAPICall.execute( oAuthVerifier, broker );
         AccountDTO accountDTO = null;
         if ( getOAuthAccessTokenAPIResult.isSuccessful() )
         {
@@ -114,8 +114,8 @@ public class TradeItService implements MyLogger
         final AccountEntity accountEntity = this.accountService.getAccountEntity( customerId, accountId );
         final AuthenticateAPICall authenticateAPICall = this.context.getBean( AuthenticateAPICall.class );
         final AuthenticateAPIResult authenticateAPIResult = authenticateAPICall.execute( accountEntity );
-        logDebug( methodName, "authenticateAPIResult: {0}", authenticateAPIResult );
         final AuthenticateDTO authenticateDTO = new AuthenticateDTO( authenticateAPIResult );
+        logDebug( methodName, "authenticateAPISuccessResult: {0}", authenticateAPIResult );
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
     }

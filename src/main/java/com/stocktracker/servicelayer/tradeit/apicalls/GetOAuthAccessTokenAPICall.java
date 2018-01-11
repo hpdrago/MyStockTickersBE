@@ -1,9 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
-import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,7 +23,7 @@ public class GetOAuthAccessTokenAPICall extends TradeItAPIRestCall<GetOAuthAcces
     {
         final String methodName = "execute ";
         logMethodBegin( methodName, oAuthVerifier, broker );
-        final String url = this.tradeItURLs.getOauthAccessTokenURL( oAuthVerifier );
+        final String url = this.tradeItURLs.getOauthAccessTokenURL();
         logDebug( methodName, "url: {0}", url );
         this.addPostParameter( TradeItProperties.BROKER_PARAM, broker );
         this.addPostParameter( TradeItProperties.OAUTH_VERIFIER_PARAM, oAuthVerifier );

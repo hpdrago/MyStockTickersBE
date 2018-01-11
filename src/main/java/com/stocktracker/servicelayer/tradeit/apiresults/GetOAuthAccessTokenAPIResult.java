@@ -35,7 +35,7 @@ public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult
         final StringBuilder sb = new StringBuilder( "GetOAuthAccessTokenAPIResult{" );
         sb.append( "userId='" ).append( userId ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
-        sb.append( ", super={" ).append( super.toString() ).append( '}' );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

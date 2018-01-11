@@ -1,4 +1,4 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.types;
 
 public class TradeItBrokerInstrument
 {

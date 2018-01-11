@@ -1,6 +1,9 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.types;
 
-public class DisplayLabelValue
+/**
+ * This class contains a the TradeIt Display Label Value fields.
+ */
+public class TradeItDisplayLabelValue
 {
     private String displayLabel;
     private String value;

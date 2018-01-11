@@ -1,8 +1,9 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.servicelayer.tradeit.TradeItService;
-import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
+import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
+import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
 import org.springframework.beans.factory.annotation.Autowired;

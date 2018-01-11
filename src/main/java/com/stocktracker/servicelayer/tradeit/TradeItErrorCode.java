@@ -10,7 +10,7 @@ public enum TradeItErrorCode
     BROKER_EXECUTION_ERROR( 200, "Broker Execution Error", "User should modify the input for the trade request" ),
     BROKER_AUTHENTICATION_ERROR( 300, "Broker Authentication Error", "Authentication info is incorrect or the user may have changed their login information and the oAuth token is no longer valid." ),
     TOO_MANY_LOGIN_ATTEMPTS_ERROR( 301, "Too Many Login Attempts Error", "After 3 invalid login attempts in a row, the user IP will be blocked from TradeIt servers for a duration of 5 minutes." ),
-    BROKER_ACCOUNT_ERROR( 400, "Broker Account Error", "User credentials are valid, but needs to take action on the brokers site (ie. sign exchange agreement, sign margin agreement." ),
+    BROKER_ACCOUNT_ERROR( 400, "Broker TradeItAccount Error", "User credentials are valid, but needs to take action on the brokers site (ie. sign exchange agreement, sign margin agreement." ),
     PARAMS_ERROR( 500, "Parameters Error", "Publisher should check the parameters being passed in." ),
     SESSION_EXPIRED_ERROR( 600, "Session Expired", "Publisher should call authenticate again in order to generate a new session token." ),
     TOKEN_INVALID_OR_EXPIRED_ERROR( 700, "Token invalid or expired", "Publisher should call oAuthUpdate in order to refresh the token." );

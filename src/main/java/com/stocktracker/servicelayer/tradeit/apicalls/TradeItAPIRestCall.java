@@ -62,7 +62,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     {
         final String methodName = "callTradeIt";
         logMethodBegin( methodName, url );
-        this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, tradeItURLs.getAPIKey() );
+        this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, this.tradeItProperties.getApiKey() );
         final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
         final RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getApiResponseClass() );

@@ -1,13 +1,18 @@
-package com.stocktracker.weblayer.dto.tradeit;
+package com.stocktracker.servicelayer.tradeit.types;
 
-public class Account
+import java.util.Arrays;
+
+/**
+ * This class defines the account fields that are returned in TradeIt authenticate call.
+ */
+public class TradeItAccount
 {
     private String accountNumber;
     private String name;
     private String accountBaseCurrency;
     private String accountIndex;
     private boolean userCanDisableMargin;
-    private OrderCapability[] orderCapabilities;
+    private TradeItOrderCapability[] orderCapabilities;
 
     public String getAccountNumber()
     {
@@ -59,13 +64,27 @@ public class Account
         this.userCanDisableMargin = userCanDisableMargin;
     }
 
-    public OrderCapability[] getOrderCapabilities()
+    public TradeItOrderCapability[] getOrderCapabilities()
     {
         return orderCapabilities;
     }
 
-    public void setOrderCapabilities( OrderCapability[] orderCapabilities )
+    public void setOrderCapabilities( TradeItOrderCapability[] orderCapabilities )
     {
         this.orderCapabilities = orderCapabilities;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "TradeItAccount{" );
+        sb.append( "accountNumber='" ).append( accountNumber ).append( '\'' );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", accountBaseCurrency='" ).append( accountBaseCurrency ).append( '\'' );
+        sb.append( ", accountIndex='" ).append( accountIndex ).append( '\'' );
+        sb.append( ", userCanDisableMargin=" ).append( userCanDisableMargin );
+        sb.append( ", orderCapabilities=" ).append( Arrays.toString( orderCapabilities ) );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 /**
- * Account entity repository
+ * TradeItAccount entity repository
  *
  * Created by mike on 12/4/2017.
  */
