@@ -134,7 +134,7 @@ public class StockQuoteService implements MyLogger
         }
         else
         {
-            logWarn( methodName, "Could not get stock information from the stock cache for {0}",
+            logTrace( methodName, "Could not get stock information from the stock cache for {0}",
                      container.getTickerSymbol() );
         }
         logMethodEnd( methodName, container );

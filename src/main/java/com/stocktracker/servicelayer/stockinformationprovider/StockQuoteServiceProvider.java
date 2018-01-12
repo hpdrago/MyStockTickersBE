@@ -1,5 +1,7 @@
 package com.stocktracker.servicelayer.stockinformationprovider;
 
+import com.stocktracker.common.exceptions.StockNotFoundException;
+
 /**
  * Defines the methods required for a stock quote provider.
  */
@@ -16,6 +18,7 @@ public interface StockQuoteServiceProvider
      * @param tickerSymbol
      * @return
      */
-    StockTickerQuote getStockTickerQuote( final String tickerSymbol );
+    StockTickerQuote getStockTickerQuote( final String tickerSymbol )
+        throws StockNotFoundException;
 }
 

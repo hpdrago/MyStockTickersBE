@@ -1,6 +1,10 @@
 package com.stocktracker.weblayer.dto;
 
 
+import com.stocktracker.common.JSONDateConverter;
+
+import java.sql.Timestamp;
+
 /**
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
@@ -11,6 +15,7 @@ public class AccountDTO
     private Integer customerId;
     private String name;
     private String brokerage;
+    private String authTimestamp;
 
     /**
      * Creates a new instance from (@code accountEntity)
@@ -66,6 +71,23 @@ public class AccountDTO
         this.brokerage = brokerage;
     }
 
+    public void setAuthTimestamp( final Timestamp authTimestamp )
+    {
+        if ( authTimestamp == null )
+        {
+            this.authTimestamp = null;
+        }
+        else
+        {
+            this.authTimestamp = JSONDateConverter.toDateAndTime( authTimestamp );
+        }
+    }
+
+    public void setAuthTimestamp( final String authTimestamp )
+    {
+        this.authTimestamp = authTimestamp;
+    }
+
     @Override
     public String toString()
     {
@@ -74,6 +96,7 @@ public class AccountDTO
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
+        sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

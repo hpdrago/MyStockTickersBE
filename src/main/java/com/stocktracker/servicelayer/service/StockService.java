@@ -204,7 +204,7 @@ public class StockService extends BaseStockQuoteContainerService<StockEntity, St
      * attempt to get a stock quote and create the database entry.  This method simply calls {@code getStockEntity}
      * but is provided for readability purposes.
      * @param tickerSymbol
-     * @throws com.stocktracker.common.exceptions.StockNotFoundException If the {@code tickerSymbol} cannot be found.
+     * @throws StockNotFoundException If the {@code tickerSymbol} cannot be found.
      */
     public StockEntity checkStockTableEntry( final String tickerSymbol )
         throws StockQuoteUnavailableException,
@@ -223,7 +223,7 @@ public class StockService extends BaseStockQuoteContainerService<StockEntity, St
      * ticker symbol. If a quote cannot be found, StockNoteFoundException will be thrown
      * @param tickerSymbol
      * @return
-     * @throws com.stocktracker.common.exceptions.StockNotFoundException
+     * @throws StockNotFoundException
      */
     public StockEntity getStockEntity( final String tickerSymbol )
         throws StockQuoteUnavailableException,
@@ -250,6 +250,27 @@ public class StockService extends BaseStockQuoteContainerService<StockEntity, St
         }
         logMethodEnd( methodName, stockEntity );
         return stockEntity;
+    }
+
+    /**
+     * Sets the discontinued flag on the stock table for {@code tickerSymbol}
+     * @param tickerSymbol
+     */
+    public void markStockAsDiscontinued( final String tickerSymbol )
+    {
+        final String methodName = "markStockAsDiscontinued";
+        logMethodBegin( methodName, tickerSymbol );
+        final StockEntity stockEntity = stockRepository.findOne( StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN ) );
+        if ( stockEntity == null )
+        {
+            logError( methodName, "Stock not found in stock {0} table to mark as discontinued.", tickerSymbol );
+        }
+        else
+        {
+            stockEntity.setDiscontinuedInd( true );
+            this.saveStock( stockEntity );
+        }
+        logMethodEnd( methodName );
     }
 
     /**

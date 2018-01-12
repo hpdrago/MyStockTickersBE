@@ -24,9 +24,10 @@ public class AccountEntity
     private String name;
     private String userId;
     private String userToken;
-    private String sessionToken;
     private String brokerage;
-    private String srv;
+    private String authUUID;
+    private String authToken;
+    private Timestamp authTimestamp;
     private Timestamp createDate;
     private Timestamp updateDate;
     private CustomerEntity customerByCustomerId;
@@ -145,28 +146,42 @@ public class AccountEntity
     }
 
     @Basic
-    @Column( name = "session_token" )
-    public String getSessionToken()
+    @Column( name = "auth_uuid" )
+    public String getAuthUUID()
     {
-        return sessionToken;
+        return authUUID;
     }
 
-    public void setSessionToken( final String sessionToken )
+    public void setAuthUUID( final String authUUID )
     {
-        this.sessionToken = sessionToken;
+        this.authUUID = authUUID;
     }
 
     @Basic
-    @Column( name = "srv" )
-    public String getSrv()
+    @Column( name = "auth_token" )
+    public String getAuthToken()
     {
-        return srv;
+        return authToken;
     }
 
-    public void setSrv( final String srv )
+    public void setAuthToken( final String authToken )
     {
-        this.srv = srv;
+        this.authToken = authToken;
     }
+
+
+    @Basic
+    @Column( name = "auth_timestamp" )
+    public Timestamp getAuthTimestamp()
+    {
+        return authTimestamp;
+    }
+
+    public void setAuthTimestamp( final Timestamp authTimestamp )
+    {
+        this.authTimestamp = authTimestamp;
+    }
+
 
     @Override
     public boolean equals( final Object o )
@@ -200,7 +215,9 @@ public class AccountEntity
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userToken ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
-        sb.append( ", sessionToken='" ).append( userToken ).append( '\'' );
+        sb.append( ", authUUID='" ).append( authUUID ).append( '\'' );
+        sb.append( ", authToken='" ).append( authToken ).append( '\'' );
+        sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );

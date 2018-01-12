@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 import pl.zankowski.iextrading4j.client.IEXTradingClient;
@@ -29,8 +30,10 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
      * Gets the stock quote
      * @param tickerSymbol
      * @return StockTickerQuote
+     * @throws StockNotFoundException for invalid ticker symbols.
      */
     public StockTickerQuote getStockTickerQuote( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getStockTickerQuote";
         logMethodBegin( methodName, tickerSymbol );
@@ -43,9 +46,10 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
      * Gets the stock quote synchronously
      * @param tickerSymbol
      * @return IEXTrading quote
-     * @throws javax.ws.rs.NotFoundException: HTTP 404 Not Found
+     * @throws StockNotFoundException
      */
     public StockTickerQuote getIEXTradingQuote( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getIEXTradingQuote";
         logMethodBegin( methodName, tickerSymbol );
@@ -57,6 +61,10 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
                                                                    .withSymbol( tickerSymbol )
                                                                    .build() );
             stockTickerQuote = this.quoteToStockTickerQuote( tickerSymbol, quote );
+        }
+        catch( javax.ws.rs.NotFoundException e )
+        {
+            throw new StockNotFoundException( "Stock not found for ticker symbol: " + tickerSymbol, e );
         }
         catch( javax.ws.rs.ProcessingException e )
         {

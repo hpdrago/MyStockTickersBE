@@ -3,6 +3,8 @@ package com.stocktracker.servicelayer.tradeit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 /**
  * This class encapsulates the handling of the URLs to make TradeIt REST calls.
  * All of the URLs and substitution tags are defined here along with user friendly method to return a complete URL
@@ -17,6 +19,7 @@ public class TradeItURLs
     private static final String REQUEST_OAUTH_POPUP_URL = BASE_URL + "/user/getOAuthLoginPopupUrlForWebApp";
     private static final String GET_OAUTH_ACCESS_TOKEN_URL = BASE_URL + "/user/getOAuthAccessToken";
     private static final String AUTHENTICATE_URL = BASE_URL + "/user/authenticate" + "?srv=" + SRV_TAG;
+    private static final String ANSWER_SECURITY_QUESTION_URL = BASE_URL + "/user/answerSecurityQuestion" + "?srv=" + SRV_TAG;
 
     @Autowired
     private TradeItProperties tradeItProperties;
@@ -28,7 +31,8 @@ public class TradeItURLs
      */
     public String getAuthenticateUrl( final String srv )
     {
-        return this.AUTHENTICATE_URL.replace( SRV_TAG, srv == null ? "" : srv );
+        Objects.requireNonNull( srv, "srv cannot be null" );
+        return this.AUTHENTICATE_URL.replace( SRV_TAG, srv );
     }
 
     /**
@@ -57,5 +61,14 @@ public class TradeItURLs
     public String getOauthAccessTokenURL()
     {
         return GET_OAUTH_ACCESS_TOKEN_URL;
+    }
+
+    /**
+     * @return The URL to use to supply the answer to a security question as a result of authenticating.
+     */
+    public String getAnswerSecurityQuestionURL( final String srv )
+    {
+        Objects.requireNonNull( srv, "srv cannot be null" );
+        return ANSWER_SECURITY_QUESTION_URL.replace( SRV_TAG, srv );
     }
 }

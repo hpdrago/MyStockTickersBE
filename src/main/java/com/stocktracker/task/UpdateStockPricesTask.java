@@ -1,6 +1,7 @@
 package com.stocktracker.task;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
 import com.stocktracker.servicelayer.service.StockService;
@@ -41,13 +42,23 @@ public class UpdateStockPricesTask implements MyLogger
                     stockEntity.getLastPriceUpdate().before( yesterday );
                 if ( updateNeeded )
                 {
-                    StockTickerQuote stockTickerQuote = this.yahooStockService.getStockTickerQuote( stockEntity.getTickerSymbol() );
-                    logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
-                              stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceChange() );
-                    stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
-                    stockEntity.setLastPriceUpdate( new Timestamp( startTime ) );
-                    stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
-                    this.stockRepository.save( stockEntity );
+                    StockTickerQuote stockTickerQuote = null;
+                    try
+                    {
+                        stockTickerQuote = this.yahooStockService.getStockTickerQuote( stockEntity.getTickerSymbol() );
+                        logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
+                                  stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceChange() );
+                        stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
+                        stockEntity.setLastPriceUpdate( new Timestamp( startTime ) );
+                        stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
+                        this.stockRepository.save( stockEntity );
+                    }
+                    catch( StockNotFoundException e )
+                    {
+                        logInfo( methodName, "Ticker symbol {0} is not longer valid", stockEntity.getTickerSymbol() );
+                        stockEntity.setDiscontinuedInd( true );
+                        this.stockRepository.save( stockEntity );
+                    }
                 }
             }
             long endTime = System.currentTimeMillis();

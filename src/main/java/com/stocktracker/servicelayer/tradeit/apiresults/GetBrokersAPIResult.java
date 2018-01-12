@@ -5,10 +5,23 @@ import com.stocktracker.servicelayer.tradeit.types.TradeItBroker;
 
 import java.util.Arrays;
 
+/**
+ * This class contains the list of brokers that are supported by TradeIt.
+ */
 public class GetBrokersAPIResult extends TradeItAPIResult
 {
     @JsonProperty("brokerList")
     private TradeItBroker[] brokers;
+
+    public GetBrokersAPIResult()
+    {
+    }
+
+    public GetBrokersAPIResult( final GetBrokersAPIResult getBrokersAPIResult )
+    {
+        super( getBrokersAPIResult );
+        this.brokers = getBrokersAPIResult.brokers;
+    }
 
     public int brokerCount()
     {

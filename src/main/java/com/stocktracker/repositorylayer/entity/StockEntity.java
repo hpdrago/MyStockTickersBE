@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -27,11 +28,12 @@ public class StockEntity
     private Timestamp lastPriceUpdate;
     private Timestamp lastPriceChange;
     private String stockExchange;
-    private Timestamp createDate;
-    private Timestamp updateDate;
     private String quoteUrl;
     private String sector;
     private String industry;
+    private String discontinuedInd;
+    private Timestamp createDate;
+    private Timestamp updateDate;
 
     /*
     @Basic
@@ -231,6 +233,30 @@ public class StockEntity
         this.updateDate = updateDate;
     }
 
+
+    @Basic
+    @Column( name = "discontinued_ind" )
+    public String getDiscontinuedInd()
+    {
+        return discontinuedInd;
+    }
+
+    @Transient
+    public boolean isDiscontined()
+    {
+        return this.discontinuedInd == null ? false : this.discontinuedInd.equalsIgnoreCase( "Y" );
+    }
+
+    public void setDiscontinuedInd( final boolean discontinuedInd )
+    {
+        this.setDiscontinuedInd( discontinuedInd ? "Y" : "N" );
+    }
+
+    public void setDiscontinuedInd( final String discontinuedInd )
+    {
+        this.discontinuedInd = discontinuedInd;
+    }
+
     @Override
     public String toString()
     {
@@ -242,12 +268,13 @@ public class StockEntity
         sb.append( ", lastPriceUpdate=" ).append( lastPriceUpdate );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", stockExchange='" ).append( stockExchange ).append( '\'' );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( ", quoteUrl='" ).append( quoteUrl ).append( '\'' );
         sb.append( ", sector='" ).append( sector ).append( '\'' );
         sb.append( ", industry='" ).append( industry ).append( '\'' );
         sb.append( ", customerByCreatedBy=" ).append( customerByCreatedBy );
+        sb.append( ", discontinuedInd=" ).append( discontinuedInd );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }

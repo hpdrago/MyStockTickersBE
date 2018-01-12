@@ -11,6 +11,10 @@ public class GetOAuthAccessTokenDTO extends TradeItAPIResult
 {
     private AccountDTO customerAccount;
 
+    public GetOAuthAccessTokenDTO()
+    {
+    }
+
     public GetOAuthAccessTokenDTO( final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult )
     {
         super( getOAuthAccessTokenAPIResult );

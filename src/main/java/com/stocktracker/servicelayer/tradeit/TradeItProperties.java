@@ -10,8 +10,10 @@ import org.springframework.context.annotation.Configuration;
 public class TradeItProperties
 {
     public static final String BROKER_PARAM = "broker";
+    public static final String TOKEN_PARAM = "token";
     public static final String USER_ID_PARAM = "userId";
     public static final String USER_TOKEN_PARAM = "userToken";
+    public static final String SECURITY_ANSWER_PARAM = "securityAnswer";
     public static final String API_KEY_PARAM = "apiKey";
     public static final String OAUTH_VERIFIER_PARAM = "oAuthVerifier";
 

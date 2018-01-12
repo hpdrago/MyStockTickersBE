@@ -2,21 +2,17 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
-import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.repositorylayer.entity.AccountEntity;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
-import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.AccountRepository;
-import com.stocktracker.repositorylayer.repository.CustomerRepository;
-import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.AccountDTO;
-import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -178,6 +174,40 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
         {
             throw new AccountNotFoundException( customerId, accountId ) ;
         }
+    }
+
+    /**
+     * Saves the account to the database.
+     * @param accountEntity
+     * @return
+     */
+    public AccountEntity saveAccount( final AccountEntity accountEntity )
+    {
+        final String methodName = "saveAccount";
+        logMethodBegin( methodName, accountEntity );
+        this.accountRepository.save( accountEntity );
+        logMethodEnd( methodName, accountEntity );
+        return accountEntity;
+    }
+
+    /**
+     * This method is called when the user has been authenticated.  The account table auth_timestamp is set so that
+     * we know when the authentication will expire which is after 15 minutes.
+     * @param accountEntity
+     */
+    public void authenticationSuccessful( final AccountEntity accountEntity )
+    {
+        final String methodName = "authenticationSuccessful";
+        logMethodBegin( methodName, accountEntity );
+        /*
+         * The timestamp is set and the UUID and Token are nulled because they need to be new values for the next
+         * authentication.
+         */
+        accountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
+        accountEntity.setAuthUUID( null );
+        accountEntity.setAuthToken( null );
+        this.accountRepository.save( accountEntity );
+        logMethodEnd( methodName, accountEntity );
     }
 
     @Override

@@ -14,4 +14,9 @@ public class StockNotFoundException extends Exception
     {
         super( "Unable to get a quote for " + tickerSymbol );
     }
+
+    public StockNotFoundException( final String tickerSymbol, final Exception e )
+    {
+        super( "Unable to get a quote for " + tickerSymbol, e ) ;
+    }
 }

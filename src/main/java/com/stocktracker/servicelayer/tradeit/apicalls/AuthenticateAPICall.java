@@ -6,6 +6,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * This class encapsulates the Authenticate API call.
  */
@@ -22,7 +24,10 @@ public class AuthenticateAPICall extends TradeItAPIRestCall<AuthenticateAPIResul
     {
         final String methodName = "execute";
         logMethodBegin( methodName, accountEntity );
-        final String authenticateURL = this.tradeItURLs.getAuthenticateUrl( accountEntity.getSrv() );
+        final String authenticateURL = this.tradeItURLs.getAuthenticateUrl( accountEntity.getAuthUUID() );
+        Objects.requireNonNull( accountEntity.getUserId(), "userId cannot be null" );
+        Objects.requireNonNull( accountEntity.getUserToken(), "userToken cannot be null" );
+        Objects.requireNonNull( accountEntity.getBrokerage(), "brokerage cannot be null" );
         this.addPostParameter( this.tradeItProperties.USER_ID_PARAM, accountEntity.getUserId() );
         this.addPostParameter( this.tradeItProperties.USER_TOKEN_PARAM, accountEntity.getUserToken() );
         this.addPostParameter( this.tradeItProperties.BROKER_PARAM, accountEntity.getBrokerage() );

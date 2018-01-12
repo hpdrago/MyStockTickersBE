@@ -1,10 +1,12 @@
 package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import org.springframework.stereotype.Service;
 import yahoofinance.Stock;
 import yahoofinance.YahooFinance;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -26,8 +28,10 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * Get the stock price for the {@code tickerSymbol}
      * @param tickerSymbol
      * @return -1 if there is an error, otherwise the last stock price will be returned
+     * @throws StockNotFoundException if the ticker symbol is no longer valid.
      */
     public StockTickerQuote getStockTickerQuote( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
@@ -45,6 +49,10 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
                 stockTickerQuote = getStockTickerQuote( stock );
                 logDebug( methodName, "{0} {1}", tickerSymbol, stockTickerQuote.getLastPrice() );
             }
+        }
+        catch( FileNotFoundException e )
+        {
+            throw new StockNotFoundException( tickerSymbol );
         }
         catch( Exception e )
         {
@@ -80,10 +88,12 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * Get the stock information from Yahoo
      * @param tickerSymbol
      * @return
-     * @throws IOException
+     * @throws IOException For communication errors
+     * @throws FileNotFoundException For invalid or not longer in use ticker symbol.
      */
     public Stock getStock( final String tickerSymbol )
-        throws IOException
+        throws FileNotFoundException,
+               IOException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );

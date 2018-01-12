@@ -1,8 +1,25 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+/**
+ * This class contains the result from a call to get the TradeIt PopUp URL for a given broker.
+ */
 public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult
 {
     private String oAuthURL;
+
+    public RequestOAuthPopUpURLAPIResult()
+    {
+    }
+
+    /**
+     * Creates a new instance.
+     * @param requestOAuthPopUpURLAPIResult
+     */
+    public RequestOAuthPopUpURLAPIResult( final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult )
+    {
+        super( requestOAuthPopUpURLAPIResult );
+        this.oAuthURL = requestOAuthPopUpURLAPIResult.oAuthURL;
+    }
 
     public String getoAuthURL()
     {

@@ -27,6 +27,7 @@ public class TradeItAPIResult
     }
 
     public boolean isSuccessful() { return this.status == null ? false : this.getAPIResultStatus().isSuccess() ;}
+    public boolean isInformationNeeded() { return this.status == null ? false : this.getAPIResultStatus().isInformationNeeded() ;}
 
     public int getCode()
     {
@@ -86,7 +87,7 @@ public class TradeItAPIResult
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "TradeitResult{" );
+        final StringBuilder sb = new StringBuilder( "TradeItResult{" );
         sb.append( "status='" ).append( status ).append( '\'' );
         sb.append( ", code='" ).append( code ).append( '\'' );
         sb.append( ", token='" ).append( token ).append( '\'' );

@@ -8,6 +8,17 @@ public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult
     private String userId;
     private String userToken;
 
+    public GetOAuthAccessTokenAPIResult()
+    {
+    }
+
+    public GetOAuthAccessTokenAPIResult( final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult )
+    {
+        super( getOAuthAccessTokenAPIResult );
+        this.userId = getOAuthAccessTokenAPIResult.userId;
+        this.userToken = getOAuthAccessTokenAPIResult.userToken;
+    }
+
     public String getUserId()
     {
         return userId;

@@ -92,12 +92,12 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      * Get the user's account.
      * @return
      */
-    public TradeItAccount[] getTradeItAPIAccounts()
+    public TradeItAccount[] getTradeItAccounts()
     {
         return tradeItAccounts;
     }
 
-    public void setTradeItAPIAccounts( TradeItAccount[] tradeItAccounts )
+    public void setTradeItAccounts( TradeItAccount[] tradeItAccounts )
     {
         this.tradeItAccounts = tradeItAccounts;
     }
