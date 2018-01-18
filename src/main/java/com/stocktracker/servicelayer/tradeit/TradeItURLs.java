@@ -20,6 +20,10 @@ public class TradeItURLs
     private static final String GET_OAUTH_ACCESS_TOKEN_URL = BASE_URL + "/user/getOAuthAccessToken";
     private static final String AUTHENTICATE_URL = BASE_URL + "/user/authenticate" + "?srv=" + SRV_TAG;
     private static final String ANSWER_SECURITY_QUESTION_URL = BASE_URL + "/user/answerSecurityQuestion" + "?srv=" + SRV_TAG;
+    private static final String CLOSE_SESSION_URL = BASE_URL + "/user/closeSession";
+    private static final String KEEP_SESSION_ALIVE_URL = BASE_URL + "/user/keepSessionAlive";
+    private static final String GET_ACCOUNT_OVERVIEW_URL = BASE_URL + "/balance/getAccountOverv";
+    private static final String GET_POSITIONS_URL = BASE_URL + "/position/getPositions";
 
     @Autowired
     private TradeItProperties tradeItProperties;
@@ -70,5 +74,38 @@ public class TradeItURLs
     {
         Objects.requireNonNull( srv, "srv cannot be null" );
         return ANSWER_SECURITY_QUESTION_URL.replace( SRV_TAG, srv );
+    }
+
+    /**
+     * Get the close session URL.
+     * @return
+     */
+    public String getCloseSessionURL() { return CLOSE_SESSION_URL; }
+
+    /**
+     * Get the keep session alive URL.
+     * @return
+     */
+    public String getKeepSessionAliveURL()
+    {
+        return KEEP_SESSION_ALIVE_URL;
+    }
+
+    /**
+     * Get the account overview URL
+     * @return
+     */
+    public String getGetAccountOverviewURL()
+    {
+        return GET_ACCOUNT_OVERVIEW_URL;
+    }
+
+    /**
+     * Get the get positions URL
+     * @return
+     */
+    public String getGetPositionsURL()
+    {
+        return GET_POSITIONS_URL;
     }
 }

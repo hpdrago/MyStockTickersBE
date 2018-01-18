@@ -1,10 +1,16 @@
 package com.stocktracker.servicelayer.service;
 
+import com.google.common.collect.Sets;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
+import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.AccountEntity;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
+import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.repository.AccountRepository;
+import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
+import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
+import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.AccountDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This service communicates between the Web layer and Repositories using the Domain Model
@@ -27,7 +37,9 @@ import java.util.Objects;
 public class AccountService extends BaseService<AccountEntity, AccountDTO> implements MyLogger
 {
     private AccountRepository accountRepository;
+    private LinkedAccountRepository linkedAccountRepository;
     private CustomerService customerService;
+    private TradeItAccountComparisonService tradeItAccountComparisonService;
 
     /**
      * Get the account by id request
@@ -194,20 +206,51 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
      * This method is called when the user has been authenticated.  The account table auth_timestamp is set so that
      * we know when the authentication will expire which is after 15 minutes.
      * @param accountEntity
+     * @param authenticateAPIResult
      */
-    public void authenticationSuccessful( final AccountEntity accountEntity )
+    public void authenticationSuccessful( final AccountEntity accountEntity, final AuthenticateAPIResult authenticateAPIResult )
+        throws LinkedAccountNotFoundException
     {
         final String methodName = "authenticationSuccessful";
-        logMethodBegin( methodName, accountEntity );
+        logMethodBegin( methodName, accountEntity, authenticateAPIResult );
+        this.tradeItAccountComparisonService.compare( accountEntity, authenticateAPIResult );
         /*
          * The timestamp is set and the UUID and Token are nulled because they need to be new values for the next
          * authentication.
          */
         accountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-        accountEntity.setAuthUUID( null );
+        accountEntity.setAuthUuid( null );
         accountEntity.setAuthToken( null );
         this.accountRepository.save( accountEntity );
         logMethodEnd( methodName, accountEntity );
+    }
+
+    /**
+     * Adds a new linked account to the {@code accountEntity} and the database.
+     * @param accountEntity
+     * @param tradeItAccount The account information from TradeIt.
+     */
+    public void addLinkedAccount( final AccountEntity accountEntity, final TradeItAccount tradeItAccount )
+    {
+        final String methodName = "addLinkedAccount";
+        logMethodBegin( methodName, accountEntity, tradeItAccount );
+        LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
+        linkedAccountEntity.setAccountByParentAccountId( accountEntity );
+        this.linkedAccountRepository.save( linkedAccountEntity );
+        accountEntity.addLinkedAccount( linkedAccountEntity );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Update the linked account.
+     * @param linkedAccountEntity
+     */
+    public void updateLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
+    {
+        final String methodName = "updateLinkedAccount";
+        logMethodBegin( methodName, linkedAccountEntity );
+        this.linkedAccountRepository.save( linkedAccountEntity );
+        logMethodEnd( methodName );
     }
 
     @Override
@@ -235,8 +278,20 @@ public class AccountService extends BaseService<AccountEntity, AccountDTO> imple
     }
 
     @Autowired
+    public void setLinkedAccountRepository( final LinkedAccountRepository linkedAccountRepository )
+    {
+        this.linkedAccountRepository = linkedAccountRepository;
+    }
+
+    @Autowired
     public void setCustomerService( final CustomerService customerService )
     {
         this.customerService = customerService;
+    }
+
+    @Autowired
+    public void setTradeItAccountComparisonService( final TradeItAccountComparisonService tradeItAccountComparisonService )
+    {
+        this.tradeItAccountComparisonService = tradeItAccountComparisonService;
     }
 }

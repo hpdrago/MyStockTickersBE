@@ -23,17 +23,21 @@ public class GetOAuthAccessTokenAPICall extends TradeItAPIRestCall<GetOAuthAcces
     {
         final String methodName = "execute ";
         logMethodBegin( methodName, oAuthVerifier, broker );
-        final String url = this.tradeItURLs.getOauthAccessTokenURL();
-        logDebug( methodName, "url: {0}", url );
         this.addPostParameter( TradeItProperties.BROKER_PARAM, broker );
         this.addPostParameter( TradeItProperties.OAUTH_VERIFIER_PARAM, oAuthVerifier );
-        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = super.callTradeIt( url );
+        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = this.execute();
         logMethodEnd( methodName, getOAuthAccessTokenAPIResult );
         return getOAuthAccessTokenAPIResult;
     }
 
     @Override
-    protected Class<GetOAuthAccessTokenAPIResult> getApiResponseClass()
+    protected String getAPIURL()
+    {
+        return this.tradeItURLs.getOauthAccessTokenURL();
+    }
+
+    @Override
+    protected Class<GetOAuthAccessTokenAPIResult> getAPIResultsClass()
     {
         return GetOAuthAccessTokenAPIResult.class;
     }

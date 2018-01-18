@@ -13,21 +13,15 @@ import org.springframework.stereotype.Component;
 public class GetBrokersAPICall extends TradeItAPIRestCall<GetBrokersAPIResult>
 {
     @Override
-    protected Class<GetBrokersAPIResult> getApiResponseClass()
+    protected String getAPIURL()
+    {
+        return this.tradeItURLs.getBrokersURL();
+    }
+
+    @Override
+    protected Class<GetBrokersAPIResult> getAPIResultsClass()
     {
         return GetBrokersAPIResult.class;
     }
 
-    /**
-     * Make the API REST call.
-     * @return
-     */
-    public GetBrokersAPIResult execute()
-    {
-        final String methodName = "execute";
-        logMethodBegin( methodName );
-        final GetBrokersAPIResult getBrokersAPIResult = this.callTradeIt( this.tradeItURLs.getBrokersURL() ) ;
-        logMethodEnd( methodName, getBrokersAPIResult );
-        return getBrokersAPIResult;
-    }
 }

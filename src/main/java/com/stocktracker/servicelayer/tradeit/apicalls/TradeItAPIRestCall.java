@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * This class encapsulates the logic to make a REST API call to TradeIt.
- * @param <T> The reponse type.  That is, the type returned by TradeIt.
+ * @param <T> The response type.  That is, the type returned by TradeIt.
  */
 public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements MyLogger
 {
@@ -47,34 +47,56 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
      * @param name
      * @param value
      */
-    protected void addPostParameter( final String name, final String value )
+    protected final void addPostParameter( final String name, final String value )
     {
         logDebug( "addPostParameter", "name: {0} value: {1}", name, value );
         this.parameterMap.add( name, value );
     }
 
     /**
-     * Make the REST call
-     * @param url
+     * This is the default execute method.  It can be used for simple API calls since it doesn't add any parameters
+     * to the API call.  Subclasses can create their own execute with parameters to use to set the necessary API
+     * call parameters and then call this method.
      * @return
      */
-    protected T callTradeIt( final String url )
+    public final T execute()
+    {
+        final String methodName = "execute";
+        logMethodBegin( methodName );
+        final T apiResult = this.callTradeIt() ;
+        logMethodEnd( methodName, apiResult );
+        return apiResult;
+    }
+
+    /**
+     * Make the REST call
+     * @return
+     */
+    private T callTradeIt()
     {
         final String methodName = "callTradeIt";
-        logMethodBegin( methodName, url );
+        logMethodBegin( methodName );
+        final String url = this.getAPIURL();
+        logDebug( methodName, "url: " + url );
         this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, this.tradeItProperties.getApiKey() );
         final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
         final RestTemplate restTemplate = new RestTemplate();
-        final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getApiResponseClass() );
+        final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
         final T response = responseEntity.getBody();
         logMethodEnd( methodName, response );
         return response;
     }
 
     /**
+     * Subclasses must override to define the correct URL to use for the API call.
+     * @return
+     */
+    protected abstract String getAPIURL();
+
+    /**
      * Creates the HttpHeaders
      */
-    protected void createHttpHeaders()
+    private void createHttpHeaders()
     {
         headers = new HttpHeaders();
         headers.setContentType( MediaType.APPLICATION_FORM_URLENCODED );
@@ -84,7 +106,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
      * Creates the HttpEntity with contains the HttpHeader and the method parameters.
      * @return
      */
-    protected HttpEntity<MultiValueMap<String, String>> createHttpEntity()
+    private HttpEntity<MultiValueMap<String, String>> createHttpEntity()
     {
         return new HttpEntity<>( this.parameterMap, this.headers );
     }
@@ -93,7 +115,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
      * Subclasses must specify the TradeIt result type.
      * @return
      */
-    protected abstract Class<T> getApiResponseClass();
+    protected abstract Class<T> getAPIResultsClass();
 
     /**
      * DI injection point.

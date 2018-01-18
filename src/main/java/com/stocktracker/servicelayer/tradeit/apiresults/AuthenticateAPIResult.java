@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.tradeit.apiresults;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * This is the base class for the Authenticate API Result.  Depending on the result status of SUCCESS or
@@ -100,6 +101,19 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     public void setTradeItAccounts( TradeItAccount[] tradeItAccounts )
     {
         this.tradeItAccounts = tradeItAccounts;
+    }
+
+    /**
+     * Returns the {@code TradeItAccount} by the {@code accountNumber}.
+     * @param accountNumber
+     * @return
+     */
+    public Optional<TradeItAccount> getTradeItAccount( final String accountNumber )
+    {
+        return Arrays.stream( this.tradeItAccounts )
+                     .filter( tradeItAccount -> tradeItAccount.getAccountNumber()
+                                                              .equals( accountNumber ) )
+                     .findFirst();
     }
 
     @Override

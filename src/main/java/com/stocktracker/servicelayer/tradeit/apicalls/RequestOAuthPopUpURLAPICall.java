@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -22,16 +21,20 @@ public class RequestOAuthPopUpURLAPICall extends TradeItAPIRestCall<RequestOAuth
     {
         final String methodName = "RequestOAuthPopUpURLAPIResult ";
         logMethodBegin( methodName, broker );
-        final String url = this.tradeItURLs.getRequestOauthPopupURL();
-        logDebug( methodName, "url: {0}", url );
         this.addPostParameter( this.tradeItProperties.BROKER_PARAM, broker );
-        RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult = this.callTradeIt( url );
+        final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult = this.execute();
         logMethodEnd( methodName, requestOAuthPopUpURLAPIResult );
         return requestOAuthPopUpURLAPIResult;
     }
 
     @Override
-    protected Class<RequestOAuthPopUpURLAPIResult> getApiResponseClass()
+    protected String getAPIURL()
+    {
+        return this.tradeItURLs.getRequestOauthPopupURL();
+    }
+
+    @Override
+    protected Class<RequestOAuthPopUpURLAPIResult> getAPIResultsClass()
     {
         return RequestOAuthPopUpURLAPIResult.class;
     }

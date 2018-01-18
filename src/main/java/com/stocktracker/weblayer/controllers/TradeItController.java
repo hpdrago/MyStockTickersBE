@@ -1,13 +1,17 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
+import com.stocktracker.weblayer.dto.tradeit.CloseSessionDTO;
+import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
+import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -68,7 +72,7 @@ public class TradeItController extends AbstractController
     {
         final String methodName = "getRequestOAuthPopUpURL";
         logMethodBegin( methodName );
-        RequestOAuthPopUpURLDTO requestOAuthPopUpURLDTO = this.tradeItService.requestOAuthPopUpURL( broker );
+        final RequestOAuthPopUpURLDTO requestOAuthPopUpURLDTO = this.tradeItService.requestOAuthPopUpURL( broker );
         logMethodEnd( methodName, requestOAuthPopUpURLDTO );
         return requestOAuthPopUpURLDTO;
     }
@@ -92,8 +96,9 @@ public class TradeItController extends AbstractController
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerId, oAuthVerifier );
-        GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = this.tradeItService.getOAuthAccessToken( customerId, broker, accountName,
-                                                                                                 oAuthVerifier );
+        final GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = this.tradeItService.getOAuthAccessToken( customerId, broker,
+                                                                                                       accountName,
+                                                                                                       oAuthVerifier );
         logMethodEnd( methodName, getOAuthAccessTokenDTO );
         return getOAuthAccessTokenDTO;
     }
@@ -111,10 +116,11 @@ public class TradeItController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public AuthenticateDTO authenticate( @PathVariable final int customerId,
                                          @PathVariable final int accountId )
+        throws LinkedAccountNotFoundException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, accountId, customerId );
-        AuthenticateDTO authenticateDTO = this.tradeItService.authenticate( customerId, accountId );
+        final AuthenticateDTO authenticateDTO = this.tradeItService.authenticate( customerId, accountId );
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
     }
@@ -135,6 +141,7 @@ public class TradeItController extends AbstractController
     public AnswerSecurityQuestionDTO answerSecurityQuestion( @PathVariable final int customerId,
                                                              @PathVariable final int accountId,
                                                              @RequestBody final String answer )
+        throws LinkedAccountNotFoundException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, answer );
@@ -143,6 +150,75 @@ public class TradeItController extends AbstractController
                                                                                                  answer );
         logMethodEnd( methodName, answerSecurityQuestionDTO );
         return answerSecurityQuestionDTO;
+    }
+
+    /**
+     * Calls TradeIt to keep the customer's session alive for the account.
+     * @param customerId
+     * @param accountId
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/keepSessionAlive/"
+                             + "/accountId/{accountId}"
+                             + "/customerId/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public KeepSessionAliveDTO keepSessionAlive( @PathVariable final int customerId,
+                                                 @PathVariable final int accountId )
+    {
+        final String methodName = "keepSessionAlive";
+        logMethodBegin( methodName, accountId, customerId );
+        final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService.keepSessionAlive( customerId, accountId );
+        logMethodEnd( methodName, keepSessionAliveDTO );
+        return keepSessionAliveDTO;
+    }
+
+    /**
+     * Calls TradeIt to close the customer's session for the account.
+     * @param customerId
+     * @param accountId
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/closeSession/"
+                             + "/accountId/{accountId}"
+                             + "/customerId/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public CloseSessionDTO closeSession( @PathVariable final int customerId,
+                                         @PathVariable final int accountId )
+    {
+        final String methodName = "closeSession";
+        logMethodBegin( methodName, accountId, customerId );
+        final CloseSessionDTO closeSessionDTO = this.tradeItService.closeSession( customerId, accountId );
+        logMethodEnd( methodName, closeSessionDTO );
+        return closeSessionDTO;
+    }
+
+    /**
+     * Calls TradeIt to get the account overview for a single brokerage account.
+     * @param accountId
+     * @param customerId
+     * @param accountNumber
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/getAccountOverview/"
+                             + "/accountId/{accountId}"
+                             + "/customerId/{customerId}"
+                             + "/accountNumber/{accountNumber}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public GetAccountOverviewDTO getAccountOverview( @PathVariable final int accountId,
+                                                     @PathVariable final int customerId,
+                                                     @PathVariable final String accountNumber )
+
+    {
+        final String methodName = "getAccountOverview";
+        logMethodBegin( methodName, accountId, customerId, accountNumber );
+        final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService.getAccountAccountOverview( customerId,
+                                                                                                           accountId,
+                                                                                                           accountNumber );
+        logMethodEnd( methodName, getAccountOverviewDTO );
+        return getAccountOverviewDTO;
     }
 
     @Autowired

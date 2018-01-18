@@ -1,5 +1,8 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,11 +11,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
- *
+ * This entity contains the information for the account that is registered with TradeIt for a brokerage.  The actual
+ * brokerage account(s) are stored in the LINKED_ACCOUNT table as brokerages offer the ability to link multiple accounts
+ * to a single login and thus there is a 1 to many relationship.
  * Created by Mike on December 4th, 2017
  */
 @Entity
@@ -25,12 +35,13 @@ public class AccountEntity
     private String userId;
     private String userToken;
     private String brokerage;
-    private String authUUID;
     private String authToken;
+    private String authUuid;
     private Timestamp authTimestamp;
     private Timestamp createDate;
     private Timestamp updateDate;
     private CustomerEntity customerByCustomerId;
+    private Collection<LinkedAccountEntity> linkedAccountsById;
 
     public static AccountEntity newInstance()
     {
@@ -147,14 +158,74 @@ public class AccountEntity
 
     @Basic
     @Column( name = "auth_uuid" )
-    public String getAuthUUID()
+    public String getAuthUuid()
     {
-        return authUUID;
+        return authUuid;
     }
 
-    public void setAuthUUID( final String authUUID )
+    public void setAuthUuid( final String authUuid )
     {
-        this.authUUID = authUUID;
+        this.authUuid = authUuid;
+    }
+
+    @OneToMany( mappedBy = "accountByParentAccountId" )
+    public Collection<LinkedAccountEntity> getLinkedAccountsById()
+    {
+        return linkedAccountsById;
+    }
+
+    @Transient
+    public void setLinkedAccountsById( final Collection<LinkedAccountEntity> linkedAccountsById )
+    {
+        this.linkedAccountsById = linkedAccountsById;
+    }
+
+    @Transient
+    public void addLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
+    {
+        if ( this.linkedAccountsById == null )
+        {
+            this.linkedAccountsById = new ArrayList<>();
+        }
+        this.linkedAccountsById.add( linkedAccountEntity );
+    }
+
+    /**
+     * Gets the linked account for the {@code accountNumber}.  If the account is not found, then the
+     * {@code LinkedAccountNotFoundException} is thrown. This is the same call as {@code getLinkedAccount} without the
+     * optional and throws the exception;
+     * @param accountNumber The account number to search for.
+     * @param accountEntity The parent account information used for detailed exception information.
+     * @return
+     * @throws LinkedAccountNotFoundException
+     */
+    @Transient
+    public LinkedAccountEntity getLinkedAccount( final String accountNumber, final AccountEntity accountEntity )
+        throws LinkedAccountNotFoundException
+    {
+        final Optional<LinkedAccountEntity> linkedAccountEntity = this.getLinkedAccount( accountNumber );
+        if ( !linkedAccountEntity.isPresent() )
+        {
+            throw new LinkedAccountNotFoundException( accountNumber, accountEntity );
+        }
+        return linkedAccountEntity.get();
+    }
+
+    /**
+     * Searches the linked accounts for the account number matching {@code accountNumber}.
+     * @param accountNumber
+     * @return
+     */
+    @Transient
+    public Optional<LinkedAccountEntity> getLinkedAccount( final String accountNumber )
+    {
+        if ( this.linkedAccountsById == null )
+        {
+            return Optional.empty();
+        }
+        return this.linkedAccountsById.stream()
+                                      .filter( linkedAccountEntity -> linkedAccountEntity.getAccountNumber().equals( accountNumber ) )
+                                      .findFirst();
     }
 
     @Basic
@@ -169,7 +240,6 @@ public class AccountEntity
         this.authToken = authToken;
     }
 
-
     @Basic
     @Column( name = "auth_timestamp" )
     public Timestamp getAuthTimestamp()
@@ -181,7 +251,6 @@ public class AccountEntity
     {
         this.authTimestamp = authTimestamp;
     }
-
 
     @Override
     public boolean equals( final Object o )
@@ -215,13 +284,14 @@ public class AccountEntity
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userToken ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
-        sb.append( ", authUUID='" ).append( authUUID ).append( '\'' );
+        sb.append( ", authUuid='" ).append( authUuid ).append( '\'' );
         sb.append( ", authToken='" ).append( authToken ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
         sb.append( ", customerByCustomerId=" ).append( customerByCustomerId );
+        sb.append( ", linkedAccountsById=" ).append( linkedAccountsById );
         sb.append( '}' );
         return sb.toString();
     }
