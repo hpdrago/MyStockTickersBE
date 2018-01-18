@@ -24,12 +24,12 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
+public class StockToBuyEntityService extends BaseStockQuoteContainerEntityService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
     private StockTagService stockTagService;
-    private StockService stockService;
-    private StockNoteSourceService stockNoteSourceService;
+    private StockEntityService stockService;
+    private StockNoteSourceEntityService stockNoteSourceService;
 
     /**
      * Get the list of all stock to buy for the customer
@@ -268,13 +268,13 @@ public class StockToBuyService extends BaseStockQuoteContainerService<StockToBuy
     }
 
     @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockEntityService stockService )
     {
         this.stockService = stockService;
     }

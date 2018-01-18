@@ -6,7 +6,7 @@ import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAP
  * This DTO is returned to the StoxTracker UI after a call to validate the user's response to a security question.
  * It has the same structure as the {@see AuthenticateDTO} as the user may have to answer another question.
  */
-public class AnswerSecurityQuestionDTO extends AnswerSecurityQuestionAPIResult
+public class AnswerSecurityQuestionDTO extends AuthenticateDTO
 {
     /**
      * Creates a new instance.

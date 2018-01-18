@@ -24,9 +24,9 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class CustomerService extends BaseService<CustomerEntity, CustomerDTO> implements MyLogger
+public class CustomerEntityService extends BaseEntityService<CustomerEntity, CustomerDTO> implements MyLogger
 {
-    private PortfolioService portfolioService;
+    private PortfolioEntityService portfolioService;
     private CustomerRepository customerRepository;
     private PortfolioRepository portfolioRepository;
 
@@ -43,7 +43,7 @@ public class CustomerService extends BaseService<CustomerEntity, CustomerDTO> im
     }
 
     @Autowired
-    public void setPortfolioService( final PortfolioService portfolioService )
+    public void setPortfolioService( final PortfolioEntityService portfolioService )
     {
         this.portfolioService = portfolioService;
     }

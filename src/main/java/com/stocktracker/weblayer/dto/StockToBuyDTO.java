@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 
@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                               StockNoteSourceService.StockNoteSourceDTOContainer
+                                                               StockNoteSourceEntityService.StockNoteSourceDTOContainer
 {
     /*
      * Entity (DB columns)

@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.AccountEntity;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -16,21 +16,21 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
 public class AnswerSecurityQuestionAPICall extends TradeItAPIRestCall<AnswerSecurityQuestionAPIResult>
 {
-    private AccountEntity accountEntity;
+    private TradeItAccountEntity tradeItAccountEntity;
 
     /**
      * Authenticate the user's account.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @return
      */
-    public AnswerSecurityQuestionAPIResult execute( final AccountEntity accountEntity, final String answer )
+    public AnswerSecurityQuestionAPIResult execute( final TradeItAccountEntity tradeItAccountEntity, final String answer )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, accountEntity, answer );
-        this.accountEntity = accountEntity;
-        Objects.requireNonNull( accountEntity.getAuthToken(), "AuthToken is missing from the account" );
-        Objects.requireNonNull( accountEntity.getAuthUuid(), "AuthUUID is missing from the account" );
-        this.addPostParameter( this.tradeItProperties.TOKEN_PARAM, accountEntity.getAuthToken() );
+        logMethodBegin( methodName, tradeItAccountEntity, answer );
+        this.tradeItAccountEntity = tradeItAccountEntity;
+        Objects.requireNonNull( tradeItAccountEntity.getAuthToken(), "AuthToken is missing from the account" );
+        Objects.requireNonNull( tradeItAccountEntity.getAuthUuid(), "AuthUUID is missing from the account" );
+        this.addPostParameter( this.tradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
         this.addPostParameter( this.tradeItProperties.SECURITY_ANSWER_PARAM, answer );
         AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = this.execute();
         logMethodBegin( methodName, answerSecurityQuestionAPIResult );
@@ -40,7 +40,7 @@ public class AnswerSecurityQuestionAPICall extends TradeItAPIRestCall<AnswerSecu
     @Override
     protected String getAPIURL()
     {
-        return this.tradeItURLs.getAnswerSecurityQuestionURL( accountEntity.getAuthUuid() );
+        return this.tradeItURLs.getAnswerSecurityQuestionURL( tradeItAccountEntity.getAuthUuid() );
     }
 
     @Override

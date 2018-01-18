@@ -24,7 +24,7 @@ public class CustomerEntity
     private String password;
     private Timestamp createDate;
     private Timestamp updateDate;
-    private Collection<AccountEntity> accountsById;
+    private Collection<TradeItAccountEntity> accountsById;
 
     public CustomerEntity()
     {
@@ -97,19 +97,19 @@ public class CustomerEntity
     }
 
     @OneToMany( mappedBy = "customerByCustomerId" )
-    public Collection<AccountEntity> getAccountsById()
+    public Collection<TradeItAccountEntity> getAccountsById()
     {
         return accountsById;
     }
 
-    public void setAccountsById( final Collection<AccountEntity> accountsById )
+    public void setAccountsById( final Collection<TradeItAccountEntity> accountsById )
     {
         this.accountsById = accountsById;
     }
 
-    public void addAccount( final AccountEntity accountEntity )
+    public void addAccount( final TradeItAccountEntity tradeItAccountEntity )
     {
-        this.accountsById.add( accountEntity );
+        this.accountsById.add( tradeItAccountEntity );
     }
 
     @Override

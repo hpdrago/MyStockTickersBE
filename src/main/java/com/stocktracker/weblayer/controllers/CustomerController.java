@@ -1,7 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.service.CustomerService;
+import com.stocktracker.servicelayer.service.CustomerEntityService;
 import com.stocktracker.weblayer.dto.CustomerDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,10 +24,10 @@ import java.util.List;
 public class CustomerController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/customer";
-    private CustomerService customerService;
+    private CustomerEntityService customerService;
 
     @Autowired
-    public void setCustomerService( final CustomerService customerService )
+    public void setCustomerService( final CustomerEntityService customerService )
     {
         this.customerService = customerService;
     }

@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.repository;
 
-import com.stocktracker.repositorylayer.entity.AccountEntity;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -10,14 +10,14 @@ import java.util.List;
  *
  * Created by mike on 12/4/2017.
  */
-public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
+public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEntity, Integer>
 {
     /**
      * Finds the customer by the id number.  Id numbers are unique as well
      * @param id
      * @return
      */
-    AccountEntity findById( final int id );
+    TradeItAccountEntity findById( final int id );
 
     /**
      * Get the account by customerId and id.  The account can be retrieved by only the id but we do so in this method
@@ -26,14 +26,14 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
      * @param id
      * @return
      */
-    AccountEntity findByCustomerIdAndId( final int customerId, final int id );
+    TradeItAccountEntity findByCustomerIdAndId( final int customerId, final int id );
 
     /**
      * Get the list of accounts by the customerId.
      * @param customerId
      * @return
      */
-    List<AccountEntity> findByCustomerId( final int customerId );
+    List<TradeItAccountEntity> findByCustomerId( final int customerId );
 
     /**
      * Get the customer's account by the name of the account.
@@ -41,5 +41,5 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Integer>
      * @param name
      * @return
      */
-    AccountEntity findByCustomerIdAndName( final int customerId, final String name );
+    TradeItAccountEntity findByCustomerIdAndName( final int customerId, final String name );
 }

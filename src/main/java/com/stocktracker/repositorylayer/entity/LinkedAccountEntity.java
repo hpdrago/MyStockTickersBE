@@ -22,13 +22,12 @@ import java.util.Objects;
 public class LinkedAccountEntity
 {
     private Integer id;
+    private Integer customerId;
     private Integer parentAccountId;
     private String accountNumber;
     private String accountName;
     private Integer accountIndex;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private AccountEntity accountByParentAccountId;
+    private TradeItAccountEntity accountByParentAccountId;
     private BigDecimal availableCash;
     private BigDecimal buyingPower;
     private BigDecimal totalValue;
@@ -38,9 +37,11 @@ public class LinkedAccountEntity
     private BigDecimal totalPercentReturn;
     private BigDecimal marginCash;
     private Collection<LinkedAccountPositionEntity> linkedAccountPositionsById;
+    private Timestamp createDate;
+    private Timestamp updateDate;
 
     /**
-     * Creates a new instance from the information contained within {@code TradeItAccount}.
+     * Creates a new instance from the information contained within {@code TradeItAccountDTO}.
      * @param tradeItAccount
      * @return
      */
@@ -74,6 +75,17 @@ public class LinkedAccountEntity
     public void setParentAccountId( final Integer parentAccountId )
     {
         this.parentAccountId = parentAccountId;
+    }
+
+    @Column( name = "customer_id" )
+    public Integer getCustomerId()
+    {
+        return customerId;
+    }
+
+    public void setCustomerId( final Integer customerId )
+    {
+        this.customerId = customerId;
     }
 
     @Basic
@@ -138,12 +150,12 @@ public class LinkedAccountEntity
 
     @ManyToOne
     @JoinColumn( name = "parent_account_id", referencedColumnName = "id", nullable = false )
-    public AccountEntity getAccountByParentAccountId()
+    public TradeItAccountEntity getAccountByParentAccountId()
     {
         return accountByParentAccountId;
     }
 
-    public void setAccountByParentAccountId( final AccountEntity accountByParentAccountId )
+    public void setAccountByParentAccountId( final TradeItAccountEntity accountByParentAccountId )
     {
         this.accountByParentAccountId = accountByParentAccountId;
     }
@@ -316,6 +328,7 @@ public class LinkedAccountEntity
     {
         final StringBuilder sb = new StringBuilder( "LinkedAccountEntity{" );
         sb.append( "id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
         sb.append( ", parentAccountId=" ).append( parentAccountId );
         sb.append( ", accountNumber='" ).append( accountNumber ).append( '\'' );
         sb.append( ", accountName='" ).append( accountName ).append( '\'' );

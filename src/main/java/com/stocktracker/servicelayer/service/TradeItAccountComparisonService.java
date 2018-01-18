@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
-import com.stocktracker.repositorylayer.entity.AccountEntity;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
@@ -23,40 +23,40 @@ import java.util.TreeSet;
 @Service
 public class TradeItAccountComparisonService implements MyLogger
 {
-    private AccountService accountService;
+    private TradeItAccountEntityService tradeItAccountEntityService;
 
     /**
      * Compares the linked accounts in {@accountEntity} which contains a list of {@code LinkedAccountEntity} to the
-     * {@code AuthenticateAPIResult} which contains a list of {@code TradeItAccount}.
-     * @param accountEntity
+     * {@code AuthenticateAPIResult} which contains a list of {@code TradeItAccountDTO}.
+     * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @throws LinkedAccountNotFoundException
      */
-    public void compare( final AccountEntity accountEntity, final AuthenticateAPIResult authenticateAPIResult )
+    public void compare( final TradeItAccountEntity tradeItAccountEntity, final AuthenticateAPIResult authenticateAPIResult )
         throws LinkedAccountNotFoundException
     {
-        SetComparator<String>.SetComparatorResults validateLinkedAccountsResult = this.validateLinkedAccounts( accountEntity,
-                                                                                      authenticateAPIResult );
-        checkForNewAccounts( accountEntity, authenticateAPIResult, validateLinkedAccountsResult );
-        checkForDeletedAccounts( accountEntity, authenticateAPIResult, validateLinkedAccountsResult );
-        checkForUpdatedAccounts( accountEntity, authenticateAPIResult, validateLinkedAccountsResult );
+        SetComparator<String>.SetComparatorResults validateLinkedAccountsResult = this.validateLinkedAccounts( tradeItAccountEntity,
+                                                                                                               authenticateAPIResult );
+        checkForNewAccounts( tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
+        checkForDeletedAccounts( tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
+        checkForUpdatedAccounts( tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
     }
 
     /**
      * Evaluates the account comparison results (@code ValidateLinkedAccountResult} to identify if there are any updated
      * account information.  Any differences in account information will be persisted to the database.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param validateLinkedAccountsResult
      * @throws LinkedAccountNotFoundException
      */
-    private void checkForUpdatedAccounts( final AccountEntity accountEntity,
+    private void checkForUpdatedAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                           final AuthenticateAPIResult authenticateAPIResult,
                                           final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
         throws LinkedAccountNotFoundException
     {
         final String methodName = "checkForUpdatedAccounts";
-        logMethodBegin( methodName, accountEntity, authenticateAPIResult, validateLinkedAccountsResult );
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
         if ( validateLinkedAccountsResult.getMatchingItems().isEmpty() )
         {
             logDebug( methodName, "There are no updated accounts" );
@@ -68,44 +68,45 @@ public class TradeItAccountComparisonService implements MyLogger
              */
             for ( String accountNumber : validateLinkedAccountsResult.getMatchingItems() )
             {
-                compareAccounts( accountEntity, authenticateAPIResult, accountNumber );
+                compareAccounts( tradeItAccountEntity, authenticateAPIResult, accountNumber );
             }
         }
         logMethodEnd( methodName );
     }
 
     /**
-     * Searches {@code accountEntity} and {@code authenticateAPIResult} for the account number {@code accountNumber}
+     * Searches {@code tradeItAccountEntity} and {@code authenticateAPIResult} for the account number {@code accountNumber}
      * and then compares their contents.  If the accounts are different, the TradeIt values are updated in the LinkedAccount.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param accountNumber
      * @throws IllegalArgumentException if trade
      * @throws LinkedAccountNotFoundException
      */
-    private void compareAccounts( final AccountEntity accountEntity,
+    private void compareAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                   final AuthenticateAPIResult authenticateAPIResult,
                                   final String accountNumber )
         throws LinkedAccountNotFoundException
     {
         final String methodName = "compareAccounts";
-        logMethodBegin( methodName, accountEntity, authenticateAPIResult, accountNumber );
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, accountNumber );
         Optional<TradeItAccount> tradeItAccount = authenticateAPIResult
             .getTradeItAccount( accountNumber );
         if ( tradeItAccount.isPresent() )
         {
-            LinkedAccountEntity linkedAccountEntity = accountEntity.getLinkedAccount( accountNumber, accountEntity );
+            LinkedAccountEntity linkedAccountEntity = tradeItAccountEntity
+                .getLinkedAccount( accountNumber, tradeItAccountEntity );
             if ( !linkedAccountEntity.isAccountDetailsEqual(
                  tradeItAccount.get().getName(),
                  tradeItAccount.get().getAccountNumber() ))
             {
                 linkedAccountEntity.setAccountName( tradeItAccount.get().getName() );
-                this.accountService.updateLinkedAccount( linkedAccountEntity );
+                this.tradeItAccountEntityService.updateLinkedAccount( linkedAccountEntity );
             }
         }
         else
         {
-            throw new IllegalArgumentException( "Could not found TradeItAccount " +
+            throw new IllegalArgumentException( "Could not found TradeItAccountDTO " +
                                                 accountNumber );
         }
         logMethodEnd( methodName );
@@ -114,16 +115,16 @@ public class TradeItAccountComparisonService implements MyLogger
     /**
      * Evaluates the account comparison results (@code ValidateLinkedAccountResult} to identify if there are any linked
      * accounts that are not present in the TradeItResults.  For now, we'll just log this information.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param validateLinkedAccountsResult
      */
-    private void checkForDeletedAccounts( final AccountEntity accountEntity,
+    private void checkForDeletedAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                           final AuthenticateAPIResult authenticateAPIResult,
                                           final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
     {
         final String methodName = "checkForDeletedAccounts";
-        logMethodBegin( methodName, accountEntity, authenticateAPIResult, validateLinkedAccountsResult );
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
         if ( validateLinkedAccountsResult.getDeletedItems().isEmpty() )
         {
             logDebug( methodName, "No deleted accounts found" );
@@ -139,16 +140,16 @@ public class TradeItAccountComparisonService implements MyLogger
     /**
      * Evaluates the account comparison results {@code ValidateLinkedAccountResult} to identify if there are any new
      * linked accounts.  If new linked accounts are found, the account information will be persisted in the database.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param validateLinkedAccountsResult
      */
-    private void checkForNewAccounts( final AccountEntity accountEntity,
+    private void checkForNewAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                       final AuthenticateAPIResult authenticateAPIResult,
                                       final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
     {
         final String methodName = "checkForNewAccounts";
-        logMethodBegin( methodName, accountEntity, authenticateAPIResult, validateLinkedAccountsResult );
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
         if ( validateLinkedAccountsResult.getNewItems().isEmpty() )
         {
             logDebug( methodName, "No new accounts found" );
@@ -162,7 +163,7 @@ public class TradeItAccountComparisonService implements MyLogger
                                   .getTradeItAccount( accountNumber );
                               if ( tradeItAccount.isPresent() )
                               {
-                                  this.accountService.addLinkedAccount( accountEntity, tradeItAccount.get() );
+                                  this.tradeItAccountEntityService.addLinkedAccount( tradeItAccountEntity, tradeItAccount.get() );
                               }
                               else
                               {
@@ -177,18 +178,18 @@ public class TradeItAccountComparisonService implements MyLogger
     /**
      * Evaluates the current linked account(s) (if any) in {@accountEntity} with the accounts returned by the
      * authentication call.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @return {@code ValidateLinkedAccountResult}
      */
-    private SetComparator<String>.SetComparatorResults validateLinkedAccounts( final AccountEntity accountEntity,
+    private SetComparator<String>.SetComparatorResults validateLinkedAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                                                                 final AuthenticateAPIResult authenticateAPIResult )
     {
         final String methodName = "validateLinkedAccounts";
-        logMethodBegin( methodName, accountEntity, authenticateAPIResult );
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
         Set<String> currentAccounts = new TreeSet();
-        accountEntity.getLinkedAccountsById()
-                     .forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
+        tradeItAccountEntity.getLinkedAccountsById()
+                            .forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
         Set<String> tradeItAccounts = new TreeSet<>();
         for ( TradeItAccount tradeItAccount: authenticateAPIResult.getTradeItAccounts() )
         {
@@ -201,9 +202,9 @@ public class TradeItAccountComparisonService implements MyLogger
     }
 
     @Autowired
-    public void setAccountService( final AccountService accountService )
+    public void setTradeItAccountService( final TradeItAccountEntityService tradeItAccountEntityService )
     {
-        this.accountService = accountService;
+        this.tradeItAccountEntityService = tradeItAccountEntityService;
     }
 
 }

@@ -3,6 +3,8 @@ package com.stocktracker.repositorylayer.repository;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * TradeItAccount entity repository
  *
@@ -16,4 +18,13 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
      * @return
      */
     LinkedAccountEntity findById( final int id );
+
+    /**
+     * Get all of the linked accounts by customer id and parent account id.  It is not really necessary to include the
+     * customer id, but to be safe, let's make sure we only look at the customer's accounts.
+     * @param customerId
+     * @param parentAccountId
+     * @return
+     */
+    List<LinkedAccountEntity> findAllByCustomerIdAndParentAccountId( final int customerId, final int parentAccountId );
 }

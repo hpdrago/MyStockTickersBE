@@ -3,8 +3,8 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockNoteCountService;
-import com.stocktracker.servicelayer.service.StockNoteService;
+import com.stocktracker.servicelayer.service.StockNoteCountEntityService;
+import com.stocktracker.servicelayer.service.StockNoteEntityService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +34,8 @@ import java.util.Objects;
 @CrossOrigin
 public class StockNotesController extends AbstractController implements MyLogger
 {
-    private StockNoteCountService stockNoteCountService;
-    private StockNoteService stockNoteService;
+    private StockNoteCountEntityService stockNoteCountService;
+    private StockNoteEntityService stockNoteService;
     private static final String URL_CONTEXT = "/stockNotes";
 
     /**
@@ -202,13 +202,13 @@ public class StockNotesController extends AbstractController implements MyLogger
     }
 
     @Autowired
-    public void setStockNoteService( final StockNoteService stockNoteService )
+    public void setStockNoteService( final StockNoteEntityService stockNoteService )
     {
         this.stockNoteService = stockNoteService;
     }
 
     @Autowired
-    public void setStockNoteCountService( final StockNoteCountService stockNoteCountService )
+    public void setStockNoteCountService( final StockNoteCountEntityService stockNoteCountService )
     {
         this.stockNoteCountService = stockNoteCountService;
     }

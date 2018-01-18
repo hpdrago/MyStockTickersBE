@@ -24,7 +24,7 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockService extends BaseStockQuoteContainerService<StockEntity, StockDTO> implements MyLogger
+public class StockEntityService extends BaseStockQuoteContainerEntityService<StockEntity, StockDTO> implements MyLogger
 {
     private StockRepository stockRepository;
 

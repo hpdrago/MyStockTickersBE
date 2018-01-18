@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockAnalystConsensusService;
+import com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class StockAnalystConsensusController implements MyLogger
 {
     private static final String CONTEXT_URL = "stockAnalystConsensus";
-    private StockAnalystConsensusService stockAnalystConsensusService;
+    private StockAnalystConsensusEntityService stockAnalystConsensusService;
 
     /**
      * Get all of the stock analyst consensus for a customer
@@ -164,7 +164,7 @@ public class StockAnalystConsensusController implements MyLogger
     }
 
     @Autowired
-    public void setStockAnalystConsensusService( final StockAnalystConsensusService stockAnalystConsensusService )
+    public void setStockAnalystConsensusService( final StockAnalystConsensusEntityService stockAnalystConsensusService )
     {
         this.stockAnalystConsensusService = stockAnalystConsensusService;
     }

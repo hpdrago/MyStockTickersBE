@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.entity.AccountEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -12,11 +11,25 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * This is the base class for all services that interface with the database to store and retrieve entities from a single
+ * table in the database.
+ *
  * Created by mike on 11/1/2016.
  */
-public abstract class BaseService<E,D> implements MyLogger
+public abstract class BaseEntityService<E,D> implements MyLogger
 {
+    /**
+     * Subclass must override this method to copy properties from the database entity to the DTO.
+     * @param entity
+     * @return
+     */
     abstract protected D entityToDTO( final E entity );
+
+    /**
+     * Subclasses must override this method to copy properties from the DTO to the database entity.
+     * @param dto
+     * @return
+     */
     abstract protected E dtoToEntity( final D dto );
 
     /**
@@ -51,6 +64,11 @@ public abstract class BaseService<E,D> implements MyLogger
         return new PageImpl<>( dtos, pageRequest, source.getTotalElements() );
     }
 
+    /**
+     * Converts a list of entities to to a list of DTO's.
+     * @param entities
+     * @return
+     */
     protected List<D> entitiesToDTOs( final List<E> entities )
     {
         List<D> dtos = new ArrayList<>();
@@ -62,6 +80,11 @@ public abstract class BaseService<E,D> implements MyLogger
         return dtos;
     }
 
+    /**
+     * Converts a list of DTO's to a list of entities.
+     * @param dtos
+     * @return
+     */
     protected List<E> dtosToEntities( final List<D> dtos )
     {
         List<E> entities = new ArrayList<>();

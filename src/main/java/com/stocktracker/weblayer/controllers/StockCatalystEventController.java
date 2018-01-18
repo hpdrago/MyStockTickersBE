@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockCatalystEventService;
+import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
-
 /**
  * This is the REST Controller for all Stock Catalyst Event methods.
  */
@@ -30,7 +28,7 @@ import java.util.List;
 public class StockCatalystEventController implements MyLogger
 {
     private static final String CONTEXT_URL = "/stockCatalystEvent";
-    private StockCatalystEventService stockCatalystEventService;
+    private StockCatalystEventEntityService stockCatalystEventService;
 
     /**
      * Get all of the stock catalyst events for a single customer.
@@ -154,7 +152,7 @@ public class StockCatalystEventController implements MyLogger
     }
 
     @Autowired
-    public void setStockCatalystEventService( final StockCatalystEventService stockCatalystEventService )
+    public void setStockCatalystEventService( final StockCatalystEventEntityService stockCatalystEventService )
     {
         this.stockCatalystEventService = stockCatalystEventService;
     }

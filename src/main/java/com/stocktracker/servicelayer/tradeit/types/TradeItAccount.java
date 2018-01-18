@@ -77,7 +77,7 @@ public class TradeItAccount
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "TradeItAccount{" );
+        final StringBuilder sb = new StringBuilder( "TradeItAccountDTO{" );
         sb.append( "accountNumber='" ).append( accountNumber ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", accountBaseCurrency='" ).append( accountBaseCurrency ).append( '\'' );

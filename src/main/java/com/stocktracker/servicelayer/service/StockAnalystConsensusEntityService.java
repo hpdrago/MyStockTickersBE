@@ -22,10 +22,10 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockAnalystConsensusService extends BaseStockQuoteContainerService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
+public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerEntityService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
-    private StockNoteSourceService stockNoteSourceService;
+    private StockNoteSourceEntityService stockNoteSourceService;
 
     /**
      * Get the DTO for the stock ticker symbol.
@@ -241,7 +241,7 @@ public class StockAnalystConsensusService extends BaseStockQuoteContainerService
     }
 
     @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }

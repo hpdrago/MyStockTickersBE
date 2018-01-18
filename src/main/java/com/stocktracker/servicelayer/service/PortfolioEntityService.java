@@ -25,11 +25,11 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO> implements MyLogger
+public class PortfolioEntityService extends BaseEntityService<PortfolioEntity, PortfolioDTO> implements MyLogger
 {
     private PortfolioRepository portfolioRepository;
-    private StockService stockService;
-    private PortfolioStockService portfolioStockService;
+    private StockEntityService stockService;
+    private PortfolioStockEntityService portfolioStockService;
     private PortfolioCalculator portfolioCalculator;
 
     /**
@@ -147,13 +147,13 @@ public class PortfolioService extends BaseService<PortfolioEntity, PortfolioDTO>
     }
 
     @Autowired
-    public void setStockService( StockService stockService )
+    public void setStockService( StockEntityService stockService )
     {
         this.stockService = stockService;
     }
 
     @Autowired
-    public void setPortfolioStockService( PortfolioStockService portfolioStockService )
+    public void setPortfolioStockService( PortfolioStockEntityService portfolioStockService )
     {
         this.portfolioStockService = portfolioStockService;
     }

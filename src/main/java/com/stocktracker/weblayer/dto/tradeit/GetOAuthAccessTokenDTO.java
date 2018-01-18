@@ -2,14 +2,14 @@ package com.stocktracker.weblayer.dto.tradeit;
 
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
-import com.stocktracker.weblayer.dto.AccountDTO;
+import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 
 /**
  * This is the DTO class to return to the client after making the TradeIt call to get the OAuth access token.
  */
 public class GetOAuthAccessTokenDTO extends TradeItAPIResult
 {
-    private AccountDTO customerAccount;
+    private TradeItAccountDTO customerAccount;
 
     public GetOAuthAccessTokenDTO()
     {
@@ -20,13 +20,13 @@ public class GetOAuthAccessTokenDTO extends TradeItAPIResult
         super( getOAuthAccessTokenAPIResult );
     }
 
-    public AccountDTO getCustomerAccount()
+    public TradeItAccountDTO getCustomerAccount()
     {
         return customerAccount;
     }
 
-    public void setCustomerAccount( final AccountDTO customerAccountDTO )
+    public void setCustomerAccount( final TradeItAccountDTO customerTradeItAccountDTO )
     {
-        this.customerAccount = customerAccountDTO;
+        this.customerAccount = customerTradeItAccountDTO;
     }
 }

@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioStockService extends BaseService<PortfolioStockEntity, PortfolioStockDTO> implements MyLogger
+public class PortfolioStockEntityService extends BaseEntityService<PortfolioStockEntity, PortfolioStockDTO> implements MyLogger
 {
     private StockQuoteService stockQuoteService;
     private PortfolioStockRepository portfolioStockRepository;

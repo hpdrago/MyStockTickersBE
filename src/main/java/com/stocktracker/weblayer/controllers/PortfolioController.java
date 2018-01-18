@@ -3,8 +3,8 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.PortfolioService;
-import com.stocktracker.servicelayer.service.PortfolioStockService;
+import com.stocktracker.servicelayer.service.PortfolioEntityService;
+import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +31,8 @@ import java.util.Objects;
 public class PortfolioController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/portfolio";
-    private PortfolioService portfolioService;
-    private PortfolioStockService portfolioStockService;
+    private PortfolioEntityService portfolioService;
+    private PortfolioStockEntityService portfolioStockService;
 
     /**
      * Get a list of portfolios for a single customer {@code customerId}
@@ -147,13 +147,13 @@ public class PortfolioController extends AbstractController implements MyLogger
     }
 
     @Autowired
-    public void setPortfolioStockService( final PortfolioStockService portfolioStockService )
+    public void setPortfolioStockService( final PortfolioStockEntityService portfolioStockService )
     {
         this.portfolioStockService = portfolioStockService;
     }
 
     @Autowired
-    public void setPortfolioService( final PortfolioService portfolioService )
+    public void setPortfolioService( final PortfolioEntityService portfolioService )
     {
         this.portfolioService = portfolioService;
     }

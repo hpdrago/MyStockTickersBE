@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.Basic;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Entity
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
-public class StockToBuyEntity implements StockNoteSourceService.StockNoteSourceEntityContainer
+public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteSourceEntityContainer
 {
     private static final int COMMENTS_LEN = 4096;
     private Integer id;

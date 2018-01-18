@@ -2,8 +2,8 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
-import com.stocktracker.servicelayer.service.AccountService;
-import com.stocktracker.weblayer.dto.AccountDTO;
+import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
+import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,21 +21,21 @@ import java.util.List;
 
 
 /**
- * This class contains all of the AccountDTO related REST weblayer service call mapping and handling
+ * This class contains all of the TradeItAccountDTO related REST weblayer service call mapping and handling
  * <p>
  * Created by mike on 5/9/2016.
  */
 @RestController
 @CrossOrigin
-public class AccountController extends AbstractController implements MyLogger
+public class TradeItAccountController extends AbstractController implements MyLogger
 {
-    private static final String CONTEXT_URL = "/account";
-    private AccountService accountService;
+    private static final String CONTEXT_URL = "/tradeItAccount";
+    private TradeItAccountEntityService tradeItAccountService;
 
     @Autowired
-    public void setAccountService( final AccountService accountService )
+    public void setTradeItAccountService( final TradeItAccountEntityService tradeItAccountService )
     {
-        this.accountService = accountService;
+        this.tradeItAccountService = tradeItAccountService;
     }
 
     /**
@@ -47,14 +47,14 @@ public class AccountController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public AccountDTO getAccount( @PathVariable int accountId,
-                                  @PathVariable int customerId )
+    public TradeItAccountDTO getAccount( @PathVariable int accountId,
+                                         @PathVariable int customerId )
     {
         final String methodName = "getAccount";
         logMethodBegin( methodName, accountId );
-        AccountDTO accountDTO = accountService.getAccountDTO( customerId, accountId );
-        logMethodEnd( methodName, accountDTO );
-        return accountDTO;
+        TradeItAccountDTO tradeItAccountDTO = tradeItAccountService.getAccountDTO( customerId, accountId );
+        logMethodEnd( methodName, tradeItAccountDTO );
+        return tradeItAccountDTO;
     }
 
     /**
@@ -65,17 +65,17 @@ public class AccountController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<AccountDTO> createAccount( @RequestBody final AccountDTO accountDTO,
-                                                     @PathVariable final int customerId )
+    public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
+                                                            @PathVariable final int customerId )
         throws AccountNotFoundException
     {
         final String methodName = "createAccount";
-        logMethodBegin( methodName, customerId, accountDTO );
-        AccountDTO returnStockDTO = this.accountService.createAccount( customerId, accountDTO );
+        logMethodBegin( methodName, customerId, tradeItAccountDTO );
+        TradeItAccountDTO returnStockDTO = this.tradeItAccountService.createAccount( customerId, tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
-                                     .buildAndExpand( accountDTO ).toUri());
+                                     .buildAndExpand( tradeItAccountDTO ).toUri());
         logMethodEnd( methodName, returnStockDTO );
         return new ResponseEntity<>( returnStockDTO, httpHeaders, HttpStatus.CREATED );
     }
@@ -94,7 +94,7 @@ public class AccountController extends AbstractController implements MyLogger
     {
         final String methodName = "deleteAccount";
         logMethodBegin( methodName, accountId, customerId );
-        this.accountService.deleteAccount( customerId, accountId );
+        this.tradeItAccountService.deleteAccount( customerId, accountId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -102,38 +102,38 @@ public class AccountController extends AbstractController implements MyLogger
     /**
      * Save the account
      * @param customerId
-     * @param accountDTO
+     * @param tradeItAccountDTO
      * @return
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<AccountDTO> saveAccount( @PathVariable int customerId,
-                                                   @RequestBody AccountDTO accountDTO )
+    public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable int customerId,
+                                                          @RequestBody TradeItAccountDTO tradeItAccountDTO )
     {
         final String methodName = "saveAccount";
-        logMethodBegin( methodName, customerId, accountDTO );
-        AccountDTO returnAccountDTO = this.accountService.updateAccount( customerId, accountDTO );
+        logMethodBegin( methodName, customerId, tradeItAccountDTO );
+        TradeItAccountDTO returnTradeItAccountDTO = this.tradeItAccountService.updateAccount( customerId, tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
-                                     .buildAndExpand( returnAccountDTO ).toUri());
-        logMethodEnd( methodName, returnAccountDTO );
-        return new ResponseEntity<>( returnAccountDTO, httpHeaders, HttpStatus.CREATED );
+                                     .buildAndExpand( returnTradeItAccountDTO ).toUri());
+        logMethodEnd( methodName, returnTradeItAccountDTO );
+        return new ResponseEntity<>( returnTradeItAccountDTO, httpHeaders, HttpStatus.CREATED );
     }
 
     /**
-     * Get all of the stock to buy for a customer and a
+     * Get all of the customer accounts that are registered with TradeIt.
      * @return
      */
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<AccountDTO> getCustomerAccounts( final @PathVariable int customerId )
+    public List<TradeItAccountDTO> getAccounts( final @PathVariable int customerId )
     {
-        final String methodName = "getCustomerAccounts";
+        final String methodName = "getAccounts";
         logMethodBegin( methodName, customerId );
-        List<AccountDTO> accounts = this.accountService.getAccounts( customerId );
+        List<TradeItAccountDTO> accounts = this.tradeItAccountService.getAccounts( customerId );
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }

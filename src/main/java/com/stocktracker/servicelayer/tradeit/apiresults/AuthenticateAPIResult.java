@@ -104,7 +104,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     }
 
     /**
-     * Returns the {@code TradeItAccount} by the {@code accountNumber}.
+     * Returns the {@code TradeItAccountDTO} by the {@code accountNumber}.
      * @param accountNumber
      * @return
      */

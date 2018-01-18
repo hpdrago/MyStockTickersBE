@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.StockEntityService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuote;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockDTO;
@@ -34,7 +34,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class StockController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/stocks";
-    private StockService stockService;
+    private StockEntityService stockService;
     private StockQuoteService stockQuoteService;
 
     /**
@@ -222,7 +222,7 @@ public class StockController extends AbstractController implements MyLogger
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockEntityService stockService )
     {
         this.stockService = stockService;
     }

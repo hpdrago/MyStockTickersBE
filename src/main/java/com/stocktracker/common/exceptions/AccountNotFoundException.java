@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AccountNotFoundException extends RuntimeException
 {
     /**
-     * TradeItAccount id not found
+     * TradeItAccountDTO id not found
      * @param id
      */
     public AccountNotFoundException( final int id )
     {
-        super( "TradeItAccount id: " + id + " was not found" );
+        super( "TradeItAccountDTO id: " + id + " was not found" );
     }
 
     public AccountNotFoundException( final int customerId, final int accountId )
     {
-        super( "TradeItAccount " + accountId + " was not found for customer " + customerId );
+        super( "TradeItAccountDTO " + accountId + " was not found for customer " + customerId );
     }
 }

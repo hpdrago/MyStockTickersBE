@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +26,7 @@ import java.util.Objects;
 @CrossOrigin
 public class StockNotesSourceController extends AbstractController
 {
-    private StockNoteSourceService stockNoteSourceService;
+    private StockNoteSourceEntityService stockNoteSourceService;
     private static final String CONTEXT_URL = "/stockNotesSource";
 
     /**
@@ -80,7 +80,7 @@ public class StockNotesSourceController extends AbstractController
     }
 
     @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }

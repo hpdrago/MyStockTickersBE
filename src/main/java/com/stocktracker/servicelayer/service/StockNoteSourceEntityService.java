@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class StockNoteSourceService extends BaseService<StockNoteSourceEntity, StockNoteSourceDTO>
+public class StockNoteSourceEntityService extends BaseEntityService<StockNoteSourceEntity, StockNoteSourceDTO>
 {
     private StockNoteSourceRepository stockNoteSourceRepository;
 

@@ -1,7 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
-import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -26,8 +25,8 @@ import java.util.Optional;
  * Created by Mike on December 4th, 2017
  */
 @Entity
-@Table( name = "account", schema = "stocktracker", catalog = "" )
-public class AccountEntity
+@Table( name = "tradeit_account", schema = "stocktracker", catalog = "" )
+public class TradeItAccountEntity
 {
     private Integer id;
     private Integer customerId;
@@ -43,9 +42,9 @@ public class AccountEntity
     private CustomerEntity customerByCustomerId;
     private Collection<LinkedAccountEntity> linkedAccountsById;
 
-    public static AccountEntity newInstance()
+    public static TradeItAccountEntity newInstance()
     {
-        return new AccountEntity();
+        return new TradeItAccountEntity();
     }
 
     @Id
@@ -195,18 +194,18 @@ public class AccountEntity
      * {@code LinkedAccountNotFoundException} is thrown. This is the same call as {@code getLinkedAccount} without the
      * optional and throws the exception;
      * @param accountNumber The account number to search for.
-     * @param accountEntity The parent account information used for detailed exception information.
+     * @param tradeItAccountEntity The parent account information used for detailed exception information.
      * @return
      * @throws LinkedAccountNotFoundException
      */
     @Transient
-    public LinkedAccountEntity getLinkedAccount( final String accountNumber, final AccountEntity accountEntity )
+    public LinkedAccountEntity getLinkedAccount( final String accountNumber, final TradeItAccountEntity tradeItAccountEntity )
         throws LinkedAccountNotFoundException
     {
         final Optional<LinkedAccountEntity> linkedAccountEntity = this.getLinkedAccount( accountNumber );
         if ( !linkedAccountEntity.isPresent() )
         {
-            throw new LinkedAccountNotFoundException( accountNumber, accountEntity );
+            throw new LinkedAccountNotFoundException( accountNumber, tradeItAccountEntity );
         }
         return linkedAccountEntity.get();
     }
@@ -259,12 +258,12 @@ public class AccountEntity
         {
             return true;
         }
-        if ( !(o instanceof AccountEntity) )
+        if ( !(o instanceof TradeItAccountEntity) )
         {
             return false;
         }
 
-        final AccountEntity that = (AccountEntity) o;
+        final TradeItAccountEntity that = (TradeItAccountEntity) o;
 
         return getId().equals( that.getId() );
     }
@@ -278,7 +277,7 @@ public class AccountEntity
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "AccountEntity{" );
+        final StringBuilder sb = new StringBuilder( "TradeItAccountEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );

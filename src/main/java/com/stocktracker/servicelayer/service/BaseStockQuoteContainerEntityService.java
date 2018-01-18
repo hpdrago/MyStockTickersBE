@@ -17,7 +17,7 @@ import java.util.Objects;
  * @param <E>
  * @param <D>
  */
-public abstract class BaseStockQuoteContainerService<E,D extends StockQuoteService.StockQuoteContainer> extends BaseService<E,D>
+public abstract class BaseStockQuoteContainerEntityService<E,D extends StockQuoteService.StockQuoteContainer> extends BaseEntityService<E,D>
 {
     private StockQuoteService stockQuoteService;
 

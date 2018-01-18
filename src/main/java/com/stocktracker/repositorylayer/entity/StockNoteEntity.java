@@ -1,7 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 @Entity
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
-public class StockNoteEntity implements MyLogger, StockNoteSourceService.StockNoteSourceEntityContainer
+public class StockNoteEntity implements MyLogger, StockNoteSourceEntityService.StockNoteSourceEntityContainer
 {
     private Integer id;
     private String tickerSymbol;

@@ -1,16 +1,12 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.AccountEntity;
-import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * This class encapsulates the Authenticate API call.
@@ -19,24 +15,24 @@ import java.util.TreeSet;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
 public class AuthenticateAPICall extends TradeItAPIRestCall<AuthenticateAPIResult>
 {
-    private AccountEntity accountEntity;
+    private TradeItAccountEntity tradeItAccountEntity;
 
     /**
      * Authenticate the user's account and add/update/delete linked accounts.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @return
      */
-    public AuthenticateAPIResult execute( final AccountEntity accountEntity )
+    public AuthenticateAPIResult execute( final TradeItAccountEntity tradeItAccountEntity )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, accountEntity );
-        this.accountEntity = accountEntity;
-        Objects.requireNonNull( accountEntity.getUserId(), "userId cannot be null" );
-        Objects.requireNonNull( accountEntity.getUserToken(), "userToken cannot be null" );
-        Objects.requireNonNull( accountEntity.getBrokerage(), "brokerage cannot be null" );
-        this.addPostParameter( this.tradeItProperties.USER_ID_PARAM, accountEntity.getUserId() );
-        this.addPostParameter( this.tradeItProperties.USER_TOKEN_PARAM, accountEntity.getUserToken() );
-        this.addPostParameter( this.tradeItProperties.BROKER_PARAM, accountEntity.getBrokerage() );
+        logMethodBegin( methodName, tradeItAccountEntity );
+        this.tradeItAccountEntity = tradeItAccountEntity;
+        Objects.requireNonNull( tradeItAccountEntity.getUserId(), "userId cannot be null" );
+        Objects.requireNonNull( tradeItAccountEntity.getUserToken(), "userToken cannot be null" );
+        Objects.requireNonNull( tradeItAccountEntity.getBrokerage(), "brokerage cannot be null" );
+        this.addPostParameter( this.tradeItProperties.USER_ID_PARAM, tradeItAccountEntity.getUserId() );
+        this.addPostParameter( this.tradeItProperties.USER_TOKEN_PARAM, tradeItAccountEntity.getUserToken() );
+        this.addPostParameter( this.tradeItProperties.BROKER_PARAM, tradeItAccountEntity.getBrokerage() );
         AuthenticateAPIResult authenticateAPIResult = this.execute();
         logMethodBegin( methodName, authenticateAPIResult );
         return authenticateAPIResult;
@@ -45,7 +41,7 @@ public class AuthenticateAPICall extends TradeItAPIRestCall<AuthenticateAPIResul
     @Override
     protected String getAPIURL()
     {
-        return this.tradeItURLs.getAuthenticateUrl( accountEntity.getAuthUuid() );
+        return this.tradeItURLs.getAuthenticateUrl( tradeItAccountEntity.getAuthUuid() );
     }
 
     @Override

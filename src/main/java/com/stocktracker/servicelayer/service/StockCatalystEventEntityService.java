@@ -22,11 +22,11 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockCatalystEventService extends BaseService<StockCatalystEventEntity, StockCatalystEventDTO> implements MyLogger
+public class StockCatalystEventEntityService extends BaseEntityService<StockCatalystEventEntity, StockCatalystEventDTO> implements MyLogger
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockQuoteService stockQuoteService;
-    private StockService stockService;
+    private StockEntityService stockService;
 
     /**
      * Get the list of all stock catalyst event for the customer
@@ -174,7 +174,7 @@ public class StockCatalystEventService extends BaseService<StockCatalystEventEnt
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockEntityService stockService )
     {
         this.stockService = stockService;
     }

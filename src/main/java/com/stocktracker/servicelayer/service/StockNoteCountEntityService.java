@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class StockNoteCountService extends BaseService<VStockNoteCountEntity, StockNoteCountDTO>
+public class StockNoteCountEntityService extends BaseEntityService<VStockNoteCountEntity, StockNoteCountDTO>
 {
     private VStockNoteCountRepository vStockNoteCountRepository;
 

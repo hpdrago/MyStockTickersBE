@@ -29,16 +29,16 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockNoteService extends BaseStockQuoteContainerService<StockNoteEntity, StockNoteDTO>
+public class StockNoteEntityService extends BaseStockQuoteContainerEntityService<StockNoteEntity, StockNoteDTO>
 {
     /**
      * Autowired service classes
      */
-    private StockService stockService;
+    private StockEntityService stockService;
     private StockNoteRepository stockNoteRepository;
     private VStockNoteCountRepository vStockNoteCountRepository;
     private StockTagService stockTagService;
-    private StockNoteSourceService stockNoteSourceService;
+    private StockNoteSourceEntityService stockNoteSourceService;
 
     /**
      * Get all of the notes for a customer.
@@ -240,7 +240,7 @@ public class StockNoteService extends BaseStockQuoteContainerService<StockNoteEn
      * @param stockService
      */
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockEntityService stockService )
     {
         this.stockService = stockService;
     }
@@ -252,7 +252,7 @@ public class StockNoteService extends BaseStockQuoteContainerService<StockNoteEn
     }
 
     @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceService stockNoteSourceService )
+    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }

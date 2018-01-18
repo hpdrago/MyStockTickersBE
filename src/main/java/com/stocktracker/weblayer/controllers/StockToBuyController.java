@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
-import com.stocktracker.servicelayer.service.StockToBuyService;
+import com.stocktracker.servicelayer.service.StockToBuyEntityService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ import javax.validation.constraints.NotNull;
 public class StockToBuyController extends AbstractController
 {
     private static final String CONTEXT_URL = "/stockToBuy";
-    private StockToBuyService stockToBuyService;
+    private StockToBuyEntityService stockToBuyService;
 
     /**
      * Get all of the stock to buy for a customer
@@ -168,7 +168,7 @@ public class StockToBuyController extends AbstractController
     }
 
     @Autowired
-    public void setStockToBuyService( final StockToBuyService stockToBuyService )
+    public void setStockToBuyService( final StockToBuyEntityService stockToBuyService )
     {
         this.stockToBuyService = stockToBuyService;
     }

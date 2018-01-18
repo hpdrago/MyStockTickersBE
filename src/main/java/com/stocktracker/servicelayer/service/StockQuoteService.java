@@ -27,8 +27,8 @@ import java.util.Objects;
 public class StockQuoteService implements MyLogger
 {
     private StockQuoteCache stockQuoteCache;
-    private StockService stockService;
-    private StockAnalystConsensusService stockAnalystConsensusService;
+    private StockEntityService stockService;
+    private StockAnalystConsensusEntityService stockAnalystConsensusService;
 
     public interface StockCompanyNameContainer
     {
@@ -266,13 +266,13 @@ public class StockQuoteService implements MyLogger
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockEntityService stockService )
     {
         this.stockService = stockService;
     }
 
     @Autowired
-    public void setStockAnalystConsensusService( final StockAnalystConsensusService stockAnalystConsensusService )
+    public void setStockAnalystConsensusService( final StockAnalystConsensusEntityService stockAnalystConsensusService )
     {
         this.stockAnalystConsensusService = stockAnalystConsensusService;
     }

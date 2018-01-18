@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.servicelayer.service.StockNoteSourceService;
+import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                                          StockNoteSourceService.StockNoteSourceDTOContainer
+                                                                          StockNoteSourceEntityService.StockNoteSourceDTOContainer
 {
     /*
      * Entity (DB columns)

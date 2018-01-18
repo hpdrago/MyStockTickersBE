@@ -4,7 +4,7 @@ import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.PortfolioStockService;
+import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractController;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ import java.util.Objects;
 public class PortfolioStockController extends AbstractController
 {
     private static final String CONTEXT_URL = "/portfolioStock";
-    private PortfolioStockService portfolioStockService;
+    private PortfolioStockEntityService portfolioStockService;
     private AddPortfolioStockHandler addPortfolioStockHandler;
     private SavePortfolioStockHandler savePortfolioStockHandler;
 
@@ -232,7 +232,7 @@ public class PortfolioStockController extends AbstractController
     }
 
     @Autowired
-    public void setPortfolioStockService( final PortfolioStockService portfolioStockService )
+    public void setPortfolioStockService( final PortfolioStockEntityService portfolioStockService )
     {
         this.portfolioStockService = portfolioStockService;
     }

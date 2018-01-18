@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.servicelayer.service.StockService;
+import com.stocktracker.servicelayer.service.StockEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.TreeSet;
 
 /**
@@ -23,7 +22,7 @@ public class StockQuoteServiceExecutor
 {
     private IEXTradingStockService iexTradingStockService;
     private YahooStockService yahooStockService;
-    private StockService stockService;
+    private StockEntityService stockService;
     private Logger logger = LoggerFactory.getLogger( StockQuoteServiceExecutor.class );
     private TreeSet<String> discontinuedStocks = new TreeSet();
 
@@ -223,7 +222,7 @@ public class StockQuoteServiceExecutor
     }
 
     @Autowired
-    public void setStockService( final StockService stockService )
+    public void setStockService( final StockEntityService stockService )
     {
         this.stockService = stockService;
     }

@@ -1,7 +1,7 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
 import com.stocktracker.common.exceptions.DuplicatePortfolioStockException;
-import com.stocktracker.servicelayer.service.PortfolioStockService;
+import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO, PortfolioStockDTO>
 {
-    private PortfolioStockService portfolioStockService;
+    private PortfolioStockEntityService portfolioStockService;
 
     /**
      * Adds a Stock to a Portfolio.
@@ -78,7 +78,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
     }
 
     @Autowired
-    public void setPortfolioStockService( final PortfolioStockService portfolioStockService )
+    public void setPortfolioStockService( final PortfolioStockEntityService portfolioStockService )
     {
         this.portfolioStockService = portfolioStockService;
     }

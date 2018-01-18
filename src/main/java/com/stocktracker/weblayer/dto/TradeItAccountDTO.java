@@ -9,7 +9,7 @@ import java.sql.Timestamp;
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
  */
-public class AccountDTO
+public class TradeItAccountDTO
 {
     private Integer id;
     private Integer customerId;
@@ -21,13 +21,13 @@ public class AccountDTO
      * Creates a new instance from (@code accountEntity)
      * @return
      */
-    public static final AccountDTO newInstance()
+    public static final TradeItAccountDTO newInstance()
     {
-        AccountDTO accountDTO = new AccountDTO();
-        return accountDTO;
+        TradeItAccountDTO tradeItAccountDTO = new TradeItAccountDTO();
+        return tradeItAccountDTO;
     }
 
-    private AccountDTO()
+    private TradeItAccountDTO()
     {
     }
 
@@ -91,7 +91,7 @@ public class AccountDTO
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "AccountDTO{" );
+        final StringBuilder sb = new StringBuilder( "TradeItAccountDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );

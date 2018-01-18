@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StockSectorService extends BaseService<StockSectorEntity, StockSectorsDTO> implements MyLogger
+public class StockSectorEntityService extends BaseEntityService<StockSectorEntity, StockSectorsDTO> implements MyLogger
 {
     private StockSectorRepository stockSectorRepository;
 

@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.AccountEntity;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -16,12 +16,12 @@ public class KeepSessionAliveAPICall extends TradeItAPIRestCall<KeepSessionAlive
 {
     /**
      * Execute the Keep Session Alive API call.
-     * @param accountEntity
+     * @param tradeItAccountEntity
      * @return
      */
-    public KeepSessionAliveAPIResult execute( final AccountEntity accountEntity )
+    public KeepSessionAliveAPIResult execute( final TradeItAccountEntity tradeItAccountEntity )
     {
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, accountEntity.getAuthToken() );
+        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
         return execute();
     }
 

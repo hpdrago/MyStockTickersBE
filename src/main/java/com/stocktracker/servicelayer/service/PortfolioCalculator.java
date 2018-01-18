@@ -17,7 +17,7 @@ import java.util.Objects;
 @Service
 public class PortfolioCalculator implements MyLogger
 {
-    private PortfolioStockService portfolioStockService;
+    private PortfolioStockEntityService portfolioStockService;
 
     /**
      * Perform the portfolio calculations
@@ -71,7 +71,7 @@ public class PortfolioCalculator implements MyLogger
     }
 
     @Autowired
-    public void setPortfolioStockService( PortfolioStockService portfolioStockService )
+    public void setPortfolioStockService( PortfolioStockEntityService portfolioStockService )
     {
         this.portfolioStockService = portfolioStockService;
     }
