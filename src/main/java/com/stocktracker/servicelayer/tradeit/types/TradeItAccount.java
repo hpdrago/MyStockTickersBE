@@ -10,7 +10,7 @@ public class TradeItAccount
     private String accountNumber;
     private String name;
     private String accountBaseCurrency;
-    private Integer accountIndex;
+    private String accountIndex;
     private boolean userCanDisableMargin;
     private TradeItOrderCapability[] orderCapabilities;
 
@@ -44,12 +44,12 @@ public class TradeItAccount
         this.accountBaseCurrency = accountBaseCurrency;
     }
 
-    public Integer getAccountIndex()
+    public String getAccountIndex()
     {
         return accountIndex;
     }
 
-    public void setAccountIndex( Integer accountIndex )
+    public void setAccountIndex( String accountIndex )
     {
         this.accountIndex = accountIndex;
     }

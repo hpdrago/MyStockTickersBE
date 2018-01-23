@@ -16,7 +16,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     /*
      * status == SUCCESS
      */
-    private TradeItAccount[] tradeItAccounts;
+    private TradeItAccount[] accounts;
 
     /*
      * status = INFORMATION_NEEDED
@@ -39,7 +39,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     public AuthenticateAPIResult( final AuthenticateAPIResult authenticateAPIResult )
     {
         super( authenticateAPIResult );
-        this.tradeItAccounts = authenticateAPIResult.tradeItAccounts;
+        this.accounts = authenticateAPIResult.accounts;
         this.informationType = authenticateAPIResult.informationType;
         this.securityOptions = authenticateAPIResult.securityOptions;
         this.securityQuestion = authenticateAPIResult.securityQuestion;
@@ -93,14 +93,14 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      * Get the user's account.
      * @return
      */
-    public TradeItAccount[] getTradeItAccounts()
+    public TradeItAccount[] getAccounts()
     {
-        return tradeItAccounts;
+        return accounts;
     }
 
-    public void setTradeItAccounts( TradeItAccount[] tradeItAccounts )
+    public void setAccounts( TradeItAccount[] accounts )
     {
-        this.tradeItAccounts = tradeItAccounts;
+        this.accounts = accounts;
     }
 
     /**
@@ -110,7 +110,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      */
     public Optional<TradeItAccount> getTradeItAccount( final String accountNumber )
     {
-        return Arrays.stream( this.tradeItAccounts )
+        return Arrays.stream( this.accounts )
                      .filter( tradeItAccount -> tradeItAccount.getAccountNumber()
                                                               .equals( accountNumber ) )
                      .findFirst();
@@ -120,7 +120,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AuthenticateAPIResult{" );
-        sb.append( "tradeItAccounts=" ).append( Arrays.toString( tradeItAccounts ) );
+        sb.append( "tradeItAccounts=" ).append( Arrays.toString( accounts ) );
         sb.append( ", informationType='" ).append( informationType ).append( '\'' );
         sb.append( ", securityQuestion='" ).append( securityQuestion ).append( '\'' );
         sb.append( ", securityOptions=" ).append( Arrays.toString( securityOptions ) );

@@ -64,11 +64,14 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
      */
     public TradeItAccountEntity getAccountEntity( final int customerId, final int accountId )
     {
-        TradeItAccountEntity tradeItAccountEntity = tradeItAccountRepository.findOne( accountId );
+        final String methodName = "getAccountDTO";
+        logMethodBegin( methodName, customerId, accountId );
+        TradeItAccountEntity tradeItAccountEntity = tradeItAccountRepository.findByCustomerIdAndId( customerId, accountId );
         if ( tradeItAccountEntity == null )
         {
             throw new AccountNotFoundException( customerId, accountId );
         }
+        logMethodEnd( methodName, tradeItAccountEntity );
         return tradeItAccountEntity;
     }
 
@@ -245,10 +248,19 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
     {
         final String methodName = "addLinkedAccount";
         logMethodBegin( methodName, tradeItAccountEntity, tradeItAccount );
-        LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
+        /*
+         * Convert the account information return from TradeIt to a LinkedEntityAccount instance.
+         */
+        final LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
+        /*
+         * Set the bidirectional relationship
+         */
         linkedAccountEntity.setAccountByParentAccountId( tradeItAccountEntity );
-        this.linkedAccountEntityService.saveLinkedAccount( linkedAccountEntity );
         tradeItAccountEntity.addLinkedAccount( linkedAccountEntity );
+        /*
+         * Save the linked account
+         */
+        this.linkedAccountEntityService.saveLinkedAccount( linkedAccountEntity );
         logMethodEnd( methodName );
     }
 

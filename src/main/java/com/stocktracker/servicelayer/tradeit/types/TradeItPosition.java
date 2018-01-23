@@ -150,4 +150,22 @@ public class TradeItPosition
     {
         this.totalGainLossPercentage = totalGainLossPercentage;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "TradeItPosition{" );
+        sb.append( "costbasis=" ).append( costbasis );
+        sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", quantity=" ).append( quantity );
+        sb.append( ", symbol='" ).append( symbol ).append( '\'' );
+        sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
+        sb.append( ", todayGainLossDollar=" ).append( todayGainLossDollar );
+        sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
+        sb.append( ", totalGainLossDollar=" ).append( totalGainLossDollar );
+        sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

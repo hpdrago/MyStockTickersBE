@@ -6,6 +6,8 @@ import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -26,7 +28,7 @@ public class LinkedAccountEntity
     private Integer parentAccountId;
     private String accountNumber;
     private String accountName;
-    private Integer accountIndex;
+    private String accountIndex;
     private TradeItAccountEntity accountByParentAccountId;
     private BigDecimal availableCash;
     private BigDecimal buyingPower;
@@ -55,6 +57,7 @@ public class LinkedAccountEntity
     }
 
     @Id
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     @Column( name = "id" )
     public Integer getId()
     {
@@ -114,12 +117,12 @@ public class LinkedAccountEntity
 
     @Basic
     @Column( name = "account_index" )
-    public Integer getAccountIndex()
+    public String getAccountIndex()
     {
         return accountIndex;
     }
 
-    public void setAccountIndex( final Integer accountIndex )
+    public void setAccountIndex( final String accountIndex )
     {
         this.accountIndex = accountIndex;
     }
@@ -158,6 +161,7 @@ public class LinkedAccountEntity
     public void setAccountByParentAccountId( final TradeItAccountEntity accountByParentAccountId )
     {
         this.accountByParentAccountId = accountByParentAccountId;
+        this.parentAccountId = accountByParentAccountId.getId();
     }
 
     /**
@@ -257,7 +261,7 @@ public class LinkedAccountEntity
     }
 
     @Basic
-    @Column( name = "marginCash" )
+    @Column( name = "margin_cash" )
     public BigDecimal getMarginCash()
     {
         return marginCash;

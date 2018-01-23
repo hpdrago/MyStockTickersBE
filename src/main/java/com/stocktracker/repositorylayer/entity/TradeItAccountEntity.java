@@ -186,6 +186,7 @@ public class TradeItAccountEntity
         {
             this.linkedAccountsById = new ArrayList<>();
         }
+        linkedAccountEntity.setCustomerId( this.getCustomerId() );
         this.linkedAccountsById.add( linkedAccountEntity );
     }
 
