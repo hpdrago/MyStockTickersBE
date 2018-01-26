@@ -67,4 +67,19 @@ public class JSONDateConverter
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
         return dateFormat.format( utcTimestamp );
     }
+
+    /**
+     * Converts a timestamp into a full JSON date and time string
+     * @param utcTimestamp
+     * @return null if {@code utcTimestamp} is null
+     */
+    public static String toJSONDateAndTime( final Timestamp utcTimestamp )
+    {
+        if ( utcTimestamp == null )
+        {
+            return "";
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        return dateFormat.format( utcTimestamp );
+    }
 }

@@ -1,9 +1,8 @@
 package com.stocktracker.weblayer.dto;
 
 
-import com.stocktracker.common.JSONDateConverter;
-
-import java.sql.Timestamp;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 
 /**
  * This class defines the data that will be sent to the client when requesting information for a Customer
@@ -71,22 +70,17 @@ public class TradeItAccountDTO
         this.brokerage = brokerage;
     }
 
-    public void setAuthTimestamp( final Timestamp authTimestamp )
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
+    public String getAuthTimestamp()
     {
-        if ( authTimestamp == null )
-        {
-            this.authTimestamp = null;
-        }
-        else
-        {
-            this.authTimestamp = JSONDateConverter.toDateAndTime( authTimestamp );
-        }
+        return authTimestamp;
     }
 
     public void setAuthTimestamp( final String authTimestamp )
     {
         this.authTimestamp = authTimestamp;
     }
+
 
     @Override
     public String toString()

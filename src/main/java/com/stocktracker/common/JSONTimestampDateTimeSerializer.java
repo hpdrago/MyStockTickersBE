@@ -10,13 +10,13 @@ import java.sql.Timestamp;
 /**
  * This class formats Timestamp into JSON dates
  */
-public class JSONTimestampToDateSerializer extends JsonSerializer<Timestamp>
+public class JSONTimestampDateTimeSerializer extends JsonSerializer<Timestamp>
 {
     @Override
     public void serialize( Timestamp timestamp, JsonGenerator jgen, SerializerProvider provider)
         throws IOException
     {
         // put your desired money style here
-        jgen.writeString( JSONDateConverter.toY4MMDD( timestamp ));
+        jgen.writeString( JSONDateConverter.toDateAndTime( timestamp ));
     }
 }

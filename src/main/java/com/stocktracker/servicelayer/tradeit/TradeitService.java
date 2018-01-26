@@ -117,7 +117,7 @@ public class TradeItService implements MyLogger
                                                                           getOAuthAccessTokenAPIResult.getUserToken() );
         }
         GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = new GetOAuthAccessTokenDTO( getOAuthAccessTokenAPIResult );
-        getOAuthAccessTokenDTO.setCustomerAccount( tradeItAccountDTO );
+        getOAuthAccessTokenDTO.setTradeItAccount( tradeItAccountDTO );
         logMethodEnd( methodName, getOAuthAccessTokenDTO );
         return getOAuthAccessTokenDTO;
     }

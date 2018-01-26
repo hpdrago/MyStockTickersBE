@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.common.JSONTimestampToDateTimeSerializer;
+import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,10 +21,10 @@ public class StockTickerQuote implements StockQuote
     private String stockExchange;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
-    @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
     private StockQuoteState stockQuoteState;
-    @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expiration;
 
     /**

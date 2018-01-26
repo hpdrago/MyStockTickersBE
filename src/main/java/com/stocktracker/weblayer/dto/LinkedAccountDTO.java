@@ -2,7 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.common.JSONTimestampToDateTimeSerializer;
+import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -18,9 +18,9 @@ public class LinkedAccountDTO
     private String accountNumber;
     private String accountName;
     private Integer accountIndex;
-    @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp createDate;
-    @JsonSerialize( using = JSONTimestampToDateTimeSerializer.class )
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp updateDate;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal availableCash;

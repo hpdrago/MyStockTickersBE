@@ -2,15 +2,12 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
-import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
-import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.CloseSessionDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
-import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
 import org.springframework.beans.factory.annotation.Autowired;

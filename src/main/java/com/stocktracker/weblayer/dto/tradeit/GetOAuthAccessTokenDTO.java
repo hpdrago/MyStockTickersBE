@@ -9,7 +9,7 @@ import com.stocktracker.weblayer.dto.TradeItAccountDTO;
  */
 public class GetOAuthAccessTokenDTO extends TradeItAPIResult
 {
-    private TradeItAccountDTO customerAccount;
+    private TradeItAccountDTO tradeItAccount;
 
     public GetOAuthAccessTokenDTO()
     {
@@ -20,13 +20,13 @@ public class GetOAuthAccessTokenDTO extends TradeItAPIResult
         super( getOAuthAccessTokenAPIResult );
     }
 
-    public TradeItAccountDTO getCustomerAccount()
+    public TradeItAccountDTO getTradeItAccount()
     {
-        return customerAccount;
+        return tradeItAccount;
     }
 
-    public void setCustomerAccount( final TradeItAccountDTO customerTradeItAccountDTO )
+    public void setTradeItAccount( final TradeItAccountDTO customerTradeItAccountDTO )
     {
-        this.customerAccount = customerTradeItAccountDTO;
+        this.tradeItAccount = customerTradeItAccountDTO;
     }
 }
