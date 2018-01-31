@@ -53,11 +53,12 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
         logMethodBegin( methodName, pageRequest, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Page<StockNoteEntity> stockNoteEntities =
-            this.stockNoteRepository.findByCustomerIdOrderByNotesDateDesc( pageRequest, customerId );
+            this.stockNoteRepository.findByCustomerId( pageRequest, customerId );
         Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }
+
     /**
      * Get all of the notes for a customer and ticker symbol.
      * @param customerId
@@ -71,9 +72,9 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Page<StockNoteEntity> stockNoteEntities =
-            this.stockNoteRepository.findByCustomerIdAndTickerSymbolOrderByNotesDateDesc( pageRequest, customerId, tickerSymbol );
-        Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
+        final Page<StockNoteEntity> stockNoteEntities =
+            this.stockNoteRepository.findByCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+        final Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }

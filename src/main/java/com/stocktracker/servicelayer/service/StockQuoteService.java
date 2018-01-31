@@ -160,6 +160,10 @@ public class StockQuoteService implements MyLogger
         }
         stockEntity.setLastPrice( stockQuote.getLastPrice() );
         stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
+        /*
+         * Can't be discontinued if we found a last price -- keep this in case we marked it discontin
+         */
+        stockEntity.setDiscontinuedInd( false );
         this.stockService.saveStock( stockEntity );
         logMethodEnd( methodName, stockQuote );
     }

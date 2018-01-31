@@ -17,7 +17,7 @@ public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity, In
      * @param customerId
      * @return
      */
-    Page<StockToBuyEntity> findByCustomerIdOrderByTickerSymbol( final Pageable pageRequest, final int customerId );
+    Page<StockToBuyEntity> findByCustomerId( final Pageable pageRequest, final int customerId );
 
     /**
      * Get all of the stocks to buy for the customer and the ticker symbol

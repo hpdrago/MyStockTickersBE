@@ -44,14 +44,9 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
         final String methodName = "getStockToBuyListForCustomerId";
         logMethodBegin( methodName, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
-            .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
+        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository.findByCustomerId( pageRequest, customerId );
         Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
-        for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
-        {
-            this.getStockQuoteService()
-                .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-        }
+        getStockQuotes( stockToBuyDTOs );
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
         return stockToBuyDTOs;
@@ -72,14 +67,11 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
         logMethodBegin( methodName, customerId, tickerSymbol );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
-            .findByCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
-        Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
-        for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
-        {
-            this.getStockQuoteService()
-                .setStockQuoteInformation( stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-        }
+        final Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
+                                                              .findByCustomerIdAndTickerSymbol( pageRequest, customerId,
+                                                                                                tickerSymbol );
+        final Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
+        this.getStockQuotes( stockToBuyDTOs );
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
         return stockToBuyDTOs;
@@ -98,12 +90,12 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId );
         Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
-        StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
+        final StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
         if ( stockToBuyEntity == null )
         {
             throw new StockToBuyNoteFoundException( stockToBuyId );
         }
-        StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
+        final StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockQuoteService()
             .setStockQuoteInformation(  stockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, stockToBuyDTO );
@@ -151,7 +143,7 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
                                             stockToBuyEntity.getId(),
                                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
-        StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
+        final StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockQuoteService()
             .setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnStockToBuyDTO );
@@ -180,7 +172,7 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
                                             stockToBuyEntity.getId(),
                                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
-        StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
+        final StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockQuoteService()
             .setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnStockToBuyDTO );
@@ -200,14 +192,55 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
         logMethodEnd( methodName );
     }
 
+    /**
+     * Converts the entity to a dto.
+     * @param stockToBuyEntity
+     * @return
+     */
     @Override
     protected StockToBuyDTO entityToDTO( final StockToBuyEntity stockToBuyEntity )
     {
         final String methodName = "entityToDTO";
         Objects.requireNonNull( stockToBuyEntity );
-        StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
+        final StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
         stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
+        this.getStockQuote( stockToBuyDTO );
+        stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
+                                                                        StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                                                                        stockToBuyDTO.getId() ) );
+        stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
+        stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getBuyAfterDate() ) );
+        if ( stockToBuyEntity.getStockNoteSourceByNotesSourceId() != null )
+        {
+            stockToBuyDTO.setNotesSourceName( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getName() );
+            stockToBuyDTO.setNotesSourceId( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getId() );
+        }
+        return stockToBuyDTO;
+    }
+
+    /**
+     * Get the stock quotes for the stock to by list.
+     * @param stockToBuyDTOs
+     */
+    private void getStockQuotes( final Page<StockToBuyDTO> stockToBuyDTOs )
+    {
+        final String methodName = "getStockQuotes";
+        logMethodBegin( methodName );
+        for ( StockToBuyDTO stockToBuyDTO : stockToBuyDTOs )
+        {
+            this.getStockQuote( stockToBuyDTO );
+        }
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Get a single stock quote.
+     * @param stockToBuyDTO
+     */
+    private void getStockQuote( final StockToBuyDTO stockToBuyDTO )
+    {
+        final String methodName = "getStockQuote";
         try
         {
             this.getStockQuoteService()
@@ -221,17 +254,6 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
         {
             logError( methodName, e );
         }
-        stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
-                                                                        StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                                                                        stockToBuyDTO.getId() ) );
-        stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
-        stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getBuyAfterDate() ) );
-        if ( stockToBuyEntity.getStockNoteSourceByNotesSourceId() != null )
-        {
-            stockToBuyDTO.setNotesSourceName( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getName() );
-            stockToBuyDTO.setNotesSourceId( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getId() );
-        }
-        return stockToBuyDTO;
     }
 
     @Override

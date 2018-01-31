@@ -149,7 +149,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                                              @PathVariable final int customerId )
     {
         final String methodName = "getStockNotes";
-        logMethodBegin( methodName, customerId );
+        logMethodBegin( methodName, pageRequest, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerId( pageRequest, customerId );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
@@ -171,7 +171,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                                              @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStocks";
-        logMethodBegin( methodName, customerId, tickerSymbol );
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerIdAndTickerSymbol( pageRequest,

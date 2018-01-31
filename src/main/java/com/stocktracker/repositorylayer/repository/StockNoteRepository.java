@@ -20,8 +20,8 @@ public interface StockNoteRepository extends PagingAndSortingRepository<StockNot
      * @param customerId
      * @return
      */
-    Page<StockNoteEntity> findByCustomerIdOrderByNotesDateDesc( final Pageable pageRequest,
-                                                                final int customerId );
+    Page<StockNoteEntity> findByCustomerId( final Pageable pageRequest,
+                                            final int customerId );
 
     /**
      * Get all of the notes for a customer and ticker symbol.
@@ -29,7 +29,7 @@ public interface StockNoteRepository extends PagingAndSortingRepository<StockNot
      * @param tickerSymbol
      * @return
      */
-    Page<StockNoteEntity> findByCustomerIdAndTickerSymbolOrderByNotesDateDesc( final Pageable pageRequest,
-                                                                               final int customerId,
-                                                                               final String tickerSymbol );
+    Page<StockNoteEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest,
+                                                           final int customerId,
+                                                           final String tickerSymbol );
 }
