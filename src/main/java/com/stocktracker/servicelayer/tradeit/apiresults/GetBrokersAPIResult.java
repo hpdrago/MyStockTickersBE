@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.stocktracker.servicelayer.tradeit.apicalls.GetBrokersAPICall;
 import com.stocktracker.servicelayer.tradeit.types.TradeItBroker;
 
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 /**
  * This class contains the list of brokers that are supported by TradeIt.
  */
-public class GetBrokersAPIResult extends TradeItAPIResult
+public class GetBrokersAPIResult extends TradeItAPIResult<GetBrokersAPIResult>
 {
     @JsonProperty("brokerList")
     private TradeItBroker[] brokers;

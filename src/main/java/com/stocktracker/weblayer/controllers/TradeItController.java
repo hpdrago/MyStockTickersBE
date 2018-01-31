@@ -8,6 +8,7 @@ import com.stocktracker.weblayer.dto.tradeit.CloseSessionDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
+import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenUpdateURLDTO;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,26 @@ public class TradeItController extends AbstractController
                                                                                                        oAuthVerifier );
         logMethodEnd( methodName, getOAuthAccessTokenDTO );
         return getOAuthAccessTokenDTO;
+    }
+
+    /**
+     * After obtaining an OAuth Verifier when the user successfully logged into their broker account, the oAuthVerifier
+     * token returned from that process is then used to get the user id and user token to be used for later authentication.
+     * @return GetOAuthAccessTokenDTO that contains the newly created account
+     */
+    @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
+                             + "/customerId/{customerId}"
+                             + "/accountId/{accountId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final int customerId,
+                                                                   @PathVariable final int accountId )
+    {
+        final String methodName = "getOAuthTokenUpdateURL";
+        logMethodBegin( methodName, customerId, accountId );
+        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = this.tradeItService.getOAuthTokenUpdateURL( customerId, accountId );
+        logMethodEnd( methodName, getOAuthAccessTokenUpdateURLDTO );
+        return getOAuthAccessTokenUpdateURLDTO;
     }
 
     /**

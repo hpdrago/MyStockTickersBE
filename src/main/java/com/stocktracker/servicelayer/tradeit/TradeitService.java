@@ -14,12 +14,15 @@ import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenAPICall
 import com.stocktracker.servicelayer.tradeit.apicalls.GetPositionsAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.KeepSessionAliveAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.RequestOAuthPopUpURLAPICall;
+import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenUpdateURLAPICall;
 import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.CloseSessionAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverViewAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenUpdateURLAPIResult;
+import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
@@ -30,6 +33,7 @@ import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
+import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenUpdateURLDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
@@ -102,7 +106,7 @@ public class TradeItService implements MyLogger
                                                        @NotNull final String accountName,
                                                        @NotNull final String oAuthVerifier )
     {
-        final String methodName = "getOAuthAccessTokenAPIResult";
+        final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerId, broker, accountName, oAuthVerifier );
         Objects.requireNonNull( broker, "broker cannot be null" );
         Objects.requireNonNull( accountName, "accountName cannot be null" );
@@ -123,6 +127,25 @@ public class TradeItService implements MyLogger
     }
 
     /**
+     * Get the URL to update the user's OAuth access token.
+     * @param customerId
+     * @param accountId
+     * @return
+     */
+    public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final int customerId, final int accountId )
+    {
+        final String methodName = "getOAuthTokenUpdateURL";
+        logMethodBegin( methodName, customerId, accountId );
+        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountService.getAccountEntity( customerId, accountId );
+        final GetOAuthAccessTokenUpdateURLAPICall getOAuthAccessTokenUpdateURLAPICall = this.context.getBean( GetOAuthAccessTokenUpdateURLAPICall.class );
+        final GetOAuthAccessTokenUpdateURLAPIResult getOAuthAccessTokenUpdateURLAPIResult = getOAuthAccessTokenUpdateURLAPICall.execute(
+            tradeItAccountEntity.getUserId(), tradeItAccountEntity.getUserToken(), tradeItAccountEntity.getBrokerage() );
+        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = new GetOAuthAccessTokenUpdateURLDTO( getOAuthAccessTokenUpdateURLAPIResult );
+        logMethodEnd( methodName, getOAuthAccessTokenUpdateURLDTO );
+        return getOAuthAccessTokenUpdateURLDTO;
+    }
+
+    /**
      * Using the {@code userId} and {@code userToken} from {@code getOAuthAccessToken}, these values will be authenticated
      * with TradeIt and if success, a 15 minute session token will be obtained.
      * @param customerId
@@ -135,6 +158,7 @@ public class TradeItService implements MyLogger
         final String methodName = "authenticate";
         logMethodBegin( methodName, customerId, accountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountService.getAccountEntity( customerId, accountId );
+        logDebug( methodName, "Evaluating account entity: {0}", tradeItAccountEntity );
         /*
          * Need to generate a UUID for the authentication process
          */
@@ -145,12 +169,16 @@ public class TradeItService implements MyLogger
             logDebug( methodName, "Setting UUID {0}", authUUID );
             this.tradeItAccountService.saveAccount( tradeItAccountEntity );
         }
+
         /*
          * Make the auth call
          */
+        logDebug( methodName, "Calling TradeIt to authenticate account: {0}", tradeItAccountEntity );
         final AuthenticateAPICall authenticateAPICall = this.context.getBean( AuthenticateAPICall.class );
         final AuthenticateAPIResult authenticateAPIResult = authenticateAPICall.execute( tradeItAccountEntity );
-        final AuthenticateDTO authenticateDTO = new AuthenticateDTO( authenticateAPIResult );
+        final AuthenticateDTO authenticateDTO = this.context.getBean( AuthenticateDTO.class );
+        authenticateDTO.copyResults( authenticateAPIResult );
+        logDebug( methodName, "Authenticate result: {0}", authenticateDTO );
         /*
          * Check the auth results
          */
@@ -166,6 +194,7 @@ public class TradeItService implements MyLogger
         }
         else
         {
+            logDebug( methodName, "Authentication was successful" );
             this.tradeItAccountService.authenticationSuccessful( tradeItAccountEntity, authenticateAPIResult,
                                                                  authenticateDTO );
         }
@@ -191,15 +220,16 @@ public class TradeItService implements MyLogger
         final AnswerSecurityQuestionAPICall answerSecurityQuestionAPICall = this.context.getBean( AnswerSecurityQuestionAPICall.class );
         final AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult =
             answerSecurityQuestionAPICall.execute( tradeItAccountEntity, questionResponse );
-        final AnswerSecurityQuestionDTO authenticateDTO = new AnswerSecurityQuestionDTO( answerSecurityQuestionAPIResult );
+        final AnswerSecurityQuestionDTO answerSecurityQuestionDTO = this.context.getBean( AnswerSecurityQuestionDTO.class );
+        answerSecurityQuestionDTO.copyResults( answerSecurityQuestionAPIResult );
         if ( answerSecurityQuestionAPIResult.isSuccessful() )
         {
             this.tradeItAccountService.authenticationSuccessful( tradeItAccountEntity, answerSecurityQuestionAPIResult,
-                                                                 authenticateDTO );
+                                                                 answerSecurityQuestionDTO );
         }
         logDebug( methodName, "authenticateAPISuccessResult: {0}", answerSecurityQuestionAPIResult );
-        logMethodEnd( methodName, authenticateDTO );
-        return authenticateDTO;
+        logMethodEnd( methodName, answerSecurityQuestionDTO );
+        return answerSecurityQuestionDTO;
     }
 
     /**
@@ -215,7 +245,14 @@ public class TradeItService implements MyLogger
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountService.getAccountEntity( customerId, accountId );
         final KeepSessionAliveAPICall keepSessionAliveAPICall = this.context.getBean( KeepSessionAliveAPICall.class );
         final KeepSessionAliveAPIResult keepSessionAliveAPIResult = keepSessionAliveAPICall.execute( tradeItAccountEntity );
-        final KeepSessionAliveDTO keepSessionAliveDTO = new KeepSessionAliveDTO( keepSessionAliveAPIResult );
+        final KeepSessionAliveDTO keepSessionAliveDTO = this.context.getBean( KeepSessionAliveDTO.class );
+        keepSessionAliveDTO.copyResults( keepSessionAliveAPIResult );
+        if ( keepSessionAliveAPIResult.isSuccessful() )
+        {
+            TradeItAccountDTO tradeItAccountEntityDTO = this.tradeItAccountService.keepSessionAliveSuccess(
+                tradeItAccountEntity, keepSessionAliveAPIResult );
+            keepSessionAliveDTO.setTradeItAccountDTO( tradeItAccountEntityDTO );
+        }
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
     }

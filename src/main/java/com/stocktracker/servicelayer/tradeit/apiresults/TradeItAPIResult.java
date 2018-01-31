@@ -1,13 +1,19 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+import com.stocktracker.servicelayer.tradeit.TradeItErrorCode;
+
 import java.util.Arrays;
 
 /**
  * This is the base class for all TradeItAPI calls.  It contains the common result values.
  */
-public class TradeItAPIResult
+public class TradeItAPIResult<T extends TradeItAPIResult>
 {
     private int code;
+    /**
+     * The error message is set based on the code value if non-zero.
+     */
+    private String errorMessage;
     private String status;
     private String token;
     private String shortMessage;
@@ -17,13 +23,32 @@ public class TradeItAPIResult
     {
     }
 
-    public TradeItAPIResult( final TradeItAPIResult otherResult )
+    public TradeItAPIResult( final T results )
     {
-        this.code = otherResult.code;
-        this.status = otherResult.status;
-        this.token = otherResult.token;
-        this.shortMessage = otherResult.shortMessage;
-        this.longMessages = otherResult.longMessages;
+        this.setResults( results );
+    }
+
+    /**
+     * Copy the results
+     * @param tradeItAPIResult
+     */
+    public void copyResults( final TradeItAPIResult tradeItAPIResult )
+    {
+        this.setResults( (T) tradeItAPIResult );
+    }
+
+    /**
+     * Sets the result values from the other {@code result} instance.
+     * @param results
+     */
+    public void setResults( final T results )
+    {
+        this.setCode( results.getCode() );
+        this.status = results.getStatus();
+        this.token = results.getToken();
+        this.shortMessage = results.getShortMessage();
+        this.longMessages = results.getLongMessages();
+        this.errorMessage = results.getErrorMessage();
     }
 
     public boolean isSuccessful() { return this.status == null ? false : this.getAPIResultStatus().isSuccess() ;}
@@ -34,10 +59,33 @@ public class TradeItAPIResult
         return code;
     }
 
+    /**
+     * Sets the code and error message based on the error code.
+     * @param code
+     */
     public void setCode( final int code )
     {
         this.code = code;
+        if ( code == 0 )
+        {
+            this.errorMessage = "";
+        }
+        else
+        {
+            this.errorMessage = TradeItErrorCode.getErrorMessage( code );
+        }
     }
+
+    public String getErrorMessage()
+    {
+        return errorMessage;
+    }
+
+    public void setErrorMessage( final String errorMessage )
+    {
+        this.errorMessage = errorMessage;
+    }
+
 
     public String getStatus()
     {
@@ -90,11 +138,11 @@ public class TradeItAPIResult
         final StringBuilder sb = new StringBuilder( "TradeItResult{" );
         sb.append( "status='" ).append( status ).append( '\'' );
         sb.append( ", code='" ).append( code ).append( '\'' );
+        sb.append( ", errorMessage='" ).append( errorMessage ).append( '\'' );
         sb.append( ", token='" ).append( token ).append( '\'' );
         sb.append( ", shortMessage='" ).append( shortMessage ).append( '\'' );
         sb.append( ", longMessages='" ).append( Arrays.toString( longMessages )).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

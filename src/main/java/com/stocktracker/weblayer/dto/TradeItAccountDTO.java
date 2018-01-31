@@ -4,6 +4,8 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 
+import java.sql.Timestamp;
+
 /**
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
@@ -14,7 +16,7 @@ public class TradeItAccountDTO
     private Integer customerId;
     private String name;
     private String brokerage;
-    private String authTimestamp;
+    private Timestamp authTimestamp;
 
     /**
      * Creates a new instance from (@code accountEntity)
@@ -71,12 +73,12 @@ public class TradeItAccountDTO
     }
 
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
-    public String getAuthTimestamp()
+    public Timestamp getAuthTimestamp()
     {
         return authTimestamp;
     }
 
-    public void setAuthTimestamp( final String authTimestamp )
+    public void setAuthTimestamp( final Timestamp authTimestamp )
     {
         this.authTimestamp = authTimestamp;
     }

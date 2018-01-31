@@ -6,7 +6,7 @@ package com.stocktracker.servicelayer.tradeit.apiresults;
  * @see: https://www.trade.it/documentation#BalanceService
  * @author michael.earl 1/17/2018
  */
-public class GetAccountOverViewAPIResult extends TradeItAPIResult
+public class GetAccountOverViewAPIResult extends TradeItAPIResult<GetAccountOverViewAPIResult>
 {
     private double availableCash;
     private double buyingPower;

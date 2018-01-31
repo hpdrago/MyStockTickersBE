@@ -3,12 +3,12 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
-import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.TradeItAccountRepository;
-import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
@@ -235,7 +235,30 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
                                                        .getLinkedAccounts( tradeItAccountEntity.getCustomerId(),
                                                                            tradeItAccountEntity.getId() );
         authenticateDTO.setLinkedAccounts( linkedAccountDTOs );
+        /*
+         * Need to send back the updated account DTO
+         */
+        final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
+        authenticateDTO.setTradeItAccountDTO( tradeItAccountDTO );
         logMethodEnd( methodName, authenticateDTO );
+    }
+
+    /**
+     * This method is called after a successful renewal of the user's authentication token.
+     * @param tradeItAccountEntity
+     * @param keepSessionAliveAPIResult
+     * @return
+     */
+    public TradeItAccountDTO keepSessionAliveSuccess( final TradeItAccountEntity tradeItAccountEntity,
+                                                      final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
+    {
+        final String methodName = "keepSessionAliveSuccess";
+        logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );
+        tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
+        this.tradeItAccountRepository.save( tradeItAccountEntity );
+        final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
+        logMethodEnd( methodName, tradeItAccountDTO );
+        return tradeItAccountDTO;
     }
 
     /**

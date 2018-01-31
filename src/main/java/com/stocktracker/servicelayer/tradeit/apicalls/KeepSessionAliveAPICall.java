@@ -7,6 +7,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * this class will execute the Keep Session Alive TradeIt API call.
  */
@@ -21,8 +23,15 @@ public class KeepSessionAliveAPICall extends TradeItAPIRestCall<KeepSessionAlive
      */
     public KeepSessionAliveAPIResult execute( final TradeItAccountEntity tradeItAccountEntity )
     {
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
-        return execute();
+        final String methodName = "execute";
+        logMethodBegin( methodName, tradeItAccountEntity );
+        Objects.requireNonNull( tradeItAccountEntity, "tradeItAccountEntity cannot be null" );
+        Objects.requireNonNull( tradeItAccountEntity.getUserToken(), "tradeItAccountEntity.authToken cannot be null" );
+        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getUserToken() );
+        logMethodEnd( methodName, tradeItAccountEntity );
+        KeepSessionAliveAPIResult keepSessionAliveAPIResult = this.execute();
+        logMethodEnd( methodName, keepSessionAliveAPIResult );
+        return keepSessionAliveAPIResult;
     }
 
     @Override

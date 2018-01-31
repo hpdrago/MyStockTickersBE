@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.tradeit.apiresults;
 /**
  * This class contains the results from calling TradeIt to obtain the userId and userToken using the oAuthVerifier.
  */
-public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult
+public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult<GetOAuthAccessTokenAPIResult>
 {
     private String userId;
     private String userToken;

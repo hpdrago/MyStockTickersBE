@@ -9,7 +9,7 @@ import java.util.Arrays;
  * @see https://www.trade.it/documentation#GetPositions
  * @author michael.earl 1/17/2018
  */
-public class GetPositionsAPIResult extends TradeItAPIResult
+public class GetPositionsAPIResult extends TradeItAPIResult<GetPositionsAPIResult>
 {
     private String accountBaseCurrency;
     private int currentPage;

@@ -2,6 +2,10 @@ package com.stocktracker.weblayer.dto.tradeit;
 
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
+import com.stocktracker.weblayer.dto.TradeItAccountDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,21 +17,33 @@ import java.util.List;
  * NOTE: this does not inherit from {@code AuthenticateAPIResult} because we want to return the {@code LinkedAccountEntity}
  * instances not {@code TradeItAccount} instances that were returned from the TradeIt authentication call.
  */
-public class AuthenticateDTO extends AuthenticateAPIResult
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE)
+public class AuthenticateDTO<T extends AuthenticateDTO<T>> extends AuthenticateAPIResult<T>
 {
+    private TradeItAccountDTO tradeItAccount;
     private List<LinkedAccountDTO> linkedAccounts;
 
     /**
-     * Creates a new instance and copies values from {@code authenticateAPIResult} as this class inherits from that class.
-     * Also sets the {@code uuid} if the results status is "INFORMATION_NEEDED".
+     * Copy the results from an authenticate result.
      * @param authenticateAPIResult
      */
-    public AuthenticateDTO( final AuthenticateAPIResult authenticateAPIResult )
+    public void copyResults( final AuthenticateAPIResult authenticateAPIResult )
     {
-        super( authenticateAPIResult ) ;
-        this.linkedAccounts = new ArrayList<>();
+        super.setResults( (T)authenticateAPIResult );
     }
 
+    /**
+     * Copy the results
+     * @param results
+     */
+    @Override
+    public void setResults( final T results )
+    {
+        super.setResults( results );
+        this.tradeItAccount = results.getTradeItAccount();
+        this.linkedAccounts = results.getLinkedAccounts();
+    }
     /**
      * Set the linked accounts.
      * @param linkedAccountDTOs
@@ -46,11 +62,22 @@ public class AuthenticateDTO extends AuthenticateAPIResult
         return linkedAccounts;
     }
 
+    public TradeItAccountDTO getTradeItAccount()
+    {
+        return tradeItAccount;
+    }
+
+    public void setTradeItAccountDTO( final TradeItAccountDTO tradeItAccount )
+    {
+        this.tradeItAccount = tradeItAccount;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AuthenticateDTO{" );
-        sb.append( "linkedAccounts=" ).append( linkedAccounts );
+        sb.append( "tradeItAccount=" ).append( tradeItAccount );
+        sb.append( ", linkedAccounts=" ).append( linkedAccounts );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

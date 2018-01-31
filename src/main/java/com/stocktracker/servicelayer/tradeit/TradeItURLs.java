@@ -18,6 +18,7 @@ public class TradeItURLs
     private static final String GET_BROKER_LIST = BASE_URL + "/preference/getBrokerList";
     private static final String REQUEST_OAUTH_POPUP_URL = BASE_URL + "/user/getOAuthLoginPopupUrlForWebApp";
     private static final String GET_OAUTH_ACCESS_TOKEN_URL = BASE_URL + "/user/getOAuthAccessToken";
+    private static final String UPDATE_OAUTH_ACCESS_TOKEN_URL = BASE_URL + "/user/getOAuthLoginPopupUrlForTokenUpdate";
     private static final String AUTHENTICATE_URL = BASE_URL + "/user/authenticate" + "?srv=" + SRV_TAG;
     private static final String ANSWER_SECURITY_QUESTION_URL = BASE_URL + "/user/answerSecurityQuestion" + "?srv=" + SRV_TAG;
     private static final String CLOSE_SESSION_URL = BASE_URL + "/user/closeSession";
@@ -65,6 +66,15 @@ public class TradeItURLs
     public String getOauthAccessTokenURL()
     {
         return GET_OAUTH_ACCESS_TOKEN_URL;
+    }
+
+    /**
+     * Get the OAuthVerifier URL.
+     * @return
+     */
+    public String getUpdateOauthAccessTokenUrl()
+    {
+        return UPDATE_OAUTH_ACCESS_TOKEN_URL;
     }
 
     /**

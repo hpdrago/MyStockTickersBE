@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @author mike 1/10/2018
  */
-public class AuthenticateAPIResult extends TradeItAPIResult
+public class AuthenticateAPIResult<T extends AuthenticateAPIResult<T>> extends TradeItAPIResult<T>
 {
     /*
      * status == SUCCESS
@@ -36,13 +36,20 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      * Copy constructor.
      * @param authenticateAPIResult
      */
-    public AuthenticateAPIResult( final AuthenticateAPIResult authenticateAPIResult )
+    public AuthenticateAPIResult( final T authenticateAPIResult )
     {
         super( authenticateAPIResult );
-        this.accounts = authenticateAPIResult.accounts;
-        this.informationType = authenticateAPIResult.informationType;
-        this.securityOptions = authenticateAPIResult.securityOptions;
-        this.securityQuestion = authenticateAPIResult.securityQuestion;
+        setResults( authenticateAPIResult );
+    }
+
+    @Override
+    public void setResults( final T results )
+    {
+        super.setResults( results );
+        this.accounts = results.getAccounts();
+        this.informationType = results.getInformationType();
+        this.securityOptions = results.getSecurityOptions();
+        this.securityQuestion = results.getSecurityQuestion();
     }
 
     public String getInformationType()

@@ -35,4 +35,26 @@ public enum TradeItErrorCode
     public boolean isParametersError() { return this == PARAMS_ERROR; }
     public boolean isSessionExpired() { return this == SESSION_EXPIRED_ERROR; }
     public boolean isTokenInvalidOrExpired() { return this == TOKEN_INVALID_OR_EXPIRED_ERROR; }
+
+    /**
+     * Get the enum for the error code value.
+     * @param errorCode
+     * @return
+     */
+    public static String getErrorMessage( final int errorCode )
+    {
+        TradeItErrorCode returnValue = null;
+        for ( final TradeItErrorCode value: TradeItErrorCode.values() )
+        {
+            if ( value.errorNumber == errorCode )
+            {
+                returnValue = value;
+            }
+        }
+        if ( returnValue == null )
+        {
+            throw new IllegalArgumentException( "Error code " + errorCode + " is not a valid error code" );
+        }
+        return returnValue.errorMessage;
+    }
 }
