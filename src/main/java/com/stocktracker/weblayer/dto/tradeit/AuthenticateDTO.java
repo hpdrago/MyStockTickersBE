@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.dto.tradeit;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,8 @@ import java.util.List;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
-public class AuthenticateDTO<T extends AuthenticateDTO<T>> extends AuthenticateAPIResult
+@Qualifier( "authenticateDTO")
+public class AuthenticateDTO extends AuthenticateAPIResult
 {
     private TradeItAccountDTO tradeItAccount;
     private List<LinkedAccountDTO> linkedAccounts;
@@ -28,21 +30,11 @@ public class AuthenticateDTO<T extends AuthenticateDTO<T>> extends AuthenticateA
      * Copy the results from an authenticate result.
      * @param authenticateAPIResult
      */
-    public void copyResults( final AuthenticateAPIResult authenticateAPIResult )
+    public void setResults( final AuthenticateAPIResult authenticateAPIResult )
     {
-        super.setResults( (T)authenticateAPIResult );
+        super.setResults( authenticateAPIResult );
     }
 
-    /**
-     * Copy the results
-     * @param results
-     */
-    public void setResults( final T results )
-    {
-        super.setResults( results );
-        this.tradeItAccount = results.getTradeItAccount();
-        this.linkedAccounts = results.getLinkedAccounts();
-    }
     /**
      * Set the linked accounts.
      * @param linkedAccountDTOs

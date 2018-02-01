@@ -225,8 +225,8 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
          * authentication.
          */
         tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-        tradeItAccountEntity.setAuthUuid( null );
-        tradeItAccountEntity.setAuthToken( null );
+        //tradeItAccountEntity.setAuthUuid( null );
+        //tradeItAccountEntity.setAuthToken( null );
         this.tradeItAccountRepository.save( tradeItAccountEntity );
         /*
          * Gather up all of the linked accounts and add them to the authenticate DTO.

@@ -27,7 +27,7 @@ public class KeepSessionAliveAPICall extends TradeItAPIRestCall<KeepSessionAlive
         logMethodBegin( methodName, tradeItAccountEntity );
         Objects.requireNonNull( tradeItAccountEntity, "tradeItAccountEntity cannot be null" );
         Objects.requireNonNull( tradeItAccountEntity.getUserToken(), "tradeItAccountEntity.authToken cannot be null" );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getUserToken() );
+        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
         logMethodEnd( methodName, tradeItAccountEntity );
         KeepSessionAliveAPIResult keepSessionAliveAPIResult = this.execute();
         logMethodEnd( methodName, keepSessionAliveAPIResult );

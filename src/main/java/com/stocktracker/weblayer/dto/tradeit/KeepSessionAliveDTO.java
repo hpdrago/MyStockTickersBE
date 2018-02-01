@@ -19,12 +19,6 @@ public class KeepSessionAliveDTO extends KeepSessionAliveAPIResult
     {
     }
 
-    public void setResults( final KeepSessionAliveDTO results )
-    {
-        super.setResults( results );
-        this.tradeItAccount = results.tradeItAccount;
-    }
-
     public TradeItAccountDTO getTradeItAccount()
     {
         return tradeItAccount;

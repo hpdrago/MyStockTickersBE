@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.dto.tradeit;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
-public class AnswerSecurityQuestionDTO extends AuthenticateDTO<AnswerSecurityQuestionDTO>
+@Qualifier( "answerSecurityQuestionDTO")
+public class AnswerSecurityQuestionDTO extends AuthenticateDTO
 {
 }
