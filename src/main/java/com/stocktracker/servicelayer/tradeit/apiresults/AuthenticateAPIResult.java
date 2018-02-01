@@ -1,6 +1,9 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -11,7 +14,9 @@ import java.util.Optional;
  *
  * @author mike 1/10/2018
  */
-public class AuthenticateAPIResult<T extends AuthenticateAPIResult<T>> extends TradeItAPIResult<T>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class AuthenticateAPIResult extends TradeItAPIResult
 {
     /*
      * status == SUCCESS
@@ -32,18 +37,7 @@ public class AuthenticateAPIResult<T extends AuthenticateAPIResult<T>> extends T
     {
     }
 
-    /**
-     * Copy constructor.
-     * @param authenticateAPIResult
-     */
-    public AuthenticateAPIResult( final T authenticateAPIResult )
-    {
-        super( authenticateAPIResult );
-        setResults( authenticateAPIResult );
-    }
-
-    @Override
-    public void setResults( final T results )
+    public void setResults( final AuthenticateAPIResult results )
     {
         super.setResults( results );
         this.accounts = results.getAccounts();

@@ -1,10 +1,17 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * The result from the answer security question is the same as the Authenticate result as there could be a subsequent
  * request to answer another question.  Possibly the user didn't answer the question correctly.
  */
-public class AnswerSecurityQuestionAPIResult extends AuthenticateAPIResult<AnswerSecurityQuestionAPIResult>
+
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class AnswerSecurityQuestionAPIResult extends AuthenticateAPIResult
 {
     /**
      * Default Constructor
@@ -13,12 +20,4 @@ public class AnswerSecurityQuestionAPIResult extends AuthenticateAPIResult<Answe
     {
     }
 
-    /**
-     * Creates a new instance.
-     * @param answerSecurityQuestionAPIResult
-     */
-    public AnswerSecurityQuestionAPIResult( final AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult )
-    {
-        super( answerSecurityQuestionAPIResult );
-    }
 }

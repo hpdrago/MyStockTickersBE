@@ -107,8 +107,8 @@ public class TradeItController extends AbstractController
      * @return GetOAuthAccessTokenDTO that contains the newly created account
      */
     @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
-                             + "/customerId/{customerId}"
-                             + "/accountId/{accountId}",
+                             + "/accountId/{accountId}"
+                             + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final int customerId,

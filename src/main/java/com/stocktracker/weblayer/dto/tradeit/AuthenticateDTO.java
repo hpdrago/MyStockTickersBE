@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
-public class AuthenticateDTO<T extends AuthenticateDTO<T>> extends AuthenticateAPIResult<T>
+public class AuthenticateDTO<T extends AuthenticateDTO<T>> extends AuthenticateAPIResult
 {
     private TradeItAccountDTO tradeItAccount;
     private List<LinkedAccountDTO> linkedAccounts;
@@ -37,7 +37,6 @@ public class AuthenticateDTO<T extends AuthenticateDTO<T>> extends AuthenticateA
      * Copy the results
      * @param results
      */
-    @Override
     public void setResults( final T results )
     {
         super.setResults( results );

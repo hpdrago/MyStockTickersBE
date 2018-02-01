@@ -3,13 +3,18 @@ package com.stocktracker.servicelayer.tradeit.apiresults;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetBrokersAPICall;
 import com.stocktracker.servicelayer.tradeit.types.TradeItBroker;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 /**
  * This class contains the list of brokers that are supported by TradeIt.
  */
-public class GetBrokersAPIResult extends TradeItAPIResult<GetBrokersAPIResult>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class GetBrokersAPIResult extends TradeItAPIResult
 {
     @JsonProperty("brokerList")
     private TradeItBroker[] brokers;
@@ -18,9 +23,9 @@ public class GetBrokersAPIResult extends TradeItAPIResult<GetBrokersAPIResult>
     {
     }
 
-    public GetBrokersAPIResult( final GetBrokersAPIResult getBrokersAPIResult )
+    public void setResults( final GetBrokersAPIResult getBrokersAPIResult )
     {
-        super( getBrokersAPIResult );
+        super.setResults( getBrokersAPIResult );
         this.brokers = getBrokersAPIResult.brokers;
     }
 

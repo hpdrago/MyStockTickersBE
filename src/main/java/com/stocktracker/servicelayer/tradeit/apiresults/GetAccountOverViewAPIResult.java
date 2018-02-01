@@ -1,12 +1,18 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * This class is returned from TradeIt when getting the account overview information.
  *
  * @see: https://www.trade.it/documentation#BalanceService
  * @author michael.earl 1/17/2018
  */
-public class GetAccountOverViewAPIResult extends TradeItAPIResult<GetAccountOverViewAPIResult>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class GetAccountOverViewAPIResult extends TradeItAPIResult
 {
     private double availableCash;
     private double buyingPower;
@@ -17,13 +23,17 @@ public class GetAccountOverViewAPIResult extends TradeItAPIResult<GetAccountOver
     private double totalPercentReturn;
     private double marginCash;
 
+    public GetAccountOverViewAPIResult()
+    {
+    }
+
     /**
-     * Creates a new instance with values from {@code getAccountOverViewAPIResult}
+     * Sets the results
      * @param getAccountOverViewAPIResult
      */
-    public GetAccountOverViewAPIResult( final GetAccountOverViewAPIResult getAccountOverViewAPIResult )
+    public void setResults( final GetAccountOverViewAPIResult getAccountOverViewAPIResult )
     {
-        super( getAccountOverViewAPIResult );
+        super.setResults( getAccountOverViewAPIResult );
         this.availableCash = getAccountOverViewAPIResult.availableCash;
         this.buyingPower = getAccountOverViewAPIResult.buyingPower;
         this.totalValue = getAccountOverViewAPIResult.totalValue;

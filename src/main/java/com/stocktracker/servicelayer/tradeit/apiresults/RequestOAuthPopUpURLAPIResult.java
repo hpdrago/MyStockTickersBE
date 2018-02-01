@@ -1,9 +1,15 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * This class contains the result from a call to get the TradeIt PopUp URL for a given broker.
  */
-public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult<RequestOAuthPopUpURLAPIResult>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult
 {
     private String oAuthURL;
 
@@ -12,12 +18,12 @@ public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult<RequestOAuth
     }
 
     /**
-     * Creates a new instance.
+     * Sets the results.
      * @param requestOAuthPopUpURLAPIResult
      */
-    public RequestOAuthPopUpURLAPIResult( final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult )
+    public void setResults( final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult )
     {
-        super( requestOAuthPopUpURLAPIResult );
+        super.setResults( requestOAuthPopUpURLAPIResult );
         this.oAuthURL = requestOAuthPopUpURLAPIResult.oAuthURL;
     }
 

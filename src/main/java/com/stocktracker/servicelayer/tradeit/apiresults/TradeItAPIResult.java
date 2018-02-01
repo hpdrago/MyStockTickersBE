@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * This is the base class for all TradeItAPI calls.  It contains the common result values.
  */
-public class TradeItAPIResult<T extends TradeItAPIResult>
+public class TradeItAPIResult
 {
     private int code;
     /**
@@ -23,25 +23,16 @@ public class TradeItAPIResult<T extends TradeItAPIResult>
     {
     }
 
-    public TradeItAPIResult( final T results )
+    public TradeItAPIResult( final TradeItAPIResult results )
     {
         this.setResults( results );
-    }
-
-    /**
-     * Copy the results
-     * @param tradeItAPIResult
-     */
-    public void copyResults( final TradeItAPIResult tradeItAPIResult )
-    {
-        this.setResults( (T) tradeItAPIResult );
     }
 
     /**
      * Sets the result values from the other {@code result} instance.
      * @param results
      */
-    public void setResults( final T results )
+    public void setResults( final TradeItAPIResult results )
     {
         this.setCode( results.getCode() );
         this.status = results.getStatus();

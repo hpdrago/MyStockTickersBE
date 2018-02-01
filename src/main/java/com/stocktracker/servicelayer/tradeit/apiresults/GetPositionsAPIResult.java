@@ -1,6 +1,9 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
@@ -9,7 +12,9 @@ import java.util.Arrays;
  * @see https://www.trade.it/documentation#GetPositions
  * @author michael.earl 1/17/2018
  */
-public class GetPositionsAPIResult extends TradeItAPIResult<GetPositionsAPIResult>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class GetPositionsAPIResult extends TradeItAPIResult
 {
     private String accountBaseCurrency;
     private int currentPage;
@@ -17,12 +22,12 @@ public class GetPositionsAPIResult extends TradeItAPIResult<GetPositionsAPIResul
     private TradeItPosition[] positions;
 
     /**
-     * Creates and new instance and copies properties from getPositionsAPIResult.
+     * Sets the results.
      * @param getPositionsAPIResult
      */
-    public GetPositionsAPIResult( final GetPositionsAPIResult getPositionsAPIResult )
+    public void setResults( final GetPositionsAPIResult getPositionsAPIResult )
     {
-        super( getPositionsAPIResult );
+        super.setResults( getPositionsAPIResult );
         this.accountBaseCurrency = getPositionsAPIResult.accountBaseCurrency;
         this.currentPage = getPositionsAPIResult.currentPage;
         this.totalPages = getPositionsAPIResult.totalPages;

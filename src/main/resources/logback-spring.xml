@@ -36,4 +36,8 @@
         <appender-ref ref="FILE"/>
     </logger>
 
+    <logger name="com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
 </configuration>

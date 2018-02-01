@@ -1,9 +1,15 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 /**
  * This class contains the results from calling TradeIt to obtain the userId and userToken using the oAuthVerifier.
  */
-public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult<GetOAuthAccessTokenAPIResult>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult
 {
     private String userId;
     private String userToken;
@@ -12,9 +18,13 @@ public class GetOAuthAccessTokenAPIResult extends TradeItAPIResult<GetOAuthAcces
     {
     }
 
-    public GetOAuthAccessTokenAPIResult( final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult )
+    /**
+     * Sets the results.
+     * @param getOAuthAccessTokenAPIResult
+     */
+    public void setResults( final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult )
     {
-        super( getOAuthAccessTokenAPIResult );
+        super.setResults( getOAuthAccessTokenAPIResult );
         this.userId = getOAuthAccessTokenAPIResult.userId;
         this.userToken = getOAuthAccessTokenAPIResult.userToken;
     }

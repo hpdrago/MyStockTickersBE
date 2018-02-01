@@ -11,41 +11,35 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class KeepSessionAliveDTO extends KeepSessionAliveAPIResult<KeepSessionAliveDTO>
+public class KeepSessionAliveDTO extends KeepSessionAliveAPIResult
 {
-    private TradeItAccountDTO tradeItAccountDTO;
+    private TradeItAccountDTO tradeItAccount;
 
     public KeepSessionAliveDTO()
     {
     }
 
-    public void copyResults( final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
-    {
-        super.copyResults( keepSessionAliveAPIResult );
-    }
-
-    @Override
     public void setResults( final KeepSessionAliveDTO results )
     {
         super.setResults( results );
-        this.tradeItAccountDTO = results.tradeItAccountDTO;
+        this.tradeItAccount = results.tradeItAccount;
     }
 
-    public TradeItAccountDTO getTradeItAccountDTO()
+    public TradeItAccountDTO getTradeItAccount()
     {
-        return tradeItAccountDTO;
+        return tradeItAccount;
     }
 
-    public void setTradeItAccountDTO( final TradeItAccountDTO tradeItAccountDTO )
+    public void setTradeItAccount( final TradeItAccountDTO tradeItAccount )
     {
-        this.tradeItAccountDTO = tradeItAccountDTO;
+        this.tradeItAccount = tradeItAccount;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "KeepSessionAliveDTO{" );
-        sb.append( "tradeItAccountDTO=" ).append( tradeItAccountDTO );
+        sb.append( "tradeItAccount=" ).append( tradeItAccount );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
