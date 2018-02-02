@@ -106,6 +106,10 @@ public class StockController extends AbstractController implements MyLogger
             stockTickerQuote = this.stockQuoteService
                                    .getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
         }
+        catch( StockNotFoundException e )
+        {
+            httpStatus = HttpStatus.NOT_FOUND;
+        }
         catch( javax.ws.rs.NotFoundException e )
         {
             httpStatus = HttpStatus.NOT_FOUND;

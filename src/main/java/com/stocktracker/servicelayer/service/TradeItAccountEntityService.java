@@ -13,6 +13,7 @@ import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
+import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -239,26 +240,32 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
          * Need to send back the updated account DTO
          */
         final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
-        authenticateDTO.setTradeItAccountDTO( tradeItAccountDTO );
+        authenticateDTO.setTradeItAccount( tradeItAccountDTO );
         logMethodEnd( methodName, authenticateDTO );
     }
 
     /**
      * This method is called after a successful renewal of the user's authentication token.
+     * {@code keepSessionAliveDTO} is populated with the TradeIt Account and linked account information.
      * @param tradeItAccountEntity
      * @param keepSessionAliveAPIResult
      * @return
      */
-    public TradeItAccountDTO keepSessionAliveSuccess( final TradeItAccountEntity tradeItAccountEntity,
-                                                      final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
+    public void keepSessionAliveSuccess( final KeepSessionAliveDTO keepSessionAliveDTO,
+                                         final TradeItAccountEntity tradeItAccountEntity,
+                                         final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
     {
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );
         tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
         this.tradeItAccountRepository.save( tradeItAccountEntity );
         final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
+        final List<LinkedAccountDTO> linkedAccountDTOs = this.linkedAccountEntityService
+                                                             .getLinkedAccounts( tradeItAccountEntity.getCustomerId(),
+                                                                                 tradeItAccountEntity.getId() );
+        keepSessionAliveDTO.setTradeItAccount( tradeItAccountDTO );
+        keepSessionAliveDTO.setLinkedAccounts( linkedAccountDTOs );
         logMethodEnd( methodName, tradeItAccountDTO );
-        return tradeItAccountDTO;
     }
 
     /**

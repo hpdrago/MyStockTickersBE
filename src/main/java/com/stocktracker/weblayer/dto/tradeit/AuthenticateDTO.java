@@ -37,11 +37,11 @@ public class AuthenticateDTO extends AuthenticateAPIResult
 
     /**
      * Set the linked accounts.
-     * @param linkedAccountDTOs
+     * @param linkedAccounts
      */
-    public void setLinkedAccounts( final List<LinkedAccountDTO> linkedAccountDTOs )
+    public void setLinkedAccounts( final List<LinkedAccountDTO> linkedAccounts )
     {
-        this.linkedAccounts = linkedAccountDTOs;
+        this.linkedAccounts = linkedAccounts;
     }
 
     /**
@@ -58,7 +58,7 @@ public class AuthenticateDTO extends AuthenticateAPIResult
         return tradeItAccount;
     }
 
-    public void setTradeItAccountDTO( final TradeItAccountDTO tradeItAccount )
+    public void setTradeItAccount( final TradeItAccountDTO tradeItAccount )
     {
         this.tradeItAccount = tradeItAccount;
     }

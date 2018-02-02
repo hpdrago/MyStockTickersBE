@@ -8,34 +8,13 @@ import org.springframework.stereotype.Component;
 
 /**
  * The DTO returned when calling TradeIt to keep the session alive.
+ * The contents are the same as with authentication as we need the TradeItAccount and LinkedAccounts.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class KeepSessionAliveDTO extends KeepSessionAliveAPIResult
+public class KeepSessionAliveDTO extends AuthenticateDTO
 {
-    private TradeItAccountDTO tradeItAccount;
-
     public KeepSessionAliveDTO()
     {
-    }
-
-    public TradeItAccountDTO getTradeItAccount()
-    {
-        return tradeItAccount;
-    }
-
-    public void setTradeItAccount( final TradeItAccountDTO tradeItAccount )
-    {
-        this.tradeItAccount = tradeItAccount;
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder( "KeepSessionAliveDTO{" );
-        sb.append( "tradeItAccount=" ).append( tradeItAccount );
-        sb.append( ", super=" ).append( super.toString() );
-        sb.append( '}' );
-        return sb.toString();
     }
 }
