@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
+@Qualifier( "requestOAuthPopUpURLAPIResult")
 public class RequestOAuthPopUpURLAPIResult extends TradeItAPIResult
 {
     private String oAuthURL;

@@ -87,7 +87,7 @@ public class TradeItService implements MyLogger
         Objects.requireNonNull( broker, "Broker cannot be null" );
         final RequestOAuthPopUpURLAPICall requestOAuthPopUpURLAPICall = this.context.getBean( RequestOAuthPopUpURLAPICall.class );
         final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult = requestOAuthPopUpURLAPICall.execute( broker );
-        final RequestOAuthPopUpURLDTO requestOAuthPopUpURLDTO = this.context.getBean( RequestOAuthPopUpURLDTO.class );
+        final RequestOAuthPopUpURLDTO requestOAuthPopUpURLDTO = (RequestOAuthPopUpURLDTO )this.context.getBean( "requestOAuthPopUpURLDTO" );
         requestOAuthPopUpURLDTO.setResults( requestOAuthPopUpURLAPIResult );
         logMethodEnd( methodName, requestOAuthPopUpURLDTO );
         return requestOAuthPopUpURLDTO;
@@ -255,9 +255,8 @@ public class TradeItService implements MyLogger
         keepSessionAliveDTO.setResults( keepSessionAliveAPIResult );
         if ( keepSessionAliveAPIResult.isSuccessful() )
         {
-            TradeItAccountDTO tradeItAccountEntityDTO = this.tradeItAccountEntityService.keepSessionAliveSuccess(
-                tradeItAccountEntity, keepSessionAliveAPIResult );
-            keepSessionAliveDTO.setTradeItAccount( tradeItAccountEntityDTO );
+            this.tradeItAccountEntityService.keepSessionAliveSuccess( keepSessionAliveDTO, tradeItAccountEntity,
+                                                                      keepSessionAliveAPIResult );
         }
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
