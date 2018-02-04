@@ -255,8 +255,7 @@ public class TradeItService implements MyLogger
         keepSessionAliveDTO.setResults( keepSessionAliveAPIResult );
         if ( keepSessionAliveAPIResult.isSuccessful() )
         {
-            this.tradeItAccountEntityService.keepSessionAliveSuccess( keepSessionAliveDTO, tradeItAccountEntity,
-                                                                      keepSessionAliveAPIResult );
+            this.tradeItAccountEntityService.keepSessionAliveSuccess( keepSessionAliveDTO, tradeItAccountEntity, keepSessionAliveAPIResult );
         }
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
