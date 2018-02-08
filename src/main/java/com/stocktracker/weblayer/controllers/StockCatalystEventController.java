@@ -125,16 +125,30 @@ public class StockCatalystEventController implements MyLogger
         return new ResponseEntity<>( newStockCatalystEventDTO, httpHeaders, HttpStatus.CREATED );
     }
 
+    /**
+     * Save the catalyst event to the database.
+     * @param customerId
+     * @param portfolioStockDTO
+     * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @PathVariable int customerId,
+    public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @PathVariable int stockCatalystEventId,
+                                                                         @PathVariable int customerId,
                                                                          @RequestBody StockCatalystEventDTO portfolioStockDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "saveStockCatalystEvent";
-        logMethodBegin( methodName, customerId, portfolioStockDTO );
+        logMethodBegin( methodName, stockCatalystEventId, customerId, portfolioStockDTO );
+        if ( portfolioStockDTO.getId() != stockCatalystEventId )
+        {
+            throw new IllegalArgumentException( String.format( "id argument %d does not match DTO content.id %d",
+                                                               stockCatalystEventId, portfolioStockDTO.getId() ));
+        }
         /*
          * Save the stock
          */

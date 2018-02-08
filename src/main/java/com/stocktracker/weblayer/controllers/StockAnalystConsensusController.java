@@ -37,10 +37,10 @@ public class StockAnalystConsensusController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( final Pageable pageRequest,
-                                                                                     @PathVariable Integer customerId )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusList( final Pageable pageRequest,
+                                                                        @PathVariable Integer customerId )
     {
-        final String methodName = "getStockAnalystConsensusForCustomerId";
+        final String methodName = "getStockAnalystConsensusList";
         logMethodBegin( methodName, customerId );
         Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
                                                                        .getStockAnalystConsensusListForCustomerId( pageRequest, customerId );
@@ -55,11 +55,11 @@ public class StockAnalystConsensusController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( final Pageable pageRequest,
-                                                                                     @PathVariable int customerId,
-                                                                                     @PathVariable String tickerSymbol )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusList( final Pageable pageRequest,
+                                                                        @PathVariable int customerId,
+                                                                        @PathVariable String tickerSymbol )
     {
-        final String methodName = "getStockAnalystConsensusForCustomerIdAndTickerSymbol";
+        final String methodName = "getStockAnalystConsensusList";
         logMethodBegin( methodName, customerId, tickerSymbol );
         Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
             .getStockAnalystConsensusListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );

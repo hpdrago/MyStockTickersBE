@@ -18,8 +18,8 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
      * @param customerId
      * @return
      */
-    Page<StockAnalystConsensusEntity> findByCustomerIdOrderByTickerSymbol( final Pageable pageRequest,
-                                                                           final int customerId );
+    Page<StockAnalystConsensusEntity> findByCustomerId( final Pageable pageRequest,
+                                                        final int customerId );
 
     /**
      * Get the list of analyst consensus by customer and ticker symbol.

@@ -64,10 +64,10 @@ public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerE
         final String methodName = "getStockAnalystConsensusListForCustomerId";
         logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
-            .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
-        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
-                                                                                        stockAnalystConsensusEntities );
+        final  Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+                                                                                     .findByCustomerId( pageRequest, customerId );
+        final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
+                                                                                              stockAnalystConsensusEntities );
         logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
         return stockAnalystConsensusDTOS;
