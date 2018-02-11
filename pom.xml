@@ -87,13 +87,11 @@
             <version>3.6</version>
         </dependency>
 
-		<!--
 		<dependency>
 			<groupId>pl.zankowski</groupId>
 			<artifactId>iextrading4j-all</artifactId>
 			<version>LATEST</version>
 		</dependency>
-		-->
 
 		<dependency>
 			<groupId>it.trade</groupId>

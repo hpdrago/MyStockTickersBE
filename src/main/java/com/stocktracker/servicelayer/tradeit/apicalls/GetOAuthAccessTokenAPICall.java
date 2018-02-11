@@ -21,7 +21,7 @@ public class GetOAuthAccessTokenAPICall extends TradeItAPIRestCall<GetOAuthAcces
      */
     public GetOAuthAccessTokenAPIResult execute( final String oAuthVerifier, final String broker )
     {
-        final String methodName = "execute ";
+        final String methodName = "execute";
         logMethodBegin( methodName, oAuthVerifier, broker );
         this.addPostParameter( TradeItProperties.BROKER_PARAM, broker );
         this.addPostParameter( TradeItProperties.OAUTH_VERIFIER_PARAM, oAuthVerifier );

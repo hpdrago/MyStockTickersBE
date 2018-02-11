@@ -90,6 +90,10 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
         CustomerEntity customerEntity = this.customerService.getCustomerEntity( customerId );
         logDebug( methodName, "customerEntity: {0}", customerEntity );
         tradeItAccountEntity.setCustomerByCustomerId( customerEntity );
+        /*
+         * Set it to null on create, there were JSON conversion issues on create.
+         */
+        tradeItAccountEntity.setAuthTimestamp( null );
         tradeItAccountEntity = this.tradeItAccountRepository.save( tradeItAccountEntity );
         logDebug( methodName, "tradeItAccountEntity: {0}", tradeItAccountEntity );
         TradeItAccountDTO returnTradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
@@ -110,7 +114,7 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
                                             final String userId, final String userToken )
     {
         final String methodName = "createAccount";
-        logMethodBegin( methodName, customerId, broker, accountName );
+        logMethodBegin( methodName, customerId, broker, accountName, userId, userToken );
         Objects.requireNonNull( broker, "broker cannot be null" );
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( userId, "userId cannot be null" );
@@ -123,6 +127,7 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
         tradeItAccountEntity.setUserToken( userToken );
         tradeItAccountEntity.setCustomerByCustomerId( this.customerService.getCustomerEntity( customerId ) );
         tradeItAccountEntity = this.tradeItAccountRepository.save( tradeItAccountEntity );
+        logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
         logMethodEnd( methodName, tradeItAccountDTO );
         return tradeItAccountDTO;

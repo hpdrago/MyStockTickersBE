@@ -84,15 +84,15 @@ public class TradeItAccountEntity
     }
 
     @Basic
-    @Column( name = "user_token" )
+    @Column( name = "user_token", updatable = false )
     public String getUserToken()
     {
         return userToken;
     }
 
-    public void setUserToken( final String loginToken )
+    public void setUserToken( final String userToken )
     {
-        this.userToken = loginToken;
+        this.userToken = userToken;
     }
 
     @Basic
@@ -282,7 +282,7 @@ public class TradeItAccountEntity
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", userId='" ).append( userToken ).append( '\'' );
+        sb.append( ", userId='" ).append( userId ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
         sb.append( ", authUuid='" ).append( authUuid ).append( '\'' );
         sb.append( ", authToken='" ).append( authToken ).append( '\'' );
