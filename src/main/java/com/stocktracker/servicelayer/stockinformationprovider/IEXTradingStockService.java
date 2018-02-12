@@ -5,10 +5,8 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 import pl.zankowski.iextrading4j.client.IEXTradingClient;
-import pl.zankowski.iextrading4j.client.endpoint.stocks.StocksEndpoint;
-import pl.zankowski.iextrading4j.client.endpoint.stocks.request.StockRequest;
+import pl.zankowski.iextrading4j.client.rest.request.stocks.QuoteRequestBuilder;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 //import pl.zankowski.iextrading4j.client.IEXTradingClient;
 
@@ -53,11 +51,10 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
     {
         final String methodName = "getIEXTradingQuote";
         logMethodBegin( methodName, tickerSymbol );
-        StocksEndpoint stocksEndpoint = this.iexTradingClient.getStocksEndpoint();
         StockTickerQuote stockTickerQuote = null;
         try
         {
-            Quote quote = stocksEndpoint.requestQuote( StockRequest.builder()
+            Quote quote = this.iexTradingClient.executeRequest( new QuoteRequestBuilder()
                                                                    .withSymbol( tickerSymbol )
                                                                    .build() );
             stockTickerQuote = this.quoteToStockTickerQuote( tickerSymbol, quote );
@@ -85,7 +82,7 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
     {
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
         stockTickerQuote.setTickerSymbol( tickerSymbol );
-        stockTickerQuote.setLastPrice( new BigDecimal( quote.getLatestPrice() ));
+        stockTickerQuote.setLastPrice( quote.getLatestPrice() );
         stockTickerQuote.setLastPriceChange( new Timestamp( quote.getLatestUpdate() ) );
         stockTickerQuote.setCompanyName( quote.getCompanyName() );
         return stockTickerQuote;
