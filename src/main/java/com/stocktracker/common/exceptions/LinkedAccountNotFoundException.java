@@ -20,4 +20,13 @@ public class LinkedAccountNotFoundException extends Exception
         super( "Linked account number " + accountNumber + " was not found for account " +
                tradeItAccountEntity.getName() + " customer " + tradeItAccountEntity.getCustomerId() );
     }
+
+    /**
+     * Exception for the primary key not found.
+     * @param linkedAccountId
+     */
+    public LinkedAccountNotFoundException( final int linkedAccountId )
+    {
+        super( "Linked account not found by primary key id " + linkedAccountId );
+    }
 }

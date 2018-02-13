@@ -290,75 +290,73 @@ public class TradeItService implements MyLogger
      */
     private void getAccountOverviewAndPositions( final TradeItAccountEntity tradeItAccountEntity )
     {
+        /*
         final String methodName = "getAccountOverviewAndPositions";
         logMethodBegin( methodName, tradeItAccountEntity );
         tradeItAccountEntity.getLinkedAccountsById()
-                            .forEach( linkedAccount -> this.getAccountOverviewAndPositions( tradeItAccountEntity, linkedAccount ));
+                            .forEach( linkedAccount -> this.getAccountOverviewAndPositions( linkedAccount.getAccountNumber(),
+                                                                                            tradeItAccountEntity.getAuthToken() ));
         logMethodEnd( methodName );
+        */
     }
 
     /**
      * Gets the account overview and positions for the {@code linkedAccount}.
-     * @param tradeItAccountEntity
-     * @param linkedAccount
+     * @param accountNumber
+     * @param authToken
      */
-    public void getAccountOverviewAndPositions( final TradeItAccountEntity tradeItAccountEntity,
-                                                final LinkedAccountEntity linkedAccount )
+    public void getAccountOverviewAndPositions( final String accountNumber,
+                                                final String authToken )
     {
+        /*
         final String methodName = "getAccountOverviewAndPositions";
-        logMethodBegin( methodName, tradeItAccountEntity, linkedAccount );
-        GetAccountOverviewDTO getAccountOverviewDTO = this.getAccountAccountOverview( tradeItAccountEntity.getCustomerId(),
-                                                                                      tradeItAccountEntity.getId(),
-                                                                                      linkedAccount.getAccountNumber() );
+        logMethodBegin( methodName, accountNumber, authToken );
+        GetAccountOverviewDTO getAccountOverviewDTO = this.getAccountAccountOverview( accountNumber, authToken );
         linkedAccount.setAccountOverviewValues( getAccountOverviewDTO );
         GetPositionsDTO getPositionsDTO = this.getPositions( tradeItAccountEntity.getCustomerId(),
                                                              tradeItAccountEntity.getId(),
                                                              linkedAccount.getAccountNumber() );
+                                                             */
+    }
+
+    /**
+     * Get the the stock positions for the account.
+     * @param accountNumber The brokerage account number.
+     * @return
+     */
+    public GetPositionsDTO getPositions( final String accountNumber, final String authToken )
+    {
+        final String methodName = "getPositions";
+        logMethodBegin( methodName, accountNumber, authToken );
+        Objects.requireNonNull( accountNumber, "accountNumber cannot be null" );
+        Objects.requireNonNull( authToken, "authToken cannot be null" );
+        final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
+        final GetPositionsAPIResult getPositionsAPIResult = getPositionsAPICall.execute( accountNumber, authToken );
+        final GetPositionsDTO getPositionsDTO = this.context.getBean( GetPositionsDTO.class );
+        getPositionsDTO.setResults( getPositionsAPIResult );
+        logMethodEnd( methodName, getPositionsDTO );
+        return getPositionsDTO;
     }
 
     /**
      * Get the account overview from TradeIt for the account number.  This is a sub account of the account identified
      * by {@code accountId}.
-     * @param customerId The customer id.
-     * @param accountId The account id of the {@AccountEntity}.
      * @param accountNumber The brokerage account number.
+     * @param authToken The authorization token.,
      * @return
      */
-    public GetAccountOverviewDTO getAccountAccountOverview( final int customerId, final int accountId,
-                                                            final String accountNumber )
+    public GetAccountOverviewDTO getAccountOverview( final String accountNumber,
+                                                     final String authToken )
     {
-        final String methodName = "getAccountAccountOverview";
-        logMethodBegin( methodName, customerId, accountId, accountNumber  );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getAccountEntity( customerId, accountId );
+        final String methodName = "getAccountOverview";
+        logMethodBegin( methodName, accountNumber, authToken  );
         final GetAccountOverviewAPICall getAccountOverviewAPICall = this.context.getBean( GetAccountOverviewAPICall.class );
         final GetAccountOverViewAPIResult getAccountOverviewAPIResult = getAccountOverviewAPICall.execute( accountNumber,
-                                                                                                           tradeItAccountEntity );
+                                                                                                           authToken );
         final GetAccountOverviewDTO getAccountOverviewDTO = this.context.getBean( GetAccountOverviewDTO.class );
         getAccountOverviewDTO.setResults( getAccountOverviewAPIResult );
         logMethodEnd( methodName, getAccountOverviewDTO );
         return getAccountOverviewDTO;
-    }
-
-    /**
-     * Get the the stock positions for the account.
-     * @param customerId The customer id.
-     * @param accountId The account id of the {@AccountEntity}.
-     * @param accountNumber The brokerage account number.
-     * @return
-     */
-    public GetPositionsDTO getPositions( final int customerId, final int accountId, final String accountNumber )
-    {
-        final String methodName = "getPositions";
-        logMethodBegin( methodName, customerId, accountId, accountNumber  );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getAccountEntity( customerId, accountId );
-        final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
-        final GetPositionsAPIResult getPositionsAPIResult = getPositionsAPICall.execute( accountNumber, tradeItAccountEntity );
-        final GetPositionsDTO getPositionsDTO = this.context.getBean( GetPositionsDTO.class );
-        getPositionsDTO.setResults( getPositionsAPIResult );
-        logMethodEnd( methodName, getPositionsDTO );
-        return getPositionsDTO;
     }
 
     @Autowired

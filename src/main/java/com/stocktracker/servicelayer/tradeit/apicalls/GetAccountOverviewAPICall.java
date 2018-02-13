@@ -16,14 +16,15 @@ public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOver
 {
     /**
      * Execute the Keep Session Alive API call.
-     * @param tradeItAccountEntity
+     * @param accountNumber
+     * @param authToken
      * @return
      */
-    public GetAccountOverViewAPIResult execute( final String accountNumber, final TradeItAccountEntity tradeItAccountEntity )
+    public GetAccountOverViewAPIResult execute( final String accountNumber, final String authToken )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, accountNumber, tradeItAccountEntity );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
+        logMethodBegin( methodName, accountNumber, authToken );
+        this.addPostParameter( TradeItProperties.TOKEN_PARAM, authToken );
         this.addPostParameter( TradeItProperties.ACCOUNT_NUMBER_PARAM, accountNumber );
         final GetAccountOverViewAPIResult getAccountOverViewAPIResult = super.execute();
         logMethodEnd( methodName, getAccountOverViewAPIResult );

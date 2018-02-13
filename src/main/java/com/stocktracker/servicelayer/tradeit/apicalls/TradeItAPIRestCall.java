@@ -1,6 +1,8 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.tradeit.TradeItAuthenticationException;
+import com.stocktracker.servicelayer.tradeit.TradeItErrorCode;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
@@ -82,8 +84,46 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
         final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
         final RestTemplate restTemplate = new RestTemplate();
         final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
-        final T response = responseEntity.getBody();
+        logDebug( methodName, "ResponseEntity: {0}", responseEntity );
+        T response = null;
+        /**
+         * Check for redirection error
+         */
+        if ( responseEntity.getStatusCode().is3xxRedirection() &&
+             responseEntity.getStatusCodeValue() == 302 )
+        {
+            response = handleRedirection();
+        }
+        else
+        {
+            response = responseEntity.getBody();
+        }
         logMethodEnd( methodName, response );
+        return response;
+    }
+
+    /**
+     * Creates a response object that indicates an authentication is required.
+     * @return
+     */
+    private T handleRedirection()
+    {
+        final String methodName = "handleRedirection";
+        logMethodBegin( methodName );
+        logInfo( methodName, "Received 302 redirection. Authentication required" );
+        T response = null;
+        try
+        {
+            response = this.getAPIResultsClass().newInstance();
+            response.setCode( TradeItErrorCode.BROKER_AUTHENTICATION_ERROR.getErrorNumber() );
+            response.setErrorMessage( TradeItErrorCode.BROKER_AUTHENTICATION_ERROR.getErrorMessage() );
+            response.setShortMessage( TradeItErrorCode.BROKER_AUTHENTICATION_ERROR.getErrorTitle() );
+            response.setStatus( "ERROR" );
+        }
+        catch( Exception e )
+        {
+            logDebug( methodName, e );
+        }
         return response;
     }
 

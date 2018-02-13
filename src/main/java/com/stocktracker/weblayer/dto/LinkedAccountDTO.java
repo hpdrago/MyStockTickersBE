@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -197,6 +198,22 @@ public class LinkedAccountDTO
     public void setCustomerId( final Integer customerId )
     {
         this.customerId = customerId;
+    }
+
+    /**
+     * Copy account summary info.
+     * @param getAccountOverviewDTO
+     */
+    public void copyAccountSummary( final GetAccountOverviewDTO getAccountOverviewDTO )
+    {
+        this.availableCash = new BigDecimal( getAccountOverviewDTO.getAvailableCash() );
+        this.marginCash = new BigDecimal( getAccountOverviewDTO.getMarginCash() );
+        this.buyingPower = new BigDecimal( getAccountOverviewDTO.getBuyingPower() );
+        this.totalValue = new BigDecimal( getAccountOverviewDTO.getTotalValue() );
+        this.dayAbsoluteReturn = new BigDecimal( getAccountOverviewDTO.getDayAbsoluteReturn() );
+        this.dayPercentReturn = new BigDecimal( getAccountOverviewDTO.getDayPercentReturn() );
+        this.totalAbsoluteReturn = new BigDecimal( getAccountOverviewDTO.getTotalAbsoluteReturn() );
+        this.totalPercentReturn = new BigDecimal( getAccountOverviewDTO.getTotalPercentReturn() );
     }
 
     @Override

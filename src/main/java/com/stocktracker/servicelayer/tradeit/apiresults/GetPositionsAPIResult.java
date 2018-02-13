@@ -86,6 +86,15 @@ public class GetPositionsAPIResult extends TradeItAPIResult
         this.positions = positions;
     }
 
+    /**
+     * The number of positions.
+     * @return
+     */
+    public int size()
+    {
+        return this.positions.length;
+    }
+
     @Override
     public String toString()
     {

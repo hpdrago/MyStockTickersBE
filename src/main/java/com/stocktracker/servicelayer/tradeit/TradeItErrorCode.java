@@ -26,6 +26,10 @@ public enum TradeItErrorCode
         this.errorMessage = errorMessage;
     }
 
+    public int getErrorNumber() { return this.errorNumber; }
+    public String getErrorTitle() { return this.errorTitle; }
+    public String getErrorMessage() { return this.errorMessage; }
+
     public boolean isSystemError() { return this == SYSTEM_ERROR; }
     public boolean isConcurrentAuthenticationError() { return this == CONCURRENT_AUTHENTICATION_ERROR; }
     public boolean isBrokerExecutionError() { return this == BROKER_EXECUTION_ERROR; }

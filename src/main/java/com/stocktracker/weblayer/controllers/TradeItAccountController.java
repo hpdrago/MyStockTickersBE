@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
+import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -133,7 +134,8 @@ public class TradeItAccountController extends AbstractController implements MyLo
     {
         final String methodName = "getAccounts";
         logMethodBegin( methodName, customerId );
-        List<TradeItAccountDTO> accounts = this.tradeItAccountService.getAccounts( customerId );
+        List<TradeItAccountDTO> accounts = this.tradeItAccountService
+                                               .getAccounts( customerId );
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }

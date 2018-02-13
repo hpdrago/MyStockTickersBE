@@ -9,6 +9,7 @@ import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenUpdateURLDTO;
+import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * TradeIt REST Controller
@@ -40,7 +43,7 @@ public class TradeItController extends AbstractController
      * @return
      */
     @RequestMapping( value = CONTEXT_URL + "/brokers",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetBrokersDTO getBrokers()
     {
@@ -64,7 +67,7 @@ public class TradeItController extends AbstractController
      * @return
      */
     @RequestMapping( value = CONTEXT_URL + "/requestOAuthPopUpURL/broker/{broker}",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public RequestOAuthPopUpURLDTO getRequestOAuthPopUpURL( @PathVariable final String broker )
     {
@@ -85,7 +88,7 @@ public class TradeItController extends AbstractController
                                          + "/broker/{broker}"
                                          + "/accountName/{accountName}"
                                          + "/oAuthVerifier/{oAuthVerifier}",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetOAuthAccessTokenDTO getOAuthAccessToken( @PathVariable final int customerId,
                                                        @PathVariable final String broker,
@@ -109,7 +112,7 @@ public class TradeItController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
                              + "/accountId/{accountId}"
                              + "/customerId/{customerId}",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final int customerId,
                                                                    @PathVariable final int accountId )
@@ -130,7 +133,7 @@ public class TradeItController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
                                          + "/customerId/{customerId}",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public AuthenticateDTO authenticate( @PathVariable final int customerId,
                                          @PathVariable final int accountId )
@@ -179,7 +182,7 @@ public class TradeItController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/keepSessionAlive/"
                              + "/accountId/{accountId}"
                              + "/customerId/{customerId}",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public KeepSessionAliveDTO keepSessionAlive( @PathVariable final int customerId,
                                                  @PathVariable final int accountId )
@@ -200,7 +203,7 @@ public class TradeItController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/closeSession/"
                              + "/accountId/{accountId}"
                              + "/customerId/{customerId}",
-                     method = RequestMethod.GET,
+                     method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public CloseSessionDTO closeSession( @PathVariable final int customerId,
                                          @PathVariable final int accountId )
@@ -210,33 +213,6 @@ public class TradeItController extends AbstractController
         final CloseSessionDTO closeSessionDTO = this.tradeItService.closeSession( customerId, accountId );
         logMethodEnd( methodName, closeSessionDTO );
         return closeSessionDTO;
-    }
-
-    /**
-     * Calls TradeIt to get the account overview for a single brokerage account.
-     * @param accountId
-     * @param customerId
-     * @param accountNumber
-     * @return
-     */
-    @RequestMapping( value = CONTEXT_URL + "/getAccountOverview/"
-                             + "/accountId/{accountId}"
-                             + "/customerId/{customerId}"
-                             + "/accountNumber/{accountNumber}",
-                     method = RequestMethod.GET,
-                     produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public GetAccountOverviewDTO getAccountOverview( @PathVariable final int accountId,
-                                                     @PathVariable final int customerId,
-                                                     @PathVariable final String accountNumber )
-
-    {
-        final String methodName = "getAccountOverview";
-        logMethodBegin( methodName, accountId, customerId, accountNumber );
-        final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService.getAccountAccountOverview( customerId,
-                                                                                                           accountId,
-                                                                                                           accountNumber );
-        logMethodEnd( methodName, getAccountOverviewDTO );
-        return getAccountOverviewDTO;
     }
 
     @Autowired
