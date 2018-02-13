@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
@@ -103,15 +104,20 @@ public class StockCatalystEventController implements MyLogger
 
     /**
      * Create a stock summary entity.
+     * @param customerId
      * @param stockCatalystEventDTO
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockCatalystEventDTO> addStockCatalystEvent( @PathVariable Integer customerId,
                                                                         @RequestBody StockCatalystEventDTO stockCatalystEventDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "addStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventDTO );
@@ -132,6 +138,7 @@ public class StockCatalystEventController implements MyLogger
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customer/{customerId}",
@@ -140,7 +147,8 @@ public class StockCatalystEventController implements MyLogger
                                                                          @PathVariable int customerId,
                                                                          @RequestBody StockCatalystEventDTO portfolioStockDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventId, customerId, portfolioStockDTO );

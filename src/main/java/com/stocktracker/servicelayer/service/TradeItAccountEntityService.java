@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
@@ -155,8 +156,10 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * Updates the database with the information in {@code tradeItAccountDTO}
      * @param customerId
      * @param tradeItAccountDTO
+     * @throws EntityVersionMismatchException
      */
     public TradeItAccountDTO updateAccount( final int customerId, @NotNull final TradeItAccountDTO tradeItAccountDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "updateAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );

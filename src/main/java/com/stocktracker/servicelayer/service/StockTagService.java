@@ -111,12 +111,15 @@ public class StockTagService implements MyLogger
         stockTagEntity.setCustomerId( customerId );
         stockTagEntity.setReferenceId( entityId );
         stockTagEntity.setReferenceType( referenceType.getReferenceType() );
+        /*
         Example<VStockTagEntity> stockTagEntityExample = Example.of( stockTagEntity );
-        List<VStockTagEntity> stockTagEntities = this.vStockTagRepository.findAll( stockTagEntityExample );
+        List<VStockTagEntity> stockTagEntities = this.vStockTagRepository
+                                                     .findAll( stockTagEntityExample );
         for ( VStockTagEntity stockTag: stockTagEntities )
         {
             tags.add( stockTag.getTagName() );
         }
+        */
         return tags;
     }
 

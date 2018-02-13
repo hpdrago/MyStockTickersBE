@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.stockinformationprovider;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockEntityService;
@@ -34,8 +35,9 @@ public class StockQuoteServiceExecutor
     /**
      * Gets a stock quote for {@code tickerSymbol} asynchronously by creating a new thread.
      * @param tickerSymbol
-     * @param handleStockQuoteResult This interface method will be called when the stock quote has been retreived.
-     * @return
+     * @param handleStockQuoteResult
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     @Async( "stockQuoteThreadPool")
     public void asynchronousGetStockQuote( final String tickerSymbol,
@@ -157,6 +159,11 @@ public class StockQuoteServiceExecutor
         return stockTickerQuote;
     }
 
+    /**
+     * This method will mark a stock as invalid in the Stock table so that it will still be around for future
+     * reference but also known that a current stock price cannot obtained for it.
+     * @param tickerSymbol
+     */
     private void handleStockNotFoundException( final String tickerSymbol )
     {
         final String methodName = "handleStockNotFoundException";
@@ -172,7 +179,7 @@ public class StockQuoteServiceExecutor
      * @throws StockNotFoundException for invalid ticker symbols.
      */
     private StockTickerQuote getQuoteFromIEXTrading( final String tickerSymbol )
-        throws StockNotFoundException
+        throws StockNotFoundException, EntityVersionMismatchException
     {
         final String methodName = "getQuoteFromIEXTrading";
         logger.debug( methodName + " " + tickerSymbol );

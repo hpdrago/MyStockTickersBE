@@ -1,12 +1,12 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
@@ -156,6 +156,7 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @return
      */
     public LinkedAccountDTO saveLinkedAccount( final LinkedAccountDTO linkedAccountDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveLinkedAccount";
         logMethodBegin( methodName, linkedAccountDTO );

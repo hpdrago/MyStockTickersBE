@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.17-log
+-- Server version	5.7.18-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -80,6 +80,7 @@ CREATE TABLE `customer_tag` (
   `tag_name` varchar(20) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
+  `version` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `customer_id_tag_name_UNIQUE` (`customer_id`,`tag_name`),
   CONSTRAINT `FK_CUSTOMER_TAG_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
@@ -92,9 +93,27 @@ CREATE TABLE `customer_tag` (
 
 LOCK TABLES `customer_tag` WRITE;
 /*!40000 ALTER TABLE `customer_tag` DISABLE KEYS */;
-INSERT INTO `customer_tag` VALUES (10,1,'tag1','2017-10-26 23:10:48',NULL);
+INSERT INTO `customer_tag` VALUES (10,1,'tag1','2017-10-26 23:10:48',NULL,1);
 /*!40000 ALTER TABLE `customer_tag` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stocktracker`.`customer_tag_BEFORE_UPDATE` BEFORE UPDATE ON `customer_tag` FOR EACH ROW
+BEGIN
+	SET NEW.version = OLD.version;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `exception`
@@ -162,7 +181,7 @@ CREATE TABLE `linked_account` (
 
 LOCK TABLES `linked_account` WRITE;
 /*!40000 ALTER TABLE `linked_account` DISABLE KEYS */;
-INSERT INTO `linked_account` VALUES (20,'SINGLE-ACCT-0001','Individual Account','/+WGVdm5GYz+JuczGwqk8xKB6GE=',1,69,'2018-01-30 23:26:15',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(21,'*************001','Individual Account','/+WGVdm5GYz+JuczGwqk8xKB6GE=',1,69,'2018-02-02 22:14:27',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(23,'*************001','Individual Account','bowSItKPG/5B14vHmY6uEIikPM4=',1,71,'2018-02-13 15:21:14',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(24,'************001','Individual Account','NDhaQFLKN/dqDOwU/b1kG5bjC4w=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(25,'************002','Joint IRA Account','6CYgp1pfc+//oBqm+EaaDQbYmBc=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(26,'************003','Joint 401k Account','2v+NZT7fA/kdCvmFAxnwblVNkt0=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(27,'************004','Margin Account','OwYOc1mTzS18GxPnRRAh3JnhbV4=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(28,'************005','OPTIONS SUPER COOL Account','7jnkL66uhWLdCj8cS9TAK6RAg9o=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(29,'************006','No Positions Account','rC/Ia8Cy07kJ70ha8i87PJhXpOw=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(30,'************007','Cash Only Account','jo1jGRNB2hlpBuvxKcr/zy4u3yo=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(31,'************008','Margin Account - Can Disable Margin','l1xoe5MeyXMqKzikk3Jy+RDBSoQ=',1,72,'2018-02-13 15:22:36',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(32,'*************001','Individual Account','99AcA6p1DKCELDXvyppTP3qWHEM=',1,73,'2018-02-13 15:32:09',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(33,'*****198','****6198','Aeh6+Ww0MP6ZrLOfGjR7w6fckog=',1,74,'2018-02-13 15:36:13',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(34,'*****200','****6200','g9OvAK96fCTqJeRh9Rg9sRReFBM=',1,74,'2018-02-13 15:36:13',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(35,'*****417','****4417','106w80SMW9mopjCPPCWbvhwGd0s=',1,74,'2018-02-13 15:36:13',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(36,'*****475','****5475','Sl8eoYSwq4sSTzWUoorFMaKzA0I=',1,74,'2018-02-13 15:36:13',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(37,'*****981','****3981','bboLFkT7A9bEzc4I4ZlHLUHI2q4=',1,74,'2018-02-13 15:36:13',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1);
+INSERT INTO `linked_account` VALUES (20,'SINGLE-ACCT-0001','Individual Account','/+WGVdm5GYz+JuczGwqk8xKB6GE=',1,69,'2018-01-30 23:26:15','2018-02-13 22:58:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(21,'*************001','Individual Account','/+WGVdm5GYz+JuczGwqk8xKB6GE=',1,69,'2018-02-02 22:14:27','2018-02-13 22:58:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(23,'*************001','Individual Account','bowSItKPG/5B14vHmY6uEIikPM4=',1,71,'2018-02-13 15:21:14','2018-02-13 22:58:21',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),(24,'************001','Individual Account','NDhaQFLKN/dqDOwU/b1kG5bjC4w=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(25,'************002','Joint IRA Account','6CYgp1pfc+//oBqm+EaaDQbYmBc=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(26,'************003','Joint 401k Account','2v+NZT7fA/kdCvmFAxnwblVNkt0=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(27,'************004','Margin Account','OwYOc1mTzS18GxPnRRAh3JnhbV4=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(28,'************005','OPTIONS SUPER COOL Account','7jnkL66uhWLdCj8cS9TAK6RAg9o=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(29,'************006','No Positions Account','rC/Ia8Cy07kJ70ha8i87PJhXpOw=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(30,'************007','Cash Only Account','jo1jGRNB2hlpBuvxKcr/zy4u3yo=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(31,'************008','Margin Account - Can Disable Margin','l1xoe5MeyXMqKzikk3Jy+RDBSoQ=',1,72,'2018-02-13 15:22:36','2018-02-13 22:58:24',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(32,'*************001','Individual Account','99AcA6p1DKCELDXvyppTP3qWHEM=',1,73,'2018-02-13 15:32:09','2018-02-13 22:58:27',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,3),(33,'*****198','****6198','Aeh6+Ww0MP6ZrLOfGjR7w6fckog=',1,74,'2018-02-13 15:36:13','2018-02-13 22:58:42',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),(34,'*****200','****6200','g9OvAK96fCTqJeRh9Rg9sRReFBM=',1,74,'2018-02-13 15:36:13','2018-02-13 22:58:42',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),(35,'*****417','****4417','106w80SMW9mopjCPPCWbvhwGd0s=',1,74,'2018-02-13 15:36:13','2018-02-13 22:58:42',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),(36,'*****475','****5475','Sl8eoYSwq4sSTzWUoorFMaKzA0I=',1,74,'2018-02-13 15:36:13','2018-02-13 22:58:42',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),(37,'*****981','****3981','bboLFkT7A9bEzc4I4ZlHLUHI2q4=',1,74,'2018-02-13 15:36:13','2018-02-13 22:58:42',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
 /*!40000 ALTER TABLE `linked_account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1037,7 +1056,7 @@ CREATE TABLE `tradeit_account` (
 
 LOCK TABLES `tradeit_account` WRITE;
 /*!40000 ALTER TABLE `tradeit_account` DISABLE KEYS */;
-INSERT INTO `tradeit_account` VALUES (69,'dummy',1,'5271517354774091a870','Ent8jpNWxmSz%2BGiHDNicBbV0%2BKgptmg4439GjqV98%2BZO%2Fuhx4VF01ypeeJoIi6dYhPwSVZVPoQeV7lQDA07yd606MRL0GYdGoxCtLW1y5qg3L4eEcSWuVlMxFNptl84F%2BJJuFi%2Boa7GqqkbmewiKhg%3D%3D','Dummy','8a9db6084d2d4ebcafde1feaec5ed75d','ce8437b8-a65f-4557-99cd-99cf5cdc6a43','2018-02-13 15:21:00','2018-01-30 23:26:15','2018-02-13 15:21:00',1),(71,'dummySecurity',1,'82515176139465360022','9NdwHvynQGaBHt8JDgc6M9y1a9f2GX5tdStoSMsuVnpoPpzfKWRdYMedI3BFwVCsade%2FDqxYhdcXSYiB7CX36iaubQgSM9qEpnvcwhMk%2F6QBthbASXdMfZPBp1mNMqUSQMysJqOGigzHGxGZ1wgpGA%3D%3D','Dummy','30c6b47994a945538a98f6d85d0c1728','47a16c12-e576-45ff-8fa1-9d060747b2fb','2018-02-13 15:21:14','2018-02-02 23:25:48','2018-02-13 15:21:14',1),(72,'dummyMultiple',1,'dec15185353505990f66','Ndv3wfN0xP4WzwMdOfgg%2BHG%2BVcWqaVu%2BhyCUo5G%2FebqqJYZGAjvlTbPUgIaN3%2B9tKMzX4WcNAzPZY2HVURBGHqMA7N52pw2tXz7%2BxYK9Ry6429nS5sWDQCb%2FFlU1M82wsvvWSC8IZYlWmxL35X51jg%3D%3D','Dummy','cdb404470b924282ae2bc0ac227a5d8c','76d0979a-225b-4671-ad44-1d330e9e9565','2018-02-13 15:32:21','2018-02-13 15:22:31','2018-02-13 15:32:21',1),(73,'dummy600',1,'60f1518535924630bf3c','5Wz6P5pgwoanv5JQeu1Q%2FVfYp9nQDQtkUNO1btap1Mw8K5F0kj80ZZNqnQQnzlywbYvv9AevSNuji6h%2FBCjIrFCUt401Jby2Q4HXSQ077xvyzoKeKPFhH1JeQ1O0uoNet6DxaLtlMqpDWIFiFUrtkQ%3D%3D','Dummy','5b992a624df940ef94e2639b10ed4771','ad487f54-88ec-4adc-a7ff-f715921e6220','2018-02-13 15:32:45','2018-02-13 15:32:05','2018-02-13 15:32:45',1),(74,'26305475-Play Money',1,'5de1518536161888d032','oe3wDKPefhbvezAyFnjmskIYd7U%2FVeUfL8%2FgAMcXYVdT4oOf9C0rhQJrZ4qqgfu693Up%2BdvdOknCytToz8kLsmNFgQIUn02CERBJ5Cz6VkvIBQUHr3533l%2B5Y2LVVJpeXKaNFlOIZUFeWYTYr7583g%3D%3D','Scottrade','0fd1c4ddb33948c99e06bed6258291f5','e2c790b4-e85f-4981-a3bc-623b6512784e','2018-02-13 15:56:40','2018-02-13 15:36:02','2018-02-13 15:56:40',1);
+INSERT INTO `tradeit_account` VALUES (69,'dummy',1,'5271517354774091a870','Ent8jpNWxmSz%2BGiHDNicBbV0%2BKgptmg4439GjqV98%2BZO%2Fuhx4VF01ypeeJoIi6dYhPwSVZVPoQeV7lQDA07yd606MRL0GYdGoxCtLW1y5qg3L4eEcSWuVlMxFNptl84F%2BJJuFi%2Boa7GqqkbmewiKhg%3D%3D','Dummy','1f84604b18e94cb3aebf1d5d72ce6726','ce8437b8-a65f-4557-99cd-99cf5cdc6a43','2018-02-13 22:58:09','2018-01-30 23:26:15','2018-02-13 22:58:09',2),(71,'dummySecurity',1,'82515176139465360022','9NdwHvynQGaBHt8JDgc6M9y1a9f2GX5tdStoSMsuVnpoPpzfKWRdYMedI3BFwVCsade%2FDqxYhdcXSYiB7CX36iaubQgSM9qEpnvcwhMk%2F6QBthbASXdMfZPBp1mNMqUSQMysJqOGigzHGxGZ1wgpGA%3D%3D','Dummy','586047e3e43c4884ba6493c61d6ec0fb','47a16c12-e576-45ff-8fa1-9d060747b2fb','2018-02-13 22:58:22','2018-02-02 23:25:48','2018-02-13 22:58:22',3),(72,'dummyMultiple',1,'dec15185353505990f66','Ndv3wfN0xP4WzwMdOfgg%2BHG%2BVcWqaVu%2BhyCUo5G%2FebqqJYZGAjvlTbPUgIaN3%2B9tKMzX4WcNAzPZY2HVURBGHqMA7N52pw2tXz7%2BxYK9Ry6429nS5sWDQCb%2FFlU1M82wsvvWSC8IZYlWmxL35X51jg%3D%3D','Dummy','747f57153a5e4fa6bc36c79db0f87621','76d0979a-225b-4671-ad44-1d330e9e9565','2018-02-13 22:58:25','2018-02-13 15:22:31','2018-02-13 22:58:25',2),(73,'dummy600',1,'60f1518535924630bf3c','5Wz6P5pgwoanv5JQeu1Q%2FVfYp9nQDQtkUNO1btap1Mw8K5F0kj80ZZNqnQQnzlywbYvv9AevSNuji6h%2FBCjIrFCUt401Jby2Q4HXSQ077xvyzoKeKPFhH1JeQ1O0uoNet6DxaLtlMqpDWIFiFUrtkQ%3D%3D','Dummy','61948efd830b40b29bd6df105852e8f7','ad487f54-88ec-4adc-a7ff-f715921e6220','2018-02-13 22:58:28','2018-02-13 15:32:05','2018-02-13 22:58:27',2),(74,'26305475-Play Money',1,'5de1518536161888d032','oe3wDKPefhbvezAyFnjmskIYd7U%2FVeUfL8%2FgAMcXYVdT4oOf9C0rhQJrZ4qqgfu693Up%2BdvdOknCytToz8kLsmNFgQIUn02CERBJ5Cz6VkvIBQUHr3533l%2B5Y2LVVJpeXKaNFlOIZUFeWYTYr7583g%3D%3D','Scottrade','7b3cc219e4034ac7ba95a6f6b5c82a55','e2c790b4-e85f-4981-a3bc-623b6512784e','2018-02-13 22:58:44','2018-02-13 15:36:02','2018-02-13 22:58:43',3);
 /*!40000 ALTER TABLE `tradeit_account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1064,7 +1083,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Temporary view structure for view `v_portfolio_stock`
+-- Temporary table structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -1090,7 +1109,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note`
+-- Temporary table structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -1118,21 +1137,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note_count`
---
-
-DROP TABLE IF EXISTS `v_stock_note_count`;
-/*!50001 DROP VIEW IF EXISTS `v_stock_note_count`*/;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-/*!50001 CREATE VIEW `v_stock_note_count` AS SELECT 
- 1 AS `customer_id`,
- 1 AS `ticker_symbol`,
- 1 AS `note_count`*/;
-SET character_set_client = @saved_cs_client;
-
---
--- Temporary view structure for view `v_stock_tag`
+-- Temporary table structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -1152,7 +1157,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_to_buy`
+-- Temporary table structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1211,24 +1216,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
--- Final view structure for view `v_stock_note_count`
---
-
-/*!50001 DROP VIEW IF EXISTS `v_stock_note_count`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8 */;
-/*!50001 SET character_set_results     = utf8 */;
-/*!50001 SET collation_connection      = utf8_general_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `v_stock_note_count` AS select `sn`.`customer_id` AS `customer_id`,`sn`.`ticker_symbol` AS `ticker_symbol`,count(0) AS `note_count` from `stock_note` `sn` group by `sn`.`customer_id`,`sn`.`ticker_symbol` order by `sn`.`customer_id`,`sn`.`ticker_symbol` */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
-
---
 -- Final view structure for view `v_stock_tag`
 --
 
@@ -1240,8 +1227,8 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `v_stock_tag` AS select `st`.`id` AS `id`,`ct`.`customer_id` AS `customer_id`,`st`.`reference_type` AS `reference_type`,`st`.`reference_id` AS `reference_id`,`st`.`customer_tag_id` AS `customer_tag_id`,`ct`.`tag_name` AS `tag_name`,`st`.`ticker_symbol` AS `ticker_symbol`,`st`.`create_date` AS `create_date`,`st`.`update_date` AS `update_date` from (`stock_tag` `st` join `customer_tag` `ct` on((`ct`.`id` = `st`.`customer_tag_id`))) */;
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_stock_tag` AS select 1 AS `id`,1 AS `customer_id`,1 AS `reference_type`,1 AS `reference_id`,1 AS `customer_tag_id`,1 AS `tag_name`,1 AS `ticker_symbol`,1 AS `create_date`,1 AS `update_date` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1258,8 +1245,8 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `v_stock_to_buy` AS select `stb`.`id` AS `id`,`stb`.`customer_id` AS `customer_id`,`stb`.`ticker_symbol` AS `ticker_symbol`,`stb`.`comments` AS `comments`,`stb`.`notes_source_id` AS `notes_source_id`,`sns`.`name` AS `notes_source_name`,`stb`.`buy_shares_up_to_price` AS `buy_shares_up_to_price`,`stb`.`completed` AS `completed`,`stb`.`stock_price_when_created` AS `stock_price_when_created`,`stb`.`buy_after_date` AS `buy_after_date`,`stb`.`create_date` AS `create_date`,`stb`.`update_date` AS `update_date` from (`stock_to_buy` `stb` left join `stock_note_source` `sns` on((`sns`.`id` = `stb`.`notes_source_id`))) */;
+/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_stock_to_buy` AS select 1 AS `id`,1 AS `customer_id`,1 AS `ticker_symbol`,1 AS `comments`,1 AS `notes_source_id`,1 AS `notes_source_name`,1 AS `buy_shares_up_to_price`,1 AS `completed`,1 AS `stock_price_when_created`,1 AS `buy_after_date`,1 AS `create_date`,1 AS `update_date` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
@@ -1273,4 +1260,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-13 13:19:41
+-- Dump completed on 2018-02-13 14:59:15

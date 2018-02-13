@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
@@ -44,6 +45,7 @@ public class LinkedAccountController extends AbstractController implements MyLog
      * @param customerId
      * @param linkedAccountDTO
      * @return
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customer/{customerId}",
@@ -51,6 +53,7 @@ public class LinkedAccountController extends AbstractController implements MyLog
     public ResponseEntity<LinkedAccountDTO> saveLinkedAccount( @PathVariable int linkedAccountId,
                                                                @PathVariable int customerId,
                                                                @RequestBody LinkedAccountDTO linkedAccountDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveLinkedAccount";
         logMethodBegin( methodName, customerId, linkedAccountId );

@@ -35,20 +35,6 @@ public class StockEntity implements VersionedEntity<String>
     private Timestamp createDate;
     private Timestamp updateDate;
     private Integer version;
-
-    /*
-    @Basic
-    @Column( name = "exchange", nullable = true, length = 10 )
-    public String getStockExchange()
-    {
-        return exchange;
-    }
-
-    public void setExchange( final String exchange )
-    {
-        this.exchange = exchange;
-    }
-    */
     private CustomerEntity customerByCreatedBy;
 
     /**
@@ -259,6 +245,7 @@ public class StockEntity implements VersionedEntity<String>
     }
 
     @Override
+    @Transient
     public String getId()
     {
         return tickerSymbol;

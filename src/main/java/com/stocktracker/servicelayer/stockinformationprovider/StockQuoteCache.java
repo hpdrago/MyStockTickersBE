@@ -30,10 +30,11 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
 
     /**
      * Get the stock quote information for the {@code tickerSymbol}
-     *
-     * @param tickerSymbol The stock symbol
-     * @param fetchMode Identified whether this is a synchronous or asynchronous call
+     * @param tickerSymbol
+     * @param fetchMode
      * @return
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     public StockQuote getStockQuote( @NotNull String tickerSymbol, final StockQuoteFetchMode fetchMode )
         throws StockQuoteUnavailableException,
@@ -91,6 +92,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     /**
      * Creates a StockQuoteCacheEntry and submits a task to refresh the stock quote.
      * @param tickerSymbol
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
      */
     private void asynchronousQuoteFetch( final @NotNull String tickerSymbol )
         throws StockNotFoundException,
@@ -106,6 +109,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      * This method is called when a stock quote has been retrieved from the stock quote service.
      * The stock quote is added to the cache and its state is set to CURRENT.
      * @param stockTickerQuote
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     @Override
     public void handleStockQuoteReturn( final StockTickerQuote stockTickerQuote )
@@ -129,6 +134,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      * Synchronous fetch from stock quote provider
      * @param tickerSymbol
      * @return
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     private StockTickerQuoteCacheEntry synchronousQuoteFetch( final @NotNull String tickerSymbol )
         throws StockQuoteUnavailableException,

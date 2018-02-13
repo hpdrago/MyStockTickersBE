@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
@@ -14,7 +15,6 @@ import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
@@ -74,6 +74,8 @@ public class StockQuoteService implements MyLogger
      * @param stockQuoteFetchMode
      * @return
      * @throws StockNotFoundInDatabaseException
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     public StockQuote getStockQuote( final String tickerSymbol,
                                      final StockQuoteFetchMode stockQuoteFetchMode )
@@ -93,8 +95,10 @@ public class StockQuoteService implements MyLogger
      * Obtains the stock information from the stock cache with the current stock information including the price,
      * last price change, and company name.
      * This information that was retrieved from the cache, is also saved back to the database stock table.
-     * @param container The container to populate with the stock quote information.
-     * @param stockQuoteFetchMode SYNCHRONOUS or ASYNCHRONOUS
+     * @param container
+     * @param stockQuoteFetchMode
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     public void setStockQuoteInformation( final StockQuoteContainer container,
                                           final StockQuoteFetchMode stockQuoteFetchMode )
@@ -145,10 +149,12 @@ public class StockQuoteService implements MyLogger
      * @param stockQuote
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public void persistStockQuote( final StockQuote stockQuote )
         throws StockQuoteUnavailableException,
-               StockNotFoundException
+               StockNotFoundException,
+               EntityVersionMismatchException
     {
         final String methodName = "persistStockQuote";
         Objects.requireNonNull( stockQuote, "container cannot be null" );
@@ -164,7 +170,7 @@ public class StockQuoteService implements MyLogger
          * Can't be discontinued if we found a last price -- keep this in case we marked it discontin
          */
         stockEntity.setDiscontinuedInd( false );
-        this.stockService.saveStock( stockEntity );
+        this.stockService.saveStockEntity( stockEntity );
         logMethodEnd( methodName, stockQuote );
     }
 
@@ -175,17 +181,21 @@ public class StockQuoteService implements MyLogger
      */
     private void updateStockPrice( final String tickerSymbol, final StockTickerQuote stockTickerQuote )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         StockEntity stockEntity = this.stockService.getStockEntity( tickerSymbol );
         stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
         stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
-        this.stockService.saveStock( stockEntity );
+        this.stockService.saveStockEntity( stockEntity );
     }
 
     /**
      * Using the ticker symbol of {@code container}, obtains and sets the stock's company name on the {@code container}
      * @param container
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public void setCompanyName( final StockCompanyNameContainer container )
         throws StockNotFoundException,
@@ -203,7 +213,9 @@ public class StockQuoteService implements MyLogger
     /**
      * Get the last price for the stock
      * @param tickerSymbol
-     * @return Null if there are any exceptions
+     * @return
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     public BigDecimal getStockPrice( final String tickerSymbol )
         throws StockQuoteUnavailableException,
@@ -226,8 +238,9 @@ public class StockQuoteService implements MyLogger
      * Makes a call to Yahoo to get the current stock information including the price, last price change, and company
      * name.  This information that was retrieved from Yahoo, is also saved back to the database stock table.
      * @param containers
-     * @param stockQuoteFetchMode SYNCHRONOUS or ASYNCHRONOUS
-     * @throws IOException
+     * @param stockQuoteFetchMode
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     public void setStockQuoteInformation( final List<StockQuoteContainer> containers,
                                           final StockQuoteFetchMode stockQuoteFetchMode )

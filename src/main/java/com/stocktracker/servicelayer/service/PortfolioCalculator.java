@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -22,10 +23,14 @@ public class PortfolioCalculator implements MyLogger
     /**
      * Perform the portfolio calculations
      * @param portfolios
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public void calculate( final List<PortfolioDTO> portfolios )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "calculate";
         logMethodBegin( methodName );
@@ -44,10 +49,14 @@ public class PortfolioCalculator implements MyLogger
     /**
      * Calculates a single Portfolio's values
      * @param portfolioDTO
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public void calculate( final PortfolioDTO portfolioDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         List<PortfolioStockDTO> portfolioStocks = this.portfolioStockService
                                                       .getPortfolioStocks( portfolioDTO.getId() );

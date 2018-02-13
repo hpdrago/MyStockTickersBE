@@ -17,13 +17,14 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "customer", schema = "stocktracker", catalog = "" )
-public class CustomerEntity
+public class CustomerEntity implements VersionedEntity<Integer>
 {
-    private int id;
+    private Integer id;
     private String email;
     private String password;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
     private Collection<TradeItAccountEntity> accountsById;
 
     public CustomerEntity()
@@ -113,6 +114,19 @@ public class CustomerEntity
     }
 
     @Override
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -142,6 +156,7 @@ public class CustomerEntity
         sb.append( ", password='" ).append( password ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( updateDate );
         sb.append( '}' );
         return sb.toString();
     }

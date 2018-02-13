@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
@@ -40,10 +41,14 @@ public class PortfolioEntityService extends DMLEntityService<Integer,
      * Get the portfolio by id request
      * @param portfolioId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public PortfolioDTO getPortfolioById( final int portfolioId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfolioById";
         logMethodBegin( methodName, portfolioId );
@@ -54,21 +59,26 @@ public class PortfolioEntityService extends DMLEntityService<Integer,
             throw new PortfolioNotFoundException( portfolioId );
         }
         PortfolioDTO portfolioDTO = this.entityToDTO( portfolioEntity );
-        this.portfolioCalculator.calculate( portfolioDTO );
+        this.portfolioCalculator
+            .calculate( portfolioDTO );
         logMethodEnd( methodName, portfolioDTO );
         return portfolioDTO;
     }
 
     /**
      * Get all of the portfolios for the customer
-     * @param customerId Customer id
-     * @return List of Portfolio DTO's for the customer
+     * @param customerId
+     * @return
      * @throws PortfolioNotFoundException
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public List<PortfolioDTO> getPortfoliosByCustomerId( final int customerId )
         throws PortfolioNotFoundException,
                StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );

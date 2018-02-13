@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
@@ -140,6 +141,7 @@ public class StockToBuyController extends AbstractController
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
@@ -148,7 +150,8 @@ public class StockToBuyController extends AbstractController
                                                          @PathVariable int customerId,
                                                          @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "saveStockToBuy";
         logMethodBegin( methodName, customerId, stockToBuyId, stockToBuyDTO );

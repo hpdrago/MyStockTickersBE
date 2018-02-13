@@ -1,13 +1,13 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
-import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
-import java.text.ParseException;
 import java.util.Objects;
 
 /**
@@ -29,7 +28,7 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockNoteEntityService extends BaseStockQuoteContainerEntityService<Integer,
+public class StockNoteEntityService extends StockQuoteContainerEntityService<Integer,
                                                                                  StockNoteEntity,
                                                                                  StockNoteDTO,
                                                                                  StockNoteRepository>
@@ -39,7 +38,6 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
      */
     private StockEntityService stockService;
     private StockNoteRepository stockNoteRepository;
-    private VStockNoteCountRepository vStockNoteCountRepository;
     private StockTagService stockTagService;
     private StockNoteSourceEntityService stockNoteSourceService;
 
@@ -135,7 +133,7 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
      * @return
      */
     public StockNoteDTO updateStockNote( final StockNoteDTO stockNoteDTO )
-        throws ParseException
+        throws EntityVersionMismatchException
     {
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, stockNoteDTO );
@@ -144,18 +142,7 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
          * Check for any changes to the sources
          */
         this.stockNoteSourceService.checkForNewSource( stockNoteDTO );
-        StockNoteEntity dbStockNoteEntity = this.dtoToEntity( stockNoteDTO );
-        /*
-         * Save the stock notes
-         */
-        dbStockNoteEntity = this.stockNoteRepository.save( dbStockNoteEntity );
-        logDebug( methodName, "after saving dbStockNoteEntity: {0}", dbStockNoteEntity );
-
-        /*
-         * Convert back into a DTO to be sent back to the caller so that they have the updated information
-         */
-        StockNoteDTO returnStockNoteDTO = this.entityToDTO( dbStockNoteEntity );
-
+        final StockNoteDTO returnStockNoteDTO = super.saveEntity( stockNoteDTO );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
     }
@@ -180,6 +167,11 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
         return stockNoteDTO;
     }
 
+    /**
+     * Converts the {@code stockNoteEntity} to a DTO
+     * @param stockNoteEntity
+     * @return
+     */
     @Override
     protected StockNoteDTO entityToDTO( final StockNoteEntity stockNoteEntity )
     {
@@ -230,12 +222,6 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
     protected StockNoteRepository getRepository()
     {
         return this.stockNoteRepository;
-    }
-
-    @Autowired
-    public void setvStockNoteCountRepository( final VStockNoteCountRepository vStockNoteCountRepository )
-    {
-        this.vStockNoteCountRepository = vStockNoteCountRepository;
     }
 
     @Autowired

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * This exception is thrown when comparing the version of an entity to the version that is in the database and if
  * the versions do not match then the entity is out of date and the update will abort.
  */
-@ResponseStatus( value= HttpStatus.CONFLICT)  // 404
+@ResponseStatus( value= HttpStatus.PRECONDITION_FAILED)  // 412
 public class EntityVersionMismatchException extends Exception
 {
     /**

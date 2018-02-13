@@ -39,7 +39,7 @@ public abstract class DMLEntityService<K extends Serializable,
      * @return Entity that was saved to the database.
      * @throws EntityVersionMismatchException
      */
-    protected D saveEntity( final D dto  )
+    public D saveEntity( final D dto  )
         throws EntityVersionMismatchException
     {
         final String methodName = "saveEntity";
@@ -59,11 +59,11 @@ public abstract class DMLEntityService<K extends Serializable,
      * @param dto
      * @return
      */
-    protected E checkEntityVersion( final D dto )
+    public E checkEntityVersion( final VersionedEntity<K> dto )
         throws EntityVersionMismatchException
     {
         final E entity = this.getRepository()
-                             .findOne( (K)dto.getId() );
+                             .findOne( dto.getId() );
         if ( entity.getVersion() != dto.getVersion() )
         {
             throw new EntityVersionMismatchException( String.format( "Entity version mismatch(%d <> %d)",

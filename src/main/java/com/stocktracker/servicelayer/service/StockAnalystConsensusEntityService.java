@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateAnalystConsensusException;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
@@ -22,7 +23,7 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerEntityService<Integer,
+public class StockAnalystConsensusEntityService extends StockQuoteContainerEntityService<Integer,
                                                                                              StockAnalystConsensusEntity,
                                                                                              StockAnalystConsensusDTO,
                                                                                              StockAnalystConsensusRepository>
@@ -124,11 +125,13 @@ public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerE
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public StockAnalystConsensusDTO createStockAnalystConsensus( final Integer customerId,
                                                                  final StockAnalystConsensusDTO stockAnalystConsensusDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "createStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
@@ -159,21 +162,13 @@ public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerE
      * @return
      */
     public StockAnalystConsensusDTO saveStockAnalystConsensus( @NotNull final StockAnalystConsensusDTO stockAnalystConsensusDTO )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusDTO );
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
-        StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
-        /*
-         * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
-         * or update triggers.
-         */
-        stockAnalystConsensusEntity = this.stockAnalystConsensusRepository.saveAndFlush( stockAnalystConsensusEntity );
-        logDebug( methodName, "saved {0}", stockAnalystConsensusEntity );
-        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
+        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = super.saveEntity( stockAnalystConsensusDTO );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
         return returnStockAnalystConsensusDTO;
     }

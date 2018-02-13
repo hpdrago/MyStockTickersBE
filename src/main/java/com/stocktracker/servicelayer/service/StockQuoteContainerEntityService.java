@@ -20,7 +20,7 @@ import java.util.Objects;
  * @param <E>
  * @param <D>
  */
-public abstract class BaseStockQuoteContainerEntityService<K extends Serializable,
+public abstract class StockQuoteContainerEntityService<K extends Serializable,
                                                            E extends VersionedEntity<K>,
                                                            D extends StockQuoteService.StockQuoteContainer &
                                                                      VersionedEntity<K>,

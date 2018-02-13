@@ -10,5 +10,6 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 public interface HandleStockQuoteReturn
 {
     void handleStockQuoteReturn( final StockTickerQuote stockTickerQuote )
-        throws StockQuoteUnavailableException, StockNotFoundException;
+        throws StockQuoteUnavailableException,
+               StockNotFoundException;
 }

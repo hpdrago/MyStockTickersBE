@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
@@ -155,8 +156,9 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL,
                       method = RequestMethod.POST )
     public ResponseEntity<StockDTO> addStock( @RequestBody final StockDTO stockDTO )
+        throws EntityVersionMismatchException
     {
-        final String methodName = "saveStock";
+        final String methodName = "saveStockEntity";
         logMethodBegin( methodName, stockDTO );
         if ( this.stockService.isStockExistsInDatabase( stockDTO.getTickerSymbol() ))
         {
@@ -164,7 +166,7 @@ public class StockController extends AbstractController implements MyLogger
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
         }
         logDebug( methodName, "call stockDTO: {0}", stockDTO );
-        StockDTO newStockDTO = this.stockService.saveStock( stockDTO );
+        StockDTO newStockDTO = this.stockService.saveEntity( stockDTO );
         logDebug( methodName, "return stockDTO: {0}", newStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder

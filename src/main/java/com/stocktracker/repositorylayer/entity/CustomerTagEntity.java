@@ -11,13 +11,14 @@ import java.sql.Timestamp;
 
 @Entity
 @Table( name = "customer_tag", schema = "stocktracker", catalog = "" )
-public class CustomerTagEntity
+public class CustomerTagEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
     private String tagName;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
@@ -80,6 +81,16 @@ public class CustomerTagEntity
         this.updateDate = updateDate;
     }
 
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -112,6 +123,7 @@ public class CustomerTagEntity
         sb.append( ", tagName='" ).append( tagName ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

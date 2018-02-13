@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
@@ -99,16 +100,14 @@ public class StockCatalystEventEntityService extends DMLEntityService<Integer,
      */
     public StockCatalystEventDTO saveStockCatalystEvent( @NotNull final StockCatalystEventDTO stockCatalystEventDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventDTO );
         Objects.requireNonNull( stockCatalystEventDTO, "stockCatalystEventDTO cannot be null" );
         this.stockService.checkStockTableEntry( stockCatalystEventDTO.getTickerSymbol() );
-        StockCatalystEventEntity stockCatalystEventEntity = this.dtoToEntity( stockCatalystEventDTO );
-        stockCatalystEventEntity = this.stockCatalystEventRepository.save( stockCatalystEventEntity );
-        logDebug( methodName, "saved {0}", stockCatalystEventEntity );
-        StockCatalystEventDTO returnStockCatalystEventDTO = this.entityToDTO( stockCatalystEventEntity );
+        StockCatalystEventDTO returnStockCatalystEventDTO = super.saveEntity( stockCatalystEventDTO );
         logMethodEnd( methodName, returnStockCatalystEventDTO );
         return returnStockCatalystEventDTO;
     }

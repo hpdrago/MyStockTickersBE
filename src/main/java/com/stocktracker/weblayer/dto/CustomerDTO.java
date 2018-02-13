@@ -1,15 +1,18 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
+
 import java.util.List;
 
 /**
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
  */
-public class CustomerDTO
+public class CustomerDTO implements VersionedEntity<Integer>
 {
-    private int id;
+    private Integer id;
     private String email;
+    private Integer version;
     private List<PortfolioDTO> portfolios;
 
     /**
@@ -26,12 +29,12 @@ public class CustomerDTO
     {
     }
 
-    public int getId()
+    public Integer getId()
     {
         return id;
     }
 
-    public void setId( int id )
+    public void setId( Integer id )
     {
         this.id = id;
     }
@@ -57,6 +60,17 @@ public class CustomerDTO
     }
 
     @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "CustomerDTO" );
@@ -66,6 +80,7 @@ public class CustomerDTO
         sb.append( "id=" ).append( id );
         sb.append( ", email=" ).append( getEmail() );
         sb.append( ", portfolios=" ).append( portfolios );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -38,10 +39,14 @@ public class PortfolioStockController extends AbstractController
 
     /**
      * Get a single customer stock entry
-     *
      * @param customerId
+     * @param portfolioId
      * @param tickerSymbol
      * @return
+     * @throws PortfolioStockNotFound
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
@@ -52,7 +57,8 @@ public class PortfolioStockController extends AbstractController
                                                 @PathVariable String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );

@@ -2,9 +2,9 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.AccountNotFoundException;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
-import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -105,12 +105,14 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @param customerId
      * @param tradeItAccountDTO
      * @return
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable int customerId,
                                                           @RequestBody TradeItAccountDTO tradeItAccountDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );

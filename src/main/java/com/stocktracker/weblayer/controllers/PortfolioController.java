@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.PortfolioEntityService;
@@ -36,8 +37,11 @@ public class PortfolioController extends AbstractController implements MyLogger
 
     /**
      * Get a list of portfolios for a single customer {@code customerId}
-     *
+     * @param customerId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
@@ -45,7 +49,8 @@ public class PortfolioController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PortfolioDTO> getPortfoliosByCustomerId( @PathVariable int customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfoliosByCustomerId";
         logMethodBegin( methodName, customerId );
@@ -56,8 +61,12 @@ public class PortfolioController extends AbstractController implements MyLogger
 
     /**
      * Get a list of stocks in a customer's portfolio
-     *
+     * @param customerId
+     * @param portfolioId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}",
@@ -66,7 +75,8 @@ public class PortfolioController extends AbstractController implements MyLogger
     public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
                                                        @PathVariable Integer portfolioId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -104,14 +114,19 @@ public class PortfolioController extends AbstractController implements MyLogger
     /**
      * Delete a portfolio by portfolio id
      * @param portfolioId
+     * @param customerId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.DELETE)
     public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
                                                          @PathVariable( "customerId" ) Integer customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -127,14 +142,19 @@ public class PortfolioController extends AbstractController implements MyLogger
     /**
      * Get a single portfolio
      * @param portfolioId
+     * @param customerId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.GET)
     public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable int portfolioId,
                                                       @PathVariable int customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfolio";
         logMethodBegin( methodName, customerId, portfolioId );

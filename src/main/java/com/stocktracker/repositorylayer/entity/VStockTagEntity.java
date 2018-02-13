@@ -233,4 +233,21 @@ public class VStockTagEntity
                                 : 0);
         return result;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "VStockTagEntity{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", referenceType=" ).append( referenceType );
+        sb.append( ", referenceId=" ).append( referenceId );
+        sb.append( ", customerTagId=" ).append( customerTagId );
+        sb.append( ", tagName='" ).append( tagName ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

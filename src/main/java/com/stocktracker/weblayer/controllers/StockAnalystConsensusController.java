@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService;
@@ -106,19 +107,25 @@ public class StockAnalystConsensusController implements MyLogger
     /**
      * Create a stock summary entity.
      * @param stockAnalystConsensusDTO
+     * @param customerId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockAnalystConsensusDTO> addStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
                                                                               @PathVariable Integer customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "addStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
         StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                   .createStockAnalystConsensus( customerId, stockAnalystConsensusDTO );
+                                                                   .createStockAnalystConsensus( customerId,
+                                                                                                 stockAnalystConsensusDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -133,8 +140,7 @@ public class StockAnalystConsensusController implements MyLogger
      * @param stockAnalystConsensusId
      * @param customerId
      * @return
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customer/{customerId}",
@@ -142,8 +148,7 @@ public class StockAnalystConsensusController implements MyLogger
     public ResponseEntity<StockAnalystConsensusDTO> updateStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
                                                                                  @PathVariable Integer stockAnalystConsensusId,
                                                                                  @PathVariable Integer customerId )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId, customerId, stockAnalystConsensusDTO );

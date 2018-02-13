@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
@@ -24,7 +25,7 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockToBuyEntityService extends BaseStockQuoteContainerEntityService<Integer,
+public class StockToBuyEntityService extends StockQuoteContainerEntityService<Integer,
                                                                                   StockToBuyEntity,
                                                                                   StockToBuyDTO,
                                                                                   StockToBuyRepository>
@@ -44,9 +45,10 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
                                                                @NotNull final Integer customerId )
     {
         final String methodName = "getStockToBuyListForCustomerId";
-        logMethodBegin( methodName, customerId );
+        logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository.findByCustomerId( pageRequest, customerId );
+        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
+                                                        .findByCustomerId( pageRequest, customerId );
         Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         getStockQuotes( stockToBuyDTOs );
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
@@ -157,7 +159,8 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
      */
     public StockToBuyDTO saveStockToBuy( @NotNull final StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "saveStockToBuy";
         logMethodBegin( methodName, stockToBuyDTO );

@@ -24,33 +24,15 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class CustomerEntityService extends BaseEntityService<CustomerEntity,
-                                                             Integer,
-                                                             CustomerDTO,
-                                                             CustomerRepository>
+public class CustomerEntityService extends DMLEntityService<Integer,
+                                                            CustomerEntity,
+                                                            CustomerDTO,
+                                                            CustomerRepository>
     implements MyLogger
 {
     private PortfolioEntityService portfolioService;
     private CustomerRepository customerRepository;
     private PortfolioRepository portfolioRepository;
-
-    @Autowired
-    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
-    {
-        this.portfolioRepository = portfolioRepository;
-    }
-
-    @Autowired
-    public void setCustomerRepository( final CustomerRepository customerRepository )
-    {
-        this.customerRepository = customerRepository;
-    }
-
-    @Autowired
-    public void setPortfolioService( final PortfolioEntityService portfolioService )
-    {
-        this.portfolioService = portfolioService;
-    }
 
     /**
      * Get the customer by id request
@@ -166,5 +148,23 @@ public class CustomerEntityService extends BaseEntityService<CustomerEntity,
     protected CustomerRepository getRepository()
     {
         return this.customerRepository;
+    }
+
+    @Autowired
+    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
+    {
+        this.portfolioRepository = portfolioRepository;
+    }
+
+    @Autowired
+    public void setCustomerRepository( final CustomerRepository customerRepository )
+    {
+        this.customerRepository = customerRepository;
+    }
+
+    @Autowired
+    public void setPortfolioService( final PortfolioEntityService portfolioService )
+    {
+        this.portfolioService = portfolioService;
     }
 }

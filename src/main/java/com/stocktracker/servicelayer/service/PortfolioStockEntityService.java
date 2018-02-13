@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
@@ -41,11 +42,16 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
      * @param portfolioId
      * @param tickerSymbol
      * @return
+     * @throws PortfolioStockNotFound
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public PortfolioStockDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
@@ -59,7 +65,8 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
             throw new PortfolioStockNotFound( customerId, portfolioId, tickerSymbol );
         }
         PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
-        this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockQuoteService
+            .setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
     }
@@ -68,6 +75,8 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
      * Get all of the stocks for a portfolio
      * @param portfolioId
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
      */
     public List<PortfolioStockDTO> getPortfolioStocks( final int portfolioId )
         throws StockNotFoundException,
@@ -113,6 +122,9 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
      * Add a new customer stock to the database
      * @param portfolioStockDE
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public PortfolioStockDTO addPortfolioStock( final PortfolioStockDTO portfolioStockDE )
         throws StockNotFoundException,
@@ -146,6 +158,8 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
     /**
      * Delete a portfolio stock as defined by the {@code portfolioStockDE}
      * @param portfolioStockDE
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
      */
     public void deletePortfolioStock( final PortfolioStockDTO portfolioStockDE )
         throws StockNotFoundException,
@@ -163,6 +177,8 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
      * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioLastStockDTO} instance
      * @param portfolioStockDTO
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
      */
     public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDTO )
         throws StockNotFoundException,
@@ -182,6 +198,9 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
     /**
      * Sets the company name, last price, and last price change
      * @param portfolioStockDTOList
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     private void setStockInformation( final List<PortfolioStockDTO> portfolioStockDTOList )
         throws StockNotFoundException,

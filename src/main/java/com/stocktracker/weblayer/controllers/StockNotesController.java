@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockNoteCountEntityService;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,8 +65,8 @@ public class StockNotesController extends AbstractController implements MyLogger
 
     /**
      * Add a stock to the database
-     *
      * @return The stock that was added
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
@@ -74,27 +74,13 @@ public class StockNotesController extends AbstractController implements MyLogger
     public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                          @PathVariable( "customerId" ) final int customerId,
                                                          @PathVariable( "stockNotesId" ) final int stockNotesId )
+        throws EntityVersionMismatchException
     {
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, customerId, stockNotesId, stockNotesDTO );
         validateStockNoteDTOPostArgument( stockNotesDTO );
         StockNoteDTO returnStockDTO = null;
-        try
-        {
-            returnStockDTO = this.stockNoteService.updateStockNote( stockNotesDTO );
-        }
-        catch ( ParseException e )
-        {
-            throw new IllegalArgumentException( e );
-        }
-        /*try
-        {
-            Thread.sleep( 5000 );
-        }
-        catch ( InterruptedException e )
-        {
-            e.printStackTrace();
-        }*/
+        returnStockDTO = this.stockNoteService.updateStockNote( stockNotesDTO );
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()

@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
@@ -24,10 +25,10 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockEntityService extends BaseStockQuoteContainerEntityService<String,
-                                                                             StockEntity,
-                                                                             StockDTO,
-                                                                             StockRepository> implements MyLogger
+public class StockEntityService extends StockQuoteContainerEntityService<String,
+                                                                         StockEntity,
+                                                                         StockDTO,
+                                                                         StockRepository> implements MyLogger
 {
     private StockRepository stockRepository;
 
@@ -37,8 +38,6 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
      * @return
      */
     public Page<StockDTO> getPage( final Pageable pageRequest, final boolean withStockPrices )
-        throws StockQuoteUnavailableException,
-               StockNotFoundException
     {
         final String methodName = "getPage";
         logMethodBegin( methodName, pageRequest );
@@ -64,8 +63,6 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
      */
     public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike,
                                             final boolean withStockPrices )
-        throws StockQuoteUnavailableException,
-               StockNotFoundException
     {
         final String methodName = "getCompaniesLike";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -126,70 +123,6 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
     }
 
     /**
-     * Add a Yahoo stock to the database
-     * @param stockQuote
-     * @return {@code StockDTO} the stock that was added to the database
-     */
-    public StockDTO saveStock( final StockQuote stockQuote )
-    {
-        final String methodName = "saveStock";
-        logMethodBegin( methodName, stockQuote );
-        Objects.requireNonNull( stockQuote, "yahooStock cannot be null" );
-        StockDTO stockDTO = stockQuoteToStockDTO( stockQuote );
-        this.saveStock( stockDTO );
-        logMethodEnd( methodName, stockDTO );
-        return stockDTO;
-    }
-
-    /**
-     * Saves the {@code stockEntity} to the database.
-     * @param stockEntity
-     */
-    public void saveStock( final StockEntity stockEntity )
-    {
-        final String methodName = "saveStock";
-        logMethodBegin( methodName, stockEntity );
-        Objects.requireNonNull( stockEntity, "stockEntity cannot be null" );
-        this.stockRepository.save( stockEntity );
-        logMethodEnd( methodName );
-    }
-
-    /**
-     * Converts a {@code CachedStockQuote} into a {@code StockDTO}
-     * @param stockQuote
-     * @return
-     */
-    private StockDTO stockQuoteToStockDTO( final StockQuote stockQuote )
-    {
-        StockDTO stockDTO = StockDTO.newInstance();
-        stockDTO.setTickerSymbol( stockQuote.getTickerSymbol() );
-        stockDTO.setCompanyName( stockQuote.getCompanyName() );
-        stockDTO.setStockExchange( stockQuote.getStockExchange() );
-        stockDTO.setLastPriceChange( stockQuote.getLastPriceChange() );
-        stockDTO.setLastPrice( stockQuote.getLastPrice() );
-        stockDTO.setStockQuoteState( stockQuote.getStockQuoteState() );
-        return stockDTO;
-    }
-
-    /**
-     * Add a stock to the database
-     * @param stockDTO
-     * @return
-     */
-    public StockDTO saveStock( final StockDTO stockDTO )
-    {
-        final String methodName = "saveStock";
-        logMethodBegin( methodName, stockDTO );
-        Objects.requireNonNull( stockDTO, "stockDTO cannot be null" );
-        StockEntity stockEntity = this.dtoToEntity( stockDTO );
-        stockEntity = this.stockRepository.save( stockEntity );
-        StockDTO returnStockDTO = this.entityToDTO( stockEntity );
-        //this.setStockQuoteInformation( returnStockDTO );
-        logMethodEnd( methodName, returnStockDTO );
-        return returnStockDTO;
-    }
-
-    /**
      * Delete the stock
      * @param tickerSymbol
      */
@@ -207,7 +140,9 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
      * attempt to get a stock quote and create the database entry.  This method simply calls {@code getStockEntity}
      * but is provided for readability purposes.
      * @param tickerSymbol
-     * @throws StockNotFoundException If the {@code tickerSymbol} cannot be found.
+     * @return
+     * @throws StockQuoteUnavailableException
+     * @throws StockNotFoundException
      */
     public StockEntity checkStockTableEntry( final String tickerSymbol )
         throws StockQuoteUnavailableException,
@@ -226,7 +161,9 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
      * ticker symbol. If a quote cannot be found, StockNoteFoundException will be thrown
      * @param tickerSymbol
      * @return
+     * @throws StockQuoteUnavailableException
      * @throws StockNotFoundException
+     * @throws EntityVersionMismatchException
      */
     public StockEntity getStockEntity( final String tickerSymbol )
         throws StockQuoteUnavailableException,
@@ -238,7 +175,8 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
         if ( stockEntity == null )
         {
             logDebug( methodName, tickerSymbol + " does note exist in the database, getting quote..." );
-            StockQuote stockQuote = this.getStockQuoteService().getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+            StockQuote stockQuote = this.getStockQuoteService()
+                                        .getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
             if ( stockQuote == null )
             {
                 logDebug( methodName, "Cannot get a quote for stock " + tickerSymbol );
@@ -271,8 +209,37 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Str
         else
         {
             stockEntity.setDiscontinuedInd( true );
-            this.saveStock( stockEntity );
+            try
+            {
+                this.saveStockEntity( stockEntity );
+            }
+            catch( EntityVersionMismatchException e )
+            {
+                try
+                {
+                    this.saveStockEntity( stockEntity );
+                }
+                catch( EntityVersionMismatchException e1 )
+                {
+                    logError( methodName, "Final update failed", e1 );
+                }
+            }
         }
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Saves the {@code stockEntity} to the database.
+     * @param stockEntity
+     */
+    public void saveStockEntity( final StockEntity stockEntity )
+        throws EntityVersionMismatchException
+    {
+        final String methodName = "saveStockEntity";
+        logMethodBegin( methodName, stockEntity );
+        Objects.requireNonNull( stockEntity, "stockEntity cannot be null" );
+        super.checkEntityVersion( stockEntity );
+        this.stockRepository.save( stockEntity );
         logMethodEnd( methodName );
     }
 
