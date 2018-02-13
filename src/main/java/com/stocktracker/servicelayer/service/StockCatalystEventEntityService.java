@@ -22,7 +22,11 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockCatalystEventEntityService extends BaseEntityService<StockCatalystEventEntity, StockCatalystEventDTO> implements MyLogger
+public class StockCatalystEventEntityService extends DMLEntityService<Integer,
+                                                                      StockCatalystEventEntity,
+                                                                      StockCatalystEventDTO,
+                                                                      StockCatalystEventRepository>
+    implements MyLogger
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockQuoteService stockQuoteService;
@@ -159,6 +163,12 @@ public class StockCatalystEventEntityService extends BaseEntityService<StockCata
             stockCatalystEventEntity.setCatalystDate( JSONDateConverter.toTimestamp( stockCatalystEventDTO.getCatalystDate() ) );
         }
         return stockCatalystEventEntity;
+    }
+
+    @Override
+    protected StockCatalystEventRepository getRepository()
+    {
+        return this.stockCatalystEventRepository;
     }
 
     @Autowired

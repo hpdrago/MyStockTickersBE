@@ -1,8 +1,10 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 
-public class StockCatalystEventDTO implements StockQuoteService.StockCompanyNameContainer
+public class StockCatalystEventDTO implements StockQuoteService.StockCompanyNameContainer,
+                                              VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -13,6 +15,7 @@ public class StockCatalystEventDTO implements StockQuoteService.StockCompanyName
     private Byte dateOrTimePeriod;
     private Byte timePeriod;
     private Short timePeriodYear;
+    private Integer version;
 
     public static StockCatalystEventDTO newInstance()
     {
@@ -110,6 +113,18 @@ public class StockCatalystEventDTO implements StockQuoteService.StockCompanyName
         this.timePeriodYear = timePeriodYear;
     }
 
+
+    @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -146,6 +161,7 @@ public class StockCatalystEventDTO implements StockQuoteService.StockCompanyName
         sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );
         sb.append( ", timePeriod=" ).append( timePeriod );
         sb.append( ", timePeriodYear=" ).append( timePeriodYear );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

@@ -17,13 +17,14 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "stock_note_source", schema = "stocktracker", catalog = "" )
-public class StockNoteSourceEntity
+public class StockNoteSourceEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private String name;
     private Integer customerId;
     private Integer timesUsed;
     private Timestamp dateCreated;
+    private Integer version;
     private Collection<StockAnalystConsensusEntity> stockAnalystConsensusesById;
     private Collection<StockNoteEntity> stockNotesById;
     private Collection<StockToBuyEntity> stockToBuysById;
@@ -95,6 +96,18 @@ public class StockNoteSourceEntity
         this.dateCreated = dateCreated;
     }
 
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -128,6 +141,7 @@ public class StockNoteSourceEntity
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", timesUsed=" ).append( timesUsed );
         sb.append( ", dateCreated=" ).append( dateCreated );
+        sb.append( ", version=" ).append( dateCreated );
         sb.append( '}' );
         return sb.toString();
     }

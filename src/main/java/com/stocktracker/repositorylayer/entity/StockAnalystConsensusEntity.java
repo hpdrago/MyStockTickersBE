@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @Entity
 @Table( name = "stock_analyst_consensus", schema = "stocktracker", catalog = "" )
-public class StockAnalystConsensusEntity
+public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -36,6 +36,7 @@ public class StockAnalystConsensusEntity
     private BigDecimal stockPriceWhenCreated;
     private StockNoteSourceEntity stockNoteSourceByNoteSourceId;
     private Integer noteSourceId;
+    private Integer version;
 
     public static StockAnalystConsensusEntity newInstance()
     {
@@ -272,6 +273,19 @@ public class StockAnalystConsensusEntity
     }
 
     @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    @Basic
+    @Column( name = "version" )
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -315,6 +329,7 @@ public class StockAnalystConsensusEntity
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", noteSourceId=" ).append( noteSourceId );
         sb.append( ", stockNoteSourceByNoteSourceId=" ).append( stockNoteSourceByNoteSourceId );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

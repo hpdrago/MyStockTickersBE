@@ -15,13 +15,14 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "portfolio", schema = "stocktracker", catalog = "" )
-public class PortfolioEntity
+public class PortfolioEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private String name;
     private Integer customerId;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     /**
      * Create a new instance from a PortfolioDTO
@@ -99,6 +100,17 @@ public class PortfolioEntity
     }
 
     @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -129,6 +141,7 @@ public class PortfolioEntity
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

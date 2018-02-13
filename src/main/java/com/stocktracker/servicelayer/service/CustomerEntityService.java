@@ -24,7 +24,11 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class CustomerEntityService extends BaseEntityService<CustomerEntity, CustomerDTO> implements MyLogger
+public class CustomerEntityService extends BaseEntityService<CustomerEntity,
+                                                             Integer,
+                                                             CustomerDTO,
+                                                             CustomerRepository>
+    implements MyLogger
 {
     private PortfolioEntityService portfolioService;
     private CustomerRepository customerRepository;
@@ -156,5 +160,11 @@ public class CustomerEntityService extends BaseEntityService<CustomerEntity, Cus
         CustomerEntity customerEntity = CustomerEntity.newInstance();
         BeanUtils.copyProperties( dto, customerEntity );
         return customerEntity;
+    }
+
+    @Override
+    protected CustomerRepository getRepository()
+    {
+        return this.customerRepository;
     }
 }

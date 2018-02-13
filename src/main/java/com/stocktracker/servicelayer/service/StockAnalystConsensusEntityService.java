@@ -22,7 +22,11 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerEntityService<StockAnalystConsensusEntity, StockAnalystConsensusDTO> implements MyLogger
+public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerEntityService<Integer,
+                                                                                             StockAnalystConsensusEntity,
+                                                                                             StockAnalystConsensusDTO,
+                                                                                             StockAnalystConsensusRepository>
+                                                implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
     private StockNoteSourceEntityService stockNoteSourceService;
@@ -232,6 +236,12 @@ public class StockAnalystConsensusEntityService extends BaseStockQuoteContainerE
             stockAnalystConsensusEntity.setStockNoteSourceByNoteSourceId( stockNoteSourceEntity );
         }
         return stockAnalystConsensusEntity;
+    }
+
+    @Override
+    protected StockAnalystConsensusRepository getRepository()
+    {
+        return this.stockAnalystConsensusRepository;
     }
 
     @Autowired

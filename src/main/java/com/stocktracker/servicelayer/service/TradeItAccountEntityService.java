@@ -32,7 +32,11 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class TradeItAccountEntityService extends BaseEntityService<TradeItAccountEntity, TradeItAccountDTO> implements MyLogger
+public class TradeItAccountEntityService extends DMLEntityService<Integer,
+                                                                  TradeItAccountEntity,
+                                                                  TradeItAccountDTO,
+                                                                  TradeItAccountRepository>
+    implements MyLogger
 {
     private TradeItAccountRepository tradeItAccountRepository;
     private LinkedAccountEntityService linkedAccountEntityService;
@@ -157,9 +161,7 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
         final String methodName = "updateAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
         this.validateAccountId( customerId, tradeItAccountDTO.getId() );
-        TradeItAccountEntity tradeItAccountEntity = this.dtoToEntity( tradeItAccountDTO );
-        tradeItAccountEntity = this.tradeItAccountRepository.save( tradeItAccountEntity );
-        TradeItAccountDTO returnTradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
+        TradeItAccountDTO returnTradeItAccountDTO = super.saveEntity( tradeItAccountDTO );
         logMethodEnd( methodName, returnTradeItAccountDTO );
         return returnTradeItAccountDTO;
     }
@@ -327,6 +329,12 @@ public class TradeItAccountEntityService extends BaseEntityService<TradeItAccoun
         TradeItAccountEntity tradeItAccountEntity = TradeItAccountEntity.newInstance();
         BeanUtils.copyProperties( dto, tradeItAccountEntity );
         return tradeItAccountEntity;
+    }
+
+    @Override
+    protected TradeItAccountRepository getRepository()
+    {
+        return this.tradeItAccountRepository;
     }
 
     @Autowired

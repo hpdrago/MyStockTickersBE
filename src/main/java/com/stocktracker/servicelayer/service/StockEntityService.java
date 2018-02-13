@@ -24,7 +24,10 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockEntityService extends BaseStockQuoteContainerEntityService<StockEntity, StockDTO> implements MyLogger
+public class StockEntityService extends BaseStockQuoteContainerEntityService<String,
+                                                                             StockEntity,
+                                                                             StockDTO,
+                                                                             StockRepository> implements MyLogger
 {
     private StockRepository stockRepository;
 
@@ -308,6 +311,12 @@ public class StockEntityService extends BaseStockQuoteContainerEntityService<Sto
         StockEntity stockEntity = StockEntity.newInstance();
         BeanUtils.copyProperties( stockDTO, stockEntity );
         return stockEntity;
+    }
+
+    @Override
+    protected StockRepository getRepository()
+    {
+        return this.stockRepository;
     }
 
     @Autowired

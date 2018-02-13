@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
@@ -11,7 +12,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                                          StockNoteSourceEntityService.StockNoteSourceDTOContainer
+                                                                          StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                          VersionedEntity<Integer>
 {
     /*
      * Entity (DB columns)
@@ -34,6 +36,7 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     private String analystPriceDate;
     private Integer notesSourceId;
     private String notesSourceName;
+    private Integer version;
 
     /*
      * Calculated columns
@@ -231,6 +234,16 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         this.notesSourceName = notesSourceName;
     }
 
+    @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
 
     @Override
     public boolean equals( final Object o )
@@ -275,6 +288,7 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", version='" ).append( version ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

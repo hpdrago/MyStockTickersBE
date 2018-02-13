@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
@@ -13,7 +14,8 @@ import java.util.Objects;
  * Created by mike on 5/7/2017.
  */
 public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                              StockNoteSourceEntityService.StockNoteSourceDTOContainer
+                                                              StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                              VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -33,6 +35,7 @@ public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.
     private String createDate;
     private String updateDate;
     private BigDecimal avgAnalystPriceTarget;
+    private Integer version;
 
     public Integer getId()
     {
@@ -157,6 +160,17 @@ public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.
     }
 
     @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -238,6 +252,7 @@ public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", updateDate='" ).append( updateDate ).append( '\'' );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

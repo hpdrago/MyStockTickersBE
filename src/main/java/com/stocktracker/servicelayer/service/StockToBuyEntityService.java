@@ -24,7 +24,11 @@ import java.util.Objects;
 
 @Service
 @Transactional
-public class StockToBuyEntityService extends BaseStockQuoteContainerEntityService<StockToBuyEntity, StockToBuyDTO> implements MyLogger
+public class StockToBuyEntityService extends BaseStockQuoteContainerEntityService<Integer,
+                                                                                  StockToBuyEntity,
+                                                                                  StockToBuyDTO,
+                                                                                  StockToBuyRepository>
+    implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
     private StockTagService stockTagService;
@@ -38,8 +42,6 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
      */
     public Page<StockToBuyDTO> getStockToBuyListForCustomerId( final Pageable pageRequest,
                                                                @NotNull final Integer customerId )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuyListForCustomerId";
         logMethodBegin( methodName, customerId );
@@ -60,8 +62,6 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
     public Page<StockToBuyDTO> getStockToBuyListForCustomerIdAndTickerSymbol( @NotNull final Pageable pageRequest,
                                                                               @NotNull final Integer customerId,
                                                                               @NotNull final String tickerSymbol )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getStockToBuyListForCustomerIdAndTickerSymbol";
         logMethodBegin( methodName, customerId, tickerSymbol );
@@ -164,15 +164,13 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
         Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
         this.stockService.checkStockTableEntry( stockToBuyDTO.getTickerSymbol() );
-        StockToBuyEntity stockToBuyEntity = this.dtoToEntity( stockToBuyDTO );
-        stockToBuyEntity = this.stockToBuyRepository.save( stockToBuyEntity );
-        this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerId(),
-                                            stockToBuyEntity.getTickerSymbol(),
+        StockToBuyDTO returnStockToBuyDTO = super.saveEntity( stockToBuyDTO );
+        this.stockTagService.saveStockTags( stockToBuyDTO.getCustomerId(),
+                                            stockToBuyDTO.getTickerSymbol(),
                                             StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                                            stockToBuyEntity.getId(),
+                                            stockToBuyDTO.getId(),
                                             stockToBuyDTO.getTags() );
-        logDebug( methodName, "saved {0}", stockToBuyEntity );
-        final StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
+        logDebug( methodName, "saved {0}", stockToBuyDTO );
         this.getStockQuoteService()
             .setStockQuoteInformation( returnStockToBuyDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnStockToBuyDTO );
@@ -275,6 +273,12 @@ public class StockToBuyEntityService extends BaseStockQuoteContainerEntityServic
             stockToBuyEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
         }
         return stockToBuyEntity;
+    }
+
+    @Override
+    protected StockToBuyRepository getRepository()
+    {
+        return this.stockToBuyRepository;
     }
 
     @Autowired

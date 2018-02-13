@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
 
@@ -8,8 +9,10 @@ import java.math.BigDecimal;
 /**
  * Created by mike on 9/11/2016.
  */
-public class StockDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer
+public class StockDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
+                                                          VersionedEntity<String>
 {
+    private Integer version;
 
     public static StockDTO newInstance()
     {
@@ -22,9 +25,27 @@ public class StockDTO extends StockTickerQuote implements StockQuoteService.Stoc
     }
 
     @Override
+    public String getId()
+    {
+        return super.getTickerSymbol();
+    }
+
+    @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockDTO{" );
+        sb.append( "version=" ).append( version );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

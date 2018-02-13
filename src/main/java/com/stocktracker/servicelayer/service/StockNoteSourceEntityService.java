@@ -15,8 +15,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for the StockNoteSource entity interface to the database.
+ */
 @Service
-public class StockNoteSourceEntityService extends BaseEntityService<StockNoteSourceEntity, StockNoteSourceDTO>
+public class StockNoteSourceEntityService extends DMLEntityService<Integer,
+                                                                   StockNoteSourceEntity,
+                                                                   StockNoteSourceDTO,
+                                                                   StockNoteSourceRepository>
 {
     private StockNoteSourceRepository stockNoteSourceRepository;
 
@@ -192,5 +198,11 @@ public class StockNoteSourceEntityService extends BaseEntityService<StockNoteSou
         StockNoteSourceEntity stockNoteSourceEntity = StockNoteSourceEntity.newInstance();
         BeanUtils.copyProperties( stockNoteSourceDTO, stockNoteSourceEntity );
         return stockNoteSourceEntity;
+    }
+
+    @Override
+    protected StockNoteSourceRepository getRepository()
+    {
+        return this.stockNoteSourceRepository;
     }
 }

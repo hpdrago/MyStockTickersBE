@@ -1,28 +1,30 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
+
 import java.util.Objects;
 
 /**
  * Created by mike on 10/23/2016.
  */
-public class PortfolioDTO
+public class PortfolioDTO implements VersionedEntity<Integer>
 {
     /**
      * The portfolio id
      */
-    private int id;
-
-    private int customerId;
+    private Integer id;
+    private Integer customerId;
 
     /**
      * The portfolio name
      */
     private String name;
 
-    private int realizedGL;
-    private int marketValue;
-    private int costBasis;
-    private int unrealizedGL;
+    private Integer realizedGL;
+    private Integer marketValue;
+    private Integer costBasis;
+    private Integer unrealizedGL;
+    private Integer version;
 
     /**
      * Creates a new instance from (@code portfolioEntity)
@@ -38,12 +40,12 @@ public class PortfolioDTO
     {
     }
 
-    public int getId()
+    public Integer getId()
     {
         return id;
     }
 
-    public void setId( int id )
+    public void setId( Integer id )
     {
         this.id = id;
     }
@@ -63,69 +65,64 @@ public class PortfolioDTO
      */ /**
      * The customer id
      */
-    public int getCustomerId()
+    public Integer getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( int customerId )
+    public void setCustomerId( Integer customerId )
     {
         this.customerId = customerId;
     }
 
-    public int getRealizedGL()
+    public Integer getRealizedGL()
     {
         return realizedGL;
     }
 
-    public void setRealizedGL( int realizedGL )
+    public void setRealizedGL( Integer realizedGL )
     {
         this.realizedGL = realizedGL;
     }
 
-    public int getMarketValue()
+    public Integer getMarketValue()
     {
         return marketValue;
     }
 
-    public void setMarketValue( int marketValue )
+    public void setMarketValue( Integer marketValue )
     {
         this.marketValue = marketValue;
     }
 
-    public int getCostBasis()
+    public Integer getCostBasis()
     {
         return costBasis;
     }
 
-    public void setCostBasis( int costBasis )
+    public void setCostBasis( Integer costBasis )
     {
         this.costBasis = costBasis;
     }
 
-    public int getUnrealizedGL()
+    public Integer getUnrealizedGL()
     {
         return unrealizedGL;
     }
 
-    public void setUnrealizedGL( int unrealizedGL )
+    public void setUnrealizedGL( Integer unrealizedGL )
     {
         this.unrealizedGL = unrealizedGL;
     }
 
-    @Override
-    public String toString()
+    public Integer getVersion()
     {
-        final StringBuilder sb = new StringBuilder( "PortfolioDTO{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", realizedGL=" ).append( realizedGL );
-        sb.append( ", marketValue=" ).append( marketValue );
-        sb.append( ", costBasis=" ).append( costBasis );
-        sb.append( ", unrealizedGL=" ).append( unrealizedGL );
-        sb.append( '}' );
-        return sb.toString();
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
     }
 
     @Override
@@ -148,4 +145,21 @@ public class PortfolioDTO
     {
         return Objects.hash( id );
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "PortfolioDTO{" );
+        sb.append( "id=" ).append( id );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", realizedGL=" ).append( realizedGL );
+        sb.append( ", marketValue=" ).append( marketValue );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", unrealizedGL=" ).append( unrealizedGL );
+        sb.append( ", version=" ).append( version );
+        sb.append( '}' );
+        return sb.toString();
+    }
+
 }

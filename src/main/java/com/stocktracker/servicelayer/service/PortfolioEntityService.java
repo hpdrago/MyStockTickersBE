@@ -25,7 +25,11 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioEntityService extends BaseEntityService<PortfolioEntity, PortfolioDTO> implements MyLogger
+public class PortfolioEntityService extends DMLEntityService<Integer,
+                                                             PortfolioEntity,
+                                                             PortfolioDTO,
+                                                             PortfolioRepository>
+    implements MyLogger
 {
     private PortfolioRepository portfolioRepository;
     private StockEntityService stockService;
@@ -132,6 +136,12 @@ public class PortfolioEntityService extends BaseEntityService<PortfolioEntity, P
         PortfolioEntity portfolioEntity = PortfolioEntity.newInstance();
         BeanUtils.copyProperties( dto, portfolioEntity );
         return portfolioEntity;
+    }
+
+    @Override
+    protected PortfolioRepository getRepository()
+    {
+        return this.portfolioRepository;
     }
 
     @Autowired

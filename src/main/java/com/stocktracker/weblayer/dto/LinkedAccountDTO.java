@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 
 import java.math.BigDecimal;
@@ -11,7 +12,7 @@ import java.sql.Timestamp;
 /**
  * This is the DTO class for the {@code LinkedAccountEntity} class.
  */
-public class LinkedAccountDTO
+public class LinkedAccountDTO implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -23,6 +24,7 @@ public class LinkedAccountDTO
     private Timestamp createDate;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp updateDate;
+    private Integer version;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal availableCash;
     @JsonSerialize( using = JSONMoneySerializer.class )
@@ -200,6 +202,17 @@ public class LinkedAccountDTO
         this.customerId = customerId;
     }
 
+
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     /**
      * Copy account summary info.
      * @param getAccountOverviewDTO
@@ -228,6 +241,7 @@ public class LinkedAccountDTO
         sb.append( ", accountIndex=" ).append( accountIndex );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
         sb.append( ", availableCash=" ).append( availableCash );
         sb.append( ", buyingPower=" ).append( buyingPower );
         sb.append( ", totalValue=" ).append( totalValue );

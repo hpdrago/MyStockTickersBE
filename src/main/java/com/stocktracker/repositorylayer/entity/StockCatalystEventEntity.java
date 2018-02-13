@@ -12,7 +12,7 @@ import java.util.Objects;
 
 @Entity
 @Table( name = "stock_catalyst_event", schema = "stocktracker", catalog = "" )
-public class StockCatalystEventEntity
+public class StockCatalystEventEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -24,6 +24,7 @@ public class StockCatalystEventEntity
     private Short timePeriodYear;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     public static StockCatalystEventEntity newInstance()
     {
@@ -115,6 +116,18 @@ public class StockCatalystEventEntity
         this.updateDate = updateDate;
     }
 
+    @Basic
+    @Column( name = "version" )
+    @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
 
     @Basic
     @Column( name = "date_or_time_period", nullable = false )

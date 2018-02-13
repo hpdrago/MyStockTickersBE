@@ -12,7 +12,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class StockNoteCountEntityService extends BaseEntityService<VStockNoteCountEntity, StockNoteCountDTO>
+public class StockNoteCountEntityService extends BaseEntityService<Integer,
+                                                                   VStockNoteCountEntity,
+                                                                   StockNoteCountDTO,
+                                                                   VStockNoteCountRepository>
 {
     private VStockNoteCountRepository vStockNoteCountRepository;
 
@@ -55,5 +58,11 @@ public class StockNoteCountEntityService extends BaseEntityService<VStockNoteCou
         VStockNoteCountEntity vStockNoteCountEntity = VStockNoteCountEntity.newInstance();
         BeanUtils.copyProperties( stockNoteCountDTO, vStockNoteCountEntity );
         return vStockNoteCountEntity;
+    }
+
+    @Override
+    protected VStockNoteCountRepository getRepository()
+    {
+        return this.vStockNoteCountRepository;
     }
 }

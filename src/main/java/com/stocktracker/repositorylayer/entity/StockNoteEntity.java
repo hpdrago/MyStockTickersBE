@@ -23,7 +23,9 @@ import java.util.Optional;
  */
 @Entity
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
-public class StockNoteEntity implements MyLogger, StockNoteSourceEntityService.StockNoteSourceEntityContainer
+public class StockNoteEntity implements MyLogger,
+                                        StockNoteSourceEntityService.StockNoteSourceEntityContainer,
+                                        VersionedEntity<Integer>
 {
     private Integer id;
     private String tickerSymbol;

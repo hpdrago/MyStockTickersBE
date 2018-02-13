@@ -17,6 +17,6 @@ public class JSONMoneySerializer extends JsonSerializer<BigDecimal>
         throws IOException
     {
         // put your desired money style here
-        jgen.writeString(value.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+        jgen.writeNumber( value.setScale(2, BigDecimal.ROUND_HALF_UP ) );
     }
 }

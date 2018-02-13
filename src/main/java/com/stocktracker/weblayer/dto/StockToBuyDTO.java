@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
@@ -9,7 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                               StockNoteSourceEntityService.StockNoteSourceDTOContainer
+                                                               StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                               VersionedEntity<Integer>
 {
     /*
      * Entity (DB columns)
@@ -26,6 +28,7 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
     private String createDate;
     private String[] tags;
     private BigDecimal avgAnalystPriceTarget;
+    private Integer version;
 
     public static StockToBuyDTO newInstance()
     {
@@ -159,6 +162,17 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
     }
 
     @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -198,6 +212,7 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
         sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", tags=" ).append( Arrays.toString( tags ) );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

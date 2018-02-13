@@ -29,7 +29,10 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockNoteEntityService extends BaseStockQuoteContainerEntityService<StockNoteEntity, StockNoteDTO>
+public class StockNoteEntityService extends BaseStockQuoteContainerEntityService<Integer,
+                                                                                 StockNoteEntity,
+                                                                                 StockNoteDTO,
+                                                                                 StockNoteRepository>
 {
     /**
      * Autowired service classes
@@ -221,6 +224,12 @@ public class StockNoteEntityService extends BaseStockQuoteContainerEntityService
         }
         stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;
+    }
+
+    @Override
+    protected StockNoteRepository getRepository()
+    {
+        return this.stockNoteRepository;
     }
 
     @Autowired

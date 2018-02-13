@@ -1,11 +1,15 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +20,11 @@ import java.util.Objects;
  *
  * Created by mike on 11/1/2016.
  */
-public abstract class BaseEntityService<E,D> implements MyLogger
+public abstract class BaseEntityService<K extends Serializable,
+                                        E,
+                                        D,
+                                        R extends JpaRepository<E, K>>
+                                        implements MyLogger
 {
     /**
      * Subclass must override this method to copy properties from the database entity to the DTO.
@@ -95,4 +103,10 @@ public abstract class BaseEntityService<E,D> implements MyLogger
         }
         return entities;
     }
+
+    /**
+     * Get the repository instance that is injected into the subclass services.
+     * @return
+     */
+    protected abstract R getRepository();
 }

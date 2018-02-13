@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Entity
 @Table( name = "linked_account", schema = "stocktracker", catalog = "" )
-public class LinkedAccountEntity
+public class LinkedAccountEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -41,6 +41,7 @@ public class LinkedAccountEntity
     private Collection<LinkedAccountPositionEntity> linkedAccountPositionsById;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     /**
      * Creates a new instance from the information contained within {@code TradeItAccountDTO}.
@@ -150,6 +151,20 @@ public class LinkedAccountEntity
     {
         this.updateDate = updateDate;
     }
+
+    @Override
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return null;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
 
     @ManyToOne
     @JoinColumn( name = "parent_account_id", referencedColumnName = "id", nullable = false )

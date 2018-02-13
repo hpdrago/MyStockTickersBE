@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "stock", schema = "stocktracker", catalog = "" )
-public class StockEntity
+public class StockEntity implements VersionedEntity<String>
 {
     public static final int TICKER_SYMBOL_LEN = 5;
     private String tickerSymbol;
@@ -34,6 +34,7 @@ public class StockEntity
     private String discontinuedInd;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     /*
     @Basic
@@ -258,6 +259,24 @@ public class StockEntity
     }
 
     @Override
+    public String getId()
+    {
+        return tickerSymbol;
+    }
+
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockEntity{" );
@@ -275,6 +294,7 @@ public class StockEntity
         sb.append( ", discontinuedInd=" ).append( discontinuedInd );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

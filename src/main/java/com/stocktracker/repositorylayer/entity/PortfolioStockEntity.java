@@ -35,6 +35,7 @@ public class PortfolioStockEntity
     private BigDecimal realizedGains;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
 
     /**
      * Default constructor
@@ -262,6 +263,18 @@ public class PortfolioStockEntity
         this.updateDate = updateDate;
     }
 
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public String toString()
     {
@@ -282,6 +295,7 @@ public class PortfolioStockEntity
         sb.append( ", realizedGains=" ).append( realizedGains );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

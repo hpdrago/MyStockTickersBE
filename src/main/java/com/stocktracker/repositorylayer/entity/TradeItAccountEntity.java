@@ -26,7 +26,7 @@ import java.util.Optional;
  */
 @Entity
 @Table( name = "tradeit_account", schema = "stocktracker", catalog = "" )
-public class TradeItAccountEntity
+public class TradeItAccountEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -39,6 +39,7 @@ public class TradeItAccountEntity
     private Timestamp authTimestamp;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
     private CustomerEntity customerByCustomerId;
     private Collection<LinkedAccountEntity> linkedAccountsById;
 
@@ -165,6 +166,20 @@ public class TradeItAccountEntity
     public void setAuthUuid( final String authUuid )
     {
         this.authUuid = authUuid;
+    }
+
+
+    @Override
+    @Basic
+    @Column( name = "version" )
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
     }
 
     @OneToMany( mappedBy = "accountByParentAccountId" )

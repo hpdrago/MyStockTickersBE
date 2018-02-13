@@ -20,7 +20,8 @@ import java.util.Optional;
 
 @Entity
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
-public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteSourceEntityContainer
+public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteSourceEntityContainer,
+                                         VersionedEntity<Integer>
 {
     private static final int COMMENTS_LEN = 4096;
     private Integer id;

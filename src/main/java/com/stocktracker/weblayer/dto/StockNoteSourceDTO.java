@@ -1,14 +1,16 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.VersionedEntity;
+
 /**
  * Created by mike on 9/10/2017.
  */
-public class StockNoteSourceDTO
+public class StockNoteSourceDTO implements VersionedEntity<Integer>
 {
     private Integer id;
     private String name;
     private Integer customerId;
-
+    private Integer version;
 
     public static StockNoteSourceDTO newInstance()
     {
@@ -46,6 +48,18 @@ public class StockNoteSourceDTO
         this.customerId = customerId;
     }
 
+
+    @Override
+    public Integer getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
+
     @Override
     public String toString()
     {
@@ -53,6 +67,7 @@ public class StockNoteSourceDTO
         sb.append( "id=" ).append( id );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

@@ -26,7 +26,10 @@ import java.util.List;
  */
 @Service
 @Transactional
-public class LinkedAccountEntityService extends BaseEntityService<LinkedAccountEntity, LinkedAccountDTO>
+public class LinkedAccountEntityService extends DMLEntityService<Integer,
+                                                                 LinkedAccountEntity,
+                                                                 LinkedAccountDTO,
+                                                                 LinkedAccountRepository>
                                         implements MyLogger
 {
     private LinkedAccountRepository linkedAccountRepository;
@@ -148,6 +151,20 @@ public class LinkedAccountEntityService extends BaseEntityService<LinkedAccountE
     }
 
     /**
+     * Save the linked account.
+     * @param linkedAccountDTO
+     * @return
+     */
+    public LinkedAccountDTO saveLinkedAccount( final LinkedAccountDTO linkedAccountDTO )
+    {
+        final String methodName = "saveLinkedAccount";
+        logMethodBegin( methodName, linkedAccountDTO );
+        LinkedAccountDTO returnLinkedAccountDTO = super.saveEntity( linkedAccountDTO );
+        logMethodEnd( methodName, returnLinkedAccountDTO );
+        return returnLinkedAccountDTO;
+    }
+
+    /**
      * Save the linked account to the database.
      * @param linkedAccountEntity
      */
@@ -173,6 +190,12 @@ public class LinkedAccountEntityService extends BaseEntityService<LinkedAccountE
         final LinkedAccountEntity linkedAccountEntity = new LinkedAccountEntity();
         BeanUtils.copyProperties( linkedAccountDTO, linkedAccountEntity );
         return linkedAccountEntity;
+    }
+
+    @Override
+    protected LinkedAccountRepository getRepository()
+    {
+        return this.linkedAccountRepository;
     }
 
     @Autowired
