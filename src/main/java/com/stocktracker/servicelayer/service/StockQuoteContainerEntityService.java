@@ -21,10 +21,10 @@ import java.util.Objects;
  * @param <D>
  */
 public abstract class StockQuoteContainerEntityService<K extends Serializable,
-                                                           E extends VersionedEntity<K>,
-                                                           D extends StockQuoteService.StockQuoteContainer &
-                                                                     VersionedEntity<K>,
-                                                           R extends JpaRepository<E,K>>
+                                                       E extends VersionedEntity<K>,
+                                                       D extends StockQuoteService.StockQuoteContainer &
+                                                                 VersionedEntity<K>,
+                                                       R extends JpaRepository<E,K>>
     extends DMLEntityService<K,E,D,R>
 {
     private StockQuoteService stockQuoteService;

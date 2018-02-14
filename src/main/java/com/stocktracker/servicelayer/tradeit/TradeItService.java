@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.tradeit;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
-import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.servicelayer.tradeit.apicalls.AnswerSecurityQuestionAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.AuthenticateAPICall;
@@ -11,29 +10,29 @@ import com.stocktracker.servicelayer.tradeit.apicalls.CloseSessionAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetAccountOverviewAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetBrokersAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenAPICall;
+import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenUpdateURLAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.GetPositionsAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.KeepSessionAliveAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.RequestOAuthPopUpURLAPICall;
-import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenUpdateURLAPICall;
 import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.CloseSessionAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverViewAPIResult;
-import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
-import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
-import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenUpdateURLAPIResult;
-import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetBrokersAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenUpdateURLAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
+import com.stocktracker.weblayer.dto.LinkedAccountPositionDTO;
+import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.CloseSessionDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
-import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenUpdateURLDTO;
-import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import com.stocktracker.weblayer.dto.tradeit.RequestOAuthPopUpURLDTO;
 import org.slf4j.Logger;
@@ -43,6 +42,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -324,7 +324,7 @@ public class TradeItService implements MyLogger
      * @param accountNumber The brokerage account number.
      * @return
      */
-    public GetPositionsDTO getPositions( final String accountNumber, final String authToken )
+    public List<LinkedAccountPositionDTO> getPositions( final String accountNumber, final String authToken )
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, accountNumber, authToken );
@@ -332,10 +332,10 @@ public class TradeItService implements MyLogger
         Objects.requireNonNull( authToken, "authToken cannot be null" );
         final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
         final GetPositionsAPIResult getPositionsAPIResult = getPositionsAPICall.execute( accountNumber, authToken );
-        final GetPositionsDTO getPositionsDTO = this.context.getBean( GetPositionsDTO.class );
-        getPositionsDTO.setResults( getPositionsAPIResult );
-        logMethodEnd( methodName, getPositionsDTO );
-        return getPositionsDTO;
+        final LinkedAccountPositionDTO linkedAccountPositionDTO = this.context.getBean( LinkedAccountPositionDTO.class );
+        linkedAccountPositionDTO.setResults( getPositionsAPIResult );
+        logMethodEnd( methodName, linkedAccountPositionDTO );
+        return linkedAccountPositionDTO;
     }
 
     /**

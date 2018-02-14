@@ -59,7 +59,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY )
-    @Column( name = "id" )
+    @Column( name = "id", nullable = false )
     public Integer getId()
     {
         return id;
@@ -70,7 +70,8 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
         this.id = id;
     }
 
-    @Column( name = "parent_account_id", updatable = false, insertable = false)
+    @Basic
+    @Column( name = "parent_account_id", updatable = false, insertable = false, nullable = false )
     public Integer getParentAccountId()
     {
         return parentAccountId;
@@ -81,7 +82,8 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
         this.parentAccountId = parentAccountId;
     }
 
-    @Column( name = "customer_id" )
+    @Basic
+    @Column( name = "customer_id", nullable = false )
     public Integer getCustomerId()
     {
         return customerId;
@@ -93,7 +95,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "account_number" )
+    @Column( name = "account_number", nullable = false, length = 20 )
     public String getAccountNumber()
     {
         return accountNumber;
@@ -105,7 +107,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "account_name" )
+    @Column( name = "account_name", nullable = false, length = 40 )
     public String getAccountName()
     {
         return accountName;
@@ -117,7 +119,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "account_index" )
+    @Column( name = "account_index", nullable = false, length = 30 )
     public String getAccountIndex()
     {
         return accountIndex;
@@ -129,7 +131,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "create_date" )
+    @Column( name = "create_date", nullable = false )
     public Timestamp getCreateDate()
     {
         return createDate;
@@ -141,7 +143,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "update_date" )
+    @Column( name = "update_date", nullable = true )
     public Timestamp getUpdateDate()
     {
         return updateDate;
@@ -154,7 +156,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
 
     @Override
     @Basic
-    @Column( name = "version" )
+    @Column( name = "version", nullable = false )
     public Integer getVersion()
     {
         return null;
@@ -192,7 +194,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "available_cash" )
+    @Column( name = "available_cash", nullable = true, precision = 2 )
     public BigDecimal getAvailableCash()
     {
         return availableCash;
@@ -204,7 +206,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "buying_power" )
+    @Column( name = "buying_power", nullable = true, precision = 2 )
     public BigDecimal getBuyingPower()
     {
         return buyingPower;
@@ -216,7 +218,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "total_value" )
+    @Column( name = "total_value", nullable = true, precision = 2 )
     public BigDecimal getTotalValue()
     {
         return totalValue;
@@ -228,7 +230,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "day_absolute_return" )
+    @Column( name = "day_absolute_return", nullable = true, precision = 2 )
     public BigDecimal getDayAbsoluteReturn()
     {
         return dayAbsoluteReturn;
@@ -240,7 +242,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "day_percent_return" )
+    @Column( name = "day_percent_return", nullable = true, precision = 2 )
     public BigDecimal getDayPercentReturn()
     {
         return dayPercentReturn;
@@ -252,7 +254,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "total_absolute_return" )
+    @Column( name = "total_absolute_return", nullable = true, precision = 2 )
     public BigDecimal getTotalAbsoluteReturn()
     {
         return totalAbsoluteReturn;
@@ -264,7 +266,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "total_percent_return" )
+    @Column( name = "total_percent_return", nullable = true, precision = 2 )
     public BigDecimal getTotalPercentReturn()
     {
         return totalPercentReturn;
@@ -276,7 +278,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "margin_cash" )
+    @Column( name = "margin_cash", nullable = true, precision = 2 )
     public BigDecimal getMarginCash()
     {
         return marginCash;

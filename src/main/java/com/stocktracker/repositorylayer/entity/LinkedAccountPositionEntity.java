@@ -1,5 +1,9 @@
 package com.stocktracker.repositorylayer.entity;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +16,9 @@ import java.sql.Timestamp;
 
 @Entity
 @Table( name = "linked_account_position", schema = "stocktracker", catalog = "" )
-public class LinkedAccountPositionEntity
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class LinkedAccountPositionEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer linkedAccountId;
@@ -28,10 +34,11 @@ public class LinkedAccountPositionEntity
     private BigDecimal totalGainLossPercentage;
     private Timestamp createDate;
     private Timestamp updateDate;
+    private Integer version;
     private LinkedAccountEntity linkedAccountByLinkedAccountId;
 
     @Id
-    @Column( name = "id" )
+    @Column( name = "id", nullable = false )
     public Integer getId()
     {
         return id;
@@ -44,7 +51,7 @@ public class LinkedAccountPositionEntity
 
 
     @Basic
-    @Column( name = "linked_account_id", updatable = false, insertable = false )
+    @Column( name = "linked_account_id", updatable = false, insertable = false, nullable = true )
     public Integer getLinkedAccountId()
     {
         return linkedAccountId;
@@ -56,7 +63,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "cost_basis" )
+    @Column( name = "cost_basis", nullable = true, precision = 2 )
     public BigDecimal getCostBasis()
     {
         return costBasis;
@@ -68,7 +75,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "holding_type" )
+    @Column( name = "holding_type", nullable = true, length = 5 )
     public String getHoldingType()
     {
         return holdingType;
@@ -80,7 +87,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "last_price" )
+    @Column( name = "last_price", nullable = true, precision = 2 )
     public BigDecimal getLastPrice()
     {
         return lastPrice;
@@ -92,7 +99,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "quantity" )
+    @Column( name = "quantity", nullable = true, precision = 2 )
     public BigDecimal getQuantity()
     {
         return quantity;
@@ -104,7 +111,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "ticker_symbol" )
+    @Column( name = "ticker_symbol", nullable = true, length = 5 )
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -116,7 +123,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "symbol_class" )
+    @Column( name = "symbol_class", nullable = true, length = 20 )
     public String getSymbolClass()
     {
         return symbolClass;
@@ -128,7 +135,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "today_gain_loss_dollar" )
+    @Column( name = "today_gain_loss_dollar", nullable = true, precision = 2 )
     public BigDecimal getTodayGainLossDollar()
     {
         return todayGainLossDollar;
@@ -140,7 +147,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "today_gain_loss_percentage" )
+    @Column( name = "today_gain_loss_percentage", nullable = true, precision = 2 )
     public BigDecimal getTodayGainLossPercentage()
     {
         return todayGainLossPercentage;
@@ -152,7 +159,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "total_gain_loss_dollar" )
+    @Column( name = "total_gain_loss_dollar", nullable = true, precision = 2 )
     public BigDecimal getTotalGainLossDollar()
     {
         return totalGainLossDollar;
@@ -164,7 +171,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "total_gain_loss_percentage" )
+    @Column( name = "total_gain_loss_percentage", nullable = true, precision = 2 )
     public BigDecimal getTotalGainLossPercentage()
     {
         return totalGainLossPercentage;
@@ -176,7 +183,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "create_date" )
+    @Column( name = "create_date", nullable = true )
     public Timestamp getCreateDate()
     {
         return createDate;
@@ -188,7 +195,7 @@ public class LinkedAccountPositionEntity
     }
 
     @Basic
-    @Column( name = "update_date" )
+    @Column( name = "update_date", nullable = true )
     public Timestamp getUpdateDate()
     {
         return updateDate;
@@ -199,6 +206,18 @@ public class LinkedAccountPositionEntity
         this.updateDate = updateDate;
     }
 
+    @Override
+    @Basic
+    @Column( name = "version", nullable = false )
+    public Integer getVersion()
+    {
+        return null;
+    }
+
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
+    }
 
     @ManyToOne
     @JoinColumn( name = "linked_account_id", referencedColumnName = "id" )
@@ -259,6 +278,7 @@ public class LinkedAccountPositionEntity
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

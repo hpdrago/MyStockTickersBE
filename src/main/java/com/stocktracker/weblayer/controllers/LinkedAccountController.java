@@ -1,12 +1,10 @@
 package com.stocktracker.weblayer.controllers;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
-import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,7 +32,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  */
 @RestController
 @CrossOrigin
-public class LinkedAccountController extends AbstractController implements MyLogger
+public class LinkedAccountController extends AbstractController
 {
     private static final String CONTEXT_URL = "/linkedAccount";
     private LinkedAccountEntityService linkedAccountEntityService;
@@ -89,29 +87,6 @@ public class LinkedAccountController extends AbstractController implements MyLog
         List<LinkedAccountDTO> accounts = this.linkedAccountEntityService.getLinkedAccounts( customerId, tradeItAccountId );
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
-    }
-
-    /**
-     * Get all of the positions for a linked account.
-     * @return
-     */
-    @RequestMapping( value = CONTEXT_URL + "/positions"
-                             + "/linkedAccountId/{linkedAccountId}"
-                             + "/tradeItAccountId/{tradeItAccountId}"
-                             + "/customer/{customerId}",
-                     method = GET,
-                     produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public GetPositionsDTO getPositions( final @PathVariable int linkedAccountId,
-                                         final @PathVariable int tradeItAccountId,
-                                         final @PathVariable int customerId )
-        throws LinkedAccountNotFoundException
-    {
-        final String methodName = "getPositions";
-        logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
-        final GetPositionsDTO getPositionsDTO = this.linkedAccountEntityService
-                                                    .getPositions( customerId, tradeItAccountId, linkedAccountId );
-        logMethodEnd( methodName, "positions size: " + getPositionsDTO.size() );
-        return getPositionsDTO;
     }
 
     /**

@@ -12,27 +12,6 @@ public abstract class DMLEntityService<K extends Serializable,
                                        R extends JpaRepository<E,K>>
     extends BaseEntityService<K,E,D,R>
 {
-
-
-    /**
-     * Converts the DTO to and Entity and saves it to the database.
-     * @param dto
-     * @return
-     */
-    /*
-    protected D saveEntity( final D dto  )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "saveEntity";
-        logMethodBegin( methodName, dto );
-        E entity = this.dtoToEntity( dto );
-        E savedEntity = this.getRepository().save( entity );
-        D returnDTO = this.entityToDTO( savedEntity );
-        logMethodEnd( methodName, returnDTO );
-        return returnDTO;
-    }
-    */
-
     /**
      * Converts the DTO to and Entity and saves it to the database.
      * @param dto

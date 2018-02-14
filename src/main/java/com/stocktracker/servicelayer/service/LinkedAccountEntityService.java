@@ -9,7 +9,7 @@ import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
-import com.stocktracker.weblayer.dto.tradeit.GetPositionsDTO;
+import com.stocktracker.weblayer.dto.LinkedAccountPositionDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @param linkedAccountId Need to get the account number from the linked account.
      * @return
      */
-    public GetPositionsDTO getPositions( final int customerId, final int tradeItAccountId, final int linkedAccountId )
+    public LinkedAccountPositionDTO getPositions( final int customerId, final int tradeItAccountId, final int linkedAccountId )
         throws LinkedAccountNotFoundException
     {
         final String methodName = "getPositions";
@@ -51,11 +51,11 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.getLinkedAccountEntity( customerId, linkedAccountId );
-        final GetPositionsDTO getPositionsDTO = this.tradeItService
+        final LinkedAccountPositionDTO linkedAccountPositionDTO = this.tradeItService
                                                     .getPositions( linkedAccountEntity.getAccountNumber(),
                                                                    tradeItAccountEntity.getAuthToken() );
         logMethodEnd( methodName );
-        return getPositionsDTO;
+        return linkedAccountPositionDTO;
     }
 
     /**
