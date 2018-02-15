@@ -6,8 +6,10 @@ import com.stocktracker.servicelayer.service.StockPositionService;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -16,6 +18,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 /**
  * This controller handles request for stock positions from the LINKED_ACCOUNT_POSITION table.
  */
+@RestController
+@CrossOrigin
 public class StockPositionController extends AbstractController
 {
     private static final String CONTEXT_URL = "/stockPosition";
