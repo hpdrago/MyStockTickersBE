@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.repository;
 
-import com.stocktracker.repositorylayer.entity.LinkedAccountPositionEntity;
+import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * Created by mike on 12/4/2017.
  */
-public interface LinkedAccountPositionRepository extends JpaRepository<LinkedAccountPositionEntity, Integer>
+public interface StockPositionRepository extends JpaRepository<StockPositionEntity, Integer>
 {
 }

@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
@@ -106,6 +107,7 @@ public class TradeItController extends AbstractController
      * After obtaining an OAuth Verifier when the user successfully logged into their broker account, the oAuthVerifier
      * token returned from that process is then used to get the user id and user token to be used for later authentication.
      * @return GetOAuthAccessTokenDTO that contains the newly created account
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
                              + "/accountId/{accountId}"
@@ -114,10 +116,13 @@ public class TradeItController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final int customerId,
                                                                    @PathVariable final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );
-        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = this.tradeItService.getOAuthTokenUpdateURL( customerId, accountId );
+        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = this.tradeItService
+                                                                                    .getOAuthTokenUpdateURL( customerId,
+                                                                                                             accountId );
         logMethodEnd( methodName, getOAuthAccessTokenUpdateURLDTO );
         return getOAuthAccessTokenUpdateURLDTO;
     }
@@ -127,6 +132,8 @@ public class TradeItController extends AbstractController
      * @param customerId
      * @param accountId
      * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -135,11 +142,13 @@ public class TradeItController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public AuthenticateDTO authenticate( @PathVariable final int customerId,
                                          @PathVariable final int accountId )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, accountId, customerId );
-        final AuthenticateDTO authenticateDTO = this.tradeItService.authenticate( customerId, accountId );
+        final AuthenticateDTO authenticateDTO = this.tradeItService
+                                                    .authenticate( customerId, accountId );
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
     }
@@ -151,6 +160,8 @@ public class TradeItController extends AbstractController
      * @param accountId
      * @param answer The user's answer to the question
      * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -160,7 +171,8 @@ public class TradeItController extends AbstractController
     public AnswerSecurityQuestionDTO answerSecurityQuestion( @PathVariable final int customerId,
                                                              @PathVariable final int accountId,
                                                              @RequestBody final String answer )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, answer );
@@ -176,6 +188,7 @@ public class TradeItController extends AbstractController
      * @param customerId
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/keepSessionAlive/"
                              + "/accountId/{accountId}"
@@ -184,10 +197,12 @@ public class TradeItController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public KeepSessionAliveDTO keepSessionAlive( @PathVariable final int customerId,
                                                  @PathVariable final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, accountId, customerId );
-        final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService.keepSessionAlive( customerId, accountId );
+        final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService
+                                                            .keepSessionAlive( customerId, accountId );
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
     }
@@ -197,6 +212,7 @@ public class TradeItController extends AbstractController
      * @param customerId
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/closeSession/"
                              + "/accountId/{accountId}"
@@ -205,10 +221,12 @@ public class TradeItController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public CloseSessionDTO closeSession( @PathVariable final int customerId,
                                          @PathVariable final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "closeSession";
         logMethodBegin( methodName, accountId, customerId );
-        final CloseSessionDTO closeSessionDTO = this.tradeItService.closeSession( customerId, accountId );
+        final CloseSessionDTO closeSessionDTO = this.tradeItService
+                                                    .closeSession( customerId, accountId );
         logMethodEnd( methodName, closeSessionDTO );
         return closeSessionDTO;
     }

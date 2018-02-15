@@ -3,13 +3,13 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
-import com.stocktracker.weblayer.dto.LinkedAccountPositionDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,34 +37,15 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
     private TradeItAccountEntityService tradeItAccountEntityService;
 
     /**
-     * Get the positions for the linked account.
-     * @param customerId Used for validation.
-     * @param tradeItAccountId Need to retrieve the authToken from the TradeIt account.
-     * @param linkedAccountId Need to get the account number from the linked account.
-     * @return
-     */
-    public LinkedAccountPositionDTO getPositions( final int customerId, final int tradeItAccountId, final int linkedAccountId )
-        throws LinkedAccountNotFoundException
-    {
-        final String methodName = "getPositions";
-        logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getAccountEntity( customerId, tradeItAccountId );
-        final LinkedAccountEntity linkedAccountEntity = this.getLinkedAccountEntity( customerId, linkedAccountId );
-        final LinkedAccountPositionDTO linkedAccountPositionDTO = this.tradeItService
-                                                    .getPositions( linkedAccountEntity.getAccountNumber(),
-                                                                   tradeItAccountEntity.getAuthToken() );
-        logMethodEnd( methodName );
-        return linkedAccountPositionDTO;
-    }
-
-    /**
      * This method will retrieve all of the linked accounts (child to the tradeit_account table) for the TradeIt account.
      * @param customerId
      * @param tradeItAccountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
-    public List<LinkedAccountDTO> getLinkedAccounts( final int customerId, final int tradeItAccountId )
+    public List<LinkedAccountDTO> getLinkedAccounts( final int customerId,
+                                                     final int tradeItAccountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, customerId, tradeItAccountId );
@@ -106,14 +87,16 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @param linkedAccountId
      * @return
      * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     public GetAccountOverviewDTO getAccountOverview( final int customerId, final int tradeItAccountId, final int linkedAccountId )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "getAccountOverview";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getAccountEntity( customerId, tradeItAccountId );
+                                                              .getAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.getLinkedAccountEntity( customerId, linkedAccountId );
         final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
             .getAccountOverview( linkedAccountEntity.getAccountNumber(),

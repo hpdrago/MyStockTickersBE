@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.servicelayer.tradeit.apicalls.AnswerSecurityQuestionAPICall;
@@ -24,7 +25,6 @@ import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenUpdat
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
-import com.stocktracker.weblayer.dto.LinkedAccountPositionDTO;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
@@ -42,7 +42,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -132,8 +131,10 @@ public class TradeItService implements MyLogger
      * @param customerId
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );
@@ -153,9 +154,12 @@ public class TradeItService implements MyLogger
      * @param customerId
      * @param accountId
      * @return
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     public AuthenticateDTO authenticate( final int customerId, final int accountId )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, customerId, accountId );
@@ -212,10 +216,13 @@ public class TradeItService implements MyLogger
      * @param accountId
      * @param questionResponse The user's text response
      * @return
+     * @throws TradeItAccountNotFoundException
+     * @throws LinkedAccountNotFoundException
      */
     public AnswerSecurityQuestionDTO answerSecurityQuestion( final int customerId, final int accountId,
                                                              final String questionResponse )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, questionResponse );
@@ -242,20 +249,23 @@ public class TradeItService implements MyLogger
      * @param customerId
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     public KeepSessionAliveDTO keepSessionAlive( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, customerId, accountId  );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getAccountEntity( customerId, accountId );
+                                                              .getAccountEntity( customerId, accountId );
         final KeepSessionAliveAPICall keepSessionAliveAPICall = this.context.getBean( KeepSessionAliveAPICall.class );
         final KeepSessionAliveAPIResult keepSessionAliveAPIResult = keepSessionAliveAPICall.execute( tradeItAccountEntity );
         final KeepSessionAliveDTO keepSessionAliveDTO = this.context.getBean( KeepSessionAliveDTO.class );
         keepSessionAliveDTO.setResults( keepSessionAliveAPIResult );
         if ( keepSessionAliveAPIResult.isSuccessful() )
         {
-            this.tradeItAccountEntityService.keepSessionAliveSuccess( keepSessionAliveDTO, tradeItAccountEntity, keepSessionAliveAPIResult );
+            this.tradeItAccountEntityService
+                .keepSessionAliveSuccess( keepSessionAliveDTO, tradeItAccountEntity, keepSessionAliveAPIResult );
         }
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
@@ -266,18 +276,21 @@ public class TradeItService implements MyLogger
      * @param customerId
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     public CloseSessionDTO closeSession( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "closeSessionDTO";
         logMethodBegin( methodName, customerId, accountId  );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getAccountEntity( customerId, accountId );
+                                                              .getAccountEntity( customerId, accountId );
         final CloseSessionAPICall closeSessionAPICall = this.context.getBean( CloseSessionAPICall.class );
         final CloseSessionDTO closeSessionDTO = this.context.getBean( CloseSessionDTO.class );
         final CloseSessionAPIResult closeSessionAPIResult = closeSessionAPICall.execute( tradeItAccountEntity );
         tradeItAccountEntity.setAuthTimestamp( null );
-        this.tradeItAccountEntityService.saveAccount( tradeItAccountEntity );
+        this.tradeItAccountEntityService
+            .saveAccount( tradeItAccountEntity );
         closeSessionDTO.setResults( closeSessionAPIResult );
         logMethodEnd( methodName, closeSessionDTO );
         return closeSessionDTO;
@@ -324,7 +337,7 @@ public class TradeItService implements MyLogger
      * @param accountNumber The brokerage account number.
      * @return
      */
-    public List<LinkedAccountPositionDTO> getPositions( final String accountNumber, final String authToken )
+    public GetPositionsAPIResult getPositions( final String accountNumber, final String authToken )
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, accountNumber, authToken );
@@ -332,10 +345,8 @@ public class TradeItService implements MyLogger
         Objects.requireNonNull( authToken, "authToken cannot be null" );
         final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
         final GetPositionsAPIResult getPositionsAPIResult = getPositionsAPICall.execute( accountNumber, authToken );
-        final LinkedAccountPositionDTO linkedAccountPositionDTO = this.context.getBean( LinkedAccountPositionDTO.class );
-        linkedAccountPositionDTO.setResults( getPositionsAPIResult );
-        logMethodEnd( methodName, linkedAccountPositionDTO );
-        return linkedAccountPositionDTO;
+        logMethodEnd( methodName, getPositionsAPIResult );
+        return getPositionsAPIResult;
     }
 
     /**

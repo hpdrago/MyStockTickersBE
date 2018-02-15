@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @Table( name = "linked_account_position", schema = "stocktracker", catalog = "" )
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class LinkedAccountPositionEntity implements VersionedEntity<Integer>
+public class StockPositionEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer linkedAccountId;
@@ -238,12 +238,12 @@ public class LinkedAccountPositionEntity implements VersionedEntity<Integer>
         {
             return true;
         }
-        if ( !(o instanceof LinkedAccountPositionEntity) )
+        if ( !(o instanceof StockPositionEntity) )
         {
             return false;
         }
 
-        final LinkedAccountPositionEntity that = (LinkedAccountPositionEntity) o;
+        final StockPositionEntity that = (StockPositionEntity) o;
 
         if ( !id.equals( that.id ) )
         {

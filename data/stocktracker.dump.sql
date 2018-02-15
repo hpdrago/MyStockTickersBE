@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.18-log
+-- Server version	5.7.17-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -1088,7 +1088,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Temporary table structure for view `v_portfolio_stock`
+-- Temporary view structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -1114,7 +1114,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_note`
+-- Temporary view structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -1142,7 +1142,21 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_tag`
+-- Temporary view structure for view `v_stock_note_count`
+--
+
+DROP TABLE IF EXISTS `v_stock_note_count`;
+/*!50001 DROP VIEW IF EXISTS `v_stock_note_count`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `v_stock_note_count` AS SELECT 
+ 1 AS `customer_id`,
+ 1 AS `ticker_symbol`,
+ 1 AS `note_count`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Temporary view structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -1162,7 +1176,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary table structure for view `v_stock_to_buy`
+-- Temporary view structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1221,6 +1235,24 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 
 --
+-- Final view structure for view `v_stock_note_count`
+--
+
+/*!50001 DROP VIEW IF EXISTS `v_stock_note_count`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8 */;
+/*!50001 SET character_set_results     = utf8 */;
+/*!50001 SET collation_connection      = utf8_general_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`stocktracker`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `v_stock_note_count` AS select `sn`.`customer_id` AS `customer_id`,`sn`.`ticker_symbol` AS `ticker_symbol`,count(0) AS `note_count` from `stock_note` `sn` group by `sn`.`customer_id`,`sn`.`ticker_symbol` order by `sn`.`customer_id`,`sn`.`ticker_symbol` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+
+--
 -- Final view structure for view `v_stock_tag`
 --
 
@@ -1265,4 +1297,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-13 20:47:03
+-- Dump completed on 2018-02-14 16:03:18

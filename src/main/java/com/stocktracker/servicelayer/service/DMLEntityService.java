@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
@@ -12,6 +14,7 @@ public abstract class DMLEntityService<K extends Serializable,
                                        R extends JpaRepository<E,K>>
     extends BaseEntityService<K,E,D,R>
 {
+
     /**
      * Converts the DTO to and Entity and saves it to the database.
      * @param dto

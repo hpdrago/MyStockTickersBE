@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
@@ -72,7 +73,10 @@ public class LinkedAccountController extends AbstractController
 
     /**
      * Get all of the accounts linked to the brokerage account registered at TradeIt.
+     * @param tradeItAccountId
+     * @param customerId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL +
                              "/tradeItAccountId/{tradeItAccountId}" +
@@ -81,10 +85,12 @@ public class LinkedAccountController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable int tradeItAccountId,
                                                      final @PathVariable int customerId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountId, customerId );
-        List<LinkedAccountDTO> accounts = this.linkedAccountEntityService.getLinkedAccounts( customerId, tradeItAccountId );
+        List<LinkedAccountDTO> accounts = this.linkedAccountEntityService
+                                              .getLinkedAccounts( customerId, tradeItAccountId );
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }
@@ -95,6 +101,8 @@ public class LinkedAccountController extends AbstractController
      * @param tradeItAccountId
      * @param customerId
      * @return
+     * @throws TradeItAccountNotFoundException
+     * @throws LinkedAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
                              + "/linkedAccountId/{linkedAccountId}"
@@ -105,7 +113,8 @@ public class LinkedAccountController extends AbstractController
     public GetAccountOverviewDTO getAccountOverview( @PathVariable final int linkedAccountId,
                                                      @PathVariable final int tradeItAccountId,
                                                      @PathVariable final int customerId )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
 
     {
         final String methodName = "getAccountOverview";

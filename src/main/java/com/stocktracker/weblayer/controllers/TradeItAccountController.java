@@ -1,7 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.AccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
@@ -50,6 +50,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public TradeItAccountDTO getAccount( @PathVariable int accountId,
                                          @PathVariable int customerId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccount";
         logMethodBegin( methodName, accountId );
@@ -68,7 +69,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
                      method = RequestMethod.POST )
     public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
                                                             @PathVariable final int customerId )
-        throws AccountNotFoundException
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
@@ -86,12 +87,14 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @param customerId
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customer/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteAccount( @PathVariable int accountId,
                                                @PathVariable int customerId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "deleteAccount";
         logMethodBegin( methodName, accountId, customerId );
@@ -106,13 +109,15 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @param tradeItAccountDTO
      * @return
      * @throws EntityVersionMismatchException
+     * @throws TradeItAccountNotFoundException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable int customerId,
                                                           @RequestBody TradeItAccountDTO tradeItAccountDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );

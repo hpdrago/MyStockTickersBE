@@ -6,6 +6,7 @@ import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteState;
+import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,11 +14,17 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+/**
+ * This DTO contains a combination of information.  The positions are obtained from TradeIt and stored in the linked account
+ * position table.  The DTO also contains other stock information obtained from Yahoo or IExtrading
+ */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class LinkedAccountPositionDTO implements StockQuoteService.StockQuoteContainer,
-                                                 VersionedEntity<Integer>
+public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
+                                         VersionedEntity<Integer>
 {
+    private Integer tradeItAccountId;
+    private Integer linkedAccountId;
     private Integer id;
     private String tickerSymbol;
     private String symbolClass;
@@ -44,6 +51,24 @@ public class LinkedAccountPositionDTO implements StockQuoteService.StockQuoteCon
     private StockQuoteState stockQuoteState;
     private BigDecimal avgAnalystPriceTarget;
     private int version;
+
+    /**
+     * Copies the TradeIt position information.
+     * @param tradeItPosition
+     */
+    public void setResults( final TradeItPosition tradeItPosition )
+    {
+        this.costBasis = new BigDecimal( tradeItPosition.getCostbasis() );
+        this.holdingType = tradeItPosition.getHoldingType();
+        this.lastPrice = new BigDecimal( tradeItPosition.getLastPrice() );
+        this.quantity = new BigDecimal( tradeItPosition.getQuantity() );
+        this.tickerSymbol = tradeItPosition.getSymbol();
+        this.symbolClass = tradeItPosition.getSymbolClass();
+        this.todayGainLossDollar = new BigDecimal( tradeItPosition.getTodayGainLossDollar() );
+        this.todayGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
+        this.totalGainLossDollar = new BigDecimal( tradeItPosition.getTodayGainLossDollar() );
+        this.totalGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
+    }
 
     @Override
     public Integer getId()
@@ -274,5 +299,25 @@ public class LinkedAccountPositionDTO implements StockQuoteService.StockQuoteCon
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    public Integer getTradeItAccountId()
+    {
+        return tradeItAccountId;
+    }
+
+    public void setTradeItAccountId( Integer tradeItAccountId )
+    {
+        this.tradeItAccountId = tradeItAccountId;
+    }
+
+    public Integer getLinkedAccountId()
+    {
+        return linkedAccountId;
+    }
+
+    public void setLinkedAccountId( Integer linkedAccountId )
+    {
+        this.linkedAccountId = linkedAccountId;
     }
 }

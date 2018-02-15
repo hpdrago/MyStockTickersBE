@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.AccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
@@ -49,9 +49,10 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param customerId
      * @param accountId
      * @return
-     * @throws AccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     public TradeItAccountDTO getAccountDTO( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccountDTO";
         logMethodBegin( methodName, customerId, accountId );
@@ -66,16 +67,17 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param customerId
      * @param accountId
      * @return
-     * @throws AccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     public TradeItAccountEntity getAccountEntity( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccountDTO";
         logMethodBegin( methodName, customerId, accountId );
         TradeItAccountEntity tradeItAccountEntity = tradeItAccountRepository.findByCustomerIdAndId( customerId, accountId );
         if ( tradeItAccountEntity == null )
         {
-            throw new AccountNotFoundException( customerId, accountId );
+            throw new TradeItAccountNotFoundException( customerId, accountId );
         }
         logMethodEnd( methodName, tradeItAccountEntity );
         return tradeItAccountEntity;
@@ -142,8 +144,10 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * Delete the account for the customer.
      * @param customerId
      * @param accountId
+     * @throws TradeItAccountNotFoundException
      */
     public void deleteAccount( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, accountId );
@@ -157,9 +161,11 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param customerId
      * @param tradeItAccountDTO
      * @throws EntityVersionMismatchException
+     * @throws TradeItAccountNotFoundException
      */
     public TradeItAccountDTO updateAccount( final int customerId, @NotNull final TradeItAccountDTO tradeItAccountDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "updateAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
@@ -188,14 +194,15 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * Determines if the account exists for {@code accountId}
      * @param customerId
      * @param accountId
-     * @throws AccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     private void validateAccountId( final int customerId, final int accountId )
+        throws TradeItAccountNotFoundException
     {
         TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountRepository.findById( accountId );
         if ( tradeItAccountEntity == null )
         {
-            throw new AccountNotFoundException( customerId, accountId ) ;
+            throw new TradeItAccountNotFoundException( customerId, accountId ) ;
         }
     }
 
@@ -222,11 +229,14 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param authenticateDTO The linked accounts will be set in this DTO from the linked accounts.
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
      */
     public void authenticationSuccessful( final TradeItAccountEntity tradeItAccountEntity,
                                           final AuthenticateAPIResult authenticateAPIResult,
                                           final AuthenticateDTO authenticateDTO )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "authenticationSuccessful";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
@@ -236,8 +246,6 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
          * authentication.
          */
         tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-        //tradeItAccountEntity.setAuthUuid( null );
-        //tradeItAccountEntity.setAuthToken( null );
         this.tradeItAccountRepository.save( tradeItAccountEntity );
         /*
          * Gather up all of the linked accounts and add them to the authenticate DTO.
@@ -260,10 +268,12 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param tradeItAccountEntity
      * @param keepSessionAliveAPIResult
      * @return
+     * @throws TradeItAccountNotFoundException
      */
     public void keepSessionAliveSuccess( final KeepSessionAliveDTO keepSessionAliveDTO,
                                          final TradeItAccountEntity tradeItAccountEntity,
                                          final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );

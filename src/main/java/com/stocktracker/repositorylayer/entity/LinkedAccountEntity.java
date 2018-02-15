@@ -38,7 +38,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     private BigDecimal totalAbsoluteReturn;
     private BigDecimal totalPercentReturn;
     private BigDecimal marginCash;
-    private Collection<LinkedAccountPositionEntity> linkedAccountPositionsById;
+    private Collection<StockPositionEntity> linkedAccountPositionsById;
     private Timestamp createDate;
     private Timestamp updateDate;
     private Integer version;
@@ -290,12 +290,12 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @OneToMany( mappedBy = "linkedAccountByLinkedAccountId" )
-    public Collection<LinkedAccountPositionEntity> getLinkedAccountPositionsById()
+    public Collection<StockPositionEntity> getLinkedAccountPositionsById()
     {
         return linkedAccountPositionsById;
     }
 
-    public void setLinkedAccountPositionsById( final Collection<LinkedAccountPositionEntity> linkedAccountPositionsById )
+    public void setLinkedAccountPositionsById( final Collection<StockPositionEntity> linkedAccountPositionsById )
     {
         this.linkedAccountPositionsById = linkedAccountPositionsById;
     }

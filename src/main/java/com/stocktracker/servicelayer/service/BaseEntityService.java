@@ -1,8 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +26,9 @@ public abstract class BaseEntityService<K extends Serializable,
                                         R extends JpaRepository<E, K>>
                                         implements MyLogger
 {
+    @Autowired
+    protected ApplicationContext context;
+
     /**
      * Subclass must override this method to copy properties from the database entity to the DTO.
      * @param entity
