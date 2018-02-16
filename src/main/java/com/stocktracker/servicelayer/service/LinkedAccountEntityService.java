@@ -52,8 +52,8 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getAccountEntity( customerId, tradeItAccountId );
         final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
-                                                                    .findAllByCustomerIdAndParentAccountId( customerId,
-                                                                                                            tradeItAccountId );
+                                                                    .findAllByCustomerIdAndTradeItAccountId( customerId,
+                                                                                                             tradeItAccountId );
         final List<LinkedAccountDTO> linkedAccountDTOs = this.entitiesToDTOs( linkedAccountEntities );
         linkedAccountDTOs.forEach( linkedAccountDTO -> this.updateAccountSummaryInformation( tradeItAccountEntity.getAuthToken(),
                                                                                              linkedAccountDTO ) );

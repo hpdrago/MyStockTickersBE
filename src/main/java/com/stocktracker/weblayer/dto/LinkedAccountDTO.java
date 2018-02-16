@@ -16,7 +16,7 @@ public class LinkedAccountDTO implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
-    private Integer parentAccountId;
+    private Integer tradeItAccountId;
     private String accountNumber;
     private String accountName;
     private Integer accountIndex;
@@ -52,14 +52,14 @@ public class LinkedAccountDTO implements VersionedEntity<Integer>
         this.id = id;
     }
 
-    public Integer getParentAccountId()
+    public Integer getTradeItAccountId()
     {
-        return parentAccountId;
+        return tradeItAccountId;
     }
 
-    public void setParentAccountId( Integer parentAccountId )
+    public void setTradeItAccountId( Integer tradeItAccountId )
     {
-        this.parentAccountId = parentAccountId;
+        this.tradeItAccountId = tradeItAccountId;
     }
 
     public String getAccountNumber()
@@ -235,7 +235,7 @@ public class LinkedAccountDTO implements VersionedEntity<Integer>
         final StringBuilder sb = new StringBuilder( "LinkedAccountDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", parentAccountId=" ).append( parentAccountId );
+        sb.append( ", tradeItAccountId=" ).append( tradeItAccountId );
         sb.append( ", accountNumber='" ).append( accountNumber ).append( '\'' );
         sb.append( ", accountName='" ).append( accountName ).append( '\'' );
         sb.append( ", accountIndex=" ).append( accountIndex );

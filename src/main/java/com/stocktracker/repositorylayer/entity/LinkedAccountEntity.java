@@ -25,11 +25,11 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
-    private Integer parentAccountId;
+    private Integer tradeItAccountId;
     private String accountNumber;
     private String accountName;
     private String accountIndex;
-    private TradeItAccountEntity accountByParentAccountId;
+    private TradeItAccountEntity accountByTradeItAccountId;
     private BigDecimal availableCash;
     private BigDecimal buyingPower;
     private BigDecimal totalValue;
@@ -71,15 +71,15 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "parent_account_id", updatable = false, insertable = false, nullable = false )
-    public Integer getParentAccountId()
+    @Column( name = "tradeit_account_id", updatable = false, insertable = false, nullable = false )
+    public Integer getTradeItAccountId()
     {
-        return parentAccountId;
+        return tradeItAccountId;
     }
 
-    public void setParentAccountId( final Integer parentAccountId )
+    public void setTradeItAccountId( final Integer tradeItAccountId )
     {
-        this.parentAccountId = parentAccountId;
+        this.tradeItAccountId = tradeItAccountId;
     }
 
     @Basic
@@ -143,7 +143,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "update_date", nullable = true )
+    @Column( name = "update_date" )
     public Timestamp getUpdateDate()
     {
         return updateDate;
@@ -156,10 +156,10 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
 
     @Override
     @Basic
-    @Column( name = "version", nullable = false )
+    @Column( name = "version" )
     public Integer getVersion()
     {
-        return null;
+        return this.version;
     }
 
     public void setVersion( final Integer version )
@@ -169,16 +169,16 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
 
 
     @ManyToOne
-    @JoinColumn( name = "parent_account_id", referencedColumnName = "id", nullable = false )
-    public TradeItAccountEntity getAccountByParentAccountId()
+    @JoinColumn( name = "tradeit_account_id", referencedColumnName = "id", nullable = false )
+    public TradeItAccountEntity getAccountByTradeItAccountId()
     {
-        return accountByParentAccountId;
+        return accountByTradeItAccountId;
     }
 
-    public void setAccountByParentAccountId( final TradeItAccountEntity accountByParentAccountId )
+    public void setAccountByTradeItAccountId( final TradeItAccountEntity accountByTradeItAccountId )
     {
-        this.accountByParentAccountId = accountByParentAccountId;
-        this.parentAccountId = accountByParentAccountId.getId();
+        this.accountByTradeItAccountId = accountByTradeItAccountId;
+        this.tradeItAccountId = accountByTradeItAccountId.getId();
     }
 
     /**
@@ -350,7 +350,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
         final StringBuilder sb = new StringBuilder( "LinkedAccountEntity{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", parentAccountId=" ).append( parentAccountId );
+        sb.append( ", tradeItAccountId=" ).append( tradeItAccountId );
         sb.append( ", accountNumber='" ).append( accountNumber ).append( '\'' );
         sb.append( ", accountName='" ).append( accountName ).append( '\'' );
         sb.append( ", accountIndex=" ).append( accountIndex );

@@ -28,7 +28,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      */
     private String informationType;
     private String securityQuestion;
-    private String securityOptions[];
+    private String securityQuestionOptions[];
 
     /**
      * Default constructor.
@@ -42,7 +42,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
         super.setResults( results );
         this.accounts = results.getAccounts();
         this.informationType = results.getInformationType();
-        this.securityOptions = results.getSecurityOptions();
+        this.securityQuestionOptions = results.getSecurityQuestionOptions();
         this.securityQuestion = results.getSecurityQuestion();
     }
 
@@ -66,14 +66,14 @@ public class AuthenticateAPIResult extends TradeItAPIResult
         this.securityQuestion = securityQuestion;
     }
 
-    public String[] getSecurityOptions()
+    public String[] getSecurityQuestionOptions()
     {
-        return securityOptions;
+        return securityQuestionOptions;
     }
 
-    public void setSecurityOptions( String[] securityOptions )
+    public void setSecurityQuestionOptions( String[] securityQuestionOptions )
     {
-        this.securityOptions = securityOptions;
+        this.securityQuestionOptions = securityQuestionOptions;
     }
 
     /**
@@ -124,7 +124,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
         sb.append( "tradeItAccounts=" ).append( Arrays.toString( accounts ) );
         sb.append( ", informationType='" ).append( informationType ).append( '\'' );
         sb.append( ", securityQuestion='" ).append( securityQuestion ).append( '\'' );
-        sb.append( ", securityOptions=" ).append( Arrays.toString( securityOptions ) );
+        sb.append( ", securityQuestionOptions=" ).append( Arrays.toString( securityQuestionOptions ) );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

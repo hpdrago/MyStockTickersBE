@@ -94,6 +94,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
         TradeItAccountEntity tradeItAccountEntity = this.dtoToEntity( tradeItAccountDTO );
+        tradeItAccountEntity.setVersion( 1 );
         CustomerEntity customerEntity = this.customerService.getCustomerEntity( customerId );
         logDebug( methodName, "customerEntity: {0}", customerEntity );
         tradeItAccountEntity.setCustomerByCustomerId( customerEntity );
@@ -133,6 +134,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
         tradeItAccountEntity.setCustomerByCustomerId( this.customerService.getCustomerEntity( customerId ) );
+        tradeItAccountEntity.setVersion( 1 );
         tradeItAccountEntity = this.tradeItAccountRepository.save( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
@@ -149,7 +151,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
     public void deleteAccount( final int customerId, final int accountId )
         throws TradeItAccountNotFoundException
     {
-        final String methodName = "createAccount";
+        final String methodName = "deleteAccount";
         logMethodBegin( methodName, customerId, accountId );
         this.validateAccountId( customerId, accountId );
         this.tradeItAccountRepository.delete( accountId );
@@ -302,10 +304,11 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
          * Convert the account information return from TradeIt to a LinkedEntityAccount instance.
          */
         final LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
+        linkedAccountEntity.setVersion( 1 );
         /*
          * Set the bidirectional relationship
          */
-        linkedAccountEntity.setAccountByParentAccountId( tradeItAccountEntity );
+        linkedAccountEntity.setAccountByTradeItAccountId( tradeItAccountEntity );
         tradeItAccountEntity.addLinkedAccount( linkedAccountEntity );
         /*
          * Save the linked account

@@ -43,6 +43,10 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
     private CustomerEntity customerByCustomerId;
     private Collection<LinkedAccountEntity> linkedAccountsById;
 
+    public TradeItAccountEntity()
+    {
+    }
+
     public static TradeItAccountEntity newInstance()
     {
         return new TradeItAccountEntity();
@@ -182,7 +186,7 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
         this.version = version;
     }
 
-    @OneToMany( mappedBy = "accountByParentAccountId" )
+    @OneToMany( mappedBy = "accountByTradeItAccountId" )
     public Collection<LinkedAccountEntity> getLinkedAccountsById()
     {
         return linkedAccountsById;

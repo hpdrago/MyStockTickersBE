@@ -73,13 +73,16 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
                                         final int linkedAccountId,
                                         final GetPositionsAPIResult getPositionsAPIResult )
     {
-        for ( final TradeItPosition tradeItPosition:  getPositionsAPIResult.getPositions() )
+        if ( getPositionsAPIResult.getPositions() != null )
         {
-            final StockPositionDTO stockPositionDTO = this.context.getBean( StockPositionDTO.class );
-            stockPositionDTO.setResults( tradeItPosition );
-            stockPositionDTO.setCustomerId( customerId );
-            stockPositionDTO.setTradeItAccountId( tradeItAccountId );
-            stockPositionDTO.setLinkedAccountId( linkedAccountId );
+            for ( final TradeItPosition tradeItPosition : getPositionsAPIResult.getPositions() )
+            {
+                final StockPositionDTO stockPositionDTO = this.context.getBean( StockPositionDTO.class );
+                stockPositionDTO.setResults( tradeItPosition );
+                stockPositionDTO.setCustomerId( customerId );
+                stockPositionDTO.setTradeItAccountId( tradeItAccountId );
+                stockPositionDTO.setLinkedAccountId( linkedAccountId );
+            }
         }
     }
 
