@@ -854,9 +854,8 @@ CREATE TABLE `stock_position` (
   `update_date` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `IDX_UNIQUE_ID_TICKER_SYMBOL` (`id`,`ticker_symbol`),
-  KEY `FK_LINKED_ACCOUNT_POSITION_LINKED_ACCOUNT_idx` (`linked_account_id`),
-  CONSTRAINT `FK_LINKED_ACCOUNT_POSITION_LINKED_ACCOUNT` FOREIGN KEY (`linked_account_id`) REFERENCES `linked_account` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  UNIQUE KEY `IDX_UNIQUE_LINKED_ACCOUNT_ID_TICKER_SYMBOL` (`linked_account_id`,`ticker_symbol`),
+  CONSTRAINT `FK_LINKED_ACCOUNT_STOCK_POSITION` FOREIGN KEY (`linked_account_id`) REFERENCES `linked_account` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1297,4 +1296,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-18 12:52:58
+-- Dump completed on 2018-02-18 13:04:01
