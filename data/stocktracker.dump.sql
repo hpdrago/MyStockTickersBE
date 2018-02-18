@@ -208,67 +208,6 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Table structure for table `linked_account_position`
---
-
-DROP TABLE IF EXISTS `linked_account_position`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `linked_account_position` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `linked_account_id` int(11) DEFAULT NULL,
-  `cost_basis` decimal(8,2) DEFAULT NULL,
-  `holding_type` varchar(5) DEFAULT NULL,
-  `last_price` decimal(8,2) DEFAULT NULL,
-  `quantity` decimal(8,2) DEFAULT NULL,
-  `ticker_symbol` char(5) DEFAULT NULL,
-  `symbol_class` varchar(20) DEFAULT NULL,
-  `today_gain_loss_dollar` decimal(8,2) DEFAULT NULL,
-  `today_gain_loss_percentage` decimal(8,2) DEFAULT NULL,
-  `total_gain_loss_dollar` decimal(8,2) DEFAULT NULL,
-  `total_gain_loss_percentage` decimal(8,2) DEFAULT NULL,
-  `create_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_date` timestamp NULL DEFAULT NULL,
-  `version` int(11) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `IDX_UNIQUE_ID_TICKER_SYMBOL` (`id`,`ticker_symbol`),
-  KEY `FK_LINKED_ACCOUNT_POSITION_LINKED_ACCOUNT_idx` (`linked_account_id`),
-  CONSTRAINT `FK_LINKED_ACCOUNT_POSITION_LINKED_ACCOUNT` FOREIGN KEY (`linked_account_id`) REFERENCES `linked_account` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `linked_account_position`
---
-
-LOCK TABLES `linked_account_position` WRITE;
-/*!40000 ALTER TABLE `linked_account_position` DISABLE KEYS */;
-/*!40000 ALTER TABLE `linked_account_position` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`linked_account_position_BEFORE_UPDATE` BEFORE UPDATE ON `linked_account_position` FOR EACH ROW
-BEGIN 
-    SET NEW.UPDATE_DATE = current_timestamp();
-    /*
-     * Increment the version number
-     */
-    SET NEW.VERSION = OLD.VERSION + 1;
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-
---
 -- Table structure for table `portfolio`
 --
 
@@ -892,6 +831,67 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `stock_position`
+--
+
+DROP TABLE IF EXISTS `stock_position`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stock_position` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `linked_account_id` int(11) DEFAULT NULL,
+  `cost_basis` decimal(8,2) DEFAULT NULL,
+  `holding_type` varchar(5) DEFAULT NULL,
+  `last_price` decimal(8,2) DEFAULT NULL,
+  `quantity` decimal(8,2) DEFAULT NULL,
+  `ticker_symbol` char(5) DEFAULT NULL,
+  `symbol_class` varchar(20) DEFAULT NULL,
+  `today_gain_loss_dollar` decimal(8,2) DEFAULT NULL,
+  `today_gain_loss_percentage` decimal(8,2) DEFAULT NULL,
+  `total_gain_loss_dollar` decimal(8,2) DEFAULT NULL,
+  `total_gain_loss_percentage` decimal(8,2) DEFAULT NULL,
+  `create_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  `version` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `IDX_UNIQUE_ID_TICKER_SYMBOL` (`id`,`ticker_symbol`),
+  KEY `FK_LINKED_ACCOUNT_POSITION_LINKED_ACCOUNT_idx` (`linked_account_id`),
+  CONSTRAINT `FK_LINKED_ACCOUNT_POSITION_LINKED_ACCOUNT` FOREIGN KEY (`linked_account_id`) REFERENCES `linked_account` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_position`
+--
+
+LOCK TABLES `stock_position` WRITE;
+/*!40000 ALTER TABLE `stock_position` DISABLE KEYS */;
+/*!40000 ALTER TABLE `stock_position` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`linked_account_position_BEFORE_UPDATE` BEFORE UPDATE ON `stock_position` FOR EACH ROW
+BEGIN 
+    SET NEW.UPDATE_DATE = current_timestamp();
+    /*
+     * Increment the version number
+     */
+    SET NEW.VERSION = OLD.VERSION + 1;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
 -- Table structure for table `stock_tag`
 --
 
@@ -1297,4 +1297,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-16 15:24:44
+-- Dump completed on 2018-02-18 12:52:58
