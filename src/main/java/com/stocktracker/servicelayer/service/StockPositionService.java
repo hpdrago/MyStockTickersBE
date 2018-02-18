@@ -30,6 +30,7 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     private TradeItService tradeItService;
     private TradeItAccountEntityService tradeItAccountEntityService;
     private LinkedAccountEntityService linkedAccountEntityService;
+    private StockPositionComparisonService stockPositionComparisonService;
 
     /**
      * Get the positions for the linked account.
@@ -49,17 +50,35 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getAccountEntity( customerId, tradeItAccountId );
+                                                              .getAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
                                                             .getLinkedAccountEntity( customerId, linkedAccountId );
+        /*
+         * Call to TradeIt to get the positions.
+         */
         final GetPositionsAPIResult getPositionsAPIResult = this.tradeItService
                                                                 .getPositions( linkedAccountEntity.getAccountNumber(),
                                                                                tradeItAccountEntity.getAuthToken() );
+
+        /*
+         * Get the positions stored in the database.
+         */
+        final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
+                                                                     .findAllByLinkedAccountId( linkedAccountId );
+
+        /*
+         * Compare the positions returned from TradeIt with the contents of the database and make database updated
+         * based on the comparison results.  This is an asynchronous calls so that we don't make the user wait for
+         * the result as TradeIt is the source of truth concerning the positions the user has with the linked account.
+         */
+        this.stockPositionComparisonService
+            .comparePositions( linkedAccountId, stockPositionEntities, getPositionsAPIResult );
+
         /*
          * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
          */
-        final List<StockPositionDTO> positions = new ArrayList<>();
-        this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId, getPositionsAPIResult );
+        final List<StockPositionDTO> positions = this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId,
+                                                                             getPositionsAPIResult );
         logMethodEnd( methodName, "Returning " + positions.size() + " positions" );
         return positions;
     }
@@ -68,11 +87,12 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * Exracts the position results from {@code getPositionsAPIResult}
      * @param getPositionsAPIResult
      */
-    private void createPositionDTOList( final int customerId,
-                                        final int tradeItAccountId,
-                                        final int linkedAccountId,
-                                        final GetPositionsAPIResult getPositionsAPIResult )
+    private List<StockPositionDTO> createPositionDTOList( final int customerId,
+                                                          final int tradeItAccountId,
+                                                          final int linkedAccountId,
+                                                          final GetPositionsAPIResult getPositionsAPIResult )
     {
+        final List<StockPositionDTO> stockPositionDTOList = new ArrayList<>();
         if ( getPositionsAPIResult.getPositions() != null )
         {
             for ( final TradeItPosition tradeItPosition : getPositionsAPIResult.getPositions() )
@@ -82,8 +102,10 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
                 stockPositionDTO.setCustomerId( customerId );
                 stockPositionDTO.setTradeItAccountId( tradeItAccountId );
                 stockPositionDTO.setLinkedAccountId( linkedAccountId );
+                stockPositionDTOList.add( stockPositionDTO );
             }
         }
+        return stockPositionDTOList;
     }
 
     @Override
@@ -129,6 +151,12 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     public void setLinkedAccountEntityService( final LinkedAccountEntityService linkedAccountEntityService )
     {
         this.linkedAccountEntityService = linkedAccountEntityService;
+    }
+
+    @Autowired
+    public void setStockPositionComparisonService( final StockPositionComparisonService stockPositionComparisonService )
+    {
+        this.stockPositionComparisonService = stockPositionComparisonService;
     }
 
 }

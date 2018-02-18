@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.StockPositionComparisonService;
+import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Scope;
@@ -15,7 +17,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-@Table( name = "linked_account_position", schema = "stocktracker", catalog = "" )
+@Table( name = "stock_position", schema = "stocktracker", catalog = "" )
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPositionEntity implements VersionedEntity<Integer>
@@ -36,6 +38,80 @@ public class StockPositionEntity implements VersionedEntity<Integer>
     private Timestamp updateDate;
     private Integer version;
     private LinkedAccountEntity linkedAccountByLinkedAccountId;
+
+    /**
+     * Create a new instance from a TradeItPosition instance.
+     * @param tradeItPosition
+     * @return
+     */
+    public static StockPositionEntity newInstance( final TradeItPosition tradeItPosition )
+    {
+        return new StockPositionEntity( tradeItPosition );
+    }
+
+    /**
+     * Copy creator.
+     * @param stockPositionEntity
+     * @return
+     */
+    public static StockPositionEntity newInstance( final StockPositionEntity stockPositionEntity )
+    {
+        return new StockPositionEntity( stockPositionEntity );
+    }
+
+    public StockPositionEntity()
+    {
+    }
+
+    /**
+     * Copy constructor.
+     * @param stockPositionEntity
+     */
+    public StockPositionEntity( final StockPositionEntity stockPositionEntity )
+    {
+        this.id = stockPositionEntity.id;
+        this.costBasis = stockPositionEntity.costBasis;
+        this.holdingType = stockPositionEntity.holdingType;
+        this.lastPrice = stockPositionEntity.lastPrice;
+        this.quantity = stockPositionEntity.quantity;
+        this.tickerSymbol = stockPositionEntity.tickerSymbol;
+        this.symbolClass = stockPositionEntity.symbolClass;
+        this.todayGainLossDollar = stockPositionEntity.todayGainLossDollar;
+        this.todayGainLossPercentage = stockPositionEntity.todayGainLossPercentage;
+        this.totalGainLossDollar = stockPositionEntity.totalGainLossDollar;
+        this.totalGainLossPercentage = stockPositionEntity.totalGainLossPercentage;
+        this.createDate = stockPositionEntity.createDate;
+        this.updateDate = stockPositionEntity.updateDate;
+        this.version = stockPositionEntity.version;
+        this.linkedAccountByLinkedAccountId = stockPositionEntity.linkedAccountByLinkedAccountId;
+    }
+
+    /**
+     * Creates a new entity instance from a TradeItPosition.
+     * @param tradeItPosition
+     */
+    public StockPositionEntity( final TradeItPosition tradeItPosition )
+    {
+        this.setValues( tradeItPosition );
+    }
+
+    /**
+     * Set the TradeItPosition values.
+     * @param tradeItPosition
+     */
+    public void setValues( final TradeItPosition tradeItPosition )
+    {
+        this.costBasis = new BigDecimal( tradeItPosition.getCostbasis() );
+        this.holdingType = tradeItPosition.getHoldingType();
+        this.lastPrice = new BigDecimal( tradeItPosition.getLastPrice() );
+        this.quantity = new BigDecimal( tradeItPosition.getQuantity() );
+        this.tickerSymbol = tradeItPosition.getSymbol();
+        this.symbolClass = tradeItPosition.getSymbolClass();
+        this.todayGainLossDollar = new BigDecimal( tradeItPosition.getTodayGainLossDollar() );
+        this.todayGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
+        this.totalGainLossDollar = new BigDecimal( tradeItPosition.getTotalGainLossDollar() );
+        this.totalGainLossPercentage = new BigDecimal( tradeItPosition.getTotalGainLossPercentage() );
+    }
 
     @Id
     @Column( name = "id", nullable = false )

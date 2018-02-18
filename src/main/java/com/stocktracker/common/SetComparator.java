@@ -1,6 +1,9 @@
 package com.stocktracker.common;
 
 import com.google.common.collect.Sets;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Set;
@@ -11,6 +14,8 @@ import java.util.TreeSet;
  * contains three sets: new items, deleted items, and matching items.  Each of these sets can be empty sets.
  * @param <T>
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class SetComparator<T>
 {
     /**

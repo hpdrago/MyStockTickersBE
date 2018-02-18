@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 /**
  * This class performs the comparison of brokerage accounts that are returned from an authenticate call to the current
- * list of linked accounts already in the database.  There are for possibilities: new accounts, deleted, accounts, updated
+ * list of linked accounts already in the database.  There are four possibilities: new accounts, deleted, accounts, updated
  * account, and no changes.  This class handles all of these scenarios although any database work is forwarded to the
  * {@code accountService}.
  */

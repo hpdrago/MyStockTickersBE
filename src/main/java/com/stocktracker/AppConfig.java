@@ -16,13 +16,28 @@ public class AppConfig
      * @return Thread pool executor
      */
     @Bean(name = "stockQuoteThreadPool")
-    public Executor threadPoolTaskExecutor()
+    public Executor stockQuoteThreadPoolTaskExecutor()
     {
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         pool.setCorePoolSize(5);
         pool.setMaxPoolSize(30);
         pool.setWaitForTasksToCompleteOnShutdown(true);
         pool.setThreadNamePrefix( "StockQuote-" );
+        return pool;
+    }
+
+    /**
+     * http://www.baeldung.com/spring-async
+     * @return Thread pool executor
+     */
+    @Bean(name = "stockPositionEvaluatorThreadPool")
+    public Executor stockPositionEvaluatorTaskExecutor()
+    {
+        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+        pool.setCorePoolSize(5);
+        pool.setMaxPoolSize(30);
+        pool.setWaitForTasksToCompleteOnShutdown(true);
+        pool.setThreadNamePrefix( "PositionEvaluator-" );
         return pool;
     }
 }
