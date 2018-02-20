@@ -31,15 +31,31 @@ public abstract class DMLEntityService<K extends Serializable,
     }
 
     /**
+     * Add the entity to the database.
+     * @param entity
+     * @return
+     */
+    public E addEntity( final E entity )
+    {
+        final String methodName = "addEntity";
+        logMethodBegin( methodName, entity );
+        entity.setVersion( 1 );
+        final E returnEntity = this.getRepository()
+                                   .save( entity );
+        logMethodEnd( methodName, returnEntity );
+        return returnEntity;
+    }
+
+    /**
      * Converts the DTO to and Entity and saves it to the database.
      * @param dto
      * @return Entity that was saved to the database.
      * @throws EntityVersionMismatchException
      */
-    public D saveEntity( final D dto  )
+    public D saveDTO( final D dto  )
         throws EntityVersionMismatchException
     {
-        final String methodName = "saveEntity";
+        final String methodName = "saveDTO";
         logMethodBegin( methodName, dto );
         checkEntityVersion( dto );
         final E entity = this.dtoToEntity( dto );
@@ -50,50 +66,48 @@ public abstract class DMLEntityService<K extends Serializable,
     }
 
     /**
-     * Add the entity to the database.
-     * @param entity
-     * @return
-     */
-    public E addEntity( final E entity )
-    {
-        final String methodName = "addEntity";
-        logMethodBegin( methodName, entity );
-        entity.setVersion( 1 );
-        final E returnEntity = this.saveEntity( entity );
-        logMethodEnd( methodName, returnEntity );
-        return returnEntity;
-    }
-
-    /**
      * Saves the entity to the database.
      * @param entity
      * @return
+     * @throws EntityVersionMismatchException
      */
     public E saveEntity( final E entity )
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveEntity";
         logMethodBegin( methodName, entity );
-        final E savedEntity = this.getRepository().save( entity );
+        this.checkEntityVersion( entity );
+        final E savedEntity = this.getRepository()
+                                  .save( entity );
         logMethodEnd( methodName, entity );
         return savedEntity;
     }
 
     /**
-     * Compares the dto.version to the version in the database and if the version are not the same, then
-     * {@code EntityVersionMismatchException} is thrown.
-     * @param dto
+     * Compares the entity.version to the version in the database and if the version are not the same, then
+     * {@code EntityVersionMismatchException} is thrown. If the entity doesn't exist, its version is set to 1.
+     * @param entity
      * @return
+     * @throws EntityVersionMismatchException if the database entity (if found) doesn't match the {@code entity}
+     *         argument's version.
      */
-    public E checkEntityVersion( final VersionedEntity<K> dto )
+    public void checkEntityVersion( final VersionedEntity<K> entity )
         throws EntityVersionMismatchException
     {
-        final E entity = this.getRepository()
-                             .findOne( dto.getId() );
-        if ( entity.getVersion() != dto.getVersion() )
+        E dbEntity = this.getRepository()
+                         .findOne( entity.getId() );
+        if ( dbEntity == null )
         {
-            throw new EntityVersionMismatchException( String.format( "Entity version mismatch(%d <> %d)",
-                                                                     dto.getVersion(), entity.getVersion() ));
+            entity.setVersion( 1 );
         }
-        return entity;
+        else
+        {
+            if ( entity.getVersion() != dbEntity.getVersion() )
+            {
+                throw new EntityVersionMismatchException( dbEntity.getVersion(),
+                                                          String.format( "Entity version mismatch(%d <> %d)",
+                                                                         dbEntity.getVersion(), entity.getVersion() ) );
+            }
+        }
     }
 }

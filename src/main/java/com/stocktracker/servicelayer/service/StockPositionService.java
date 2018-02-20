@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
@@ -41,13 +42,15 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public List<StockPositionDTO> getPositions( final int customerId,
                                                 final int tradeItAccountId,
                                                 final int linkedAccountId )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );

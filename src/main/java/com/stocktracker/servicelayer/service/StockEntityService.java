@@ -163,7 +163,6 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
      * @return
      * @throws StockQuoteUnavailableException
      * @throws StockNotFoundException
-     * @throws EntityVersionMismatchException
      */
     public StockEntity getStockEntity( final String tickerSymbol )
         throws StockQuoteUnavailableException,
@@ -186,7 +185,17 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
             {
                 logDebug( methodName, "Creating new stock table entry" );
                 stockEntity = stockQuoteToStockEntity( stockQuote );
-                this.stockRepository.save( stockEntity );
+                try
+                {
+                    this.saveStockEntity( stockEntity );
+                }
+                catch( EntityVersionMismatchException e )
+                {
+                    logError( methodName, "Failed version check but saving stock anyway", e );
+                    stockEntity.setVersion( e.getCurrentVersion() );
+                    this.getRepository()
+                        .save( stockEntity );
+                }
             }
         }
         logMethodEnd( methodName, stockEntity );
@@ -215,14 +224,10 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
             }
             catch( EntityVersionMismatchException e )
             {
-                try
-                {
-                    this.saveStockEntity( stockEntity );
-                }
-                catch( EntityVersionMismatchException e1 )
-                {
-                    logError( methodName, "Final update failed", e1 );
-                }
+                logError( methodName, "Failed version check but saving anyway " + stockEntity, e );
+                stockEntity.setVersion( e.getCurrentVersion() );
+                this.stockRepository
+                    .save( stockEntity );
             }
         }
         logMethodEnd( methodName );
@@ -231,6 +236,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     /**
      * Saves the {@code stockEntity} to the database.
      * @param stockEntity
+     * @throws EntityVersionMismatchException
      */
     public void saveStockEntity( final StockEntity stockEntity )
         throws EntityVersionMismatchException
@@ -238,8 +244,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         final String methodName = "saveStockEntity";
         logMethodBegin( methodName, stockEntity );
         Objects.requireNonNull( stockEntity, "stockEntity cannot be null" );
-        super.checkEntityVersion( stockEntity );
-        this.stockRepository.save( stockEntity );
+        this.saveEntity( stockEntity );
         logMethodEnd( methodName );
     }
 

@@ -23,7 +23,7 @@ public class TradeItURLs
     private static final String ANSWER_SECURITY_QUESTION_URL = BASE_URL + "/user/answerSecurityQuestion" + "?srv=" + SRV_TAG;
     private static final String CLOSE_SESSION_URL = BASE_URL + "/user/closeSession";
     private static final String KEEP_SESSION_ALIVE_URL = BASE_URL + "/user/keepSessionAlive";
-    private static final String GET_ACCOUNT_OVERVIEW_URL = BASE_URL + "/balance/getAccountOverv";
+    private static final String GET_ACCOUNT_OVERVIEW_URL = BASE_URL + "/balance/getAccountOverview";
     private static final String GET_POSITIONS_URL = BASE_URL + "/position/getPositions";
 
     @Autowired

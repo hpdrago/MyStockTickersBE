@@ -167,7 +167,7 @@ public class StockToBuyEntityService extends StockQuoteContainerEntityService<In
         Objects.requireNonNull( stockToBuyDTO, "stockToBuyDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
         this.stockService.checkStockTableEntry( stockToBuyDTO.getTickerSymbol() );
-        StockToBuyDTO returnStockToBuyDTO = super.saveEntity( stockToBuyDTO );
+        StockToBuyDTO returnStockToBuyDTO = this.saveDTO( stockToBuyDTO );
         this.stockTagService.saveStockTags( stockToBuyDTO.getCustomerId(),
                                             stockToBuyDTO.getTickerSymbol(),
                                             StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,

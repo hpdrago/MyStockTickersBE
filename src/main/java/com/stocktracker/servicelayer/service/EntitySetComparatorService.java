@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
 
 import java.io.Serializable;
@@ -28,10 +29,12 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param entityService The entity repository.
      * @param collection1 Collection of entities from non-database source.
      * @param collection2 Current entity values from the database.
+     * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
      */
     public void compareAndUpdateDatabase( final DMLEntityService<K,E,?,?> entityService,
                                           final Collection<E> collection1,
                                           final Collection<E> collection2 )
+        throws EntityVersionMismatchException
     {
         final String methodName = "compareAndUpdateDatabase";
         logMethodBegin( methodName );
@@ -46,9 +49,11 @@ public class EntitySetComparatorService<K extends Serializable,
      * Updates the database for each entity in {@oode matchingEntities}
      * @param repository
      * @param updateEntities List of entities to update.
+     * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
      */
     private void updateEntities( final DMLEntityService<K,E,?,?> repository,
                                  final Set<E> updateEntities )
+        throws EntityVersionMismatchException
     {
         final String methodName = "updateEntities";
         logMethodBegin( methodName );

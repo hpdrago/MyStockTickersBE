@@ -364,6 +364,7 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
         sb.append( ", totalAbsoluteReturn=" ).append( totalAbsoluteReturn );
         sb.append( ", totalPercentReturn=" ).append( totalPercentReturn );
         sb.append( ", marginCash=" ).append( marginCash );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

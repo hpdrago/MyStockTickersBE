@@ -272,14 +272,15 @@ public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
         this.noteSourceId = noteSourceId;
     }
 
+    @Basic
+    @Column( name = "version", nullable = false, columnDefinition = "int default 1" )
     @Override
     public Integer getVersion()
     {
-        return version;
+        return this.version;
     }
 
-    @Basic
-    @Column( name = "version" )
+    @Override
     public void setVersion( final Integer version )
     {
         this.version = version;

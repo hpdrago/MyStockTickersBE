@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
@@ -29,10 +30,20 @@ public class StockPositionComparator implements MyLogger
 {
     private StockPositionService stockPositionService;
 
+    /**
+     * This method will run on its own thread and will compare the positions stored in the database with the positions
+     * returned from TradeIt and synchronize (insert, update, delete) the database positions to match the TradeIt
+     * positions.
+     * @param linkedAccountEntity
+     * @param stockPositionEntities
+     * @param getPositionsAPIResult
+     * @throws EntityVersionMismatchException
+     */
     @Async( "stockPositionEvaluatorThreadPool" )
     public void comparePositions( final LinkedAccountEntity linkedAccountEntity,
                                   final List<StockPositionEntity> stockPositionEntities,
                                   final GetPositionsAPIResult getPositionsAPIResult )
+        throws EntityVersionMismatchException
     {
         final String methodName = "comparePositions";
         logMethodBegin( methodName );
@@ -71,9 +82,13 @@ public class StockPositionComparator implements MyLogger
      * @param stockPositionEntities
      */
     private void updateEntities( final Set<MyStockPositionEntity> stockPositionEntities )
+        throws EntityVersionMismatchException
     {
-        stockPositionEntities.forEach( myStockPositionEntity -> this.stockPositionService
-                                                                    .saveEntity( myStockPositionEntity ));
+        for ( final MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
+        {
+            this.stockPositionService
+                .saveEntity( myStockPositionEntity );
+        }
     }
 
     /**
@@ -91,9 +106,13 @@ public class StockPositionComparator implements MyLogger
      * @param stockPositionEntities
      */
     private void addEntities( final Set<MyStockPositionEntity> stockPositionEntities )
+        throws EntityVersionMismatchException
     {
-        stockPositionEntities.forEach( stockPositionEntity -> this.stockPositionService
-                                                                  .saveEntity( stockPositionEntity ) );
+        for ( final MyStockPositionEntity stockPositionEntity : stockPositionEntities )
+        {
+            this.stockPositionService
+                .saveEntity( stockPositionEntity );
+        }
     }
 
     /**

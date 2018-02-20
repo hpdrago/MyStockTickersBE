@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
@@ -84,6 +85,7 @@ public class TradeItController extends AbstractController
      * After obtaining an OAuth Verifier when the user successfully logged into their broker account, the oAuthVerifier
      * token returned from that process is then used to get the user id and user token to be used for later authentication.
      * @return GetOAuthAccessTokenDTO that contains the newly created account
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/getOAuthAccessToken"
                                          + "/customerId/{customerId}"
@@ -96,6 +98,7 @@ public class TradeItController extends AbstractController
                                                        @PathVariable final String broker,
                                                        @PathVariable final String accountName,
                                                        @PathVariable final String oAuthVerifier )
+        throws EntityVersionMismatchException
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerId, oAuthVerifier );
@@ -138,6 +141,7 @@ public class TradeItController extends AbstractController
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -148,7 +152,8 @@ public class TradeItController extends AbstractController
                                          @PathVariable final int accountId )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, accountId, customerId );
@@ -176,6 +181,7 @@ public class TradeItController extends AbstractController
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -187,7 +193,8 @@ public class TradeItController extends AbstractController
                                                              @RequestBody final String answer )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, answer );

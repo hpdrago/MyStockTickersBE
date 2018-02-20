@@ -48,8 +48,6 @@ public class StockController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStocks( final Pageable pageRequest )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getStockNotesStocks";
         logMethodBegin( methodName, pageRequest );
@@ -69,8 +67,6 @@ public class StockController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStockCompaniesMatching( final Pageable pageRequest,
                                                      final @PathVariable( "companiesLike" ) String companiesLike )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getStockCompaniesMatching";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -95,8 +91,7 @@ public class StockController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<StockQuote> getStockQuote( @PathVariable final String tickerSymbol )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
+        throws StockQuoteUnavailableException
     {
         final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
@@ -166,7 +161,7 @@ public class StockController extends AbstractController implements MyLogger
             throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
         }
         logDebug( methodName, "call stockDTO: {0}", stockDTO );
-        StockDTO newStockDTO = this.stockService.saveEntity( stockDTO );
+        StockDTO newStockDTO = this.stockService.saveDTO( stockDTO );
         logDebug( methodName, "return stockDTO: {0}", newStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder

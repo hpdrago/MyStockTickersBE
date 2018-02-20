@@ -142,7 +142,7 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
          * Check for any changes to the sources
          */
         this.stockNoteSourceService.checkForNewSource( stockNoteDTO );
-        final StockNoteDTO returnStockNoteDTO = super.saveEntity( stockNoteDTO );
+        final StockNoteDTO returnStockNoteDTO = super.saveDTO( stockNoteDTO );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
     }

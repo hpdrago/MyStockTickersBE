@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
@@ -24,6 +25,7 @@ import java.util.TreeSet;
 public class TradeItAccountComparisonService implements MyLogger
 {
     private TradeItAccountEntityService tradeItAccountEntityService;
+    private LinkedAccountEntityService linkedAccountEntityService;
 
     /**
      * Compares the linked accounts in {@accountEntity} which contains a list of {@code LinkedAccountEntity} to the
@@ -31,9 +33,11 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
      */
     public void compare( final TradeItAccountEntity tradeItAccountEntity, final AuthenticateAPIResult authenticateAPIResult )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               EntityVersionMismatchException
     {
         SetComparator<String>.SetComparatorResults validateLinkedAccountsResult = this.validateLinkedAccounts( tradeItAccountEntity,
                                                                                                                authenticateAPIResult );
@@ -49,11 +53,13 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param authenticateAPIResult
      * @param validateLinkedAccountsResult
      * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
      */
     private void checkForUpdatedAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                           final AuthenticateAPIResult authenticateAPIResult,
                                           final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               EntityVersionMismatchException
     {
         final String methodName = "checkForUpdatedAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
@@ -80,13 +86,15 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param accountNumber
-     * @throws IllegalArgumentException if trade
+     * @throws IllegalArgumentException
      * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
      */
     private void compareAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                   final AuthenticateAPIResult authenticateAPIResult,
                                   final String accountNumber )
-        throws LinkedAccountNotFoundException
+        throws LinkedAccountNotFoundException,
+               EntityVersionMismatchException
     {
         final String methodName = "compareAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, accountNumber );
@@ -101,7 +109,8 @@ public class TradeItAccountComparisonService implements MyLogger
                  tradeItAccount.get().getAccountNumber() ))
             {
                 linkedAccountEntity.setAccountName( tradeItAccount.get().getName() );
-                this.tradeItAccountEntityService.updateLinkedAccount( linkedAccountEntity );
+                this.linkedAccountEntityService
+                    .saveEntity( linkedAccountEntity );
             }
         }
         else
@@ -143,10 +152,12 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @param validateLinkedAccountsResult
+     * @throws EntityVersionMismatchException
      */
     private void checkForNewAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                       final AuthenticateAPIResult authenticateAPIResult,
                                       final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
+        throws EntityVersionMismatchException
     {
         final String methodName = "checkForNewAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
@@ -156,21 +167,20 @@ public class TradeItAccountComparisonService implements MyLogger
         }
         else
         {
-            validateLinkedAccountsResult.getNewItems()
-                .forEach( accountNumber ->
-                          {
-                              Optional<TradeItAccount> tradeItAccount = authenticateAPIResult
-                                  .getTradeItAccount( accountNumber );
-                              if ( tradeItAccount.isPresent() )
-                              {
-                                  this.tradeItAccountEntityService.addLinkedAccount( tradeItAccountEntity, tradeItAccount.get() );
-                              }
-                              else
-                              {
-                                  throw new IllegalArgumentException(
-                                      "Could not found trade it account by account number " + accountNumber );
-                              }
-                          });
+            for ( final String accountNumber : validateLinkedAccountsResult.getNewItems() )
+            {
+                Optional<TradeItAccount> tradeItAccount = authenticateAPIResult
+                    .getTradeItAccount( accountNumber );
+                if ( tradeItAccount.isPresent() )
+                {
+                    this.tradeItAccountEntityService.addLinkedAccount( tradeItAccountEntity, tradeItAccount.get() );
+                }
+                else
+                {
+                    throw new IllegalArgumentException(
+                        "Could not found trade it account by account number " + accountNumber );
+                }
+            }
         }
         logMethodEnd( methodName );
     }
@@ -207,4 +217,9 @@ public class TradeItAccountComparisonService implements MyLogger
         this.tradeItAccountEntityService = tradeItAccountEntityService;
     }
 
+    @Autowired
+    public void setLinkedAccountEntityService( final LinkedAccountEntityService linkedAccountEntityService )
+    {
+        this.linkedAccountEntityService = linkedAccountEntityService;
+    }
 }

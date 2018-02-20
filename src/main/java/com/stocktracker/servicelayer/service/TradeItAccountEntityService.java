@@ -102,7 +102,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
          * Set it to null on create, there were JSON conversion issues on create.
          */
         tradeItAccountEntity.setAuthTimestamp( null );
-        tradeItAccountEntity = this.tradeItAccountRepository.save( tradeItAccountEntity );
+        tradeItAccountEntity = this.addEntity( tradeItAccountEntity );
         logDebug( methodName, "tradeItAccountEntity: {0}", tradeItAccountEntity );
         TradeItAccountDTO returnTradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
         logMethodEnd( methodName, returnTradeItAccountDTO );
@@ -117,9 +117,11 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param userId
      * @param userToken
      * @return
+     * @throws EntityVersionMismatchException
      */
     public TradeItAccountDTO createAccount( final int customerId, final String broker, final String accountName,
                                             final String userId, final String userToken )
+        throws EntityVersionMismatchException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, broker, accountName, userId, userToken );
@@ -134,8 +136,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
         tradeItAccountEntity.setCustomerByCustomerId( this.customerService.getCustomerEntity( customerId ) );
-        tradeItAccountEntity.setVersion( 1 );
-        tradeItAccountEntity = this.tradeItAccountRepository.save( tradeItAccountEntity );
+        tradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
         logMethodEnd( methodName, tradeItAccountDTO );
@@ -172,7 +173,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
         final String methodName = "updateAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
         this.validateAccountId( customerId, tradeItAccountDTO.getId() );
-        TradeItAccountDTO returnTradeItAccountDTO = super.saveEntity( tradeItAccountDTO );
+        final TradeItAccountDTO returnTradeItAccountDTO = super.saveDTO( tradeItAccountDTO );
         logMethodEnd( methodName, returnTradeItAccountDTO );
         return returnTradeItAccountDTO;
     }
@@ -232,13 +233,15 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public void synchronizeTradeItAccount( final int customerId,
                                            final int tradeItAccountId,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "synchronizeTradeItAccount";
         logMethodBegin( methodName, customerId, tradeItAccountId, authenticateDTO );
@@ -258,12 +261,14 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public void synchronizeTradeItAccount( final TradeItAccountEntity tradeItAccountEntity,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "synchronizeTradeItAccount";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateDTO );
@@ -318,9 +323,11 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * Adds a new linked account to the {@code tradeItAccountEntity} and the database.
      * @param tradeItAccountEntity
      * @param tradeItAccount The account information from TradeIt.
+     * @throws EntityVersionMismatchException
      */
     public void addLinkedAccount( final TradeItAccountEntity tradeItAccountEntity,
                                   final TradeItAccount tradeItAccount )
+        throws EntityVersionMismatchException
     {
         final String methodName = "addLinkedAccount";
         logMethodBegin( methodName, tradeItAccountEntity, tradeItAccount );
@@ -328,7 +335,6 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
          * Convert the account information return from TradeIt to a LinkedEntityAccount instance.
          */
         final LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
-        linkedAccountEntity.setVersion( 1 );
         /*
          * Set the bidirectional relationship
          */
@@ -337,19 +343,8 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
         /*
          * Save the linked account
          */
-        this.linkedAccountEntityService.saveLinkedAccount( linkedAccountEntity );
-        logMethodEnd( methodName );
-    }
-
-    /**
-     * Update the linked account.
-     * @param linkedAccountEntity
-     */
-    public void updateLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
-    {
-        final String methodName = "updateLinkedAccount";
-        logMethodBegin( methodName, linkedAccountEntity );
-        this.linkedAccountEntityService.saveLinkedAccount( linkedAccountEntity );
+        this.linkedAccountEntityService
+            .saveEntity( linkedAccountEntity );
         logMethodEnd( methodName );
     }
 

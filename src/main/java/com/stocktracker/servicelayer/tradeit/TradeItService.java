@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
@@ -112,11 +113,13 @@ public class TradeItService implements MyLogger
      * @param oAuthVerifier
      * @return instance of GetOAuthAccessTokenAPIResult which contains the TradeItAccountDTO that was created if the TradeIt
      * getOAuthAccessToken was successful.
+     * @throws EntityVersionMismatchException
      */
     public GetOAuthAccessTokenDTO getOAuthAccessToken( final int customerId,
                                                        @NotNull final String broker,
                                                        @NotNull final String accountName,
                                                        @NotNull final String oAuthVerifier )
+        throws EntityVersionMismatchException
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerId, broker, accountName, oAuthVerifier );
@@ -237,12 +240,14 @@ public class TradeItService implements MyLogger
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
      */
     public AnswerSecurityQuestionDTO answerSecurityQuestion( final int customerId, final int accountId,
                                                              final String questionResponse )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, questionResponse );

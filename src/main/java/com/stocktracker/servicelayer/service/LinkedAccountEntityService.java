@@ -153,33 +153,6 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
         return linkedAccountEntity;
     }
 
-    /**
-     * Save the linked account.
-     * @param linkedAccountDTO
-     * @return
-     */
-    public LinkedAccountDTO saveLinkedAccount( final LinkedAccountDTO linkedAccountDTO )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "saveLinkedAccount";
-        logMethodBegin( methodName, linkedAccountDTO );
-        LinkedAccountDTO returnLinkedAccountDTO = super.saveEntity( linkedAccountDTO );
-        logMethodEnd( methodName, returnLinkedAccountDTO );
-        return returnLinkedAccountDTO;
-    }
-
-    /**
-     * Save the linked account to the database.
-     * @param linkedAccountEntity
-     */
-    public void saveLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
-    {
-        final String methodName = "getLinkedAccounts";
-        logMethodBegin( methodName, linkedAccountEntity );
-        this.linkedAccountRepository.save( linkedAccountEntity );
-        logMethodEnd( methodName );
-    }
-
     @Override
     protected LinkedAccountDTO entityToDTO( final LinkedAccountEntity linkedAccountEntity )
     {

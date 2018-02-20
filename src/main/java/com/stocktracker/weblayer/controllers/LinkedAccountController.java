@@ -60,7 +60,8 @@ public class LinkedAccountController extends AbstractController
         /*
          * Save the Account
          */
-        LinkedAccountDTO returnLinkedAccountDTO = this.linkedAccountEntityService.saveLinkedAccount( linkedAccountDTO );
+        LinkedAccountDTO returnLinkedAccountDTO = this.linkedAccountEntityService
+                                                      .saveDTO( linkedAccountDTO );
         /*
          * send the response
          */

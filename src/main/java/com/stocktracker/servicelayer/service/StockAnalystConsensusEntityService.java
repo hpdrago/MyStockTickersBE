@@ -125,13 +125,11 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
-     * @throws EntityVersionMismatchException
      */
     public StockAnalystConsensusDTO createStockAnalystConsensus( final Integer customerId,
                                                                  final StockAnalystConsensusDTO stockAnalystConsensusDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+               StockQuoteUnavailableException
     {
         final String methodName = "createStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
@@ -143,13 +141,14 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
         }
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
+        stockAnalystConsensusEntity.setVersion( 1 );
         stockAnalystConsensusEntity.setStockPriceWhenCreated( this.getStockQuoteService()
                                                                   .getStockPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
         /*
          * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
          * or update triggers.
          */
-        stockAnalystConsensusEntity = this.stockAnalystConsensusRepository.saveAndFlush( stockAnalystConsensusEntity );
+        stockAnalystConsensusEntity = this.stockAnalystConsensusRepository.save( stockAnalystConsensusEntity );
         logDebug( methodName, "saved {0}", stockAnalystConsensusEntity );
         StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
@@ -168,7 +167,7 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
         logMethodBegin( methodName, stockAnalystConsensusDTO );
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
-        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = super.saveEntity( stockAnalystConsensusDTO );
+        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = super.saveDTO( stockAnalystConsensusDTO );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
         return returnStockAnalystConsensusDTO;
     }

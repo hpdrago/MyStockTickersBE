@@ -107,7 +107,7 @@ public class StockCatalystEventEntityService extends DMLEntityService<Integer,
         logMethodBegin( methodName, stockCatalystEventDTO );
         Objects.requireNonNull( stockCatalystEventDTO, "stockCatalystEventDTO cannot be null" );
         this.stockService.checkStockTableEntry( stockCatalystEventDTO.getTickerSymbol() );
-        StockCatalystEventDTO returnStockCatalystEventDTO = super.saveEntity( stockCatalystEventDTO );
+        final StockCatalystEventDTO returnStockCatalystEventDTO = this.saveDTO( stockCatalystEventDTO );
         logMethodEnd( methodName, returnStockCatalystEventDTO );
         return returnStockCatalystEventDTO;
     }

@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.servicelayer.service.StockPositionService;
@@ -36,6 +37,7 @@ public class StockPositionController extends AbstractController
      * @throws TradeItAccountNotFoundException
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL
                              + "/linkedAccountId/{linkedAccountId}"
@@ -48,7 +50,8 @@ public class StockPositionController extends AbstractController
                                                 final @PathVariable int customerId )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
