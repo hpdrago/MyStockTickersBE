@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
  * Service class for the StockNoteSource entity interface to the database.
  */
 @Service
+@Transactional
 public class StockNoteSourceEntityService extends DMLEntityService<Integer,
                                                                    StockNoteSourceEntity,
                                                                    StockNoteSourceDTO,

@@ -1,6 +1,5 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.servicelayer.service.StockPositionComparisonService;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.stereotype.Component;

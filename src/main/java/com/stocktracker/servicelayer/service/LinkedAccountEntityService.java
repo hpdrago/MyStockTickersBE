@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
@@ -42,21 +43,27 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @param tradeItAccountId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws LinkedAccountNotFoundException
      */
     public List<LinkedAccountDTO> getLinkedAccounts( final int customerId,
                                                      final int tradeItAccountId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               TradeItAuthenticationException,
+               LinkedAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, customerId, tradeItAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getAccountEntity( customerId, tradeItAccountId );
+                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
         final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
                                                                     .findAllByCustomerIdAndTradeItAccountId( customerId,
                                                                                                              tradeItAccountId );
         final List<LinkedAccountDTO> linkedAccountDTOs = this.entitiesToDTOs( linkedAccountEntities );
-        linkedAccountDTOs.forEach( linkedAccountDTO -> this.updateAccountSummaryInformation( tradeItAccountEntity.getAuthToken(),
-                                                                                             linkedAccountDTO ) );
+        for ( final LinkedAccountDTO linkedAccountDTO: linkedAccountDTOs )
+        {
+            this.updateAccountSummaryInformation( tradeItAccountEntity, linkedAccountDTO );
+        }
         logMethodEnd( methodName, linkedAccountDTOs );
         return linkedAccountDTOs;
     }
@@ -66,16 +73,25 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * The information retrieved from the TradeIt Result is then copied into the {@code linkedAccountDTO} which should
      * be populated with the database information for the linked account and thus the account summary information is
      * in addition that which is stored in the DB -- hence the use of the DTO here.
-     * @param authToken
+     * @param tradeItAccountEntity
      * @param linkedAccountDTO
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws TradeItAccountNotFoundException
      */
-    private void updateAccountSummaryInformation( final String authToken, final LinkedAccountDTO linkedAccountDTO )
+    private void updateAccountSummaryInformation( final TradeItAccountEntity tradeItAccountEntity,
+                                                  final LinkedAccountDTO linkedAccountDTO )
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "updateAccountSummaryInformation";
         logMethodBegin( methodName, linkedAccountDTO );
         final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
-                                                                .getAccountOverview( linkedAccountDTO.getAccountNumber(),
-                                                                                     authToken );
+                                                                .getAccountOverview( tradeItAccountEntity.getCustomerId(),
+                                                                                     tradeItAccountEntity.getId(),
+                                                                                     linkedAccountDTO.getAccountNumber(),
+                                                                                     tradeItAccountEntity.getAuthToken() );
         linkedAccountDTO.copyAccountSummary( getAccountOverviewDTO );
         logMethodEnd( methodName );
     }
@@ -88,19 +104,23 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @return
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     public GetAccountOverviewDTO getAccountOverview( final int customerId, final int tradeItAccountId, final int linkedAccountId )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "getAccountOverview";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getAccountEntity( customerId, tradeItAccountId );
+                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.getLinkedAccountEntity( customerId, linkedAccountId );
         final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
-            .getAccountOverview( linkedAccountEntity.getAccountNumber(),
-                                 tradeItAccountEntity.getAuthToken() );
+                                                                .getAccountOverview( linkedAccountEntity.getCustomerId(),
+                                                                                     linkedAccountEntity.getId(),
+                                                                                     linkedAccountEntity.getAccountNumber(),
+                                                                                     tradeItAccountEntity.getAuthToken() );
         logMethodEnd( methodName );
         return getAccountOverviewDTO;
     }

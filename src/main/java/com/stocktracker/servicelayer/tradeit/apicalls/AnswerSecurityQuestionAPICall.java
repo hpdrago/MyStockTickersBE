@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -32,8 +33,19 @@ public class AnswerSecurityQuestionAPICall extends TradeItAPIRestCall<AnswerSecu
         Objects.requireNonNull( tradeItAccountEntity.getAuthUuid(), "AuthUUID is missing from the account" );
         this.addPostParameter( this.tradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
         this.addPostParameter( this.tradeItProperties.SECURITY_ANSWER_PARAM, answer );
-        AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = this.execute();
-        logMethodBegin( methodName, answerSecurityQuestionAPIResult );
+        AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = null;
+        try
+        {
+            answerSecurityQuestionAPIResult = this.execute();
+        }
+        catch( TradeItAuthenticationException e )
+        {
+            /*
+             * Should not get this exception in this context since this is part of the authentication process.
+             */
+            logError( methodName, e );
+        }
+        logMethodEnd( methodName, answerSecurityQuestionAPIResult );
         return answerSecurityQuestionAPIResult;
     }
 

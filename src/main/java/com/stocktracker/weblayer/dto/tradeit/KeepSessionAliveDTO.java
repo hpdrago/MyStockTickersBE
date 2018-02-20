@@ -1,7 +1,5 @@
 package com.stocktracker.weblayer.dto.tradeit;
 
-import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
-import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,5 +14,10 @@ public class KeepSessionAliveDTO extends AuthenticateDTO
 {
     public KeepSessionAliveDTO()
     {
+    }
+
+    public KeepSessionAliveDTO( final AuthenticateDTO authenticateDTO )
+    {
+        super( authenticateDTO );
     }
 }

@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverViewAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -19,8 +19,10 @@ public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOver
      * @param accountNumber
      * @param authToken
      * @return
+     * @throws TradeItAuthenticationException
      */
     public GetAccountOverViewAPIResult execute( final String accountNumber, final String authToken )
+        throws TradeItAuthenticationException
     {
         final String methodName = "execute";
         logMethodBegin( methodName, accountNumber, authToken );

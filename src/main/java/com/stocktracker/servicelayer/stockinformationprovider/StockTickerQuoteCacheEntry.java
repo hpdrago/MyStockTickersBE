@@ -110,6 +110,12 @@ public class StockTickerQuoteCacheEntry implements StockQuote
         this.stockTableEntryValidated = stockTableEntryValidated;
     }
 
+    public void setLastPrice( final BigDecimal lastPrice )
+    {
+        this.stockTickerQuote.setLastPrice( lastPrice );
+        this.stockTickerQuote.setExpiration( new Timestamp( System.currentTimeMillis() + StockQuoteCache.EXPIRATION_TIME ));
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -141,6 +147,5 @@ public class StockTickerQuoteCacheEntry implements StockQuote
         sb.append( '}' );
         return sb.toString();
     }
-
 }
 

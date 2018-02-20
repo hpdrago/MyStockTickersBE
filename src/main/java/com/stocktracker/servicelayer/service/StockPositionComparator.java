@@ -4,12 +4,13 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Service
-public class StockPositionComparisonService implements MyLogger
+/**
+ * This class compares the positions returned from TradeIt for a single account against the contents in the STOCK_POSITION
+ * table in the database.  The differences in what was returned by TradeIt than what is in the database are applied to
+ * the database so that the database STOCK_POSITION table represents what TradeIt has reported.
+ */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class StockPositionComparator implements MyLogger
 {
     private StockPositionService stockPositionService;
 
@@ -29,12 +36,13 @@ public class StockPositionComparisonService implements MyLogger
     {
         final String methodName = "comparePositions";
         logMethodBegin( methodName );
+        final Map<String,StockPositionEntity> currentStockPositionMap = this.createStockPositionMap( stockPositionEntities );
         /*
          * First we need to convert the getPositionsAPIResult to StockPositionEntities so that we can perform
          * set comparisons
          */
         final List<MyStockPositionEntity> tradeItStockPositionEntities = this.convertTradeItPositionsToStockPositions( linkedAccountEntity,
-                                                                                                                       stockPositionEntities,
+                                                                                                                       currentStockPositionMap,
                                                                                                                        getPositionsAPIResult );
         /*
          * Next we need to convert the list of StockPositionEntities to a list of MyStockPositionEntities because we need these
@@ -60,10 +68,12 @@ public class StockPositionComparisonService implements MyLogger
 
     /**
      * Update stock position entities.
-     * @param matchingItems
+     * @param stockPositionEntities
      */
-    private void updateEntities( final Set<MyStockPositionEntity> matchingItems )
+    private void updateEntities( final Set<MyStockPositionEntity> stockPositionEntities )
     {
+        stockPositionEntities.forEach( myStockPositionEntity -> this.stockPositionService
+                                                                    .saveEntity( myStockPositionEntity ));
     }
 
     /**
@@ -101,23 +111,22 @@ public class StockPositionComparisonService implements MyLogger
 
     /**
      * Converts the TradeIt Position instances into StockPositionEntity instances.
+     * @param stockPositionEntityMap This map contains the database entries for the stock positions.  It is used to obtain
+     *                               the primary key value for those stocks that match the TradeIt it result so that they
+     *                               new values from the TradeIt results can be updated in the database.
      * @param linkedAccountEntity The linked account is the parent account of a {@code StockPositionEntity} so we need to
      *                            assign that parent instance value to add to the database.
-     * @param stockPositionEntities This list contains the database entries for the stock positions.  It is used to obtain
-     *                              the primary key value for those stocks that match the TradeIt it result so that they
-     *                              new values from the TradeIt results can be updated in the database.
      * @param getPositionsAPIResult The TradeIt get positions results that contains the stock positions.
      * @return
      */
     private List<MyStockPositionEntity> convertTradeItPositionsToStockPositions( final LinkedAccountEntity linkedAccountEntity,
-                                                                                 final List<StockPositionEntity> stockPositionEntities,
+                                                                                 final Map<String,StockPositionEntity> stockPositionEntityMap,
                                                                                  final GetPositionsAPIResult getPositionsAPIResult )
     {
         final List<MyStockPositionEntity> tradeItStockPositionEntities = new ArrayList<>();
-        final Map<String,StockPositionEntity> databaseStockPositionMap = this.createStockPositionMap( stockPositionEntities );
         for ( final TradeItPosition tradeItPosition: getPositionsAPIResult.getPositions() )
         {
-            final StockPositionEntity databaseStockPositionEntity = databaseStockPositionMap.get( tradeItPosition.getSymbol() );
+            final StockPositionEntity databaseStockPositionEntity = stockPositionEntityMap.get( tradeItPosition.getSymbol() );
             /*
              * The the entities that are not found in the map will be added to the database.
              */

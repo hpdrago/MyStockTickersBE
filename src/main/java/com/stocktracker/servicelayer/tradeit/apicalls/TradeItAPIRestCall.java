@@ -1,8 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.tradeit.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItErrorCode;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
@@ -62,6 +61,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
      * @return
      */
     public final T execute()
+        throws TradeItAuthenticationException
     {
         final String methodName = "execute";
         logMethodBegin( methodName );
@@ -72,9 +72,11 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
 
     /**
      * Make the REST call
-     * @return
+     * @return API Result.
+     * @throws TradeItAuthenticationException
      */
     private T callTradeIt()
+        throws TradeItAuthenticationException
     {
         final String methodName = "callTradeIt";
         logMethodBegin( methodName );
@@ -92,7 +94,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
         if ( responseEntity.getStatusCode().is3xxRedirection() &&
              responseEntity.getStatusCodeValue() == 302 )
         {
-            response = handleRedirection();
+            handleRedirection();
         }
         else
         {
@@ -105,26 +107,15 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     /**
      * Creates a response object that indicates an authentication is required.
      * @return
+     * @throws TradeItAuthenticationException
      */
-    private T handleRedirection()
+    private void handleRedirection()
+        throws TradeItAuthenticationException
     {
         final String methodName = "handleRedirection";
-        logMethodBegin( methodName );
-        logInfo( methodName, "Received 302 redirection. Authentication required" );
-        T response = null;
-        try
-        {
-            response = this.getAPIResultsClass().newInstance();
-            response.setCode( TradeItErrorCode.BROKER_AUTHENTICATION_ERROR.getErrorNumber() );
-            response.setErrorMessage( TradeItErrorCode.BROKER_AUTHENTICATION_ERROR.getErrorMessage() );
-            response.setShortMessage( TradeItErrorCode.BROKER_AUTHENTICATION_ERROR.getErrorTitle() );
-            response.setStatus( "ERROR" );
-        }
-        catch( Exception e )
-        {
-            logDebug( methodName, e );
-        }
-        return response;
+        final String message = "Received 302 redirection. Authentication required";
+        logDebug( methodName, message );
+        throw new TradeItAuthenticationException( message );
     }
 
     /**

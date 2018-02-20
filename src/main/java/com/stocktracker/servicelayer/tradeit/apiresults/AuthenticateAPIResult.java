@@ -37,6 +37,15 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     {
     }
 
+    /**
+     * Copy constructor.
+     * @param authenticateAPIResult
+     */
+    public AuthenticateAPIResult( final AuthenticateAPIResult authenticateAPIResult )
+    {
+        this.setResults( authenticateAPIResult );
+    }
+
     public void setResults( final AuthenticateAPIResult results )
     {
         super.setResults( results );
@@ -121,11 +130,11 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AuthenticateAPIResult{" );
-        sb.append( "tradeItAccounts=" ).append( Arrays.toString( accounts ) );
+        sb.append( "" ).append( super.toString() );
+        sb.append( ", tradeItAccounts=" ).append( Arrays.toString( accounts ) );
         sb.append( ", informationType='" ).append( informationType ).append( '\'' );
         sb.append( ", securityQuestion='" ).append( securityQuestion ).append( '\'' );
         sb.append( ", securityQuestionOptions=" ).append( Arrays.toString( securityQuestionOptions ) );
-        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

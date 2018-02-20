@@ -8,7 +8,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,6 +24,22 @@ public class AuthenticateDTO extends AuthenticateAPIResult
 {
     private TradeItAccountDTO tradeItAccount;
     private List<LinkedAccountDTO> linkedAccounts;
+
+    /**
+     * Default constructor.
+     */
+    public AuthenticateDTO()
+    {
+    }
+
+    /**
+     * Copy constructor.
+     * @param authenticateDTO
+     */
+    public AuthenticateDTO( final AuthenticateDTO authenticateDTO )
+    {
+        super( authenticateDTO );
+    }
 
     /**
      * Copy the results from an authenticate result.

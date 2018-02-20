@@ -160,6 +160,7 @@ public class GetAccountOverViewAPIResult extends TradeItAPIResult
         sb.append( ", totalAbsoluteReturn=" ).append( totalAbsoluteReturn );
         sb.append( ", totalPercentReturn=" ).append( totalPercentReturn );
         sb.append( ", marginCash=" ).append( marginCash );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

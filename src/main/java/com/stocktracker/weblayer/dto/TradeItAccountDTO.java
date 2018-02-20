@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
 
 import java.sql.Timestamp;
 
@@ -11,7 +10,7 @@ import java.sql.Timestamp;
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
  */
-public class TradeItAccountDTO implements VersionedEntity<Integer>
+public class TradeItAccountDTO implements VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;

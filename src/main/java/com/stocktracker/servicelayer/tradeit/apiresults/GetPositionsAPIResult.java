@@ -102,7 +102,8 @@ public class GetPositionsAPIResult extends TradeItAPIResult
         sb.append( "accountBaseCurrency='" ).append( accountBaseCurrency ).append( '\'' );
         sb.append( ", currentPage=" ).append( currentPage );
         sb.append( ", totalPages=" ).append( totalPages );
-        sb.append( ", positions=" ).append( Arrays.toString( positions ) );
+        sb.append( ", positions=" ).append( positions.length );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

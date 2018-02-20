@@ -1,14 +1,14 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.TradeItAccountRepository;
-import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
@@ -56,7 +56,7 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
     {
         final String methodName = "getAccountDTO";
         logMethodBegin( methodName, customerId, accountId );
-        TradeItAccountEntity tradeItAccountEntity = this.getAccountEntity( customerId, accountId );
+        TradeItAccountEntity tradeItAccountEntity = this.getTradeItAccountEntity( customerId, accountId );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
         logMethodEnd( methodName, tradeItAccountDTO );
         return tradeItAccountDTO;
@@ -65,19 +65,19 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
     /**
      * Get the account for the customer and account id.
      * @param customerId
-     * @param accountId
+     * @param tradeItAccountId
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    public TradeItAccountEntity getAccountEntity( final int customerId, final int accountId )
+    public TradeItAccountEntity getTradeItAccountEntity( final int customerId, final int tradeItAccountId )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccountDTO";
-        logMethodBegin( methodName, customerId, accountId );
-        TradeItAccountEntity tradeItAccountEntity = tradeItAccountRepository.findByCustomerIdAndId( customerId, accountId );
+        logMethodBegin( methodName, customerId, tradeItAccountId );
+        TradeItAccountEntity tradeItAccountEntity = tradeItAccountRepository.findByCustomerIdAndId( customerId, tradeItAccountId );
         if ( tradeItAccountEntity == null )
         {
-            throw new TradeItAccountNotFoundException( customerId, accountId );
+            throw new TradeItAccountNotFoundException( customerId, tradeItAccountId );
         }
         logMethodEnd( methodName, tradeItAccountEntity );
         return tradeItAccountEntity;
@@ -211,44 +211,64 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
     /**
      * Saves the account to the database.
      * @param tradeItAccountEntity
-     * @return
+     * @return Updated TradeIt Account entity.
      */
     public TradeItAccountEntity saveAccount( final TradeItAccountEntity tradeItAccountEntity )
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, tradeItAccountEntity );
-        this.tradeItAccountRepository.save( tradeItAccountEntity );
-        logMethodEnd( methodName, tradeItAccountEntity );
-        return tradeItAccountEntity;
+        TradeItAccountEntity returnEntity = this.tradeItAccountRepository
+                                                .save( tradeItAccountEntity );
+        logMethodEnd( methodName, returnEntity );
+        return returnEntity;
     }
 
     /**
-     * This method is called when the user has been authenticated.  The account table auth_timestamp is set so that
-     * we know when the authentication will expire which is after 15 minutes.
+     * This method is called after a successful authentication call.  This is a wrapper method for the follow method
+     * with the same name.
+     * @param customerId
+     * @param tradeItAccountId
+     * @param authenticateDTO
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     */
+    public void synchronizeTradeItAccount( final int customerId,
+                                           final int tradeItAccountId,
+                                           final AuthenticateDTO authenticateDTO )
+        throws LinkedAccountNotFoundException,
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
+    {
+        final String methodName = "synchronizeTradeItAccount";
+        logMethodBegin( methodName, customerId, tradeItAccountId, authenticateDTO );
+        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountRepository
+                                                              .findByCustomerIdAndId( customerId, tradeItAccountId );
+        this.synchronizeTradeItAccount( tradeItAccountEntity, authenticateDTO );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * This method is called when the user has been authenticated.
      *
      * Also, the LINKED_ACCOUNT table is updated (added/updated -- not deleted) to reflect the {@code TradeItAccount}
      * accounts returned from the authentication call.
      * @param tradeItAccountEntity
-     * @param authenticateAPIResult
      * @param authenticateDTO The linked accounts will be set in this DTO from the linked accounts.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
-    public void authenticationSuccessful( final TradeItAccountEntity tradeItAccountEntity,
-                                          final AuthenticateAPIResult authenticateAPIResult,
-                                          final AuthenticateDTO authenticateDTO )
+    public void synchronizeTradeItAccount( final TradeItAccountEntity tradeItAccountEntity,
+                                           final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
-        final String methodName = "authenticationSuccessful";
-        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
-        this.tradeItAccountComparisonService.compare( tradeItAccountEntity, authenticateAPIResult );
-        /*
-         * The timestamp is set and the UUID and Token are nulled because they need to be new values for the next
-         * authentication.
-         */
-        tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-        this.tradeItAccountRepository.save( tradeItAccountEntity );
+        final String methodName = "synchronizeTradeItAccount";
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateDTO );
+        this.tradeItAccountComparisonService
+            .compare( tradeItAccountEntity, authenticateDTO );
         /*
          * Gather up all of the linked accounts and add them to the authenticate DTO.
          */
@@ -271,11 +291,15 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param keepSessionAliveAPIResult
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws LinkedAccountNotFoundException
      */
     public void keepSessionAliveSuccess( final KeepSessionAliveDTO keepSessionAliveDTO,
                                          final TradeItAccountEntity tradeItAccountEntity,
                                          final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               LinkedAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );

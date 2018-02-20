@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -33,8 +34,16 @@ public class AuthenticateAPICall extends TradeItAPIRestCall<AuthenticateAPIResul
         this.addPostParameter( this.tradeItProperties.USER_ID_PARAM, tradeItAccountEntity.getUserId() );
         this.addPostParameter( this.tradeItProperties.USER_TOKEN_PARAM, tradeItAccountEntity.getUserToken() );
         this.addPostParameter( this.tradeItProperties.BROKER_PARAM, tradeItAccountEntity.getBrokerage() );
-        AuthenticateAPIResult authenticateAPIResult = this.execute();
-        logMethodBegin( methodName, authenticateAPIResult );
+        AuthenticateAPIResult authenticateAPIResult = null;
+        try
+        {
+            authenticateAPIResult = this.execute();
+        }
+        catch( TradeItAuthenticationException e )
+        {
+            logError( methodName, e );
+        }
+        logMethodEnd( methodName, authenticateAPIResult );
         return authenticateAPIResult;
     }
 

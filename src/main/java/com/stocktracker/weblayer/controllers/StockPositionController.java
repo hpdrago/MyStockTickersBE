@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.servicelayer.service.StockPositionService;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -34,6 +35,7 @@ public class StockPositionController extends AbstractController
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws LinkedAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     @RequestMapping( value = CONTEXT_URL
                              + "/linkedAccountId/{linkedAccountId}"
@@ -45,12 +47,13 @@ public class StockPositionController extends AbstractController
                                                 final @PathVariable int tradeItAccountId,
                                                 final @PathVariable int customerId )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
         final List<StockPositionDTO> positions = this.stockPositionService
-                                                             .getPositions( customerId, tradeItAccountId, linkedAccountId );
+                                                     .getPositions( customerId, tradeItAccountId, linkedAccountId );
         logMethodEnd( methodName, "positions size: " + positions.size() );
         return positions;
     }

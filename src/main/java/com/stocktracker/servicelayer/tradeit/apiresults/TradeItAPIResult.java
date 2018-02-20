@@ -44,6 +44,8 @@ public class TradeItAPIResult
 
     public boolean isSuccessful() { return this.status == null ? false : this.getAPIResultStatus().isSuccess() ;}
     public boolean isInformationNeeded() { return this.status == null ? false : this.getAPIResultStatus().isInformationNeeded() ;}
+    public boolean isAuthenticationRequired() { return this.status == null ? false :
+                                                       this.code == TradeItErrorCode.SESSION_EXPIRED_ERROR.getErrorNumber(); }
 
     public int getCode()
     {

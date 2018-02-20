@@ -1,13 +1,11 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
-
 import java.util.Objects;
 
 /**
  * Created by mike on 10/23/2016.
  */
-public class PortfolioDTO implements VersionedEntity<Integer>
+public class PortfolioDTO implements VersionedDTO<Integer>
 {
     /**
      * The portfolio id

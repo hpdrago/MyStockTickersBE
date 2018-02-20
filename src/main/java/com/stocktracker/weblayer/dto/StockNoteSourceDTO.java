@@ -1,11 +1,9 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
-
 /**
  * Created by mike on 9/10/2017.
  */
-public class StockNoteSourceDTO implements VersionedEntity<Integer>
+public class StockNoteSourceDTO implements VersionedDTO<Integer>
 {
     private Integer id;
     private String name;

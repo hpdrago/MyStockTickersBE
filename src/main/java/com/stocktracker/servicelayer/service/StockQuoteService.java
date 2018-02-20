@@ -65,6 +65,20 @@ public class StockQuoteService implements MyLogger
     }
 
     /**
+     * Updates the quote cache with the last price.
+     * @param tickerSymbol
+     * @param lastPrice
+     */
+    public void updateStockPrice( final String tickerSymbol, final BigDecimal lastPrice )
+    {
+        final String methodName = "updateStockPrice";
+        logMethodBegin( methodName, tickerSymbol, lastPrice );
+        this.stockQuoteCache
+            .updateLastPrice( tickerSymbol, lastPrice );
+        logMethodEnd( methodName );
+    }
+
+    /**
      * Gets a stock quote from the {@code StockQuoteCache}.
      * If the fetch mode is SYNCHRONOUS, this method will block and wait while the quote is retrieved.
      * If the fetch mode is ASYNCHRONOUS and the stock quote is not found or is stale, this block will return without

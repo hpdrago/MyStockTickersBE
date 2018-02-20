@@ -4,6 +4,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,8 @@ public class LinkedAccountController extends AbstractController
      * @param customerId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws LinkedAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL +
                              "/tradeItAccountId/{tradeItAccountId}" +
@@ -85,7 +88,9 @@ public class LinkedAccountController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable int tradeItAccountId,
                                                      final @PathVariable int customerId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               LinkedAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountId, customerId );
@@ -102,6 +107,7 @@ public class LinkedAccountController extends AbstractController
      * @param customerId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
@@ -114,7 +120,8 @@ public class LinkedAccountController extends AbstractController
                                                      @PathVariable final int tradeItAccountId,
                                                      @PathVariable final int customerId )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
 
     {
         final String methodName = "getAccountOverview";

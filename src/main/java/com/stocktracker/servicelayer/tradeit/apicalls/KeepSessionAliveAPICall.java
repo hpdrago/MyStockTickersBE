@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -18,17 +18,17 @@ public class KeepSessionAliveAPICall extends TradeItAPIRestCall<KeepSessionAlive
 {
     /**
      * Execute the Keep Session Alive API call.
-     * @param tradeItAccountEntity
+     * @param authToken
      * @return
+     * @throws TradeItAuthenticationException
      */
-    public KeepSessionAliveAPIResult execute( final TradeItAccountEntity tradeItAccountEntity )
+    public KeepSessionAliveAPIResult execute( final String authToken )
+        throws TradeItAuthenticationException
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, tradeItAccountEntity );
-        Objects.requireNonNull( tradeItAccountEntity, "tradeItAccountEntity cannot be null" );
-        Objects.requireNonNull( tradeItAccountEntity.getUserToken(), "tradeItAccountEntity.authToken cannot be null" );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
-        logMethodEnd( methodName, tradeItAccountEntity );
+        logMethodBegin( methodName );
+        Objects.requireNonNull( authToken, "authToken cannot be null" );
+        this.addPostParameter( TradeItProperties.TOKEN_PARAM, authToken );
         KeepSessionAliveAPIResult keepSessionAliveAPIResult = this.execute();
         logMethodEnd( methodName, keepSessionAliveAPIResult );
         return keepSessionAliveAPIResult;

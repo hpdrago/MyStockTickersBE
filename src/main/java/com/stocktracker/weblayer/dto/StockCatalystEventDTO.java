@@ -1,10 +1,9 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 
 public class StockCatalystEventDTO implements StockQuoteService.StockCompanyNameContainer,
-                                              VersionedEntity<Integer>
+                                              VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;

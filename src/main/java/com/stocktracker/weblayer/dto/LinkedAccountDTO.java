@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 
 import java.math.BigDecimal;
@@ -12,7 +11,7 @@ import java.sql.Timestamp;
 /**
  * This is the DTO class for the {@code LinkedAccountEntity} class.
  */
-public class LinkedAccountDTO implements VersionedEntity<Integer>
+public class LinkedAccountDTO implements VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;

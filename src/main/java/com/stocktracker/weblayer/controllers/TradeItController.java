@@ -2,6 +2,8 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
+import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
@@ -31,6 +33,7 @@ public class TradeItController extends AbstractController
 {
     private static final String CONTEXT_URL = "/tradeIt";
     private TradeItService tradeItService;
+    private TradeItAccountEntityService tradeItAccountEntityService;
 
     /**
      * Cache this result as it should hardly change
@@ -134,6 +137,7 @@ public class TradeItController extends AbstractController
      * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -143,12 +147,21 @@ public class TradeItController extends AbstractController
     public AuthenticateDTO authenticate( @PathVariable final int customerId,
                                          @PathVariable final int accountId )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, accountId, customerId );
         final AuthenticateDTO authenticateDTO = this.tradeItService
                                                     .authenticate( customerId, accountId );
+        /*
+         * Synchronize the linked accounts identified by TradeIt with the linked account table.
+         */
+        if ( authenticateDTO.isSuccessful() )
+        {
+            this.tradeItAccountEntityService
+                .synchronizeTradeItAccount( customerId, accountId, authenticateDTO );
+        }
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
     }
@@ -162,6 +175,7 @@ public class TradeItController extends AbstractController
      * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -172,7 +186,8 @@ public class TradeItController extends AbstractController
                                                              @PathVariable final int accountId,
                                                              @RequestBody final String answer )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, answer );
@@ -186,23 +201,27 @@ public class TradeItController extends AbstractController
     /**
      * Calls TradeIt to keep the customer's session alive for the account.
      * @param customerId
-     * @param accountId
+     * @param tradeItAccountId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws LinkedAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/keepSessionAlive/"
-                             + "/accountId/{accountId}"
+                             + "/tradeItAccountId/{tradeItAccountId}"
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public KeepSessionAliveDTO keepSessionAlive( @PathVariable final int customerId,
-                                                 @PathVariable final int accountId )
-        throws TradeItAccountNotFoundException
+                                                 @PathVariable final int tradeItAccountId )
+        throws TradeItAccountNotFoundException,
+               TradeItAuthenticationException,
+               LinkedAccountNotFoundException
     {
         final String methodName = "keepSessionAlive";
-        logMethodBegin( methodName, accountId, customerId );
+        logMethodBegin( methodName, customerId, tradeItAccountId );
         final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService
-                                                            .keepSessionAlive( customerId, accountId );
+                                                            .keepSessionAlive( customerId, tradeItAccountId );
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
     }
@@ -236,4 +255,11 @@ public class TradeItController extends AbstractController
     {
         this.tradeItService = tradeItService;
     }
+
+    @Autowired
+    public void setTradeItAccountEntityService( final TradeItAccountEntityService tradeItAccountEntityService )
+    {
+        this.tradeItAccountEntityService = tradeItAccountEntityService;
+    }
+
 }

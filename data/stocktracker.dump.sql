@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.18, for Win64 (x86_64)
 --
 -- Host: localhost    Database: stocktracker
 -- ------------------------------------------------------
--- Server version	5.7.17-log
+-- Server version	5.7.18-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -876,7 +876,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`linked_account_position_BEFORE_UPDATE` BEFORE UPDATE ON `stock_position` FOR EACH ROW
+/*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stocktracker`.`stock_position_BEFORE_UPDATE` BEFORE UPDATE ON `stock_position` FOR EACH ROW
 BEGIN 
     SET NEW.UPDATE_DATE = current_timestamp();
     /*
@@ -1060,7 +1060,7 @@ CREATE TABLE `tradeit_account` (
 
 LOCK TABLES `tradeit_account` WRITE;
 /*!40000 ALTER TABLE `tradeit_account` DISABLE KEYS */;
-INSERT INTO `tradeit_account` VALUES (69,'dummy',1,'5271517354774091a870','Ent8jpNWxmSz%2BGiHDNicBbV0%2BKgptmg4439GjqV98%2BZO%2Fuhx4VF01ypeeJoIi6dYhPwSVZVPoQeV7lQDA07yd606MRL0GYdGoxCtLW1y5qg3L4eEcSWuVlMxFNptl84F%2BJJuFi%2Boa7GqqkbmewiKhg%3D%3D','Dummy','1f84604b18e94cb3aebf1d5d72ce6726','ce8437b8-a65f-4557-99cd-99cf5cdc6a43','2018-02-13 22:58:09','2018-01-30 23:26:15','2018-02-13 22:58:09',2),(71,'dummySecurity',1,'82515176139465360022','9NdwHvynQGaBHt8JDgc6M9y1a9f2GX5tdStoSMsuVnpoPpzfKWRdYMedI3BFwVCsade%2FDqxYhdcXSYiB7CX36iaubQgSM9qEpnvcwhMk%2F6QBthbASXdMfZPBp1mNMqUSQMysJqOGigzHGxGZ1wgpGA%3D%3D','Dummy','586047e3e43c4884ba6493c61d6ec0fb','47a16c12-e576-45ff-8fa1-9d060747b2fb','2018-02-13 22:58:22','2018-02-02 23:25:48','2018-02-13 22:58:22',3),(72,'dummyMultiple',1,'dec15185353505990f66','Ndv3wfN0xP4WzwMdOfgg%2BHG%2BVcWqaVu%2BhyCUo5G%2FebqqJYZGAjvlTbPUgIaN3%2B9tKMzX4WcNAzPZY2HVURBGHqMA7N52pw2tXz7%2BxYK9Ry6429nS5sWDQCb%2FFlU1M82wsvvWSC8IZYlWmxL35X51jg%3D%3D','Dummy','25fc6c4ac0b4440e884ac7283302a81c','76d0979a-225b-4671-ad44-1d330e9e9565','2018-02-14 03:38:29','2018-02-13 15:22:31','2018-02-14 03:38:29',4),(73,'dummy600',1,'60f1518535924630bf3c','5Wz6P5pgwoanv5JQeu1Q%2FVfYp9nQDQtkUNO1btap1Mw8K5F0kj80ZZNqnQQnzlywbYvv9AevSNuji6h%2FBCjIrFCUt401Jby2Q4HXSQ077xvyzoKeKPFhH1JeQ1O0uoNet6DxaLtlMqpDWIFiFUrtkQ%3D%3D','Dummy','0977a8479f7049f9a86b9b14c8b55533','ad487f54-88ec-4adc-a7ff-f715921e6220','2018-02-15 19:55:17','2018-02-13 15:32:05','2018-02-15 19:55:16',4),(74,'26305475-Play Money',1,'5de1518536161888d032','oe3wDKPefhbvezAyFnjmskIYd7U%2FVeUfL8%2FgAMcXYVdT4oOf9C0rhQJrZ4qqgfu693Up%2BdvdOknCytToz8kLsmNFgQIUn02CERBJ5Cz6VkvIBQUHr3533l%2B5Y2LVVJpeXKaNFlOIZUFeWYTYr7583g%3D%3D','Scottrade','af15ac8c6ee142ceb75ff006318bbc72','e2c790b4-e85f-4981-a3bc-623b6512784e','2018-02-16 22:16:59','2018-02-13 15:36:02','2018-02-16 22:16:59',38),(77,'dummyOptionLong',1,'3e61518823375005f725','%2BKhK3sN24IwXMQdvshkldxPAAyBK5uBj0Sx9CgpGt9aoZk0CDsY35b3%2BmMB2p7X93Ho1ZzxSVGUNERJ%2FPGeg3hI%2B%2BD2yws3jZa1eZIcyj1AeOhwsNkghFjFwlumu482WYHVcccFFQ5gmn2Y6uEQKag%3D%3D','Dummy','9b8c7b9b1d83425b936a61de8fcc5e80','786a64a5-54e6-4a4b-a78c-7008bcee286a','2018-02-16 23:23:04','2018-02-16 23:22:56','2018-02-16 23:23:03',4);
+INSERT INTO `tradeit_account` VALUES (69,'dummy',1,'5271517354774091a870','Ent8jpNWxmSz%2BGiHDNicBbV0%2BKgptmg4439GjqV98%2BZO%2Fuhx4VF01ypeeJoIi6dYhPwSVZVPoQeV7lQDA07yd606MRL0GYdGoxCtLW1y5qg3L4eEcSWuVlMxFNptl84F%2BJJuFi%2Boa7GqqkbmewiKhg%3D%3D','Dummy','8678950bca964a29877c72df1c0332b5','ce8437b8-a65f-4557-99cd-99cf5cdc6a43','2018-02-19 23:36:33','2018-01-30 23:26:15','2018-02-19 23:36:33',24),(71,'dummySecurity',1,'82515176139465360022','9NdwHvynQGaBHt8JDgc6M9y1a9f2GX5tdStoSMsuVnpoPpzfKWRdYMedI3BFwVCsade%2FDqxYhdcXSYiB7CX36iaubQgSM9qEpnvcwhMk%2F6QBthbASXdMfZPBp1mNMqUSQMysJqOGigzHGxGZ1wgpGA%3D%3D','Dummy','586047e3e43c4884ba6493c61d6ec0fb','47a16c12-e576-45ff-8fa1-9d060747b2fb','2018-02-13 22:58:22','2018-02-02 23:25:48','2018-02-13 22:58:22',3),(72,'dummyMultiple',1,'dec15185353505990f66','Ndv3wfN0xP4WzwMdOfgg%2BHG%2BVcWqaVu%2BhyCUo5G%2FebqqJYZGAjvlTbPUgIaN3%2B9tKMzX4WcNAzPZY2HVURBGHqMA7N52pw2tXz7%2BxYK9Ry6429nS5sWDQCb%2FFlU1M82wsvvWSC8IZYlWmxL35X51jg%3D%3D','Dummy','6789a2e9c2ee4ae9adf874a0d9523b0d','76d0979a-225b-4671-ad44-1d330e9e9565','2018-02-18 22:27:59','2018-02-13 15:22:31','2018-02-18 22:27:58',5),(73,'dummy600',1,'60f1518535924630bf3c','5Wz6P5pgwoanv5JQeu1Q%2FVfYp9nQDQtkUNO1btap1Mw8K5F0kj80ZZNqnQQnzlywbYvv9AevSNuji6h%2FBCjIrFCUt401Jby2Q4HXSQ077xvyzoKeKPFhH1JeQ1O0uoNet6DxaLtlMqpDWIFiFUrtkQ%3D%3D','Dummy','4c7d937579894999876fef97dbd3431c','ad487f54-88ec-4adc-a7ff-f715921e6220','2018-02-19 16:25:05','2018-02-13 15:32:05','2018-02-19 16:25:05',21),(74,'26305475-Play Money',1,'5de1518536161888d032','oe3wDKPefhbvezAyFnjmskIYd7U%2FVeUfL8%2FgAMcXYVdT4oOf9C0rhQJrZ4qqgfu693Up%2BdvdOknCytToz8kLsmNFgQIUn02CERBJ5Cz6VkvIBQUHr3533l%2B5Y2LVVJpeXKaNFlOIZUFeWYTYr7583g%3D%3D','Scottrade','af15ac8c6ee142ceb75ff006318bbc72','e2c790b4-e85f-4981-a3bc-623b6512784e','2018-02-16 22:16:59','2018-02-13 15:36:02','2018-02-16 22:16:59',38),(77,'dummyOptionLong',1,'3e61518823375005f725','%2BKhK3sN24IwXMQdvshkldxPAAyBK5uBj0Sx9CgpGt9aoZk0CDsY35b3%2BmMB2p7X93Ho1ZzxSVGUNERJ%2FPGeg3hI%2B%2BD2yws3jZa1eZIcyj1AeOhwsNkghFjFwlumu482WYHVcccFFQ5gmn2Y6uEQKag%3D%3D','Dummy','a16d8e0c5598448ca297a76162ae75b1','786a64a5-54e6-4a4b-a78c-7008bcee286a','2018-02-19 18:41:24','2018-02-16 23:22:56','2018-02-19 21:20:02',24);
 /*!40000 ALTER TABLE `tradeit_account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1087,7 +1087,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Temporary view structure for view `v_portfolio_stock`
+-- Temporary table structure for view `v_portfolio_stock`
 --
 
 DROP TABLE IF EXISTS `v_portfolio_stock`;
@@ -1113,7 +1113,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note`
+-- Temporary table structure for view `v_stock_note`
 --
 
 DROP TABLE IF EXISTS `v_stock_note`;
@@ -1141,7 +1141,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_note_count`
+-- Temporary table structure for view `v_stock_note_count`
 --
 
 DROP TABLE IF EXISTS `v_stock_note_count`;
@@ -1155,7 +1155,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_tag`
+-- Temporary table structure for view `v_stock_tag`
 --
 
 DROP TABLE IF EXISTS `v_stock_tag`;
@@ -1175,7 +1175,7 @@ SET character_set_client = utf8;
 SET character_set_client = @saved_cs_client;
 
 --
--- Temporary view structure for view `v_stock_to_buy`
+-- Temporary table structure for view `v_stock_to_buy`
 --
 
 DROP TABLE IF EXISTS `v_stock_to_buy`;
@@ -1296,4 +1296,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-18 13:04:01
+-- Dump completed on 2018-02-19 21:12:31

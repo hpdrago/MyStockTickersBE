@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteState;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
@@ -21,7 +20,7 @@ import java.sql.Timestamp;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
-                                         VersionedEntity<Integer>
+                                         VersionedDTO<Integer>
 {
     private Integer tradeItAccountId;
     private Integer linkedAccountId;
@@ -269,6 +268,12 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     public Integer getVersion()
     {
         return version;
+    }
+
+    @Override
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
     }
 
     public void setVersion( final int version )

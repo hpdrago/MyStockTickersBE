@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -25,7 +26,16 @@ public class GetOAuthAccessTokenAPICall extends TradeItAPIRestCall<GetOAuthAcces
         logMethodBegin( methodName, oAuthVerifier, broker );
         this.addPostParameter( TradeItProperties.BROKER_PARAM, broker );
         this.addPostParameter( TradeItProperties.OAUTH_VERIFIER_PARAM, oAuthVerifier );
-        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = this.execute();
+        GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = null;
+        try
+        {
+            getOAuthAccessTokenAPIResult = this.execute();
+        }
+        catch( TradeItAuthenticationException e )
+        {
+            // should not get this exception in this context.
+            logError( methodName, e );
+        }
         logMethodEnd( methodName, getOAuthAccessTokenAPIResult );
         return getOAuthAccessTokenAPIResult;
     }

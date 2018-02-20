@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.CloseSessionAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -20,7 +21,9 @@ public class CloseSessionAPICall extends TradeItAPIRestCall<CloseSessionAPIResul
      * @return
      */
     public CloseSessionAPIResult execute( final TradeItAccountEntity tradeItAccountEntity )
+        throws TradeItAuthenticationException
     {
+        final String methodName = "execute";
         this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
         return execute();
     }

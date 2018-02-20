@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This cache holds stocks that will expire after the set amount of time
@@ -19,13 +21,38 @@ import java.util.Objects;
 @Service
 public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
 {
-    public static final long EXPIRATION_TIME = 5 * 60 * 1000; // 5 min
+    public static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis( 5 );
     private Map<String, StockTickerQuoteCacheEntry> cacheEntryMap = Collections.synchronizedMap( new HashMap<>( ) );
     private StockQuoteServiceExecutor stockQuoteServiceExecutor;
     private StockEntityService stockService;
 
     public StockQuoteCache()
     {
+    }
+
+    public void updateLastPrice( @NotNull final String tickerSymbol, @NotNull final BigDecimal lastPrice )
+    {
+        final String methodName = "updateLastPrice";
+        logMethodBegin( methodName, tickerSymbol, lastPrice );
+        StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheEntryMap.get( tickerSymbol );
+        /*
+         * If we don't have a full quote, go get it now.
+         */
+        if ( stockTickerQuoteCacheEntry == null )
+        {
+            try
+            {
+                this.synchronousQuoteFetch( tickerSymbol );
+            }
+            catch( Exception e )
+            {
+                logError( methodName, e );
+            }
+        }
+        else
+        {
+            stockTickerQuoteCacheEntry.setLastPrice( lastPrice );
+        }
     }
 
     /**
@@ -36,7 +63,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
      * @throws StockQuoteUnavailableException
      * @throws StockNotFoundException
      */
-    public StockQuote getStockQuote( @NotNull String tickerSymbol, final StockQuoteFetchMode fetchMode )
+    public StockQuote getStockQuote( @NotNull String tickerSymbol, @NotNull final StockQuoteFetchMode fetchMode )
         throws StockQuoteUnavailableException,
                StockNotFoundException
     {

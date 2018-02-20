@@ -69,11 +69,11 @@ public class TradeItAccountController extends AbstractController implements MyLo
                      method = RequestMethod.POST )
     public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
                                                             @PathVariable final int customerId )
-        throws TradeItAccountNotFoundException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
-        TradeItAccountDTO returnStockDTO = this.tradeItAccountService.createAccount( customerId, tradeItAccountDTO );
+        TradeItAccountDTO returnStockDTO = this.tradeItAccountService
+                                               .createAccount( customerId, tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -121,7 +121,8 @@ public class TradeItAccountController extends AbstractController implements MyLo
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
-        TradeItAccountDTO returnTradeItAccountDTO = this.tradeItAccountService.updateAccount( customerId, tradeItAccountDTO );
+        TradeItAccountDTO returnTradeItAccountDTO = this.tradeItAccountService
+                                                        .updateAccount( customerId, tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )

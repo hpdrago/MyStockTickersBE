@@ -6,6 +6,7 @@ import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.StockPositionRepository;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
@@ -30,7 +31,6 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     private TradeItService tradeItService;
     private TradeItAccountEntityService tradeItAccountEntityService;
     private LinkedAccountEntityService linkedAccountEntityService;
-    private StockPositionComparisonService stockPositionComparisonService;
 
     /**
      * Get the positions for the linked account.
@@ -40,25 +40,27 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * @return List of positions.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     public List<StockPositionDTO> getPositions( final int customerId,
                                                 final int tradeItAccountId,
                                                 final int linkedAccountId )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException
+               TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getAccountEntity( customerId, tradeItAccountId );
+                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
                                                             .getLinkedAccountEntity( customerId, linkedAccountId );
         /*
          * Call to TradeIt to get the positions.
          */
         final GetPositionsAPIResult getPositionsAPIResult = this.tradeItService
-                                                                .getPositions( linkedAccountEntity.getAccountNumber(),
-                                                                               tradeItAccountEntity.getAuthToken() );
+                                                                .getPositions( tradeItAccountEntity,
+                                                                               linkedAccountEntity );
 
         /*
          * Get the positions stored in the database.
@@ -71,8 +73,8 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
          * based on the comparison results.  This is an asynchronous calls so that we don't make the user wait for
          * the result as TradeIt is the source of truth concerning the positions the user has with the linked account.
          */
-        this.stockPositionComparisonService
-            .comparePositions( linkedAccountId, stockPositionEntities, getPositionsAPIResult );
+        final StockPositionComparator stockPositionComparator = this.context.getBean( StockPositionComparator.class );
+        stockPositionComparator.comparePositions( linkedAccountEntity, stockPositionEntities, getPositionsAPIResult );
 
         /*
          * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
@@ -152,11 +154,4 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     {
         this.linkedAccountEntityService = linkedAccountEntityService;
     }
-
-    @Autowired
-    public void setStockPositionComparisonService( final StockPositionComparisonService stockPositionComparisonService )
-    {
-        this.stockPositionComparisonService = stockPositionComparisonService;
-    }
-
 }

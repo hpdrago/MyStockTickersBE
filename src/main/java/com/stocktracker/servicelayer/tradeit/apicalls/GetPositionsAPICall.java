@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -24,8 +25,10 @@ public class GetPositionsAPICall extends TradeItAPIRestCall<GetPositionsAPIResul
      * @param accountNumber
      * @param authToken
      * @return
+     * @throws TradeItAuthenticationException
      */
     public GetPositionsAPIResult execute( final String accountNumber, final String authToken )
+        throws TradeItAuthenticationException
     {
         final String methodName = "execute";
         logMethodBegin( methodName, accountNumber, authToken );
