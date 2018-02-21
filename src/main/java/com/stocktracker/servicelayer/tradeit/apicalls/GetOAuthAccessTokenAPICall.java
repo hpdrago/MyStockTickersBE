@@ -1,7 +1,5 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -16,26 +14,15 @@ public class GetOAuthAccessTokenAPICall extends TradeItAPIRestCall<GetOAuthAcces
 {
     /**
      * Make the API call.
-     * @param oAuthVerifier
-     * @param broker
+     * @param parameterMap Must contain BROKER_PARAM and OAUTH_VERIFIER_PARAM.
      * @return
+     * @throws IllegalArgumentException If the required parameters are not found in {@code parameterMap}.
      */
-    public GetOAuthAccessTokenAPIResult execute( final String oAuthVerifier, final String broker )
+    public GetOAuthAccessTokenAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, oAuthVerifier, broker );
-        this.addPostParameter( TradeItProperties.BROKER_PARAM, broker );
-        this.addPostParameter( TradeItProperties.OAUTH_VERIFIER_PARAM, oAuthVerifier );
-        GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = null;
-        try
-        {
-            getOAuthAccessTokenAPIResult = this.execute();
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            // should not get this exception in this context.
-            logError( methodName, e );
-        }
+        logMethodBegin( methodName, parameterMap );
+        GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = this.callTradeIt( parameterMap );
         logMethodEnd( methodName, getOAuthAccessTokenAPIResult );
         return getOAuthAccessTokenAPIResult;
     }

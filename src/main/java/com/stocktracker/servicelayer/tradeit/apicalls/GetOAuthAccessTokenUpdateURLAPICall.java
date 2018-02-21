@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItProperties;
+import com.stocktracker.servicelayer.tradeit.TradeItParameter;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenUpdateURLAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -16,30 +15,18 @@ public class GetOAuthAccessTokenUpdateURLAPICall extends TradeItAPIRestCall<GetO
 {
     /**
      * Make the API call to get the URL to update the user's token.
-     * @param userId
-     * @param userToken
-     * @param broker
-     * @return
+     * @param parameterMap Must contain USER_ID_PARAM, TOKEN_PARAM, and BROKER_PARAM.
+     * @return OAuth access token result.
+     * @throws IllegalArgumentException If the required parameters are not in {@code parameterMap}
      */
-    public GetOAuthAccessTokenUpdateURLAPIResult execute( final String userId, final String userToken, final String broker )
+    public GetOAuthAccessTokenUpdateURLAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute ";
-        logMethodBegin( methodName, userId, userToken, broker );
-        this.addPostParameter( TradeItProperties.USER_ID_PARAM, userId );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, userToken );
-        this.addPostParameter( TradeItProperties.BROKER_PARAM, broker );
-        GetOAuthAccessTokenUpdateURLAPIResult GetOAuthAccessTokenUpdateURLAPIResult = null;
-        try
-        {
-            GetOAuthAccessTokenUpdateURLAPIResult = this.execute();
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            /*
-             * Should not get this exception in this context.
-             */
-            logError( methodName, e );
-        }
+        logMethodBegin( methodName, parameterMap );
+        parameterMap.parameterCheck( TradeItParameter.USER_ID_PARAM,
+                                     TradeItParameter.TOKEN_PARAM,
+                                     TradeItParameter.BROKER_PARAM );
+        GetOAuthAccessTokenUpdateURLAPIResult GetOAuthAccessTokenUpdateURLAPIResult = this.callTradeIt( parameterMap );
         logMethodEnd( methodName, GetOAuthAccessTokenUpdateURLAPIResult );
         return GetOAuthAccessTokenUpdateURLAPIResult;
     }

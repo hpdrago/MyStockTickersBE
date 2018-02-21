@@ -75,14 +75,12 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * in addition that which is stored in the DB -- hence the use of the DTO here.
      * @param tradeItAccountEntity
      * @param linkedAccountDTO
-     * @throws LinkedAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws TradeItAccountNotFoundException
      */
     private void updateAccountSummaryInformation( final TradeItAccountEntity tradeItAccountEntity,
                                                   final LinkedAccountDTO linkedAccountDTO )
-        throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
+        throws TradeItAccountNotFoundException,
                TradeItAuthenticationException
     {
         final String methodName = "updateAccountSummaryInformation";

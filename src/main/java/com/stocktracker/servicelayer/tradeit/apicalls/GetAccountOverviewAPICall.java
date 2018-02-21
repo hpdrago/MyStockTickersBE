@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItProperties;
+import com.stocktracker.servicelayer.tradeit.TradeItParameter;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverViewAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -16,19 +15,16 @@ public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOver
 {
     /**
      * Execute the Keep Session Alive API call.
-     * @param accountNumber
-     * @param authToken
-     * @return
-     * @throws TradeItAuthenticationException
+     * @param parameterMap Map must contain TOKEN_PARAM and ACCOUNT_NUMBER_PARAM
+     * @return Result of keep alive call.
+     * @throws IllegalArgumentException If the required parameters are not found in {@code parameterMap}
      */
-    public GetAccountOverViewAPIResult execute( final String accountNumber, final String authToken )
-        throws TradeItAuthenticationException
+    public GetAccountOverViewAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, accountNumber, authToken );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, authToken );
-        this.addPostParameter( TradeItProperties.ACCOUNT_NUMBER_PARAM, accountNumber );
-        final GetAccountOverViewAPIResult getAccountOverViewAPIResult = super.execute();
+        logMethodBegin( methodName, parameterMap );
+        parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM, TradeItParameter.ACCOUNT_NUMBER_PARAM );
+        final GetAccountOverViewAPIResult getAccountOverViewAPIResult = super.callTradeIt( parameterMap );
         logMethodEnd( methodName, getAccountOverViewAPIResult );
         return getAccountOverViewAPIResult;
     }

@@ -1,13 +1,10 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItProperties;
+import com.stocktracker.servicelayer.tradeit.TradeItParameter;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 /**
  * this class will execute the Keep Session Alive TradeIt API call.
@@ -18,18 +15,16 @@ public class KeepSessionAliveAPICall extends TradeItAPIRestCall<KeepSessionAlive
 {
     /**
      * Execute the Keep Session Alive API call.
-     * @param authToken
+     * @param parameterMap Must contain TOKEN_PARAM
      * @return
-     * @throws TradeItAuthenticationException
+     * @throws IllegalArgumentException if TOKEN_PARAM is not in {@code parameterMap}
      */
-    public KeepSessionAliveAPIResult execute( final String authToken )
-        throws TradeItAuthenticationException
+    public KeepSessionAliveAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName );
-        Objects.requireNonNull( authToken, "authToken cannot be null" );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, authToken );
-        KeepSessionAliveAPIResult keepSessionAliveAPIResult = this.execute();
+        logMethodBegin( methodName, parameterMap );
+        parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM );
+        KeepSessionAliveAPIResult keepSessionAliveAPIResult = this.callTradeIt( parameterMap );
         logMethodEnd( methodName, keepSessionAliveAPIResult );
         return keepSessionAliveAPIResult;
     }

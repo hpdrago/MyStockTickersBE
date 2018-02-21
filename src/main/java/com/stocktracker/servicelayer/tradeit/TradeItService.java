@@ -18,6 +18,8 @@ import com.stocktracker.servicelayer.tradeit.apicalls.GetOAuthAccessTokenUpdateU
 import com.stocktracker.servicelayer.tradeit.apicalls.GetPositionsAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.KeepSessionAliveAPICall;
 import com.stocktracker.servicelayer.tradeit.apicalls.RequestOAuthPopUpURLAPICall;
+import com.stocktracker.servicelayer.tradeit.apicalls.TradeItAPICallParameters;
+import com.stocktracker.servicelayer.tradeit.apicalls.TradeItAPIRestCall;
 import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.CloseSessionAPIResult;
@@ -28,6 +30,7 @@ import com.stocktracker.servicelayer.tradeit.apiresults.GetOAuthAccessTokenUpdat
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import com.stocktracker.servicelayer.tradeit.apiresults.RequestOAuthPopUpURLAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
@@ -70,16 +73,7 @@ public class TradeItService implements MyLogger
         final String methodName = "getBrokers";
         logger.debug( methodName + ".begin" );
         final GetBrokersAPICall getBrokersAPICall = this.context.getBean( GetBrokersAPICall.class );
-        GetBrokersAPIResult getBrokersAPIResult = null;
-        try
-        {
-            getBrokersAPIResult = getBrokersAPICall.execute();
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            // should not get this exception in this context.
-            logError( methodName, e );
-        }
+        GetBrokersAPIResult getBrokersAPIResult = getBrokersAPICall.execute( TradeItAPICallParameters.newMap() );
         final GetBrokersDTO getBrokersDTO = this.context.getBean( GetBrokersDTO.class );
         getBrokersDTO.setResults( getBrokersAPIResult );
         logger.debug( methodName + ".end " + getBrokersDTO );
@@ -98,7 +92,18 @@ public class TradeItService implements MyLogger
         logMethodBegin( methodName, broker );
         Objects.requireNonNull( broker, "Broker cannot be null" );
         final RequestOAuthPopUpURLAPICall requestOAuthPopUpURLAPICall = this.context.getBean( RequestOAuthPopUpURLAPICall.class );
-        final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult = requestOAuthPopUpURLAPICall.execute( broker );
+        /*
+         * Create the method parameters
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.BROKER_PARAM, broker );
+        /*
+         * Execute the TradeIt API call
+         */
+        final RequestOAuthPopUpURLAPIResult requestOAuthPopUpURLAPIResult = requestOAuthPopUpURLAPICall.execute( parameters );
+        /*
+         * Get the result and convert it into a DTO.
+         */
         final RequestOAuthPopUpURLDTO requestOAuthPopUpURLDTO = (RequestOAuthPopUpURLDTO )this.context.getBean( "requestOAuthPopUpURLDTO" );
         requestOAuthPopUpURLDTO.setResults( requestOAuthPopUpURLAPIResult );
         logMethodEnd( methodName, requestOAuthPopUpURLDTO );
@@ -126,15 +131,31 @@ public class TradeItService implements MyLogger
         Objects.requireNonNull( broker, "broker cannot be null" );
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( oAuthVerifier, "oAuthVerifier cannot be null" );
-        final GetOAuthAccessTokenAPICall getOAuthAccessTokenAPICall = this.context.getBean( GetOAuthAccessTokenAPICall.class );
-        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = getOAuthAccessTokenAPICall.execute( oAuthVerifier, broker );
+        final GetOAuthAccessTokenAPICall getOAuthAccessTokenAPICall = this.context
+                                                                          .getBean( GetOAuthAccessTokenAPICall.class );
+        /*
+         * Create the parameter map
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.OAUTH_VERIFIER_PARAM, oAuthVerifier )
+                                                                              .addParameter( TradeItParameter.BROKER_PARAM, broker );
+        /*
+         * Execute the TradeIt API call
+         */
+        final GetOAuthAccessTokenAPIResult getOAuthAccessTokenAPIResult = getOAuthAccessTokenAPICall.execute( parameters );
         TradeItAccountDTO tradeItAccountDTO = null;
+        /*
+         * Check the results
+         */
         if ( getOAuthAccessTokenAPIResult.isSuccessful() )
         {
             tradeItAccountDTO = this.tradeItAccountEntityService.createAccount( customerId, broker, accountName,
                                                                                 getOAuthAccessTokenAPIResult.getUserId(),
                                                                                 getOAuthAccessTokenAPIResult.getUserToken() );
         }
+        /*
+         * Create the return DTO
+         */
         GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = new GetOAuthAccessTokenDTO( getOAuthAccessTokenAPIResult );
         getOAuthAccessTokenDTO.setTradeItAccount( tradeItAccountDTO );
         logMethodEnd( methodName, getOAuthAccessTokenDTO );
@@ -147,17 +168,36 @@ public class TradeItService implements MyLogger
      * @param accountId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final int customerId, final int accountId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService.getTradeItAccountEntity( customerId, accountId );
-        final GetOAuthAccessTokenUpdateURLAPICall getOAuthAccessTokenUpdateURLAPICall = this.context.getBean( GetOAuthAccessTokenUpdateURLAPICall.class );
-        final GetOAuthAccessTokenUpdateURLAPIResult getOAuthAccessTokenUpdateURLAPIResult = getOAuthAccessTokenUpdateURLAPICall.execute(
-            tradeItAccountEntity.getUserId(), tradeItAccountEntity.getUserToken(), tradeItAccountEntity.getBrokerage() );
-        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = this.context.getBean( GetOAuthAccessTokenUpdateURLDTO.class );
+        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
+                                                              .getTradeItAccountEntity( customerId, accountId );
+        final GetOAuthAccessTokenUpdateURLAPICall getOAuthAccessTokenUpdateURLAPICall = this.context
+                                                                                            .getBean( GetOAuthAccessTokenUpdateURLAPICall.class );
+        /*
+         * Create the method parameter map
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.USER_ID_PARAM, tradeItAccountEntity.getUserId() )
+                                                                              .addParameter( TradeItParameter.USER_TOKEN_PARAM, tradeItAccountEntity.getUserToken() )
+                                                                              .addParameter( TradeItParameter.BROKER_PARAM, tradeItAccountEntity.getBrokerage() );
+        /*
+         * Make the call to TradeIt
+         */
+        final GetOAuthAccessTokenUpdateURLAPIResult getOAuthAccessTokenUpdateURLAPIResult = this.callTradeIt( tradeItAccountEntity,
+                                                                                                              getOAuthAccessTokenUpdateURLAPICall,
+                                                                                                              parameters );
+        /*
+         * Create the DTO result and return it.
+         */
+        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = this.context
+                                                                                    .getBean( GetOAuthAccessTokenUpdateURLDTO.class );
         getOAuthAccessTokenUpdateURLDTO.setResults( getOAuthAccessTokenUpdateURLAPIResult );
         logMethodEnd( methodName, getOAuthAccessTokenUpdateURLDTO );
         return getOAuthAccessTokenUpdateURLDTO;
@@ -171,9 +211,11 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     public AuthenticateDTO authenticate( final int customerId, final int tradeItAccountId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, customerId, tradeItAccountId );
@@ -191,13 +233,26 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                        .saveAccount( tradeItAccountEntity );
         }
-
+        /*
+         * Create the method parameter map
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                  .addParameter( TradeItParameter.AUTH_UUID, tradeItAccountEntity.getAuthUuid() )
+                  .addParameter( TradeItParameter.USER_ID_PARAM, tradeItAccountEntity.getUserId() )
+                  .addParameter( TradeItParameter.USER_TOKEN_PARAM, tradeItAccountEntity.getUserToken() )
+                  .addParameter( TradeItParameter.BROKER_PARAM, tradeItAccountEntity.getBrokerage() );
         /*
          * Make the auth call
          */
         logDebug( methodName, "Calling TradeIt to authenticate account: {0}", tradeItAccountEntity );
         final AuthenticateAPICall authenticateAPICall = this.context.getBean( AuthenticateAPICall.class );
-        final AuthenticateAPIResult authenticateAPIResult = authenticateAPICall.execute( tradeItAccountEntity );
+        final AuthenticateAPIResult authenticateAPIResult = this.callTradeIt( tradeItAccountEntity,
+                                                                              authenticateAPICall,
+                                                                              parameters );
+
+        /*
+         * Create the result DTO and extract the results from the authenticate call.
+         */
         final AuthenticateDTO authenticateDTO = (AuthenticateDTO)this.context.getBean( "authenticateDTO" );
         authenticateDTO.setResults( authenticateAPIResult );
         logDebug( methodName, "Authenticate result: {0}", authenticateDTO );
@@ -252,14 +307,34 @@ public class TradeItService implements MyLogger
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, questionResponse );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-            .getTradeItAccountEntity( customerId, accountId );
+                                                              .getTradeItAccountEntity( customerId, accountId );
         final AnswerSecurityQuestionAPICall answerSecurityQuestionAPICall = this.context.getBean( AnswerSecurityQuestionAPICall.class );
-        final AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult =
-            answerSecurityQuestionAPICall.execute( tradeItAccountEntity, questionResponse );
+        /*
+         * Create the execute parameter map
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.TOKEN_PARAM,
+                                                                                                 tradeItAccountEntity.getAuthToken() )
+                                                                              .addParameter( TradeItParameter.SECURITY_ANSWER_PARAM,
+                                                                                                 questionResponse );
+        /*
+         * Make the TradeIt API call
+         */
+        final AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = this.callTradeIt( tradeItAccountEntity,
+                                                                                                  answerSecurityQuestionAPICall,
+                                                                                                  parameters );
+        /*
+         * Create the return DTO, extract the results, and evaluate the result status.
+         */
         final AnswerSecurityQuestionDTO answerSecurityQuestionDTO = this.context.getBean( AnswerSecurityQuestionDTO.class );
         answerSecurityQuestionDTO.setResults( answerSecurityQuestionAPIResult );
         if ( answerSecurityQuestionAPIResult.isSuccessful() )
         {
+            /*
+             * If successful, the list of accounts linked to the tradeit account are returned.
+             * The accounts are compared against the database linked accounts and the database is synchronized
+             * to the results returned by TradeIt.
+             */
             this.tradeItAccountEntityService
                 .synchronizeTradeItAccount( tradeItAccountEntity, answerSecurityQuestionDTO );
         }
@@ -285,7 +360,20 @@ public class TradeItService implements MyLogger
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getTradeItAccountEntity( customerId, tradeItAccountId );
         final KeepSessionAliveAPICall keepSessionAliveAPICall = this.context.getBean( KeepSessionAliveAPICall.class );
-        final KeepSessionAliveAPIResult keepSessionAliveAPIResult = keepSessionAliveAPICall.execute( tradeItAccountEntity.getAuthToken() );
+        /*
+         * Create the parameter map
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
+        /*
+         * Call TradeIt to keep the session alive.
+         */
+        final KeepSessionAliveAPIResult keepSessionAliveAPIResult = this.callTradeIt( tradeItAccountEntity,
+                                                                                      keepSessionAliveAPICall,
+                                                                                      parameters );
+        /*
+         * Evaluate the results and create the return DTO.
+         */
         KeepSessionAliveDTO keepSessionAliveDTO = this.context.getBean( KeepSessionAliveDTO.class );
         keepSessionAliveDTO.setResults( keepSessionAliveAPIResult );
         if ( keepSessionAliveAPIResult.isSuccessful() )
@@ -318,15 +406,32 @@ public class TradeItService implements MyLogger
         logMethodBegin( methodName, customerId, accountId  );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getTradeItAccountEntity( customerId, accountId );
+        /*
+         * Create the api call and the return DTO.
+         */
         final CloseSessionAPICall closeSessionAPICall = this.context.getBean( CloseSessionAPICall.class );
         final CloseSessionDTO closeSessionDTO = this.context.getBean( CloseSessionDTO.class );
         final CloseSessionAPIResult closeSessionAPIResult;
         try
         {
-            closeSessionAPIResult = closeSessionAPICall.execute( tradeItAccountEntity );
+            /*
+             * Create the api call parameters
+             */
+            final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                                  .addParameter( TradeItParameter.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
+            /*
+             * Call the TradeIt API
+             */
+            closeSessionAPIResult = this.callTradeIt( tradeItAccountEntity, closeSessionAPICall, parameters );
+            /*
+             * Null out the auth timestamp so that we can identify that this account is not longer authenticated.
+             */
             tradeItAccountEntity.setAuthTimestamp( null );
             this.tradeItAccountEntityService
                 .saveAccount( tradeItAccountEntity );
+            /*
+             * Save the results.
+             */
             closeSessionDTO.setResults( closeSessionAPIResult );
         }
         catch( TradeItAuthenticationException e )
@@ -381,34 +486,27 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountEntity
      * @param linkedAccountEntity
      * @return
-     * @throws LinkedAccountNotFoundException
-     * @throws TradeItAccountNotFoundException,
      * @throws TradeItAuthenticationException
      */
     public GetPositionsAPIResult getPositions( final TradeItAccountEntity tradeItAccountEntity,
                                                final LinkedAccountEntity linkedAccountEntity )
-        throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+        throws TradeItAuthenticationException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, tradeItAccountEntity.getId(), linkedAccountEntity.getId() );
         final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
-        GetPositionsAPIResult getPositionsAPIResult = null;
-        try
-        {
-            getPositionsAPIResult = getPositionsAPICall.execute( linkedAccountEntity.getAccountNumber(),
-                                                                 tradeItAccountEntity.getAuthToken() );
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            /*
-             * Authenticate and try again.
-             */
-            authenticateOnException( linkedAccountEntity.getCustomerId(), tradeItAccountEntity.getId(), e );
-            getPositionsAPIResult = getPositionsAPICall.execute( linkedAccountEntity.getAccountNumber(),
-                                                                 tradeItAccountEntity.getAuthToken() );
-        }
+        /*
+         * Create the get positions parameters.
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() )
+                                                                              .addParameter( TradeItParameter.ACCOUNT_NUMBER_PARAM, linkedAccountEntity.getAccountNumber() );
+        /*
+         * Make the get positions API call.
+         */
+        final GetPositionsAPIResult getPositionsAPIResult = this.callTradeIt( tradeItAccountEntity,
+                                                                              getPositionsAPICall,
+                                                                              parameters );
         logMethodEnd( methodName, getPositionsAPIResult );
         return getPositionsAPIResult;
     }
@@ -461,30 +559,119 @@ public class TradeItService implements MyLogger
                                                      final int tradeItAccountId,
                                                      final String accountNumber,
                                                      final String authToken )
-        throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
+        throws TradeItAccountNotFoundException,
                TradeItAuthenticationException
     {
         final String methodName = "getAccountOverview";
         logMethodBegin( methodName, customerId, tradeItAccountId, accountNumber, authToken  );
+        Objects.requireNonNull( accountNumber, "accountNumber cannot be null" );
+        Objects.requireNonNull( accountNumber, "authToken cannot be null" );
+        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
+                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
         final GetAccountOverviewAPICall getAccountOverviewAPICall = this.context.getBean( GetAccountOverviewAPICall.class );
-        GetAccountOverViewAPIResult getAccountOverviewAPIResult;
-        try
-        {
-            getAccountOverviewAPIResult = getAccountOverviewAPICall.execute( accountNumber, authToken );
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            /*
-             * Authenticate and try again.
-             */
-            this.authenticateOnException( customerId, tradeItAccountId, e );
-            getAccountOverviewAPIResult = getAccountOverviewAPICall.execute( accountNumber, authToken );
-        }
+        /*
+         * Create the parameter map for the get account overview fcall.
+         */
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+                                                                              .addParameter( TradeItParameter.TOKEN_PARAM, authToken )
+                                                                              .addParameter( TradeItParameter.ACCOUNT_NUMBER_PARAM, accountNumber );
+        /*
+         * Make the account overview API call to TradeIT
+         */
+        GetAccountOverViewAPIResult getAccountOverviewAPIResult = this.callTradeIt( tradeItAccountEntity,
+                                                                                    getAccountOverviewAPICall,
+                                                                                    parameters );
+        /*
+         * Create the return DTO.
+         */
         final GetAccountOverviewDTO getAccountOverviewDTO = this.context.getBean( GetAccountOverviewDTO.class );
         getAccountOverviewDTO.setResults( getAccountOverviewAPIResult );
         logMethodEnd( methodName, getAccountOverviewDTO );
         return getAccountOverviewDTO;
+    }
+
+    /**
+     * This is a wrapper method to execute an TradeIt API call. It provides common error evaluation and handling
+     * for most TradeIt calls.
+     * @param tradeItAPIRestCall
+     * @param <T>
+     * @return The result of the TradeIt API call.
+     * @throws TradeItAuthenticationException
+     */
+    private <T extends TradeItAPIResult> T callTradeIt( final TradeItAccountEntity tradeItAccountEntity,
+                                                        final TradeItAPIRestCall<T> tradeItAPIRestCall,
+                                                        final TradeItAPICallParameters tradeItAPICallParameterMap )
+        throws TradeItAuthenticationException
+    {
+        final String methodName = "callTradeIt";
+        logMethodBegin( methodName, tradeItAccountEntity.getId(),
+                                    tradeItAPIRestCall.getClass().getName(),
+                                    tradeItAPICallParameterMap );
+        T tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
+        logDebug( methodName, "tradeItAPIResult: {0}", tradeItAPIResult );
+        if ( !tradeItAPIResult.isSuccessful() )
+        {
+            switch ( tradeItAPIResult.getTradeItCodeEnum() )
+            {
+                /*
+                 * When the session is expired, the account will be re-authenticated and if successful, the TradeItCall
+                 * will be made again.
+                 */
+                case SESSION_EXPIRED_ERROR:
+                    this.handleSessionExpired( tradeItAccountEntity );
+                    final AuthenticateAPIResult authenticateAPIResult = (AuthenticateAPIResult)tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
+                    logDebug( methodName, "authentication result: {0}", authenticateAPIResult );
+                    /*
+                     * Bail out with exception if we need the user to answer the security questions.
+                     */
+                    if ( tradeItAPIResult.isInformationNeeded() )
+                    {
+                        throw new TradeItAuthenticationException( authenticateAPIResult );
+                    }
+                    tradeItAPIResult = (T)authenticateAPIResult;
+                    break;
+            }
+        }
+        logMethodEnd( methodName, tradeItAPIResult );
+        return tradeItAPIResult;
+    }
+
+    /**
+     * This method is called when a TradeIt API call returns a session expired error code.
+     * This method will make a call to re-authenticate the account. If the call does not result in a SUCCESS, like
+     * INFORMATION_NEEDED is returned this this method will throw TradeItAuthenticationException to indicate that the
+     * simple authentication call did not succeed as was expected.
+     * @param tradeItAccountEntity The auth token is needed to authenticate and on successful authentication the
+     *                             auth token and auth timestamp will be persisted.
+     * @throws
+     */
+    private void handleSessionExpired( final TradeItAccountEntity tradeItAccountEntity )
+        throws TradeItAuthenticationException
+    {
+        final String methodName = "handleSessionExpired";
+        logMethodBegin( methodName, tradeItAccountEntity );
+        final AuthenticateAPICall authenticateAPICall = this.context.getBean( AuthenticateAPICall.class );
+        final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
+            .addParameter( TradeItParameter.USER_ID_PARAM, tradeItAccountEntity.getUserId() )
+            .addParameter( TradeItParameter.USER_TOKEN_PARAM, tradeItAccountEntity.getUserToken() )
+            .addParameter( TradeItParameter.BROKER_PARAM, tradeItAccountEntity.getBrokerage() )
+            .addParameter( TradeItParameter.AUTH_UUID, tradeItAccountEntity.getAuthToken() );
+        final AuthenticateAPIResult authenticateAPIResult = authenticateAPICall.execute( parameters );
+        logDebug( methodName, "Authentication result {0}", authenticateAPIResult );
+        if ( authenticateAPIResult.isSuccessful() )
+        {
+            logDebug( methodName, "Authentication was successful" );
+            tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
+            tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
+            this.tradeItAccountEntityService
+                .saveAccount( tradeItAccountEntity );
+        }
+        else
+        {
+            logDebug( methodName, "Authentication failed, throwing exception" );
+            throw new TradeItAuthenticationException( authenticateAPIResult );
+        }
+        logMethodEnd( methodName );
     }
 
     @Autowired

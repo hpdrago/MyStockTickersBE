@@ -1,8 +1,5 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.apiresults.CloseSessionAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -17,15 +14,14 @@ public class CloseSessionAPICall extends TradeItAPIRestCall<CloseSessionAPIResul
 {
     /**
      * Execute the Keep Session Alive API call.
-     * @param tradeItAccountEntity
-     * @return
+     * @param parameterMap Must contain TOKEN_PARAM.
+     * @return Close session result.
+     * @throws IllegalArgumentException if TOKEN_PARAM is not in {@code parameterMap}.
      */
-    public CloseSessionAPIResult execute( final TradeItAccountEntity tradeItAccountEntity )
-        throws TradeItAuthenticationException
+    public CloseSessionAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
-        return execute();
+        return this.callTradeIt( parameterMap );
     }
 
     @Override

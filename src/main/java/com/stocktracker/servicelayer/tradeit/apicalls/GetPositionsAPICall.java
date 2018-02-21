@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.servicelayer.tradeit.TradeItProperties;
+import com.stocktracker.servicelayer.tradeit.TradeItParameter;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -22,19 +21,16 @@ public class GetPositionsAPICall extends TradeItAPIRestCall<GetPositionsAPIResul
 
     /**
      * Execute the get positions API call to TradeIt.
-     * @param accountNumber
-     * @param authToken
-     * @return
-     * @throws TradeItAuthenticationException
+     * @param parameterMap Must contain TOKEN_PARAM and ACCOUNT_NUMBER_PARAM.
+     * @return The positions for the account.
+     * @throws IllegalArgumentException if the required parameters are not in {@code parameterMap}.
      */
-    public GetPositionsAPIResult execute( final String accountNumber, final String authToken )
-        throws TradeItAuthenticationException
+    public GetPositionsAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, accountNumber, authToken );
-        this.addPostParameter( TradeItProperties.TOKEN_PARAM, authToken );
-        this.addPostParameter( TradeItProperties.ACCOUNT_NUMBER_PARAM, accountNumber );
-        final GetPositionsAPIResult getPositionsAPIResult = super.execute();
+        logMethodBegin( methodName, parameterMap );
+        parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM, TradeItParameter.ACCOUNT_NUMBER_PARAM );
+        final GetPositionsAPIResult getPositionsAPIResult = super.callTradeIt( parameterMap );
         logMethodEnd( methodName, getPositionsAPIResult );
         return getPositionsAPIResult;
     }

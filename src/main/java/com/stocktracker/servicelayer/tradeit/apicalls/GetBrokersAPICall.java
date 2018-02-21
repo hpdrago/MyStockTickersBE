@@ -24,4 +24,12 @@ public class GetBrokersAPICall extends TradeItAPIRestCall<GetBrokersAPIResult>
         return GetBrokersAPIResult.class;
     }
 
+    public GetBrokersAPIResult execute( final TradeItAPICallParameters parameterMap )
+    {
+        final String methodName = "execute";
+        logMethodBegin( methodName );
+        GetBrokersAPIResult getBrokersAPIResult = this.callTradeIt( parameterMap );
+        logMethodEnd( methodName, getBrokersAPIResult );
+        return getBrokersAPIResult;
+    }
 }

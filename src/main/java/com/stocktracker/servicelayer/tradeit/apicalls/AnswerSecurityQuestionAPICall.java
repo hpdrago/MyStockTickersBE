@@ -1,13 +1,10 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
-import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
+import com.stocktracker.servicelayer.tradeit.TradeItParameter;
 import com.stocktracker.servicelayer.tradeit.apiresults.AnswerSecurityQuestionAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 /**
  * This class encapsulates the TradeIt API call to send the answer back to the broker to continue the authentication
@@ -17,34 +14,21 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
 public class AnswerSecurityQuestionAPICall extends TradeItAPIRestCall<AnswerSecurityQuestionAPIResult>
 {
-    private TradeItAccountEntity tradeItAccountEntity;
+    private TradeItAPICallParameters parameterMap;
 
     /**
      * Authenticate the user's account.
-     * @param tradeItAccountEntity
+     * @param parameterMap Must contain TOKEN_PARAM, SECURITY_ANSWER_PARAM.
      * @return
+     * @throws IllegalArgumentException if {@code parameterMap} does not contain the required parameters.
      */
-    public AnswerSecurityQuestionAPIResult execute( final TradeItAccountEntity tradeItAccountEntity, final String answer )
+    public AnswerSecurityQuestionAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
-        logMethodBegin( methodName, tradeItAccountEntity, answer );
-        this.tradeItAccountEntity = tradeItAccountEntity;
-        Objects.requireNonNull( tradeItAccountEntity.getAuthToken(), "AuthToken is missing from the account" );
-        Objects.requireNonNull( tradeItAccountEntity.getAuthUuid(), "AuthUUID is missing from the account" );
-        this.addPostParameter( this.tradeItProperties.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
-        this.addPostParameter( this.tradeItProperties.SECURITY_ANSWER_PARAM, answer );
-        AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = null;
-        try
-        {
-            answerSecurityQuestionAPIResult = this.execute();
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            /*
-             * Should not get this exception in this context since this is part of the authentication process.
-             */
-            logError( methodName, e );
-        }
+        logMethodBegin( methodName, parameterMap );
+        this.parameterMap = parameterMap;
+        parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM, TradeItParameter.SECURITY_ANSWER_PARAM );
+        final AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = this.callTradeIt( parameterMap );
         logMethodEnd( methodName, answerSecurityQuestionAPIResult );
         return answerSecurityQuestionAPIResult;
     }
@@ -52,7 +36,7 @@ public class AnswerSecurityQuestionAPICall extends TradeItAPIRestCall<AnswerSecu
     @Override
     protected String getAPIURL()
     {
-        return this.tradeItURLs.getAnswerSecurityQuestionURL( tradeItAccountEntity.getAuthUuid() );
+        return this.tradeItURLs.getAnswerSecurityQuestionURL( this.parameterMap.getParameterValue( TradeItParameter.AUTH_UUID ));
     }
 
     @Override

@@ -94,8 +94,12 @@ public abstract class DMLEntityService<K extends Serializable,
     public void checkEntityVersion( final VersionedEntity<K> entity )
         throws EntityVersionMismatchException
     {
-        E dbEntity = this.getRepository()
-                         .findOne( entity.getId() );
+        E dbEntity = null;
+        if ( entity.getId() != null )
+        {
+            dbEntity = this.getRepository()
+                           .findOne( entity.getId() );
+        }
         if ( dbEntity == null )
         {
             entity.setVersion( 1 );

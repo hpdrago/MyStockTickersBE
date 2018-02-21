@@ -3,8 +3,9 @@ package com.stocktracker.servicelayer.tradeit;
 /**
  * Created by michael.earl on 4/14/2017.
  */
-public enum TradeItErrorCode
+public enum TradeItCodeEnum
 {
+    SUCCESS( 0, "SUCCESS", "SUCCESS" ),
     SYSTEM_ERROR( 100, "System Error", "System Error" ),
     CONCURRENT_AUTHENTICATION_ERROR( 101, "Concurrent Authentication Error", "Triggered when we are currently processing a login for a user and second request for the same user comes in." ),
     BROKER_EXECUTION_ERROR( 200, "Broker Execution Error", "User should modify the input for the trade request" ),
@@ -19,7 +20,7 @@ public enum TradeItErrorCode
     private String errorTitle;
     private String errorMessage;
 
-    TradeItErrorCode( final int errorNumber, final String errorTitle, final String errorMessage )
+    TradeItCodeEnum( final int errorNumber, final String errorTitle, final String errorMessage )
     {
         this.errorNumber = errorNumber;
         this.errorTitle = errorTitle;
@@ -30,6 +31,8 @@ public enum TradeItErrorCode
     public String getErrorTitle() { return this.errorTitle; }
     public String getErrorMessage() { return this.errorMessage; }
 
+
+    public boolean isSuccess() { return this == SUCCESS; }
     public boolean isSystemError() { return this == SYSTEM_ERROR; }
     public boolean isConcurrentAuthenticationError() { return this == CONCURRENT_AUTHENTICATION_ERROR; }
     public boolean isBrokerExecutionError() { return this == BROKER_EXECUTION_ERROR; }
@@ -47,8 +50,8 @@ public enum TradeItErrorCode
      */
     public static String getErrorMessage( final int errorCode )
     {
-        TradeItErrorCode returnValue = null;
-        for ( final TradeItErrorCode value: TradeItErrorCode.values() )
+        TradeItCodeEnum returnValue = null;
+        for ( final TradeItCodeEnum value: TradeItCodeEnum.values() )
         {
             if ( value.errorNumber == errorCode )
             {
@@ -60,5 +63,28 @@ public enum TradeItErrorCode
             throw new IllegalArgumentException( "Error code " + errorCode + " is not a valid error code" );
         }
         return returnValue.errorMessage;
+    }
+
+    /**
+     * Converts the code value into the enum value.
+     * @param code
+     * @return
+     * @throws IllegalArgumentException if the code cannot be converted to an enum.
+     */
+    public static TradeItCodeEnum valueOf( final int code )
+    {
+        TradeItCodeEnum tradeItCodeEnum = null;
+        for ( final TradeItCodeEnum errorCode: TradeItCodeEnum.values() )
+        {
+            if ( errorCode.getErrorNumber() == code )
+            {
+                tradeItCodeEnum = errorCode;
+            }
+        }
+        if ( tradeItCodeEnum == null )
+        {
+            throw new IllegalArgumentException( "No enum found in TradeItCodeEnum for code value " + code );
+        }
+        return tradeItCodeEnum;
     }
 }

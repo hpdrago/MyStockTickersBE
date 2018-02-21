@@ -114,6 +114,7 @@ public class TradeItController extends AbstractController
      * token returned from that process is then used to get the user id and user token to be used for later authentication.
      * @return GetOAuthAccessTokenDTO that contains the newly created account
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
      */
     @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
                              + "/accountId/{accountId}"
@@ -122,7 +123,8 @@ public class TradeItController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final int customerId,
                                                                    @PathVariable final int accountId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               TradeItAuthenticationException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );

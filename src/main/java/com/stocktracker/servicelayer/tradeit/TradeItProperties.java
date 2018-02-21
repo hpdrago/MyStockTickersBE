@@ -17,6 +17,7 @@ public class TradeItProperties
     public static final String SECURITY_ANSWER_PARAM = "securityAnswer";
     public static final String API_KEY_PARAM = "apiKey";
     public static final String OAUTH_VERIFIER_PARAM = "oAuthVerifier";
+    public static final String AUTH_UUID = "AuthUUID";
 
     @Value( "${stocktracker.tradeit.api.key}" )
     private String apiKey;

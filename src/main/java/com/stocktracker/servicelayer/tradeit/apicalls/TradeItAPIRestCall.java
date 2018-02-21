@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
@@ -44,6 +43,47 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     }
 
     /**
+     * This is the method that is called by the TradeItService and must be implemented by all TradeIt API Calls.
+     * @param parameterMap
+     * @return
+     */
+    public abstract T execute( final TradeItAPICallParameters parameterMap );
+
+    /**
+     * Make the REST call
+     * @param parameterMap Contains the parameters for the TradeIt API Call.
+     * @return API Result.
+     */
+    protected T callTradeIt( final TradeItAPICallParameters parameterMap )
+    {
+        final String methodName = "callTradeIt";
+        logMethodBegin( methodName );
+        final String url = this.getAPIURL();
+        logDebug( methodName, "url: " + url );
+        this.addPostParameters( parameterMap );
+        this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, this.tradeItProperties.getApiKey() );
+        final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
+        final RestTemplate restTemplate = new RestTemplate();
+        final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
+        logDebug( methodName, "ResponseEntity: {0}", responseEntity );
+        final T response = responseEntity.getBody();
+        logMethodEnd( methodName, response );
+        return response;
+    }
+
+    /**
+     * Adds all of the parameters to the internal parameter map.
+     * @param parameterMap
+     */
+    protected void addPostParameters( final TradeItAPICallParameters parameterMap )
+    {
+        for ( final String parameter: parameterMap.keySet() )
+        {
+            this.parameterMap.set( parameter, parameterMap.getParameterValue( parameter ) );
+        }
+    }
+
+    /**
      * Adds a POST parameter to the REST call.
      * @param name
      * @param value
@@ -52,70 +92,6 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     {
         logDebug( "addPostParameter", "name: {0} value: {1}", name, value );
         this.parameterMap.add( name, value );
-    }
-
-    /**
-     * This is the default execute method.  It can be used for simple API calls since it doesn't add any parameters
-     * to the API call.  Subclasses can create their own execute with parameters to use to set the necessary API
-     * call parameters and then call this method.
-     * @return
-     */
-    public final T execute()
-        throws TradeItAuthenticationException
-    {
-        final String methodName = "execute";
-        logMethodBegin( methodName );
-        final T apiResult = this.callTradeIt() ;
-        logMethodEnd( methodName, apiResult );
-        return apiResult;
-    }
-
-    /**
-     * Make the REST call
-     * @return API Result.
-     * @throws TradeItAuthenticationException
-     */
-    private T callTradeIt()
-        throws TradeItAuthenticationException
-    {
-        final String methodName = "callTradeIt";
-        logMethodBegin( methodName );
-        final String url = this.getAPIURL();
-        logDebug( methodName, "url: " + url );
-        this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, this.tradeItProperties.getApiKey() );
-        final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
-        final RestTemplate restTemplate = new RestTemplate();
-        final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
-        logDebug( methodName, "ResponseEntity: {0}", responseEntity );
-        T response = null;
-        /**
-         * Check for redirection error
-         */
-        if ( responseEntity.getStatusCode().is3xxRedirection() &&
-             responseEntity.getStatusCodeValue() == 302 )
-        {
-            handleRedirection();
-        }
-        else
-        {
-            response = responseEntity.getBody();
-        }
-        logMethodEnd( methodName, response );
-        return response;
-    }
-
-    /**
-     * Creates a response object that indicates an authentication is required.
-     * @return
-     * @throws TradeItAuthenticationException
-     */
-    private void handleRedirection()
-        throws TradeItAuthenticationException
-    {
-        final String methodName = "handleRedirection";
-        final String message = "Received 302 redirection. Authentication required";
-        logDebug( methodName, message );
-        throw new TradeItAuthenticationException( message );
     }
 
     /**

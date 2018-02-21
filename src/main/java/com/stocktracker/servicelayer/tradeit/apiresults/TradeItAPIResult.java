@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
-import com.stocktracker.servicelayer.tradeit.TradeItErrorCode;
+import com.stocktracker.servicelayer.tradeit.TradeItCodeEnum;
 
 import java.util.Arrays;
 
@@ -45,7 +45,7 @@ public class TradeItAPIResult
     public boolean isSuccessful() { return this.status == null ? false : this.getAPIResultStatus().isSuccess() ;}
     public boolean isInformationNeeded() { return this.status == null ? false : this.getAPIResultStatus().isInformationNeeded() ;}
     public boolean isAuthenticationRequired() { return this.status == null ? false :
-                                                       this.code == TradeItErrorCode.SESSION_EXPIRED_ERROR.getErrorNumber(); }
+                                                       this.code == TradeItCodeEnum.SESSION_EXPIRED_ERROR.getErrorNumber(); }
 
     public int getCode()
     {
@@ -65,8 +65,17 @@ public class TradeItAPIResult
         }
         else
         {
-            this.errorMessage = TradeItErrorCode.getErrorMessage( code );
+            this.errorMessage = TradeItCodeEnum.getErrorMessage( code );
         }
+    }
+
+    /**
+     * Get the enum for the error code.
+     * @return
+     */
+    public TradeItCodeEnum getTradeItCodeEnum()
+    {
+        return TradeItCodeEnum.valueOf( this.code );
     }
 
     public String getErrorMessage()
