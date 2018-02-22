@@ -313,10 +313,12 @@ public class TradeItService implements MyLogger
          * Create the execute parameter map
          */
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
-                                                                              .addParameter( TradeItParameter.TOKEN_PARAM,
-                                                                                                 tradeItAccountEntity.getAuthToken() )
-                                                                              .addParameter( TradeItParameter.SECURITY_ANSWER_PARAM,
-                                                                                                 questionResponse );
+                    .addParameter( TradeItParameter.AUTH_UUID,
+                                   tradeItAccountEntity.getAuthUuid() )
+                    .addParameter( TradeItParameter.TOKEN_PARAM,
+                                   tradeItAccountEntity.getAuthToken() )
+                    .addParameter( TradeItParameter.SECURITY_ANSWER_PARAM,
+                                   questionResponse );
         /*
          * Make the TradeIt API call
          */

@@ -24,11 +24,15 @@ import java.util.Set;
  * table in the database.  The differences in what was returned by TradeIt than what is in the database are applied to
  * the database so that the database STOCK_POSITION table represents what TradeIt has reported.
  */
-@Component
-@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPositionComparator implements MyLogger
 {
     private StockPositionService stockPositionService;
+    private LinkedAccountEntity linkedAccountEntity;
+
+    public StockPositionComparator( StockPositionService stockPositionService )
+    {
+        this.stockPositionService = stockPositionService;
+    }
 
     /**
      * This method will run on its own thread and will compare the positions stored in the database with the positions
@@ -46,7 +50,8 @@ public class StockPositionComparator implements MyLogger
         throws EntityVersionMismatchException
     {
         final String methodName = "comparePositions";
-        logMethodBegin( methodName );
+        logMethodBegin( methodName, linkedAccountEntity );
+        this.linkedAccountEntity = linkedAccountEntity;
         final Map<String,StockPositionEntity> currentStockPositionMap = this.createStockPositionMap( stockPositionEntities );
         /*
          * First we need to convert the getPositionsAPIResult to StockPositionEntities so that we can perform
@@ -86,8 +91,12 @@ public class StockPositionComparator implements MyLogger
     {
         for ( final MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
         {
+            /*
+             * Need to unwrap the class because JPA doesn't know about the My*
+             */
+            StockPositionEntity stockPositionEntity = StockPositionEntity.newInstance( myStockPositionEntity );
             this.stockPositionService
-                .saveEntity( myStockPositionEntity );
+                .saveEntity( stockPositionEntity );
         }
     }
 
@@ -97,8 +106,15 @@ public class StockPositionComparator implements MyLogger
      */
     private void deleteEntities( final Set<MyStockPositionEntity> stockPositionEntities )
     {
-        stockPositionEntities.forEach( myStockPositionEntity -> this.stockPositionService
-                                                                    .deleteEntity( myStockPositionEntity ) );
+        for ( MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
+        {
+            /*
+             * Need to unwrap the class because JPA doesn't know about the My*
+             */
+            StockPositionEntity stockPositionEntity = StockPositionEntity.newInstance( myStockPositionEntity );
+            this.stockPositionService
+                .deleteEntity( stockPositionEntity );
+        }
     }
 
     /**
@@ -108,8 +124,13 @@ public class StockPositionComparator implements MyLogger
     private void addEntities( final Set<MyStockPositionEntity> stockPositionEntities )
         throws EntityVersionMismatchException
     {
-        for ( final MyStockPositionEntity stockPositionEntity : stockPositionEntities )
+        for ( final MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
         {
+            /*
+             * Need to unwrap the class because JPA doesn't know about the My*
+             */
+            StockPositionEntity stockPositionEntity = StockPositionEntity.newInstance( myStockPositionEntity );
+            stockPositionEntity.setLinkedAccountByLinkedAccountId( this.linkedAccountEntity );
             this.stockPositionService
                 .saveEntity( stockPositionEntity );
         }
@@ -187,7 +208,7 @@ public class StockPositionComparator implements MyLogger
      * the ticker symbol. We need to change the equals to the tickerSymbol as that is the key to the
      * TradeIt positions.  The equals method is used in the Set operations.
      */
-    private class MyStockPositionEntity extends StockPositionEntity
+    private class MyStockPositionEntity extends StockPositionEntity implements Comparable<MyStockPositionEntity>
     {
         public MyStockPositionEntity( final StockPositionEntity stockPositionEntity )
         {
@@ -200,21 +221,10 @@ public class StockPositionComparator implements MyLogger
         }
 
         @Override
-        public boolean equals( final Object o )
+        public int compareTo( final MyStockPositionEntity other )
         {
-            return this.getTickerSymbol().equals( ((StockPositionEntity)o).getTickerSymbol() );
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return this.getTickerSymbol().hashCode();
+            return this.getTickerSymbol().compareTo( other.getTickerSymbol() );
         }
     }
 
-    @Autowired
-    public void setStockPositionService( final StockPositionService stockPositionService )
-    {
-        this.stockPositionService = stockPositionService;
-    }
 }

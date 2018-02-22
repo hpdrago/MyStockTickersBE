@@ -95,6 +95,9 @@ public abstract class DMLEntityService<K extends Serializable,
         throws EntityVersionMismatchException
     {
         E dbEntity = null;
+        /*
+         * If there is an ID then there is a database version of this entity.
+         */
         if ( entity.getId() != null )
         {
             dbEntity = this.getRepository()
@@ -106,6 +109,10 @@ public abstract class DMLEntityService<K extends Serializable,
         }
         else
         {
+            if ( entity.getVersion() == null )
+            {
+                entity.setVersion( 1 );
+            }
             if ( entity.getVersion() != dbEntity.getVersion() )
             {
                 throw new EntityVersionMismatchException( dbEntity.getVersion(),

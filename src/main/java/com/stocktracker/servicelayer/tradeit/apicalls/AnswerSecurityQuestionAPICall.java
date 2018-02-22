@@ -27,7 +27,9 @@ public class AnswerSecurityQuestionAPICall extends TradeItAPIRestCall<AnswerSecu
         final String methodName = "execute";
         logMethodBegin( methodName, parameterMap );
         this.parameterMap = parameterMap;
-        parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM, TradeItParameter.SECURITY_ANSWER_PARAM );
+        parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM,
+                                     TradeItParameter.SECURITY_ANSWER_PARAM,
+                                     TradeItParameter.AUTH_UUID );
         final AnswerSecurityQuestionAPIResult answerSecurityQuestionAPIResult = this.callTradeIt( parameterMap );
         logMethodEnd( methodName, answerSecurityQuestionAPIResult );
         return answerSecurityQuestionAPIResult;

@@ -18,7 +18,7 @@ import java.util.Set;
  * @param <E> The entity type.
  */
 public class EntitySetComparatorService<K extends Serializable,
-                                        E extends VersionedEntity<K>>
+                                        E extends VersionedEntity<K> & Comparable<E>>
     extends SetComparator<E>
     implements MyLogger
 {

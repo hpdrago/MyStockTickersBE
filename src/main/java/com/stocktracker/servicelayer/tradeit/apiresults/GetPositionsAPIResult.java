@@ -5,8 +5,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 /**
  * This class contains the TradeIt API results for the GetPositions call.
  * @see https://www.trade.it/documentation#GetPositions
@@ -102,7 +100,7 @@ public class GetPositionsAPIResult extends TradeItAPIResult
         sb.append( "accountBaseCurrency='" ).append( accountBaseCurrency ).append( '\'' );
         sb.append( ", currentPage=" ).append( currentPage );
         sb.append( ", totalPages=" ).append( totalPages );
-        sb.append( ", positions=" ).append( positions.length );
+        sb.append( ", positions=" ).append( positions == null ? 0 : positions.length );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

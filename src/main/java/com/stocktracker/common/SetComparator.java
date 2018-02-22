@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -16,7 +17,7 @@ import java.util.TreeSet;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class SetComparator<T>
+public class SetComparator<T extends Comparable<T>>
 {
     /**
      * Compares the to sets and returns {@code SetComparatorResults} which contains the differences between

@@ -76,7 +76,7 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
          * based on the comparison results.  This is an asynchronous calls so that we don't make the user wait for
          * the result as TradeIt is the source of truth concerning the positions the user has with the linked account.
          */
-        final StockPositionComparator stockPositionComparator = this.context.getBean( StockPositionComparator.class );
+        final StockPositionComparator stockPositionComparator = new StockPositionComparator( this );
         stockPositionComparator.comparePositions( linkedAccountEntity, stockPositionEntities, getPositionsAPIResult );
 
         /*

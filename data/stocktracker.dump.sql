@@ -172,7 +172,7 @@ CREATE TABLE `linked_account` (
   KEY `FK_LINKED_ACCOUNT_CUSTOMER_idx` (`customer_id`),
   CONSTRAINT `FK_LINKED_ACCOUNT_ACCOUNT` FOREIGN KEY (`tradeit_account_id`) REFERENCES `tradeit_account` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `FK_LINKED_ACCOUNT_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,7 +181,7 @@ CREATE TABLE `linked_account` (
 
 LOCK TABLES `linked_account` WRITE;
 /*!40000 ALTER TABLE `linked_account` DISABLE KEYS */;
-INSERT INTO `linked_account` VALUES (23,'*************001','Individual Account','bowSItKPG/5B14vHmY6uEIikPM4=',1,71,'2018-02-13 15:21:14','2018-02-13 22:58:21',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),(24,'************001','Individual Account','NDhaQFLKN/dqDOwU/b1kG5bjC4w=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(25,'************002','Joint IRA Account','6CYgp1pfc+//oBqm+EaaDQbYmBc=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(26,'************003','Joint 401k Account','2v+NZT7fA/kdCvmFAxnwblVNkt0=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(27,'************004','Margin Account','OwYOc1mTzS18GxPnRRAh3JnhbV4=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(28,'************005','OPTIONS SUPER COOL Account','7jnkL66uhWLdCj8cS9TAK6RAg9o=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(29,'************006','No Positions Account','rC/Ia8Cy07kJ70ha8i87PJhXpOw=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(30,'************007','Cash Only Account','jo1jGRNB2hlpBuvxKcr/zy4u3yo=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(31,'************008','Margin Account - Can Disable Margin','l1xoe5MeyXMqKzikk3Jy+RDBSoQ=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(32,'*************001','Individual Account','99AcA6p1DKCELDXvyppTP3qWHEM=',1,73,'2018-02-13 15:32:09','2018-02-15 19:55:16',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,7),(33,'*****198','****6198','Aeh6+Ww0MP6ZrLOfGjR7w6fckog=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(34,'*****200','****6200','g9OvAK96fCTqJeRh9Rg9sRReFBM=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(35,'*****417','****4417','106w80SMW9mopjCPPCWbvhwGd0s=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(36,'*****475','****5475','Sl8eoYSwq4sSTzWUoorFMaKzA0I=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(37,'*****981','****3981','bboLFkT7A9bEzc4I4ZlHLUHI2q4=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(39,'*************001','Individual Account','bD17tjnVw/eTXUUTfsYbsy++q3E=',1,77,'2018-02-16 23:23:03',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1);
+INSERT INTO `linked_account` VALUES (24,'************001','Individual Account','NDhaQFLKN/dqDOwU/b1kG5bjC4w=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(25,'************002','Joint IRA Account','6CYgp1pfc+//oBqm+EaaDQbYmBc=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(26,'************003','Joint 401k Account','2v+NZT7fA/kdCvmFAxnwblVNkt0=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(27,'************004','Margin Account','OwYOc1mTzS18GxPnRRAh3JnhbV4=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(28,'************005','OPTIONS SUPER COOL Account','7jnkL66uhWLdCj8cS9TAK6RAg9o=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(29,'************006','No Positions Account','rC/Ia8Cy07kJ70ha8i87PJhXpOw=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(30,'************007','Cash Only Account','jo1jGRNB2hlpBuvxKcr/zy4u3yo=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(31,'************008','Margin Account - Can Disable Margin','l1xoe5MeyXMqKzikk3Jy+RDBSoQ=',1,72,'2018-02-13 15:22:36','2018-02-14 03:38:28',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,6),(32,'*************001','Individual Account','99AcA6p1DKCELDXvyppTP3qWHEM=',1,73,'2018-02-13 15:32:09','2018-02-15 19:55:16',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,7),(33,'*****198','****6198','Aeh6+Ww0MP6ZrLOfGjR7w6fckog=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(34,'*****200','****6200','g9OvAK96fCTqJeRh9Rg9sRReFBM=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(35,'*****417','****4417','106w80SMW9mopjCPPCWbvhwGd0s=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(36,'*****475','****5475','Sl8eoYSwq4sSTzWUoorFMaKzA0I=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(37,'*****981','****3981','bboLFkT7A9bEzc4I4ZlHLUHI2q4=',1,74,'2018-02-13 15:36:13','2018-02-16 22:22:08',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,54),(39,'*************001','Individual Account','bD17tjnVw/eTXUUTfsYbsy++q3E=',1,77,'2018-02-16 23:23:03',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1),(40,'*************001','Individual Account','DigvkhlEeHiu6wKFVuSgH/iiQh4=',1,79,'2018-02-22 19:31:42',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `linked_account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -271,7 +271,7 @@ CREATE TABLE `portfolio_stock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
   `portfolio_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `number_of_shares` int(11) DEFAULT NULL,
   `average_unit_cost` decimal(7,2) DEFAULT NULL,
   `realized_gains` decimal(7,2) DEFAULT NULL,
@@ -331,7 +331,7 @@ DROP TABLE IF EXISTS `stock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stock` (
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `company_name` varchar(70) DEFAULT NULL,
   `stock_exchange` varchar(10) DEFAULT 'OTHER',
   `created_by` int(11) DEFAULT '1',
@@ -397,7 +397,7 @@ DROP TABLE IF EXISTS `stock_analyst_consensus`;
 CREATE TABLE `stock_analyst_consensus` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `comments` varchar(4000) DEFAULT NULL,
   `analyst_strong_buy_count` int(11) DEFAULT NULL,
   `analyst_buy_count` int(11) DEFAULT NULL,
@@ -570,7 +570,7 @@ DROP TABLE IF EXISTS `stock_catalyst_event`;
 CREATE TABLE `stock_catalyst_event` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `catalyst_date` timestamp NULL DEFAULT NULL,
   `catalyst_desc` varchar(1000) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -627,7 +627,7 @@ DROP TABLE IF EXISTS `stock_note`;
 CREATE TABLE `stock_note` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `notes` varchar(4000) NOT NULL,
   `notes_source_id` int(11) DEFAULT NULL,
   `notes_rating` tinyint(1) DEFAULT NULL,
@@ -786,7 +786,7 @@ DROP TABLE IF EXISTS `stock_note_stock`;
 CREATE TABLE `stock_note_stock` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `stock_note_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `customer_id` int(11) NOT NULL,
   `stock_price` decimal(7,2) DEFAULT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -844,7 +844,7 @@ CREATE TABLE `stock_position` (
   `holding_type` varchar(5) DEFAULT NULL,
   `last_price` decimal(8,2) DEFAULT NULL,
   `quantity` decimal(8,2) DEFAULT NULL,
-  `ticker_symbol` char(5) DEFAULT NULL,
+  `ticker_symbol` varchar(10) DEFAULT NULL,
   `symbol_class` varchar(20) DEFAULT NULL,
   `today_gain_loss_dollar` decimal(8,2) DEFAULT NULL,
   `today_gain_loss_percentage` decimal(8,2) DEFAULT NULL,
@@ -902,7 +902,7 @@ CREATE TABLE `stock_tag` (
   `reference_type` int(11) NOT NULL,
   `reference_id` int(11) NOT NULL,
   `customer_tag_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -931,7 +931,7 @@ DROP TABLE IF EXISTS `stock_to_buy`;
 CREATE TABLE `stock_to_buy` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
-  `ticker_symbol` varchar(5) NOT NULL,
+  `ticker_symbol` varchar(10) NOT NULL,
   `comments` varchar(4096) DEFAULT NULL,
   `notes_source_id` int(11) DEFAULT NULL,
   `buy_shares_up_to_price` decimal(7,2) DEFAULT NULL,
@@ -1051,7 +1051,7 @@ CREATE TABLE `tradeit_account` (
   UNIQUE KEY `CUSTOMER_ID_NAME_UNIQUE` (`customer_id`,`name`),
   KEY `idx_account_customer_id` (`customer_id`),
   CONSTRAINT `FK_TRADEIT_ACCOUNT_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1060,7 +1060,7 @@ CREATE TABLE `tradeit_account` (
 
 LOCK TABLES `tradeit_account` WRITE;
 /*!40000 ALTER TABLE `tradeit_account` DISABLE KEYS */;
-INSERT INTO `tradeit_account` VALUES (71,'dummySecurity',1,'82515176139465360022','9NdwHvynQGaBHt8JDgc6M9y1a9f2GX5tdStoSMsuVnpoPpzfKWRdYMedI3BFwVCsade%2FDqxYhdcXSYiB7CX36iaubQgSM9qEpnvcwhMk%2F6QBthbASXdMfZPBp1mNMqUSQMysJqOGigzHGxGZ1wgpGA%3D%3D','Dummy','586047e3e43c4884ba6493c61d6ec0fb','47a16c12-e576-45ff-8fa1-9d060747b2fb','2018-02-13 22:58:22','2018-02-02 23:25:48','2018-02-13 22:58:22',3),(72,'dummyMultiple',1,'dec15185353505990f66','Ndv3wfN0xP4WzwMdOfgg%2BHG%2BVcWqaVu%2BhyCUo5G%2FebqqJYZGAjvlTbPUgIaN3%2B9tKMzX4WcNAzPZY2HVURBGHqMA7N52pw2tXz7%2BxYK9Ry6429nS5sWDQCb%2FFlU1M82wsvvWSC8IZYlWmxL35X51jg%3D%3D','Dummy','6789a2e9c2ee4ae9adf874a0d9523b0d','76d0979a-225b-4671-ad44-1d330e9e9565','2018-02-18 22:27:59','2018-02-13 15:22:31','2018-02-18 22:27:58',5),(73,'dummy600',1,'60f1518535924630bf3c','5Wz6P5pgwoanv5JQeu1Q%2FVfYp9nQDQtkUNO1btap1Mw8K5F0kj80ZZNqnQQnzlywbYvv9AevSNuji6h%2FBCjIrFCUt401Jby2Q4HXSQ077xvyzoKeKPFhH1JeQ1O0uoNet6DxaLtlMqpDWIFiFUrtkQ%3D%3D','Dummy','4c7d937579894999876fef97dbd3431c','ad487f54-88ec-4adc-a7ff-f715921e6220','2018-02-19 16:25:05','2018-02-13 15:32:05','2018-02-19 16:25:05',21),(74,'26305475-Play Money',1,'5de1518536161888d032','oe3wDKPefhbvezAyFnjmskIYd7U%2FVeUfL8%2FgAMcXYVdT4oOf9C0rhQJrZ4qqgfu693Up%2BdvdOknCytToz8kLsmNFgQIUn02CERBJ5Cz6VkvIBQUHr3533l%2B5Y2LVVJpeXKaNFlOIZUFeWYTYr7583g%3D%3D','Scottrade','af15ac8c6ee142ceb75ff006318bbc72','e2c790b4-e85f-4981-a3bc-623b6512784e','2018-02-16 22:16:59','2018-02-13 15:36:02','2018-02-16 22:16:59',38),(77,'dummyOptionLong',1,'3e61518823375005f725','%2BKhK3sN24IwXMQdvshkldxPAAyBK5uBj0Sx9CgpGt9aoZk0CDsY35b3%2BmMB2p7X93Ho1ZzxSVGUNERJ%2FPGeg3hI%2B%2BD2yws3jZa1eZIcyj1AeOhwsNkghFjFwlumu482WYHVcccFFQ5gmn2Y6uEQKag%3D%3D','Dummy','bf3673e4a26e4bf695732f491493a20f','786a64a5-54e6-4a4b-a78c-7008bcee286a','2018-02-19 18:41:24','2018-02-16 23:22:56','2018-02-20 16:05:30',25),(78,'dummy',1,'e761519250179881594a','9VRaOq7yTUGOeTKLpK%2F%2FNxegIytp%2Bfb1SofvFkjLEsX8jh0Y47iolzS%2Byobt8UwhHEGgh7nB5zvUeNNjzBZOUoHoPqpc0%2BTVTOlzhwr1BsDZpggdel9kc1MM%2BdDt3X1sxEqaf%2B2KXWHc8a1NZxITGw%3D%3D','Dummy',NULL,'25a3f35e-c219-416e-b03c-d7128846ecdc',NULL,'2018-02-21 21:56:19','2018-02-21 21:57:50',2);
+INSERT INTO `tradeit_account` VALUES (72,'dummyMultiple',1,'dec15185353505990f66','Ndv3wfN0xP4WzwMdOfgg%2BHG%2BVcWqaVu%2BhyCUo5G%2FebqqJYZGAjvlTbPUgIaN3%2B9tKMzX4WcNAzPZY2HVURBGHqMA7N52pw2tXz7%2BxYK9Ry6429nS5sWDQCb%2FFlU1M82wsvvWSC8IZYlWmxL35X51jg%3D%3D','Dummy','6789a2e9c2ee4ae9adf874a0d9523b0d','76d0979a-225b-4671-ad44-1d330e9e9565','2018-02-18 22:27:59','2018-02-13 15:22:31','2018-02-18 22:27:58',5),(73,'dummy600',1,'60f1518535924630bf3c','5Wz6P5pgwoanv5JQeu1Q%2FVfYp9nQDQtkUNO1btap1Mw8K5F0kj80ZZNqnQQnzlywbYvv9AevSNuji6h%2FBCjIrFCUt401Jby2Q4HXSQ077xvyzoKeKPFhH1JeQ1O0uoNet6DxaLtlMqpDWIFiFUrtkQ%3D%3D','Dummy','4c7d937579894999876fef97dbd3431c','ad487f54-88ec-4adc-a7ff-f715921e6220','2018-02-19 16:25:05','2018-02-13 15:32:05','2018-02-19 16:25:05',21),(74,'26305475-Play Money',1,'5de1518536161888d032','oe3wDKPefhbvezAyFnjmskIYd7U%2FVeUfL8%2FgAMcXYVdT4oOf9C0rhQJrZ4qqgfu693Up%2BdvdOknCytToz8kLsmNFgQIUn02CERBJ5Cz6VkvIBQUHr3533l%2B5Y2LVVJpeXKaNFlOIZUFeWYTYr7583g%3D%3D','Scottrade','183a06aad8df47fd9852dac7cfb1c5b7','e2c790b4-e85f-4981-a3bc-623b6512784e','2018-02-22 16:33:27','2018-02-13 15:36:02','2018-02-22 16:33:26',41),(77,'dummyOptionLong',1,'3e61518823375005f725','%2BKhK3sN24IwXMQdvshkldxPAAyBK5uBj0Sx9CgpGt9aoZk0CDsY35b3%2BmMB2p7X93Ho1ZzxSVGUNERJ%2FPGeg3hI%2B%2BD2yws3jZa1eZIcyj1AeOhwsNkghFjFwlumu482WYHVcccFFQ5gmn2Y6uEQKag%3D%3D','Dummy','bf3673e4a26e4bf695732f491493a20f','786a64a5-54e6-4a4b-a78c-7008bcee286a','2018-02-19 18:41:24','2018-02-16 23:22:56','2018-02-20 16:05:30',25),(78,'dummy',1,'e761519250179881594a','9VRaOq7yTUGOeTKLpK%2F%2FNxegIytp%2Bfb1SofvFkjLEsX8jh0Y47iolzS%2Byobt8UwhHEGgh7nB5zvUeNNjzBZOUoHoPqpc0%2BTVTOlzhwr1BsDZpggdel9kc1MM%2BdDt3X1sxEqaf%2B2KXWHc8a1NZxITGw%3D%3D','Dummy',NULL,'25a3f35e-c219-416e-b03c-d7128846ecdc',NULL,'2018-02-21 21:56:19','2018-02-21 21:57:50',2),(79,'dummySecurity',1,'3441519317281766e643','t8lPzAtBXFvi2Z3VOh9U%2Bg7zny%2BAaGBl4%2BYTaV3sn80EDTuWN9mbRs5ZiSEUQPOp2bhe4jVd1sRZS3BNDinqRuQPqO7QYzDnlJYo9iasKs5G%2F4RrM60TFpRipE83oMqicSGrr2rsbi6IgXyNRCquxg%3D%3D','Dummy','01a3fa11a06341738fe11a4b352725af','392c262e-a262-458a-ab48-5047ba36b781',NULL,'2018-02-22 16:34:41','2018-02-22 21:01:01',18);
 /*!40000 ALTER TABLE `tradeit_account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1296,4 +1296,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-21 14:49:22
+-- Dump completed on 2018-02-22 15:14:13
