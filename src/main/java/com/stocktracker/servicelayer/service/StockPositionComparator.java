@@ -131,6 +131,7 @@ public class StockPositionComparator implements MyLogger
              */
             StockPositionEntity stockPositionEntity = StockPositionEntity.newInstance( myStockPositionEntity );
             stockPositionEntity.setLinkedAccountByLinkedAccountId( this.linkedAccountEntity );
+            stockPositionEntity.setVersion( 1 );
             this.stockPositionService
                 .saveEntity( stockPositionEntity );
         }

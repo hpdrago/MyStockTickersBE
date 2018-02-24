@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.TradeItServiceUnavailableException;
 import com.stocktracker.servicelayer.tradeit.TradeItProperties;
 import com.stocktracker.servicelayer.tradeit.TradeItURLs;
 import com.stocktracker.servicelayer.tradeit.apiresults.TradeItAPIResult;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -64,9 +66,18 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
         this.addPostParameter( this.tradeItProperties.API_KEY_PARAM, this.tradeItProperties.getApiKey() );
         final HttpEntity<MultiValueMap<String, String>> request = this.createHttpEntity();
         final RestTemplate restTemplate = new RestTemplate();
-        final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
-        logDebug( methodName, "ResponseEntity: {0}", responseEntity );
-        final T response = responseEntity.getBody();
+        T response = null;
+        try
+        {
+            final ResponseEntity<T> responseEntity = restTemplate
+                .postForEntity( url, request, this.getAPIResultsClass() );
+            logDebug( methodName, "ResponseEntity: {0}", responseEntity );
+            response = responseEntity.getBody();
+        }
+        catch( HttpServerErrorException e )
+        {
+            throw new TradeItServiceUnavailableException( e );
+        }
         logMethodEnd( methodName, response );
         return response;
     }

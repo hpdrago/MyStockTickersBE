@@ -1,5 +1,6 @@
 package com.stocktracker.common.exceptions;
 
+import com.stocktracker.servicelayer.tradeit.TradeItCodeEnum;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,7 +15,7 @@ public class TradeItAuthenticationException extends TradeItAPIException
 
     public TradeItAuthenticationException( final AuthenticateAPIResult authenticateAPIResult )
     {
-        super( "Authentication failed with " + authenticateAPIResult.getStatus() );
+        super( TradeItCodeEnum.getErrorMessage( authenticateAPIResult.getCode() ));
         this.authenticateAPIResult = authenticateAPIResult;
     }
 

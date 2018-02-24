@@ -286,7 +286,7 @@ public class StockPositionEntity implements VersionedEntity<Integer>
 
     @Override
     @Basic
-    @Column( name = "version", nullable = false )
+    @Column( name = "version", nullable = true )
     public Integer getVersion()
     {
         return null;

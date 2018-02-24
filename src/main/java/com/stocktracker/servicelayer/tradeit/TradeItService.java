@@ -255,35 +255,48 @@ public class TradeItService implements MyLogger
          */
         final AuthenticateDTO authenticateDTO = (AuthenticateDTO)this.context.getBean( "authenticateDTO" );
         authenticateDTO.setResults( authenticateAPIResult );
-        logDebug( methodName, "Authenticate result: {0}", authenticateDTO );
-        logDebug( methodName, "AuthToken result: {0}", authenticateDTO.getToken() );
-        /*
-         * Save the token as it is needed after the user answers the necessary security questions.
-         */
-        Objects.requireNonNull( authenticateAPIResult.getToken(), "The token cannot be null from the auth result" );
-        tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
-        /*
-         * Check the auth results
-         */
-        if ( authenticateAPIResult.isInformationNeeded() )
-        {
-            logDebug( methodName, "INFORMATION_NEEDED - Need to prompt security question." );
-            this.tradeItAccountEntityService
-                .saveAccount( tradeItAccountEntity );
-        }
-        else if ( authenticateDTO.isSuccessful() )
-        {
-            logDebug( methodName, "Authentication was successful" );
-            /*
-             * The timestamp is set and the UUID authentication.
-             */
-            tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-            this.tradeItAccountEntityService
-                .saveAccount( tradeItAccountEntity );
-        }
-        logDebug( methodName, "authenticateAPIResult: {0}", authenticateAPIResult );
+        this.handleAuthenticationResults( tradeItAccountEntity, authenticateAPIResult );
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
+    }
+
+    /**
+     * This method evaluates the authenticate API result and takes appropriate action based on TradeIt API status value.
+     * @param tradeItAccountEntity
+     * @param authenticateAPIResult
+     * @throws TradeItAuthenticationException
+     */
+    private void handleAuthenticationResults( final TradeItAccountEntity tradeItAccountEntity,
+                                              final AuthenticateAPIResult authenticateAPIResult )
+        throws TradeItAuthenticationException
+    {
+        final String methodName = "handleAuthenticationResults";
+        logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
+        switch ( authenticateAPIResult.getAPIResultStatus() )
+        {
+            case SUCCESS:
+                logDebug( methodName, "Authentication was successful" );
+                /*
+                 * The timestamp is set and the UUID authentication.
+                 */
+                tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
+                tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
+                this.tradeItAccountEntityService
+                    .saveAccount( tradeItAccountEntity );
+                break;
+
+            case ERROR:
+                throw new TradeItAuthenticationException( authenticateAPIResult );
+
+            case INFORMATION_NEEDED:
+                logDebug( methodName, "INFORMATION_NEEDED - Need to prompt security question." );
+                tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
+                tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
+                this.tradeItAccountEntityService
+                    .saveAccount( tradeItAccountEntity );
+                break;
+        }
+        logMethodEnd( methodName );
     }
 
     /**
@@ -621,16 +634,9 @@ public class TradeItService implements MyLogger
                  */
                 case SESSION_EXPIRED_ERROR:
                     this.handleSessionExpired( tradeItAccountEntity );
-                    final AuthenticateAPIResult authenticateAPIResult = (AuthenticateAPIResult)tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
-                    logDebug( methodName, "authentication result: {0}", authenticateAPIResult );
-                    /*
-                     * Bail out with exception if we need the user to answer the security questions.
-                     */
-                    if ( tradeItAPIResult.isInformationNeeded() )
-                    {
-                        throw new TradeItAuthenticationException( authenticateAPIResult );
-                    }
-                    tradeItAPIResult = (T)authenticateAPIResult;
+                    logDebug( methodName, "re-executing " + tradeItAPIRestCall.getClass().getSimpleName() );
+                    tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
+                    logDebug( methodName, "re-execute result: {0}", tradeItAPIResult );
                     break;
             }
         }
