@@ -49,7 +49,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     public void setResults( final AuthenticateAPIResult results )
     {
         super.setResults( results );
-        this.accounts = results.getAccounts();
+        this.accounts = results.getAccounts().get();
         this.informationType = results.getInformationType();
         this.securityQuestionOptions = results.getSecurityQuestionOptions();
         this.securityQuestion = results.getSecurityQuestion();
@@ -103,9 +103,9 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      * Get the user's account.
      * @return
      */
-    public TradeItAccount[] getAccounts()
+    public Optional<TradeItAccount[]> getAccounts()
     {
-        return accounts;
+        return Optional.ofNullable( accounts );
     }
 
     public void setAccounts( TradeItAccount[] accounts )

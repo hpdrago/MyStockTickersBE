@@ -3,17 +3,19 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.StockPositionRepository;
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
 
     /**
      * Get the positions for the linked account.
+     * @param pageRequest
+     * @param pageRequest
      * @param customerId
      * @param tradeItAccountId
      * @param linkedAccountId
@@ -44,7 +48,8 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
-    public List<StockPositionDTO> getPositions( final int customerId,
+    public Page<StockPositionDTO> getPositions( final Pageable pageRequest,
+                                                final int customerId,
                                                 final int tradeItAccountId,
                                                 final int linkedAccountId )
         throws LinkedAccountNotFoundException,
@@ -53,7 +58,40 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
                EntityVersionMismatchException
     {
         final String methodName = "getPositions";
-        logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
+        logMethodBegin( methodName, pageRequest, customerId, tradeItAccountId, linkedAccountId );
+        if ( this.stockPositionRepository.countByLinkedAccountId( linkedAccountId ) == 0 )
+        {
+            logError( methodName, "No positions found, synchronizing with TradeIt" );
+            this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
+        }
+        final Page<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
+                                                                    .findByLinkedAccountId( pageRequest, linkedAccountId );
+
+        final Page<StockPositionDTO> stockPositionDTOs = this.entitiesToDTOs( pageRequest, stockPositionEntities );
+        logMethodEnd( methodName, "Returning " + stockPositionDTOs.getTotalElements() + " positions" );
+        return stockPositionDTOs;
+    }
+
+    /**
+     * Calls TradeIt to retrieve the positions for the linked account and synchronized the TradeIt position with the
+     * positions in the database.
+     * @param customerId
+     * @param tradeItAccountId
+     * @param linkedAccountId
+     * @return
+     * @throws TradeItAccountNotFoundException
+     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
+     */
+    private List<StockPositionDTO> synchronizePositions( final int customerId,
+                                                         final int tradeItAccountId,
+                                                         final int linkedAccountId )
+        throws TradeItAccountNotFoundException,
+               LinkedAccountNotFoundException,
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
+    {
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getTradeItAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
@@ -82,10 +120,8 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
         /*
          * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
          */
-        final List<StockPositionDTO> positions = this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId,
-                                                                             getPositionsAPIResult );
-        logMethodEnd( methodName, "Returning " + positions.size() + " positions" );
-        return positions;
+        return this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId,
+                                           getPositionsAPIResult );
     }
 
     /**

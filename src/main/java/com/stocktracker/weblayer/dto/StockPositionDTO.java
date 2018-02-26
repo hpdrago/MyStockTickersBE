@@ -44,12 +44,12 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     private BigDecimal totalGainLossPercentage;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
-    private int customerId;
+    private Integer customerId;
     private String companyName;
     private String exchange;
     private StockQuoteState stockQuoteState;
     private BigDecimal avgAnalystPriceTarget;
-    private int version;
+    private Integer version;
 
     /**
      * Copies the TradeIt position information.
@@ -163,7 +163,7 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         this.avgAnalystPriceTarget = avgAnalystPriceTarget;
     }
 
-    public void setCustomerId( final int customerId )
+    public void setCustomerId( final Integer customerId )
     {
         this.customerId = customerId;
     }
@@ -270,13 +270,7 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         return version;
     }
 
-    @Override
     public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    public void setVersion( final int version )
     {
         this.version = version;
     }

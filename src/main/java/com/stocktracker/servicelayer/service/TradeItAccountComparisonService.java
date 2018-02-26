@@ -201,9 +201,12 @@ public class TradeItAccountComparisonService implements MyLogger
         tradeItAccountEntity.getLinkedAccountsById()
                             .forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
         Set<String> tradeItAccounts = new TreeSet<>();
-        for ( TradeItAccount tradeItAccount: authenticateAPIResult.getAccounts() )
+        if ( authenticateAPIResult.getAccounts().isPresent() )
         {
-            tradeItAccounts.add( tradeItAccount.getAccountNumber() );
+            for ( TradeItAccount tradeItAccount : authenticateAPIResult.getAccounts().get() )
+            {
+                tradeItAccounts.add( tradeItAccount.getAccountNumber() );
+            }
         }
         SetComparator<String> accountComparator = new SetComparator<>();
         SetComparator<String>.SetComparatorResults results = accountComparator.compareSets( tradeItAccounts, currentAccounts );
