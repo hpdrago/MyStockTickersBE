@@ -11,6 +11,7 @@ public interface StockQuote
     String getTickerSymbol();
     String getCompanyName();
     String getStockExchange();
+    BigDecimal getOpenPrice();
     BigDecimal getLastPrice();
     Timestamp getLastPriceChange();
     StockQuoteState getStockQuoteState();

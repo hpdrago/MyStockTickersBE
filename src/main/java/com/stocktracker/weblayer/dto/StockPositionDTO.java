@@ -31,6 +31,8 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     private BigDecimal costBasis;
     private String holdingType;
     @JsonSerialize( using = JSONMoneySerializer.class )
+    private BigDecimal openPrice;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal quantity;
@@ -276,28 +278,15 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     }
 
     @Override
-    public String toString()
+    public BigDecimal getOpenPrice()
     {
-        final StringBuilder sb = new StringBuilder( "LinkedAccountPositionDTO{" );
-        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", id='" ).append( id ).append( '\'' );
-        sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
-        sb.append( ", costBasis=" ).append( costBasis );
-        sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
-        sb.append( ", lastPrice=" ).append( lastPrice );
-        sb.append( ", quantity=" ).append( quantity );
-        sb.append( ", todayGainLossDollar=" ).append( todayGainLossDollar );
-        sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
-        sb.append( ", totalGainLossDollar=" ).append( totalGainLossDollar );
-        sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
-        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
-        sb.append( ", exchange='" ).append( exchange ).append( '\'' );
-        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
-        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
-        sb.append( '}' );
-        return sb.toString();
+        return openPrice;
+    }
+
+    @Override
+    public void setOpenPrice( final BigDecimal openPrice )
+    {
+        this.openPrice = openPrice;
     }
 
     public Integer getTradeItAccountId()
@@ -318,5 +307,31 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     public void setLinkedAccountId( Integer linkedAccountId )
     {
         this.linkedAccountId = linkedAccountId;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "LinkedAccountPositionDTO{" );
+        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", id='" ).append( id ).append( '\'' );
+        sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
+        sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
+        sb.append( ", openPrice=" ).append( openPrice );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", quantity=" ).append( quantity );
+        sb.append( ", todayGainLossDollar=" ).append( todayGainLossDollar );
+        sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
+        sb.append( ", totalGainLossDollar=" ).append( totalGainLossDollar );
+        sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
+        sb.append( ", lastPriceChange=" ).append( lastPriceChange );
+        sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", exchange='" ).append( exchange ).append( '\'' );
+        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
+        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

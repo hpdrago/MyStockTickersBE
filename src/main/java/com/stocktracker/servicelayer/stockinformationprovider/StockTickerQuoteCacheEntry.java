@@ -77,6 +77,12 @@ public class StockTickerQuoteCacheEntry implements StockQuote
     }
 
     @Override
+    public BigDecimal getOpenPrice()
+    {
+        return this.stockTickerQuote.getOpenPrice();
+    }
+
+    @Override
     public BigDecimal getLastPrice()
     {
         return this.stockTickerQuote.getLastPrice();

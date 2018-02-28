@@ -44,8 +44,10 @@ public class StockQuoteService implements MyLogger
     public interface LastPriceContainer
     {
         String getTickerSymbol();
+        void setOpenPrice( final BigDecimal stockPrice );
         void setLastPrice( final BigDecimal stockPrice );
         BigDecimal getLastPrice();
+        BigDecimal getOpenPrice();
         void setLastPriceChange( final Timestamp lastPriceChange );
         Timestamp getLastPriceChange();
     }
@@ -130,6 +132,7 @@ public class StockQuoteService implements MyLogger
         {
             container.setCompanyName( stockQuote.getCompanyName() );
             container.setLastPrice( stockQuote.getLastPrice() );
+            container.setOpenPrice( stockQuote.getOpenPrice() );
             container.setStockQuoteState( stockQuote.getStockQuoteState() );
             container.setLastPriceChange( stockQuote.getLastPriceChange() );
             /*

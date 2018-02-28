@@ -20,6 +20,8 @@ public class StockTickerQuote implements StockQuote
     private String companyName;
     private String stockExchange;
     @JsonSerialize( using = JSONMoneySerializer.class )
+    private BigDecimal openPrice;
+    @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
@@ -110,6 +112,18 @@ public class StockTickerQuote implements StockQuote
         return stockExchange;
     }
 
+
+    public void setOpenPrice( final BigDecimal openPrice )
+    {
+        this.openPrice = openPrice;
+    }
+
+    @Override
+    public BigDecimal getOpenPrice()
+    {
+        return this.openPrice;
+    }
+
     public void setCompanyName( final String companyName )
     {
         this.companyName = companyName;
@@ -148,6 +162,7 @@ public class StockTickerQuote implements StockQuote
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", stockExchange='" ).append( companyName ).append( '\'' );
+        sb.append( ", openPrice=" ).append( openPrice );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", stockQuoteState=" ).append( stockQuoteState );
