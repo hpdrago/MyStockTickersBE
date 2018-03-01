@@ -76,6 +76,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
         stockTickerQuote.setTickerSymbol( stock.getSymbol() );
         stockTickerQuote.setLastPrice( stock.getQuote().getPrice() );
+        stockTickerQuote.setOpenPrice( stock.getQuote().getOpen() );
         if ( stock.getQuote().getLastTradeTime() != null )
         {
             stockTickerQuote.setLastPriceChange( new Timestamp( stock.getQuote().getLastTradeTime().getTimeInMillis() ) );

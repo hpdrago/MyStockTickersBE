@@ -83,6 +83,7 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
         stockTickerQuote.setTickerSymbol( tickerSymbol );
         stockTickerQuote.setLastPrice( quote.getLatestPrice() );
+        stockTickerQuote.setOpenPrice( quote.getOpen() );
         stockTickerQuote.setLastPriceChange( new Timestamp( quote.getLatestUpdate() ) );
         stockTickerQuote.setCompanyName( quote.getCompanyName() );
         return stockTickerQuote;

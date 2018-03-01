@@ -56,10 +56,6 @@ public class StockQuoteServiceExecutor
                 stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
             }
         }
-        catch( StockNotFoundException e )
-        {
-            this.handleStockNotFoundException( tickerSymbol );
-        }
         catch( Exception e )
         {
             logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage(), e );
@@ -90,10 +86,6 @@ public class StockQuoteServiceExecutor
                     stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
                     triedYahoo = true;
                 }
-            }
-            catch( StockNotFoundException e )
-            {
-                this.discontinuedStocks.add( tickerSymbol );
             }
             catch( Exception e )
             {
@@ -179,14 +171,12 @@ public class StockQuoteServiceExecutor
      * @throws StockNotFoundException for invalid ticker symbols.
      */
     private StockTickerQuote getQuoteFromIEXTrading( final String tickerSymbol )
-        throws StockNotFoundException, EntityVersionMismatchException
     {
         final String methodName = "getQuoteFromIEXTrading";
         logger.debug( methodName + " " + tickerSymbol );
         StockTickerQuote stockTickerQuote = null;
         if ( !this.discontinuedStocks.contains( tickerSymbol ))
         {
-            stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );
             try
             {
                 stockTickerQuote = this.iexTradingStockService.getStockTickerQuote( tickerSymbol );
