@@ -40,4 +40,19 @@ public class AppConfig
         pool.setThreadNamePrefix( "PositionEvaluator-" );
         return pool;
     }
+
+    /**
+     * http://www.baeldung.com/spring-async
+     * @return Thread pool executor
+     */
+    @Bean(name = "linkedAccountGetOverviewThreadPool")
+    public Executor linkedAccountGetOverviewTaskExecutor()
+    {
+        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+        pool.setCorePoolSize(5);
+        pool.setMaxPoolSize(30);
+        pool.setWaitForTasksToCompleteOnShutdown(true);
+        pool.setThreadNamePrefix( "GetAccountOverview-" );
+        return pool;
+    }
 }

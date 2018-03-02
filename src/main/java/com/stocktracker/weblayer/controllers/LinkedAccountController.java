@@ -78,9 +78,9 @@ public class LinkedAccountController extends AbstractController
      * @param tradeItAccountId
      * @param customerId
      * @return
-     * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL +
                              "/tradeItAccountId/{tradeItAccountId}" +
@@ -90,8 +90,8 @@ public class LinkedAccountController extends AbstractController
     public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable int tradeItAccountId,
                                                      final @PathVariable int customerId )
         throws TradeItAccountNotFoundException,
-               LinkedAccountNotFoundException,
-               TradeItAuthenticationException
+               EntityVersionMismatchException,
+               LinkedAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountId, customerId );
@@ -111,6 +111,7 @@ public class LinkedAccountController extends AbstractController
      * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
      */
+    /*
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
                              + "/linkedAccountId/{linkedAccountId}"
                              + "/tradeItAccountId/{tradeItAccountId}"
@@ -132,7 +133,7 @@ public class LinkedAccountController extends AbstractController
         logMethodEnd( methodName, getAccountOverviewDTO );
         return getAccountOverviewDTO;
     }
-
+*/
     @Autowired
     public void setTradeItAccountService( final LinkedAccountEntityService linkedAccountEntityService )
     {

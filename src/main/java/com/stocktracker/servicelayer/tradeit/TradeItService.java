@@ -368,7 +368,9 @@ public class TradeItService implements MyLogger
     public KeepSessionAliveDTO keepSessionAlive( final int customerId,
                                                  final int tradeItAccountId )
         throws TradeItAccountNotFoundException,
-               LinkedAccountNotFoundException, TradeItAuthenticationException
+               LinkedAccountNotFoundException,
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, customerId, tradeItAccountId );
@@ -489,7 +491,7 @@ public class TradeItService implements MyLogger
         final String methodName = "getAccountOverviewAndPositions";
         logMethodBegin( methodName, accountNumber, authToken );
         GetAccountOverviewDTO getAccountOverviewDTO = this.getAccountAccountOverview( accountNumber, authToken );
-        linkedAccount.setAccountOverviewValues( getAccountOverviewDTO );
+        linkedAccount.setGetAccountOverviewValues( getAccountOverviewDTO );
         GetPositionsDTO getPositionsDTO = this.getPositions( tradeItAccountEntity.getCustomerId(),
                                                              tradeItAccountEntity.getId(),
                                                              linkedAccount.getAccountNumber() );
@@ -514,8 +516,10 @@ public class TradeItService implements MyLogger
          * Create the get positions parameters.
          */
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
-                                                                              .addParameter( TradeItParameter.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() )
-                                                                              .addParameter( TradeItParameter.ACCOUNT_NUMBER_PARAM, linkedAccountEntity.getAccountNumber() );
+                                                                            .addParameter( TradeItParameter.TOKEN_PARAM,
+                                                                                           tradeItAccountEntity.getAuthToken() )
+                                                                            .addParameter( TradeItParameter.ACCOUNT_NUMBER_PARAM,
+                                                                                           linkedAccountEntity.getAccountNumber() );
         /*
          * Make the get positions API call.
          */
@@ -527,69 +531,28 @@ public class TradeItService implements MyLogger
     }
 
     /**
-     * This is called after receiving a {@code TradeItAuthenticationException}.  It will attempt to perform an
-     * authentication call for the account identified by {@code accountId}
-     * @param customerId
-     * @param tradeItAccountId
-     * @param e
-     * @throws LinkedAccountNotFoundException
-     * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
-     */
-    private void authenticateOnException( final int customerId,
-                                          final int tradeItAccountId,
-                                          final TradeItAuthenticationException e )
-        throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
-               TradeItAuthenticationException
-    {
-        final String methodName = "authenticateOnException";
-        logMethodBegin( methodName, customerId, tradeItAccountId );
-        /*
-         * Need to re-authenticate the account
-         */
-        final AuthenticateDTO authenticateDTO = this.authenticate( customerId, tradeItAccountId );
-        if ( authenticateDTO.isSuccessful() )
-        {
-            logDebug( methodName, "Authentication successful" );
-        }
-        else
-        {
-            logError( methodName, "Authentication unsuccessful, throwing exception", e );
-            throw e;
-        }
-        logMethodEnd( methodName );
-    }
-
-    /**
      * Get the account overview from TradeIt for the account number.  This is a sub account of the account identified
      * by {@code accountId}.
-     * @param customerId
-     * @param tradeItAccountId
+     * @param tradeItAccountEntity
      * @param accountNumber The brokerage account number.
-     * @param authToken The authorization token.,
      * @return
      */
-    public GetAccountOverviewDTO getAccountOverview( final int customerId,
-                                                     final int tradeItAccountId,
-                                                     final String accountNumber,
-                                                     final String authToken )
-        throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+    public GetAccountOverviewDTO getAccountOverview( final TradeItAccountEntity tradeItAccountEntity,
+                                                     final String accountNumber )
+        throws TradeItAuthenticationException
     {
         final String methodName = "getAccountOverview";
-        logMethodBegin( methodName, customerId, tradeItAccountId, accountNumber, authToken  );
+        logMethodBegin( methodName, tradeItAccountEntity.getId(), accountNumber  );
         Objects.requireNonNull( accountNumber, "accountNumber cannot be null" );
-        Objects.requireNonNull( accountNumber, "authToken cannot be null" );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
         final GetAccountOverviewAPICall getAccountOverviewAPICall = this.context.getBean( GetAccountOverviewAPICall.class );
         /*
-         * Create the parameter map for the get account overview fcall.
+         * Create the parameter map for the get account overview call.
          */
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
-                                                                              .addParameter( TradeItParameter.TOKEN_PARAM, authToken )
-                                                                              .addParameter( TradeItParameter.ACCOUNT_NUMBER_PARAM, accountNumber );
+                                                                            .addParameter( TradeItParameter.TOKEN_PARAM,
+                                                                                           tradeItAccountEntity.getAuthToken() )
+                                                                            .addParameter( TradeItParameter.ACCOUNT_NUMBER_PARAM,
+                                                                                           accountNumber );
         /*
          * Make the account overview API call to TradeIT
          */

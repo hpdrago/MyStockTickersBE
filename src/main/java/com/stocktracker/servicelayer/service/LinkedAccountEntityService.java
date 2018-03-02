@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.EntityRefreshStatus;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
@@ -34,6 +35,7 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
                                         implements MyLogger
 {
     private LinkedAccountRepository linkedAccountRepository;
+    private LinkedAccountGetOverviewService linkedAccountGetOverviewService;
     private TradeItService tradeItService;
     private TradeItAccountEntityService tradeItAccountEntityService;
 
@@ -43,29 +45,96 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @param tradeItAccountId
      * @return
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
      */
     public List<LinkedAccountDTO> getLinkedAccounts( final int customerId,
                                                      final int tradeItAccountId )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
-               LinkedAccountNotFoundException
+               LinkedAccountNotFoundException,
+               EntityVersionMismatchException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, customerId, tradeItAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getTradeItAccountEntity( customerId, tradeItAccountId );
-        final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
-                                                                    .findAllByCustomerIdAndTradeItAccountId( customerId,
-                                                                                                             tradeItAccountId );
+        List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
+                                                              .findAllByCustomerIdAndTradeItAccountId( customerId,
+                                                                                                       tradeItAccountId );
+        /*
+         * Update the accounts to UPDATING as the accounts will be updated asynchronously.
+         */
+        this.updateGetAccountOverviewStatus( linkedAccountEntities, EntityRefreshStatus.UPDATING );
+        /*
+         * Need to reload the entities as the version number will have changed after updating the status.
+         */
+        linkedAccountEntities = this.linkedAccountRepository
+            .findAllByCustomerIdAndTradeItAccountId( customerId,
+                                                     tradeItAccountId );
+        /*
+         * These are asynchronous calls to refresh the account overview information
+         */
+        linkedAccountEntities.forEach( linkedAccountEntity -> this.linkedAccountGetOverviewService
+                             .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ));
         final List<LinkedAccountDTO> linkedAccountDTOs = this.entitiesToDTOs( linkedAccountEntities );
-        for ( final LinkedAccountDTO linkedAccountDTO: linkedAccountDTOs )
-        {
-            this.updateAccountSummaryInformation( tradeItAccountEntity, linkedAccountDTO );
-        }
-        logMethodEnd( methodName, linkedAccountDTOs );
+        logMethodEnd( methodName, String.format( "returning %d linked account", linkedAccountDTOs.size() ));
         return linkedAccountDTOs;
+    }
+
+    /**
+     * This method will set the get_account_overview_status column to {@code entityRefreshStatus}.
+     * @param linkedAccountEntities Entities to update.
+     * @param entityRefreshStatus Status to update to.
+     * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
+     */
+    public void updateGetAccountOverviewStatus( final List<LinkedAccountEntity> linkedAccountEntities,
+                                                final EntityRefreshStatus entityRefreshStatus )
+        throws EntityVersionMismatchException,
+               LinkedAccountNotFoundException
+    {
+        final String methodName = "updateGetAccountOverviewStatus";
+        logMethodBegin( methodName, entityRefreshStatus );
+        for ( LinkedAccountEntity linkedAccountEntity : linkedAccountEntities )
+        {
+            updateGetAccountOverviewStatus( linkedAccountEntity,
+                                            entityRefreshStatus );
+        }
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * This method will set the get_account_overview_status column to {@code entityRefreshStatus}.
+     * @param linkedAccountEntity The entity to update.
+     * @param entityRefreshStatus Status to update to.
+     * @return Updated entity instance.  This maybe a "fresher" version of the entity if there was a version mismatch.
+     * @throws LinkedAccountNotFoundException
+     * @throws EntityVersionMismatchException
+     */
+    public LinkedAccountEntity updateGetAccountOverviewStatus( final LinkedAccountEntity linkedAccountEntity,
+                                                               final EntityRefreshStatus entityRefreshStatus )
+        throws LinkedAccountNotFoundException,
+               EntityVersionMismatchException
+    {
+        final String methodName = "updateGetAccountOverviewStatus";
+        logMethodBegin( methodName, linkedAccountEntity.getId(), entityRefreshStatus );
+        linkedAccountEntity.setGetAccountOverviewStatus( entityRefreshStatus.name() );
+        LinkedAccountEntity returnEntity = null;
+        try
+        {
+            returnEntity = this.saveEntity( linkedAccountEntity );
+        }
+        catch( EntityVersionMismatchException e )
+        {
+            /*
+             * Retrieve and update entity
+             */
+            returnEntity = this.getLinkedAccountEntity( linkedAccountEntity.getCustomerId(), linkedAccountEntity.getId() );
+            returnEntity.setGetAccountOverviewStatus( entityRefreshStatus.name() );
+            returnEntity = this.saveEntity( linkedAccountEntity );
+        }
+        logMethodEnd( methodName );
+        return returnEntity;
     }
 
     /**
@@ -76,20 +145,17 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * @param tradeItAccountEntity
      * @param linkedAccountDTO
      * @throws TradeItAuthenticationException
-     * @throws TradeItAccountNotFoundException
      */
     private void updateAccountSummaryInformation( final TradeItAccountEntity tradeItAccountEntity,
                                                   final LinkedAccountDTO linkedAccountDTO )
-        throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+        throws TradeItAuthenticationException
     {
         final String methodName = "updateAccountSummaryInformation";
         logMethodBegin( methodName, linkedAccountDTO );
         final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
-                                                                .getAccountOverview( tradeItAccountEntity.getCustomerId(),
-                                                                                     tradeItAccountEntity.getId(),
-                                                                                     linkedAccountDTO.getAccountNumber(),
-                                                                                     tradeItAccountEntity.getAuthToken() );
+                                                                .getAccountOverview( tradeItAccountEntity,
+                                                                                     linkedAccountDTO.getAccountNumber() );
+
         linkedAccountDTO.copyAccountSummary( getAccountOverviewDTO );
         logMethodEnd( methodName );
     }
@@ -115,10 +181,8 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
                                                               .getTradeItAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.getLinkedAccountEntity( customerId, linkedAccountId );
         final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
-                                                                .getAccountOverview( linkedAccountEntity.getCustomerId(),
-                                                                                     linkedAccountEntity.getId(),
-                                                                                     linkedAccountEntity.getAccountNumber(),
-                                                                                     tradeItAccountEntity.getAuthToken() );
+                                                                .getAccountOverview( tradeItAccountEntity,
+                                                                                     linkedAccountEntity.getAccountNumber() );
         logMethodEnd( methodName );
         return getAccountOverviewDTO;
     }
@@ -190,4 +254,11 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
     {
         this.tradeItAccountEntityService = tradeItAccountEntityService;
     }
+
+    @Autowired
+    public void setLinkedAccountGetOverviewService( final LinkedAccountGetOverviewService linkedAccountGetOverviewService )
+    {
+        this.linkedAccountGetOverviewService = linkedAccountGetOverviewService;
+    }
+
 }

@@ -232,7 +232,6 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param authenticateDTO
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
     public void synchronizeTradeItAccount( final int customerId,
@@ -240,7 +239,6 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "synchronizeTradeItAccount";
@@ -260,14 +258,12 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param authenticateDTO The linked accounts will be set in this DTO from the linked accounts.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
     public void synchronizeTradeItAccount( final TradeItAccountEntity tradeItAccountEntity,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "synchronizeTradeItAccount";
@@ -294,17 +290,16 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * {@code keepSessionAliveDTO} is populated with the TradeIt Account and linked account information.
      * @param tradeItAccountEntity
      * @param keepSessionAliveAPIResult
-     * @return
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
-     * @throws LinkedAccountNotFoundException
+     * @throws TradeItAccountNotFoundException,
+     * @throws EntityVersionMismatchException
      */
     public void keepSessionAliveSuccess( final KeepSessionAliveDTO keepSessionAliveDTO,
                                          final TradeItAccountEntity tradeItAccountEntity,
                                          final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
         throws TradeItAccountNotFoundException,
-               LinkedAccountNotFoundException,
-               TradeItAuthenticationException
+               EntityVersionMismatchException,
+               LinkedAccountNotFoundException
     {
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );
