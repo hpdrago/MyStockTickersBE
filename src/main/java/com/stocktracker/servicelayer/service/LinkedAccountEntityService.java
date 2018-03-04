@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,18 +65,17 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
         /*
          * Update the accounts to UPDATING as the accounts will be updated asynchronously.
          */
-        this.updateGetAccountOverviewStatus( linkedAccountEntities, EntityRefreshStatus.UPDATING );
-        /*
-         * Need to reload the entities as the version number will have changed after updating the status.
-         */
-        linkedAccountEntities = this.linkedAccountRepository
-            .findAllByCustomerIdAndTradeItAccountId( customerId,
-                                                     tradeItAccountId );
+        linkedAccountEntities = this.updateGetAccountOverviewStatus( linkedAccountEntities, EntityRefreshStatus.UPDATING );
         /*
          * These are asynchronous calls to refresh the account overview information
          */
-        linkedAccountEntities.forEach( linkedAccountEntity -> this.linkedAccountGetOverviewService
-                             .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ));
+        linkedAccountEntities
+            .forEach( linkedAccountEntity -> this.linkedAccountGetOverviewService
+                                                 .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ));
+        /*
+         * Return the values that are currently in the database, the front ent will load those values first and
+         * then make another call to get the updated information for each account.
+         */
         final List<LinkedAccountDTO> linkedAccountDTOs = this.entitiesToDTOs( linkedAccountEntities );
         logMethodEnd( methodName, String.format( "returning %d linked account", linkedAccountDTOs.size() ));
         return linkedAccountDTOs;
@@ -85,22 +85,26 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
      * This method will set the get_account_overview_status column to {@code entityRefreshStatus}.
      * @param linkedAccountEntities Entities to update.
      * @param entityRefreshStatus Status to update to.
+     * @return Updates entity list.
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
      */
-    public void updateGetAccountOverviewStatus( final List<LinkedAccountEntity> linkedAccountEntities,
-                                                final EntityRefreshStatus entityRefreshStatus )
+    public List<LinkedAccountEntity> updateGetAccountOverviewStatus( final List<LinkedAccountEntity> linkedAccountEntities,
+                                                                     final EntityRefreshStatus entityRefreshStatus )
         throws EntityVersionMismatchException,
                LinkedAccountNotFoundException
     {
         final String methodName = "updateGetAccountOverviewStatus";
         logMethodBegin( methodName, entityRefreshStatus );
+        final List<LinkedAccountEntity> updatedLinikedAccounts = new ArrayList<>();
         for ( LinkedAccountEntity linkedAccountEntity : linkedAccountEntities )
         {
-            updateGetAccountOverviewStatus( linkedAccountEntity,
-                                            entityRefreshStatus );
+            LinkedAccountEntity updatedLinnkedAccount = updateGetAccountOverviewStatus( linkedAccountEntity,
+                                                                                        entityRefreshStatus );
+            updatedLinikedAccounts.add( updatedLinnkedAccount );
         }
         logMethodEnd( methodName );
+        return updatedLinikedAccounts;
     }
 
     /**
