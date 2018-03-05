@@ -42,7 +42,6 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
     private Timestamp createDate;
     private Timestamp updateDate;
     private Integer version;
-    private String getAccountOverviewStatus;
 
     /**
      * Creates a new instance from the information contained within {@code TradeItAccountDTO}.
@@ -301,18 +300,6 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
         this.linkedAccountPositionsById = linkedAccountPositionsById;
     }
 
-    @Basic
-    @Column( name = "get_account_overview_status",length = 10 )
-    public String getGetAccountOverviewStatus()
-    {
-        return getAccountOverviewStatus;
-    }
-
-    public void setGetAccountOverviewStatus( final String getAccountOverviewStatus )
-    {
-        this.getAccountOverviewStatus = getAccountOverviewStatus;
-    }
-
     /**
      * Copy the values form the result of the TradeIt getAccountOverview call.
      * @param accountOverviewDTO
@@ -378,7 +365,6 @@ public class LinkedAccountEntity implements VersionedEntity<Integer>
         sb.append( ", totalPercentReturn=" ).append( totalPercentReturn );
         sb.append( ", marginCash=" ).append( marginCash );
         sb.append( ", version=" ).append( version );
-        sb.append( ", getAccountOverviewStatus=" ).append( getAccountOverviewStatus );
         sb.append( '}' );
         return sb.toString();
     }

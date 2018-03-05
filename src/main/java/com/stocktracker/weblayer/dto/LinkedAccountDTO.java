@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.EntityLoadingStatus;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
@@ -40,6 +41,7 @@ public class LinkedAccountDTO implements VersionedDTO<Integer>
     private BigDecimal totalPercentReturn;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal marginCash;
+    private String loadingStatus;
 
     public Integer getId()
     {
@@ -212,6 +214,21 @@ public class LinkedAccountDTO implements VersionedDTO<Integer>
         this.version = version;
     }
 
+    public void setLoadingStatus( final EntityLoadingStatus entityLoadingStatus )
+    {
+        this.loadingStatus = entityLoadingStatus.name();
+    }
+
+    public String getLoadingStatus()
+    {
+        return loadingStatus;
+    }
+
+    public void setLoadingStatus( final String loadingStatus )
+    {
+        this.loadingStatus = loadingStatus;
+    }
+
     /**
      * Copy account summary info.
      * @param getAccountOverviewDTO
@@ -249,6 +266,7 @@ public class LinkedAccountDTO implements VersionedDTO<Integer>
         sb.append( ", totalAbsoluteReturn=" ).append( totalAbsoluteReturn );
         sb.append( ", totalPercentReturn=" ).append( totalPercentReturn );
         sb.append( ", marginCash=" ).append( marginCash );
+        sb.append( ", loadingStatus=" ).append( loadingStatus );
         sb.append( '}' );
         return sb.toString();
     }

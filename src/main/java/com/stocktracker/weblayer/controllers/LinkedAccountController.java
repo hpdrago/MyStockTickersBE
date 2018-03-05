@@ -3,10 +3,9 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
-import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
+import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
-import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -78,9 +77,7 @@ public class LinkedAccountController extends AbstractController
      * @param tradeItAccountId
      * @param customerId
      * @return
-     * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
-     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL +
                              "/tradeItAccountId/{tradeItAccountId}" +
@@ -89,9 +86,7 @@ public class LinkedAccountController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable int tradeItAccountId,
                                                      final @PathVariable int customerId )
-        throws TradeItAccountNotFoundException,
-               EntityVersionMismatchException,
-               LinkedAccountNotFoundException
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountId, customerId );
@@ -102,7 +97,13 @@ public class LinkedAccountController extends AbstractController
     }
 
     /**
-     * Calls TradeIt to get the account overview for a single brokerage account.
+     * This is the subsequent call made after a call to {@code getLinkedAccounts}.
+     * Obtaining the get account overview information for linked account is an asynchronous process.  When linked accounts
+     * are selected from the database, each account is then asynchronously updated by calling the TradeIt get account
+     * summary API call.  This effort is done in parallel so that the user can see the linked accounts as quick as possible
+     * and while the initial request to get the requests makes it back to the client the linked accounts are being updated
+     * in the background.  This method is then called by the client to get the updated (get account overview) information
+     * for each linked account.  When called, this method will block until the account information has been updated.
      * @param linkedAccountId
      * @param tradeItAccountId
      * @param customerId
@@ -111,33 +112,27 @@ public class LinkedAccountController extends AbstractController
      * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
      */
-    /*
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
                              + "/linkedAccountId/{linkedAccountId}"
                              + "/tradeItAccountId/{tradeItAccountId}"
                              + "/customer/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public GetAccountOverviewDTO getAccountOverview( @PathVariable final int linkedAccountId,
+    public LinkedAccountDTO getUpdatedLinkedAccount( @PathVariable final int linkedAccountId,
                                                      @PathVariable final int tradeItAccountId,
                                                      @PathVariable final int customerId )
-        throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
-               TradeItAuthenticationException
-
     {
-        final String methodName = "getAccountOverview";
+        final String methodName = "getUpdatedLinkedAccount";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
-        final GetAccountOverviewDTO getAccountOverviewDTO = this.linkedAccountEntityService
-                                                                .getAccountOverview( customerId, tradeItAccountId, linkedAccountId );
-        logMethodEnd( methodName, getAccountOverviewDTO );
-        return getAccountOverviewDTO;
+        final LinkedAccountDTO linkedAccountDTO = this.linkedAccountEntityService
+                                                      .getUpdatedLinkedAccount( customerId, linkedAccountId );
+        logMethodEnd( methodName, linkedAccountDTO.getId() );
+        return linkedAccountDTO;
     }
-*/
+
     @Autowired
     public void setTradeItAccountService( final LinkedAccountEntityService linkedAccountEntityService )
     {
         this.linkedAccountEntityService = linkedAccountEntityService;
     }
-
 }

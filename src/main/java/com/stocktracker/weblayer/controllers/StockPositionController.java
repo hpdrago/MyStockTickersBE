@@ -7,13 +7,13 @@ import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.servicelayer.service.StockPositionService;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -45,8 +45,7 @@ public class StockPositionController extends AbstractController
                              + "/customer/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockPositionDTO> getPositions( final Pageable pageRequest,
-                                                final @PathVariable int linkedAccountId,
+    public List<StockPositionDTO> getPositions( final @PathVariable int linkedAccountId,
                                                 final @PathVariable int tradeItAccountId,
                                                 final @PathVariable int customerId )
         throws LinkedAccountNotFoundException,
@@ -56,10 +55,9 @@ public class StockPositionController extends AbstractController
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
-        final Page<StockPositionDTO> positions = this.stockPositionService
-                                                     .getPositions( pageRequest, customerId, tradeItAccountId, linkedAccountId );
-        logMethodEnd( methodName, "positions size: " + positions.getTotalElements() +
-                                  " pages: " + positions.getTotalPages() );
+        final List<StockPositionDTO> positions = this.stockPositionService
+                                                     .getPositions( customerId, tradeItAccountId, linkedAccountId );
+        logMethodEnd( methodName, "positions size: " + positions.size() );
         return positions;
     }
 

@@ -170,7 +170,8 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
     {
         final String methodName = "synchronousQuoteFetch";
         logMethodBegin( methodName, tickerSymbol );
-        StockTickerQuote stockTickerQuote = this.stockQuoteServiceExecutor.synchronousGetStockQuote( tickerSymbol );
+        StockTickerQuote stockTickerQuote = this.stockQuoteServiceExecutor
+                                                .synchronousGetStockQuote( tickerSymbol );
         if ( stockTickerQuote == null )
         {
             throw new StockNotFoundException( tickerSymbol + " is not a valid ticker symbol" );

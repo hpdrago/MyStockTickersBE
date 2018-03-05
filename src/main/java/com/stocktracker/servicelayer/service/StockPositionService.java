@@ -14,8 +14,6 @@ import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,8 +35,6 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
 
     /**
      * Get the positions for the linked account.
-     * @param pageRequest
-     * @param pageRequest
      * @param customerId
      * @param tradeItAccountId
      * @param linkedAccountId
@@ -48,8 +44,7 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
-    public Page<StockPositionDTO> getPositions( final Pageable pageRequest,
-                                                final int customerId,
+    public List<StockPositionDTO> getPositions( final int customerId,
                                                 final int tradeItAccountId,
                                                 final int linkedAccountId )
         throws LinkedAccountNotFoundException,
@@ -58,17 +53,17 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
                EntityVersionMismatchException
     {
         final String methodName = "getPositions";
-        logMethodBegin( methodName, pageRequest, customerId, tradeItAccountId, linkedAccountId );
+        logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
         if ( this.stockPositionRepository.countByLinkedAccountId( linkedAccountId ) == 0 )
         {
             logError( methodName, "No positions found, synchronizing with TradeIt" );
             this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
         }
-        final Page<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
-                                                                    .findByLinkedAccountId( pageRequest, linkedAccountId );
+        final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
+                                                                    .findByLinkedAccountId( linkedAccountId );
 
-        final Page<StockPositionDTO> stockPositionDTOs = this.entitiesToDTOs( pageRequest, stockPositionEntities );
-        logMethodEnd( methodName, "Returning " + stockPositionDTOs.getTotalElements() + " positions" );
+        final List<StockPositionDTO> stockPositionDTOs = this.entitiesToDTOs( stockPositionEntities );
+        logMethodEnd( methodName, "Returning " + stockPositionDTOs.size() + " positions" );
         return stockPositionDTOs;
     }
 

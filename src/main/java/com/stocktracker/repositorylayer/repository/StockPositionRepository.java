@@ -1,8 +1,6 @@
 package com.stocktracker.repositorylayer.repository;
 
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -27,7 +25,7 @@ public interface StockPositionRepository extends JpaRepository<StockPositionEnti
      * @param linkedAccountId
      * @return
      */
-    Page<StockPositionEntity> findByLinkedAccountId( final Pageable pageRequest, final int linkedAccountId );
+    List<StockPositionEntity> findByLinkedAccountId( final int linkedAccountId );
 
     /**
      * Count the number of positions in the linked account.
