@@ -108,10 +108,11 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
     }
 
     /**
-     * Blocks and waits for the get account summary information call that must have been
+     * Blocks and waits for the get account summary information call that must have been made previously.
      * @param customerId
      * @param linkedAccountId
-     * @return
+     * @return Updated linked account.
+     * @throws IllegalArgumentException if the {@code linkedAccountId} is not registered to be updated.
      */
     public LinkedAccountDTO getUpdatedLinkedAccount( final int customerId, final int linkedAccountId )
     {
