@@ -290,15 +290,11 @@ public class TradeItAccountEntityService extends DMLEntityService<Integer,
      * @param tradeItAccountEntity
      * @param keepSessionAliveAPIResult
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAccountNotFoundException,
-     * @throws EntityVersionMismatchException
      */
     public void keepSessionAliveSuccess( final KeepSessionAliveDTO keepSessionAliveDTO,
                                          final TradeItAccountEntity tradeItAccountEntity,
                                          final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
-        throws TradeItAccountNotFoundException,
-               EntityVersionMismatchException,
-               LinkedAccountNotFoundException
+        throws TradeItAccountNotFoundException
     {
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );

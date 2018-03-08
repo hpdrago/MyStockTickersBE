@@ -119,10 +119,12 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
         logMethodBegin( methodName, customerId, linkedAccountId );
         this.tradeItAsyncUpdateService
             .checkGetAccountOverviewExists( linkedAccountId );
+        logDebug( methodName, "blocking for linked account: {0}", linkedAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.tradeItAsyncUpdateService
                                                             .subscribeToGetAccountOverview( linkedAccountId )
                                                             .toBlocking()
                                                             .first();
+        logDebug( methodName, "received after blocking {0}", linkedAccountEntity );
         this.tradeItAsyncUpdateService
             .removeGetAccountOverviewRequest( linkedAccountId );
         final LinkedAccountDTO linkedAccountDTO = this.entityToDTO( linkedAccountEntity );
@@ -175,6 +177,7 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
     public void setTradeItAsyncUpdateService( final TradeItAsyncUpdateService tradeItAsyncUpdateService )
     {
         this.tradeItAsyncUpdateService = tradeItAsyncUpdateService;
+        logInfo( "setTradeItAsyncUpdateService", "Injection of " + tradeItAsyncUpdateService );
     }
 
 }

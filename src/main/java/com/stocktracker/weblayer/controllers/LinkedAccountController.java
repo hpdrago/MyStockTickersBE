@@ -113,7 +113,7 @@ public class LinkedAccountController extends AbstractController
      * @throws LinkedAccountNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
-                             + "/linkedAccountId/{linkedAccountId}"
+                             + "/id/{linkedAccountId}"
                              + "/tradeItAccountId/{tradeItAccountId}"
                              + "/customer/{customerId}",
                      method = GET,
@@ -126,7 +126,7 @@ public class LinkedAccountController extends AbstractController
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
         final LinkedAccountDTO linkedAccountDTO = this.linkedAccountEntityService
                                                       .getUpdatedLinkedAccount( customerId, linkedAccountId );
-        logMethodEnd( methodName, linkedAccountDTO.getId() );
+        logMethodEnd( methodName, linkedAccountDTO );
         return linkedAccountDTO;
     }
 
