@@ -54,11 +54,14 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
+        /*
         if ( this.stockPositionRepository.countByLinkedAccountId( linkedAccountId ) == 0 )
         {
             logError( methodName, "No positions found, synchronizing with TradeIt" );
             this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
         }
+        */
+        this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
         final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
                                                                     .findByLinkedAccountId( linkedAccountId );
 
@@ -87,6 +90,8 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
                TradeItAuthenticationException,
                EntityVersionMismatchException
     {
+        final String methodName = "synchronizePositions";
+        logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getTradeItAccountEntity( customerId, tradeItAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
@@ -115,8 +120,10 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
         /*
          * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
          */
-        return this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId,
-                                           getPositionsAPIResult );
+        final List<StockPositionDTO> stockPositionList = this.createPositionDTOList( customerId, tradeItAccountId,
+                                                                                     linkedAccountId, getPositionsAPIResult );
+        logMethodEnd( methodName, stockPositionList.size() + " positions" );
+        return stockPositionList;
     }
 
     /**

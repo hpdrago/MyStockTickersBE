@@ -14,6 +14,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 /**
  * This class encapsulates the logic to make a REST API call to TradeIt.
@@ -69,12 +70,15 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
         T response = null;
         try
         {
-            final ResponseEntity<T> responseEntity = restTemplate
-                .postForEntity( url, request, this.getAPIResultsClass() );
+            final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
             logDebug( methodName, "ResponseEntity: {0}", responseEntity );
             response = responseEntity.getBody();
         }
         catch( HttpServerErrorException e )
+        {
+            throw new TradeItServiceUnavailableException( e );
+        }
+        catch( UnknownHttpStatusCodeException e )
         {
             throw new TradeItServiceUnavailableException( e );
         }

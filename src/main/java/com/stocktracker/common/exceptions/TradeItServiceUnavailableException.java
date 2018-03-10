@@ -8,7 +8,7 @@ import org.springframework.web.client.HttpServerErrorException;
 @ResponseStatus( value= HttpStatus.SERVICE_UNAVAILABLE )  // 503
 public class TradeItServiceUnavailableException extends RuntimeException
 {
-    public TradeItServiceUnavailableException( final HttpServerErrorException e )
+    public TradeItServiceUnavailableException( final Exception e )
     {
         super( "TradeIt Service Unavailable", e );
     }
