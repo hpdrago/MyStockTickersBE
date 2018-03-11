@@ -162,38 +162,49 @@ public class StockPositionComparator implements MyLogger
                                                                                  final Map<String,StockPositionEntity> stockPositionEntityMap,
                                                                                  final GetPositionsAPIResult getPositionsAPIResult )
     {
+        final String methodName = "convertTradeItPositionsToStockPositions";
+        logMethodBegin( methodName, linkedAccountEntity.getId() );
         final List<MyStockPositionEntity> tradeItStockPositionEntities = new ArrayList<>();
-        for ( final TradeItPosition tradeItPosition: getPositionsAPIResult.getPositions() )
+        if ( getPositionsAPIResult.getPositions() == null ||
+             getPositionsAPIResult.getPositions().length == 0 )
         {
-            /*
-             * We don't want FIXED INCOME or OPTIONS
-             */
-            if ( tradeItPosition.getSymbolClass().equals( "EQUITY_OR_ETF" ) ||
-                 tradeItPosition.getSymbolClass().equals( "MUTUAL_FUNDS" ))
+            logDebug( methodName, "No positions found" );
+        }
+        else
+        {
+            for ( final TradeItPosition tradeItPosition : getPositionsAPIResult.getPositions() )
             {
-                final StockPositionEntity databaseStockPositionEntity = stockPositionEntityMap
-                    .get( tradeItPosition.getSymbol() );
                 /*
-                 * The the entities that are not found in the map will be added to the database.
+                 * We don't want FIXED INCOME or OPTIONS
                  */
-                if ( databaseStockPositionEntity == null )
+                if ( tradeItPosition.getSymbolClass().equals( "EQUITY_OR_ETF" ) ||
+                     tradeItPosition.getSymbolClass().equals( "MUTUAL_FUNDS" ) )
                 {
-                    final MyStockPositionEntity stockPositionEntity = new MyStockPositionEntity( tradeItPosition );
-                    stockPositionEntity.setLinkedAccountByLinkedAccountId( linkedAccountEntity );
-                    tradeItStockPositionEntities.add( stockPositionEntity );
-                }
-                /*
-                 * The entities that match, will be updated so we need to preserve the database entity values and update
-                 * the values from the TradeIt position
-                 */
-                else
-                {
-                    final MyStockPositionEntity stockPositionEntity = new MyStockPositionEntity( databaseStockPositionEntity );
-                    stockPositionEntity.setValues( tradeItPosition );
-                    tradeItStockPositionEntities.add( stockPositionEntity );
+                    final StockPositionEntity databaseStockPositionEntity = stockPositionEntityMap
+                        .get( tradeItPosition.getSymbol() );
+                    /*
+                     * The the entities that are not found in the map will be added to the database.
+                     */
+                    if ( databaseStockPositionEntity == null )
+                    {
+                        final MyStockPositionEntity stockPositionEntity = new MyStockPositionEntity( tradeItPosition );
+                        stockPositionEntity.setLinkedAccountByLinkedAccountId( linkedAccountEntity );
+                        tradeItStockPositionEntities.add( stockPositionEntity );
+                    }
+                    /*
+                     * The entities that match, will be updated so we need to preserve the database entity values and update
+                     * the values from the TradeIt position
+                     */
+                    else
+                    {
+                        final MyStockPositionEntity stockPositionEntity = new MyStockPositionEntity( databaseStockPositionEntity );
+                        stockPositionEntity.setValues( tradeItPosition );
+                        tradeItStockPositionEntities.add( stockPositionEntity );
+                    }
                 }
             }
         }
+        logMethodEnd( methodName, "Total positions: " + tradeItStockPositionEntities.size() );
         return tradeItStockPositionEntities;
     }
 
