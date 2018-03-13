@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by mike on 5/7/2017.
  */
-public interface StockAnalystConsensusRepository extends JpaRepository<StockAnalystConsensusEntity, Integer>
+public interface StockAnalystConsensusRepository extends VersionedEntityRepository<Integer,StockAnalystConsensusEntity>
 {
     /**
      * Get all of the stock analytics records for a customer

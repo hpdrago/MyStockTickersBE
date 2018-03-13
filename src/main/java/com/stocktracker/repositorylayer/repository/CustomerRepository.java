@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  *
  * Created by mike on 5/14/2016.
  */
-public interface CustomerRepository extends JpaRepository<CustomerEntity, Integer>
+public interface CustomerRepository extends VersionedEntityRepository<Integer,CustomerEntity>
 {
     /**
      * Finds the customer for the email. Email address are unique

@@ -252,5 +252,4 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }
-
 }

@@ -3,7 +3,9 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockNoteCountEntityService;
 import com.stocktracker.servicelayer.service.StockNoteEntityService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
@@ -69,7 +71,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
+    @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                          @PathVariable( "customerId" ) final int customerId,
@@ -102,7 +104,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     public ResponseEntity<StockNoteDTO> deleteStockNote( @PathVariable( "customerId" ) final int customerId,
                                                          @PathVariable( "stockNotesId" ) final int stockNotesId )
     {
-        final String methodName = "updateStockNote";
+        final String methodName = "deleteStockNote";
         logMethodBegin( methodName, customerId, stockNotesId );
         StockNoteDTO stockNotesDTO = this.stockNoteService.delete( stockNotesId );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -112,6 +114,38 @@ public class StockNotesController extends AbstractController implements MyLogger
                                                             .toUri() );
         logMethodEnd( methodName, stockNotesDTO );
         return new ResponseEntity<>( stockNotesDTO, httpHeaders, HttpStatus.CREATED );
+    }
+
+    /**
+     * Get a stock note
+     *
+     * @return The stock that was added
+     */
+    @CrossOrigin
+    @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
+                     method = RequestMethod.GET )
+    public ResponseEntity<StockNoteDTO> getStockNote( @PathVariable( "customerId" ) final int customerId,
+                                                      @PathVariable( "stockNotesId" ) final int stockNotesId )
+    {
+        final String methodName = "getStockNote";
+        logMethodBegin( methodName, customerId, stockNotesId );
+        StockNoteDTO stockNotesDTO = null;
+        try
+        {
+            stockNotesDTO = this.stockNoteService
+                                .getDTO( customerId, stockNotesId );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockNoteNotFoundException( stockNotesId );
+        }
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()
+                                                            .path( "" )
+                                                            .buildAndExpand( stockNotesDTO )
+                                                            .toUri() );
+        logMethodEnd( methodName, stockNotesDTO );
+        return new ResponseEntity<>( stockNotesDTO, httpHeaders, HttpStatus.OK );
     }
 
     private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNotesDTO )

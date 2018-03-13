@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by mike on 5/7/2017.
  */
-public interface StockCatalystEventRepository extends JpaRepository<StockCatalystEventEntity, Integer>
+public interface StockCatalystEventRepository extends VersionedEntityRepository<Integer,StockCatalystEventEntity>
 {
     /**
      * Get all of the stock catalyst event records for a customer

@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Created by mike on 12/4/2017.
  */
-public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEntity, Integer>
+public interface LinkedAccountRepository extends VersionedEntityRepository<Integer,LinkedAccountEntity>
 {
     /**
      * Gets the linked account by the primary key.

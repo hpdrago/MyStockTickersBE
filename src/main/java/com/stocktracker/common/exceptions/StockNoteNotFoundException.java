@@ -11,6 +11,6 @@ public class StockNoteNotFoundException extends RuntimeException
 {
     public StockNoteNotFoundException( final int stockNoteId )
     {
-        super( String.format( "Portfolio stock not found for stock note id: %d", stockNoteId ));
+        super( String.format( "Stock note not found for stock note id: %d", stockNoteId ));
     }
 }

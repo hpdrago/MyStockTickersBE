@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.QueryByExampleExecutor;
  * Stock Entity Repository
  * Created by mike on 9/11/2016.
  */
-public interface StockRepository extends JpaRepository<StockEntity,String>,
+public interface StockRepository extends VersionedEntityRepository<String,StockEntity>,
                                          QueryByExampleExecutor<StockEntity>
 {
     Page<StockEntity> findByCompanyNameIsLikeOrTickerSymbolIsLike( Pageable pageRequest,

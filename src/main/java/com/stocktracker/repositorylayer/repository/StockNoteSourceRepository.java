@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by mike on 5/7/2017.
  */
-public interface StockNoteSourceRepository extends JpaRepository<StockNoteSourceEntity, Integer>
+public interface StockNoteSourceRepository extends VersionedEntityRepository<Integer, StockNoteSourceEntity>
 {
     /**
      * Retrieves all of the stock notes sources for a single customer

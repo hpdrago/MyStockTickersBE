@@ -1,9 +1,10 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
+import com.stocktracker.repositorylayer.repository.VersionedEntityRepository;
 import com.stocktracker.weblayer.dto.VersionedDTO;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
 
@@ -17,17 +18,42 @@ import java.io.Serializable;
 public abstract class DMLEntityService<K extends Serializable,
                                        E extends VersionedEntity<K>,
                                        D extends VersionedDTO<K>,
-                                       R extends JpaRepository<E,K>>
+                                       R extends VersionedEntityRepository<K,E>>
     extends BaseEntityService<K,E,D,R>
 {
+    /**
+     * Get the DTO for the entity matching key.
+     * @param key
+     * @return
+     * @throws VersionedEntityNotFoundException
+     */
+    public D getDTO( final int customerId, final K key )
+        throws VersionedEntityNotFoundException
+    {
+        final String methodName = "getEntity";
+        logMethodBegin( methodName, customerId, key );
+        final E entity = this.getRepository()
+                             .findByCustomerIdAndId( customerId, key );
+        if ( entity == null )
+        {
+            throw new VersionedEntityNotFoundException( key );
+        }
+        final D dto = this.entityToDTO( entity );
+        logMethodEnd( methodName, dto );
+        return dto;
+    }
+
     /**
      * Delete the entity.
      * @param entity
      */
     public void deleteEntity( final E entity )
     {
+        final String methodName = "deleteEntity";
+        logMethodBegin( methodName, entity );
         this.getRepository()
             .delete( entity.getId() );
+        logMethodEnd( methodName );
     }
 
     /**

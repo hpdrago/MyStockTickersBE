@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by mike on 5/7/2017.
  */
-public interface StockNoteRepository extends JpaRepository<StockNoteEntity,Integer>
+public interface StockNoteRepository extends VersionedEntityRepository<Integer,StockNoteEntity>
 {
     /**
      * Get all of the stock notes for the customer and order by descending notes date

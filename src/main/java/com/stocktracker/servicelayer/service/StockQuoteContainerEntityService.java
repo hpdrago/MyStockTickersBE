@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
+import com.stocktracker.repositorylayer.repository.VersionedEntityRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.weblayer.dto.VersionedDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
                                                        E extends VersionedEntity<K>,
                                                        D extends StockQuoteService.StockQuoteContainer &
                                                                  VersionedDTO<K>,
-                                                       R extends JpaRepository<E,K>>
+                                                       R extends VersionedEntityRepository<K,E>>
     extends DMLEntityService<K,E,D,R>
 {
     private StockQuoteService stockQuoteService;
