@@ -29,35 +29,59 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
     extends VersionedEntityService<K,E,D,R>
 {
     private StockQuoteService stockQuoteService;
+    protected enum StockQuoteFetch
+    {
+        NONE,
+        FETCH;
+        protected boolean isFetch() { return this == FETCH; }
+    }
 
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
      *
      * @param pageRequest The information of the requested page.
-     * @param entityPage      The {@code Page<ENTITY>} object.
+     * @param entityPage The {@code Page<ENTITY>} object.
      * @return The created {@code Page<DTO>} object.
      */
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage )
+    {
+        return this.entitiesToDTOs( pageRequest, entityPage, StockQuoteFetch.FETCH );
+    }
+
+    /**
+     * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
+     *
+     * @param pageRequest The information of the requested page.
+     * @param entityPage The {@code Page<ENTITY>} object.
+     * @param stockQuoteFetch Determines if the stock quotes should be fetched.
+     * @return The created {@code Page<DTO>} object.
+     */
+    protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
+                                      @NotNull final Page<E> entityPage,
+                                      @NotNull final StockQuoteFetch stockQuoteFetch )
     {
         final String methodName = "entitiesToDTOs";
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
         List<D> dtos = this.entitiesToDTOs( entityPage.getContent() );
-        for ( D dto : dtos )
+        if ( stockQuoteFetch.isFetch() )
         {
-            try
+            for ( D dto : dtos )
             {
-                this.stockQuoteService.setStockQuoteInformation( dto, StockQuoteFetchMode.ASYNCHRONOUS );
-            }
-            catch ( StockQuoteUnavailableException e )
-            {
-                logError( methodName, e );
-            }
-            catch ( StockNotFoundException e )
-            {
-                logError( methodName, e );
+                try
+                {
+                    this.stockQuoteService.setStockQuoteInformation( dto, StockQuoteFetchMode.ASYNCHRONOUS );
+                }
+                catch( StockQuoteUnavailableException e )
+                {
+                    logError( methodName, e );
+                }
+                catch( StockNotFoundException e )
+                {
+                    logError( methodName, e );
+                }
             }
         }
         logMethodEnd( methodName );

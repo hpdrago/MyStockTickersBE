@@ -132,10 +132,17 @@ public class StockQuoteServiceExecutor
                     logger.debug( methodName + " Stock quote obtained from Yahoo for " + tickerSymbol );
                 }
             }
+            catch( StockNotFoundException e )
+            {
+                logger.warn( methodName + " Failed to get quote(StockNotFoundException) from Yahoo for " + tickerSymbol );
+                this.handleStockNotFoundException( tickerSymbol );
+                //logger.warn( methodName + " " );
+            }
             catch( Exception e )
             {
                 if ( e instanceof FileNotFoundException )
                 {
+                    logger.warn( methodName + " Failed to get quote(FileNotFoundException) from Yahoo for " + tickerSymbol );
                     this.handleStockNotFoundException( tickerSymbol );
                 }
                 else

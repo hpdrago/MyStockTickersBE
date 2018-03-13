@@ -59,11 +59,9 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
      * Get companies matching either the company name or ticker symbol strings
      * @param pageRequest
      * @param companiesLike
-     * @param withStockPrices
      * @return
      */
-    public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike,
-                                            final boolean withStockPrices )
+    public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike )
     {
         final String methodName = "getCompaniesLike";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -77,7 +75,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
+        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities, StockQuoteFetch.NONE );
         logMethodEnd( methodName );
         return stockDTOPage;
     }

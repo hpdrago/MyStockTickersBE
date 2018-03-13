@@ -8,6 +8,7 @@ import pl.zankowski.iextrading4j.client.IEXTradingClient;
 import pl.zankowski.iextrading4j.client.rest.request.stocks.QuoteRequestBuilder;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 //import pl.zankowski.iextrading4j.client.IEXTradingClient;
 
 /**
@@ -35,6 +36,7 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
     {
         final String methodName = "getStockTickerQuote";
         logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         StockTickerQuote stockTickerQuote = this.getIEXTradingQuote( tickerSymbol );
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
@@ -51,6 +53,7 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
     {
         final String methodName = "getIEXTradingQuote";
         logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         StockTickerQuote stockTickerQuote = null;
         try
         {
@@ -67,6 +70,10 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
         {
             logError( methodName, "Error for ticker symbol: " + tickerSymbol, e );
         }
+        catch( Exception e )
+        {
+            logWarn( methodName, "Could not get quote from IEXTrading for " + tickerSymbol );
+        }
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
@@ -80,6 +87,8 @@ public class IEXTradingStockService implements MyLogger, StockQuoteServiceProvid
      */
     private StockTickerQuote quoteToStockTickerQuote( final String tickerSymbol, final Quote quote )
     {
+        Objects.requireNonNull( tickerSymbol,"tickerSymbol cannot be null" );
+        Objects.requireNonNull( quote,"quote cannot be null" );
         StockTickerQuote stockTickerQuote = new StockTickerQuote();
         stockTickerQuote.setTickerSymbol( tickerSymbol );
         stockTickerQuote.setLastPrice( quote.getLatestPrice() );

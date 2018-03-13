@@ -75,9 +75,8 @@ public class StockController extends AbstractController implements MyLogger
         {
             throw new IllegalArgumentException( "companiesLike cannot be null or empty" );
         }
-        Page<StockDTO> stockDTOs = this.stockService.getCompaniesLike( pageRequest,
-                                                                      companiesLike,
-                                                                false );
+        Page<StockDTO> stockDTOs = this.stockService
+                                       .getCompaniesLike( pageRequest, companiesLike );
         logMethodEnd( methodName, stockDTOs );
         return stockDTOs;
     }
