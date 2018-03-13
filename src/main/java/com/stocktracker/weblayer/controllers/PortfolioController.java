@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioEntityService;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -75,8 +76,7 @@ public class PortfolioController extends AbstractController implements MyLogger
     public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
                                                        @PathVariable Integer portfolioId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -97,6 +97,7 @@ public class PortfolioController extends AbstractController implements MyLogger
         method = RequestMethod.POST )
     public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable Integer customerId,
                                                       @RequestBody PortfolioDTO portfolioDto )
+        throws EntityVersionMismatchException
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDto );
@@ -122,21 +123,17 @@ public class PortfolioController extends AbstractController implements MyLogger
      */
     @CrossOrigin
     @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.DELETE)
-    public ResponseEntity<PortfolioDTO> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
-                                                         @PathVariable( "customerId" ) Integer customerId )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+    public ResponseEntity<Void> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
+                                                 @PathVariable( "customerId" ) Integer customerId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, customerId, portfolioId );
         Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
-        logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
-        portfolioDTO = portfolioService.deletePortfolio( portfolioId );
-        logMethodBegin( methodName, portfolioDTO );
-        return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );
+        portfolioService.deleteEntity( portfolioId );
+        logMethodBegin( methodName );
+        return new ResponseEntity<>( HttpStatus.OK );
     }
 
     /**

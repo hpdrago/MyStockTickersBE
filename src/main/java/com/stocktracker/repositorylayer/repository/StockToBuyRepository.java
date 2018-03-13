@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * Created by mike on 10/24/2017.
  */
-public interface StockToBuyRepository extends VersionedEntityRepository<Integer,StockToBuyEntity>
+public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity,Integer>
 {
     /**
      * Get all of the stocks to buy records for a customer

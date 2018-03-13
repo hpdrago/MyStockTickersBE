@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.CustomerRepository;
@@ -24,10 +25,10 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class CustomerEntityService extends DMLEntityService<Integer,
-                                                            CustomerEntity,
-                                                            CustomerDTO,
-                                                            CustomerRepository>
+public class CustomerEntityService extends VersionedEntityService<Integer,
+                                                                  CustomerEntity,
+                                                                  CustomerDTO,
+                                                                  CustomerRepository>
     implements MyLogger
 {
     private PortfolioEntityService portfolioService;
@@ -57,8 +58,12 @@ public class CustomerEntityService extends DMLEntityService<Integer,
      */
     public CustomerEntity getCustomerEntity( final int customerId )
     {
-        CustomerEntity customerEntity = customerRepository.findOne( customerId );
-        if ( customerEntity == null )
+        CustomerEntity customerEntity = null;
+        try
+        {
+            customerEntity = this.getEntity( customerId );
+        }
+        catch( VersionedEntityNotFoundException e )
         {
             throw new CustomerNotFoundException( customerId );
         }

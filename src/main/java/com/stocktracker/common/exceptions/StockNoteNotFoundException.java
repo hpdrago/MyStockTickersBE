@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Created by mike on 10/04/2017.
  */
-@ResponseStatus(value= HttpStatus.NOT_FOUND)  // 404
+@ResponseStatus(value=HttpStatus.NOT_FOUND)  // 404
 public class StockNoteNotFoundException extends RuntimeException
 {
     public StockNoteNotFoundException( final int stockNoteId )

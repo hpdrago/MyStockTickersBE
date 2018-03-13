@@ -20,10 +20,10 @@ import java.util.Objects;
  *
  * Created by mike on 11/1/2016.
  */
-public abstract class BaseEntityService<K extends Serializable,
+public abstract class BaseEntityService<ID extends Serializable,
                                         E,
                                         D,
-                                        R extends JpaRepository<E, K>>
+                                        R extends JpaRepository<E, ID>>
                                         implements MyLogger
 {
     @Autowired

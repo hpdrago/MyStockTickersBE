@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,7 @@ public class StockCatalystEventController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockCatalystEventDTO getStockCatalystEvent( @PathVariable int stockCatalystEventId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockCatalystEvent";
         logMethodBegin( methodName );
@@ -94,10 +96,11 @@ public class StockCatalystEventController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable int stockCatalystEventId,
                                                           @PathVariable int customerId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventId );
-        this.stockCatalystEventService.deleteStockCatalystEvent( stockCatalystEventId );
+        this.stockCatalystEventService.deleteEntity( stockCatalystEventId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }

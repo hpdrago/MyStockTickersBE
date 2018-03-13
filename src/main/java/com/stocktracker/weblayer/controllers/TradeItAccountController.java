@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
                      method = RequestMethod.POST )
     public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
                                                             @PathVariable final int customerId )
+        throws EntityVersionMismatchException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
@@ -98,7 +100,14 @@ public class TradeItAccountController extends AbstractController implements MyLo
     {
         final String methodName = "deleteAccount";
         logMethodBegin( methodName, accountId, customerId );
-        this.tradeItAccountService.deleteAccount( customerId, accountId );
+        try
+        {
+            this.tradeItAccountService.deleteEntity( accountId );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( accountId );
+        }
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -116,13 +125,12 @@ public class TradeItAccountController extends AbstractController implements MyLo
                      method = RequestMethod.PUT )
     public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable int customerId,
                                                           @RequestBody TradeItAccountDTO tradeItAccountDTO )
-        throws EntityVersionMismatchException,
-               TradeItAccountNotFoundException
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
         TradeItAccountDTO returnTradeItAccountDTO = this.tradeItAccountService
-                                                        .updateAccount( customerId, tradeItAccountDTO );
+                                                        .saveDTO( tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )

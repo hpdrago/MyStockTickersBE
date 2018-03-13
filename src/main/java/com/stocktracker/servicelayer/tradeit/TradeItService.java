@@ -169,10 +169,12 @@ public class TradeItService implements MyLogger
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final int customerId, final int accountId )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );
@@ -190,9 +192,8 @@ public class TradeItService implements MyLogger
         /*
          * Make the call to TradeIt
          */
-        final GetOAuthAccessTokenUpdateURLAPIResult getOAuthAccessTokenUpdateURLAPIResult = this.callTradeIt( tradeItAccountEntity,
-                                                                                                              getOAuthAccessTokenUpdateURLAPICall,
-                                                                                                              parameters );
+        final GetOAuthAccessTokenUpdateURLAPIResult getOAuthAccessTokenUpdateURLAPIResult =
+            this.callTradeIt( tradeItAccountEntity, getOAuthAccessTokenUpdateURLAPICall, parameters );
         /*
          * Create the DTO result and return it.
          */
@@ -212,10 +213,12 @@ public class TradeItService implements MyLogger
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public AuthenticateDTO authenticate( final int customerId, final int tradeItAccountId )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException
+               TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, customerId, tradeItAccountId );
@@ -231,7 +234,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity.setAuthUuid( authUUID );
             logDebug( methodName, "Setting UUID {0}", authUUID );
             tradeItAccountEntity = this.tradeItAccountEntityService
-                                       .saveAccount( tradeItAccountEntity );
+                                       .saveEntity( tradeItAccountEntity );
         }
         /*
          * Create the method parameter map
@@ -265,10 +268,12 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     private void handleAuthenticationResults( final TradeItAccountEntity tradeItAccountEntity,
                                               final AuthenticateAPIResult authenticateAPIResult )
-        throws TradeItAuthenticationException
+        throws TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "handleAuthenticationResults";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
@@ -282,7 +287,7 @@ public class TradeItService implements MyLogger
                 tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
                 tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
                 this.tradeItAccountEntityService
-                    .saveAccount( tradeItAccountEntity );
+                    .saveEntity( tradeItAccountEntity );
                 break;
 
             case ERROR:
@@ -293,7 +298,7 @@ public class TradeItService implements MyLogger
                 tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
                 tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
                 this.tradeItAccountEntityService
-                    .saveAccount( tradeItAccountEntity );
+                    .saveEntity( tradeItAccountEntity );
                 break;
         }
         logMethodEnd( methodName );
@@ -445,7 +450,7 @@ public class TradeItService implements MyLogger
              */
             tradeItAccountEntity.setAuthTimestamp( null );
             this.tradeItAccountEntityService
-                .saveAccount( tradeItAccountEntity );
+                .saveEntity( tradeItAccountEntity );
             /*
              * Save the results.
              */
@@ -458,44 +463,15 @@ public class TradeItService implements MyLogger
              */
             logError( methodName, e );
         }
+        catch( EntityVersionMismatchException e )
+        {
+            /*
+             * Don't care if this fails.
+             */
+            logError( methodName, e );
+        }
         logMethodEnd( methodName, closeSessionDTO );
         return closeSessionDTO;
-    }
-
-    /**
-     * Cycles through all of the linked accounts in {@code tradeItAccountEntity} and calls TradeIt to get the account
-     * overview information and the positions.
-     * @param tradeItAccountEntity
-     */
-    private void getAccountOverviewAndPositions( final TradeItAccountEntity tradeItAccountEntity )
-    {
-        /*
-        final String methodName = "getAccountOverviewAndPositions";
-        logMethodBegin( methodName, tradeItAccountEntity );
-        tradeItAccountEntity.getLinkedAccountsById()
-                            .forEach( linkedAccount -> this.getAccountOverviewAndPositions( linkedAccount.getAccountNumber(),
-                                                                                            tradeItAccountEntity.getAuthToken() ));
-        logMethodEnd( methodName );
-        */
-    }
-
-    /**
-     * Gets the account overview and positions for the {@code linkedAccount}.
-     * @param accountNumber
-     * @param authToken
-     */
-    public void getAccountOverviewAndPositions( final String accountNumber,
-                                                final String authToken )
-    {
-        /*
-        final String methodName = "getAccountOverviewAndPositions";
-        logMethodBegin( methodName, accountNumber, authToken );
-        GetAccountOverviewDTO getAccountOverviewDTO = this.getAccountAccountOverview( accountNumber, authToken );
-        linkedAccount.setGetAccountOverviewValues( getAccountOverviewDTO );
-        GetPositionsDTO getPositionsDTO = this.getPositions( tradeItAccountEntity.getCustomerId(),
-                                                             tradeItAccountEntity.getId(),
-                                                             linkedAccount.getAccountNumber() );
-                                                             */
     }
 
     /**
@@ -504,10 +480,12 @@ public class TradeItService implements MyLogger
      * @param linkedAccountEntity
      * @return
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public GetPositionsAPIResult getPositions( final TradeItAccountEntity tradeItAccountEntity,
                                                final LinkedAccountEntity linkedAccountEntity )
-        throws TradeItAuthenticationException
+        throws TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, tradeItAccountEntity.getId(), linkedAccountEntity.getId() );
@@ -536,10 +514,13 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountEntity
      * @param accountNumber The brokerage account number.
      * @return
+     * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     public GetAccountOverviewDTO getAccountOverview( final TradeItAccountEntity tradeItAccountEntity,
                                                      final String accountNumber )
-        throws TradeItAuthenticationException
+        throws TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "getAccountOverview";
         logMethodBegin( methodName, tradeItAccountEntity.getId(), accountNumber  );
@@ -575,11 +556,13 @@ public class TradeItService implements MyLogger
      * @param <T>
      * @return The result of the TradeIt API call.
      * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     private <T extends TradeItAPIResult> T callTradeIt( final TradeItAccountEntity tradeItAccountEntity,
                                                         final TradeItAPIRestCall<T> tradeItAPIRestCall,
                                                         final TradeItAPICallParameters tradeItAPICallParameterMap )
-        throws TradeItAuthenticationException
+        throws TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "callTradeIt";
         logMethodBegin( methodName, tradeItAccountEntity.getId(),
@@ -614,10 +597,12 @@ public class TradeItService implements MyLogger
      * simple authentication call did not succeed as was expected.
      * @param tradeItAccountEntity The auth token is needed to authenticate and on successful authentication the
      *                             auth token and auth timestamp will be persisted.
-     * @throws
+     * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
      */
     private void handleSessionExpired( final TradeItAccountEntity tradeItAccountEntity )
-        throws TradeItAuthenticationException
+        throws TradeItAuthenticationException,
+               EntityVersionMismatchException
     {
         final String methodName = "handleSessionExpired";
         logMethodBegin( methodName, tradeItAccountEntity );
@@ -635,7 +620,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
             tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
             this.tradeItAccountEntityService
-                .saveAccount( tradeItAccountEntity );
+                .saveEntity( tradeItAccountEntity );
         }
         else
         {

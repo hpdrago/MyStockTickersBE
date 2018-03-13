@@ -5,6 +5,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -26,7 +27,7 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioEntityService extends DMLEntityService<Integer,
+public class PortfolioEntityService extends VersionedEntityService<Integer,
                                                              PortfolioEntity,
                                                              PortfolioDTO,
                                                              PortfolioRepository>
@@ -53,8 +54,12 @@ public class PortfolioEntityService extends DMLEntityService<Integer,
         final String methodName = "getPortfolioById";
         logMethodBegin( methodName, portfolioId );
         Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
-        PortfolioEntity portfolioEntity = this.portfolioRepository.findOne( portfolioId );
-        if ( portfolioEntity == null )
+        PortfolioEntity portfolioEntity = null;
+        try
+        {
+            portfolioEntity = this.getEntity( portfolioId );
+        }
+        catch( VersionedEntityNotFoundException e )
         {
             throw new PortfolioNotFoundException( portfolioId );
         }
@@ -99,35 +104,20 @@ public class PortfolioEntityService extends DMLEntityService<Integer,
      * @param customerId
      * @param portfolioDTO
      * @return PortfolioEntity that was inserted
+     * @throws EntityVersionMismatchException
      */
     public PortfolioDTO addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDTO );
         Objects.requireNonNull( portfolioDTO, "portfolioDTO cannot be null" );
         Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
         PortfolioEntity portfolioEntity = this.dtoToEntity( portfolioDTO );
-        portfolioEntity = this.portfolioRepository.save( portfolioEntity );
+        portfolioEntity = this.saveEntity( portfolioEntity );
         PortfolioDTO returnPortfolioDTO = this.entityToDTO( portfolioEntity );
         logMethodEnd( methodName, returnPortfolioDTO );
         return returnPortfolioDTO;
-    }
-
-    /**
-     * Delete the portfolio from the database
-     * @param portfolioId The portfolio id
-     * @return The PortfolioDTO for the deleted portfolio
-     */
-    public PortfolioDTO deletePortfolio( final int portfolioId )
-    {
-        final String methodName = "deletePortfolio";
-        logMethodBegin( methodName, portfolioId );
-        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
-        PortfolioEntity portfolioEntity = this.portfolioRepository.getOne( portfolioId );
-        this.portfolioRepository.delete( portfolioId );
-        PortfolioDTO portfolioDTO = this.entityToDTO( portfolioEntity );
-        logMethodEnd( methodName, portfolioDTO );
-        return portfolioDTO;
     }
 
     @Override

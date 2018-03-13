@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
@@ -47,6 +48,18 @@ public class CustomerEntity implements VersionedEntity<Integer>
     public void setId( final Integer id )
     {
         this.id = id;
+    }
+
+    @Transient
+    public int getCustomerId()
+    {
+        return this.id;
+    }
+
+    @Transient
+    public void setCustomerId( final int customerId )
+    {
+        this.id = customerId;
     }
 
     @Basic

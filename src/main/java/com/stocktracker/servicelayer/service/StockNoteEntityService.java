@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockNoteNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
@@ -101,10 +100,14 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
      * The user can specify multiple stocks for a note and that results in multiple stock note entries created one
      * for each stock.
      * @param stockNoteDTO
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public StockNoteDTO createStockNote( final StockNoteDTO stockNoteDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "createStockNote";
         logMethodBegin( methodName, stockNoteDTO );
@@ -120,8 +123,7 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
          */
         stockNoteEntity.setStockPriceWhenCreated( this.getStockQuoteService()
                                                       .getStockPrice( stockNoteEntity.getTickerSymbol() ));
-        stockNoteEntity.setVersion( 1 );
-        stockNoteEntity = this.stockNoteRepository.save( stockNoteEntity );
+        stockNoteEntity = this.addEntity( stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
@@ -145,26 +147,6 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
         final StockNoteDTO returnStockNoteDTO = super.saveDTO( stockNoteDTO );
         logMethodEnd( methodName, returnStockNoteDTO );
         return returnStockNoteDTO;
-    }
-
-    /**
-     * Delete a stock note
-     * @param stockNotesId
-     * @return
-     */
-    public StockNoteDTO delete( final int stockNotesId )
-    {
-        final String methodName = "updateStockNoteStocks";
-        logMethodBegin( methodName, stockNotesId );
-        StockNoteEntity stockNoteEntity = this.stockNoteRepository.findOne( stockNotesId );
-        if ( stockNoteEntity == null )
-        {
-            throw new StockNoteNotFoundException( stockNotesId ) ;
-        }
-        this.stockNoteRepository.delete( stockNoteEntity );
-        StockNoteDTO stockNoteDTO = this.entityToDTO( stockNoteEntity );
-        logMethodEnd( methodName, stockNoteDTO );
-        return stockNoteDTO;
     }
 
     /**

@@ -5,6 +5,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
@@ -23,7 +24,7 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockCatalystEventEntityService extends DMLEntityService<Integer,
+public class StockCatalystEventEntityService extends VersionedEntityService<Integer,
                                                                       StockCatalystEventEntity,
                                                                       StockCatalystEventDTO,
                                                                       StockCatalystEventRepository>
@@ -81,13 +82,15 @@ public class StockCatalystEventEntityService extends DMLEntityService<Integer,
      * Get a single stock analytics by stockCatalystEventId
      * @param stockCatalystEventId
      * @return StockCatalystEventDTO instance
+     * @throws VersionedEntityNotFoundException
      */
     public StockCatalystEventDTO getStockCatalystEvent( @NotNull final Integer stockCatalystEventId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventId );
         Objects.requireNonNull( stockCatalystEventId, "stockCatalystEventId cannot be null" );
-        StockCatalystEventEntity stockCatalystEventEntity = this.stockCatalystEventRepository.findOne( stockCatalystEventId );
+        StockCatalystEventEntity stockCatalystEventEntity = this.getEntity( stockCatalystEventId );
         StockCatalystEventDTO stockCatalystEventDTO = this.entityToDTO( stockCatalystEventEntity );
         logMethodEnd( methodName, stockCatalystEventDTO );
         return stockCatalystEventDTO;
@@ -110,19 +113,6 @@ public class StockCatalystEventEntityService extends DMLEntityService<Integer,
         final StockCatalystEventDTO returnStockCatalystEventDTO = this.saveDTO( stockCatalystEventDTO );
         logMethodEnd( methodName, returnStockCatalystEventDTO );
         return returnStockCatalystEventDTO;
-    }
-
-    /**
-     * Deletes the stock analytics from the database
-     * @param stockCatalystEventId
-     */
-    public void deleteStockCatalystEvent( @NotNull final Integer stockCatalystEventId )
-    {
-        final String methodName = "deleteStockCatalystEvent";
-        Objects.requireNonNull( stockCatalystEventId, "stockCatalystEventId cannot be null" );
-        logMethodBegin( methodName, stockCatalystEventId );
-        this.stockCatalystEventRepository.delete( stockCatalystEventId );
-        logMethodEnd( methodName );
     }
 
     @Override

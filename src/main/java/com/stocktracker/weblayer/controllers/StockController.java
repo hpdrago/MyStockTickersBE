@@ -6,6 +6,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockQuoteService;
 import com.stocktracker.servicelayer.service.StockEntityService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuote;
@@ -130,6 +131,7 @@ public class StockController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public StockDTO getStock( @PathVariable final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
@@ -189,7 +191,14 @@ public class StockController extends AbstractController implements MyLogger
         if ( this.stockService.isStockExistsInDatabase( tickerSymbol ))
         {
             logDebug( methodName, "tickerSymbol: {0}", tickerSymbol );
-            this.stockService.deleteStock( tickerSymbol );
+            try
+            {
+                this.stockService.deleteEntity( tickerSymbol );
+            }
+            catch( VersionedEntityNotFoundException e )
+            {
+                throw new StockNotFoundInDatabaseException( tickerSymbol );
+            }
         }
         else
         {

@@ -5,6 +5,7 @@ import com.stocktracker.common.exceptions.DuplicateAnalystConsensusException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
@@ -106,12 +107,12 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
      * @return StockAnalystConsensusDTO instance
      */
     public StockAnalystConsensusDTO getStockAnalystConsensus( @NotNull final Integer stockAnalystConsensusId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId );
         Objects.requireNonNull( stockAnalystConsensusId, "stockAnalystConsensusId cannot be null" );
-        StockAnalystConsensusEntity stockAnalystConsensusEntity = this.stockAnalystConsensusRepository
-            .findOne( stockAnalystConsensusId );
+        StockAnalystConsensusEntity stockAnalystConsensusEntity = this.getEntity( stockAnalystConsensusId );
         StockAnalystConsensusDTO stockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
         logMethodEnd( methodName, stockAnalystConsensusDTO );
         return stockAnalystConsensusDTO;
@@ -125,11 +126,13 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public StockAnalystConsensusDTO createStockAnalystConsensus( final Integer customerId,
                                                                  final StockAnalystConsensusDTO stockAnalystConsensusDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "createStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
@@ -148,7 +151,7 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
          * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
          * or update triggers.
          */
-        stockAnalystConsensusEntity = this.stockAnalystConsensusRepository.save( stockAnalystConsensusEntity );
+        stockAnalystConsensusEntity = this.saveEntity( stockAnalystConsensusEntity );
         logDebug( methodName, "saved {0}", stockAnalystConsensusEntity );
         StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
@@ -170,19 +173,6 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
         StockAnalystConsensusDTO returnStockAnalystConsensusDTO = super.saveDTO( stockAnalystConsensusDTO );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
         return returnStockAnalystConsensusDTO;
-    }
-
-    /**
-     * Deletes the stock analytics from the database
-     * @param stockAnalystConsensusId
-     */
-    public void deleteStockAnalystConsensus( @NotNull final Integer stockAnalystConsensusId )
-    {
-        final String methodName = "deleteStockAnalystConsensus";
-        Objects.requireNonNull( stockAnalystConsensusId, "stockAnalystConsensusId cannot be null" );
-        logMethodBegin( methodName, stockAnalystConsensusId );
-        this.stockAnalystConsensusRepository.delete( stockAnalystConsensusId );
-        logMethodEnd( methodName );
     }
 
     @Override

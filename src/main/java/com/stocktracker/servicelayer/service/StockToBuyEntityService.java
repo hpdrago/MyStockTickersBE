@@ -5,7 +5,8 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
+import com.stocktracker.common.exceptions.StockToBuyNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
@@ -87,15 +88,19 @@ public class StockToBuyEntityService extends StockQuoteContainerEntityService<In
     public StockToBuyDTO getStockToBuy( final int stockToBuyId )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
-               StockToBuyNoteFoundException
+               StockToBuyNotFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId );
         Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
-        final StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository.findOne( stockToBuyId );
-        if ( stockToBuyEntity == null )
+        final StockToBuyEntity stockToBuyEntity;
+        try
         {
-            throw new StockToBuyNoteFoundException( stockToBuyId );
+            stockToBuyEntity = this.getEntity( stockToBuyId );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockToBuyNotFoundException( stockToBuyId );
         }
         final StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockQuoteService()
@@ -110,10 +115,12 @@ public class StockToBuyEntityService extends StockQuoteContainerEntityService<In
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     public StockToBuyDTO createStockToBuy( final StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "createStockToBuy";
         logMethodBegin( methodName, stockToBuyDTO );
@@ -138,7 +145,7 @@ public class StockToBuyEntityService extends StockQuoteContainerEntityService<In
             stockToBuyEntity.setCreateDate( new Timestamp( System.currentTimeMillis() ) );
         }
         stockToBuyEntity.setVersion( 1 );
-        stockToBuyEntity = this.stockToBuyRepository.save( stockToBuyEntity );
+        stockToBuyEntity = this.saveEntity( stockToBuyEntity );
         this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerId(),
                                             stockToBuyEntity.getTickerSymbol(),
                                             StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
@@ -181,19 +188,6 @@ public class StockToBuyEntityService extends StockQuoteContainerEntityService<In
     }
 
     /**
-     * Deletes the stock toBuy from the database
-     * @param stockToBuyId
-     */
-    public void deleteStockToBuy( @NotNull final Integer stockToBuyId )
-    {
-        final String methodName = "deleteStockToBuy";
-        Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
-        logMethodBegin( methodName, stockToBuyId );
-        this.stockToBuyRepository.delete( stockToBuyId );
-        logMethodEnd( methodName );
-    }
-
-    /**
      * Converts the entity to a dto.
      * @param stockToBuyEntity
      * @return
@@ -201,7 +195,6 @@ public class StockToBuyEntityService extends StockQuoteContainerEntityService<In
     @Override
     protected StockToBuyDTO entityToDTO( final StockToBuyEntity stockToBuyEntity )
     {
-        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockToBuyEntity );
         final StockToBuyDTO stockToBuyDTO = StockToBuyDTO.newInstance();
         BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );

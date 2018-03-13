@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by mike on 10/23/2016.
  */
-public interface PortfolioRepository extends VersionedEntityRepository<Integer,PortfolioEntity>
+public interface PortfolioRepository extends JpaRepository<PortfolioEntity,Integer>
 {
     /**
      * Get a list of the portfolios for a customer

@@ -5,6 +5,7 @@ import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractController;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
@@ -71,36 +72,6 @@ public class PortfolioStockController extends AbstractController
     /**
      * Delete a single customer portfolio stock entry
      *
-     * @param customerId
-     * @param portfolioId
-     * @param tickerSymbol
-     * @return
-     */
-    @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
-        method = RequestMethod.DELETE,
-        produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deletePortfolioStock( @PathVariable Integer customerId,
-                                                      @PathVariable Integer portfolioId,
-                                                      @PathVariable String tickerSymbol )
-        throws PortfolioStockNotFound,
-               StockNotFoundException,
-               StockQuoteUnavailableException
-    {
-        final String methodName = "deletePortfolioStock";
-        logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
-        PortfolioStockDTO portfolioStockDTO = PortfolioStockDTO.newInstance();
-        portfolioStockDTO.setTickerSymbol( tickerSymbol );
-        portfolioStockDTO.setCustomerId( customerId );
-        portfolioStockDTO.setPortfolioId( portfolioId );
-        this.portfolioStockService.deletePortfolioStock( portfolioStockDTO );
-        logMethodEnd( methodName );
-        return new ResponseEntity<>( HttpStatus.OK );
-    }
-
-    /**
-     * Delete a single customer portfolio stock entry
-     *
      * @param portfolioStockId
      * @return
      */
@@ -114,7 +85,15 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "deletePortfolioStock";
         logMethodBegin( methodName, customerId, portfolioStockId );
-        this.portfolioStockService.deletePortfolioStock( portfolioStockId );
+        try
+        {
+            this.portfolioStockService
+                .deleteEntity( portfolioStockId );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new PortfolioStockNotFound( portfolioStockId );
+        }
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -183,6 +162,7 @@ public class PortfolioStockController extends AbstractController
         method = RequestMethod.PUT )
     public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
                                                                  @PathVariable Integer customerId )
+        throws EntityVersionMismatchException
     {
         final String methodName = "savePortfolioStock";
         logMethodBegin( methodName, customerId, portfolioStockDTO );

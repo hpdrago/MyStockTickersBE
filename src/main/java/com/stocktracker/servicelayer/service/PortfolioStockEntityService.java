@@ -27,10 +27,10 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class PortfolioStockEntityService extends BaseEntityService<Integer,
-                                                                   PortfolioStockEntity,
-                                                                   PortfolioStockDTO,
-                                                                   PortfolioStockRepository>
+public class PortfolioStockEntityService extends VersionedEntityService<Integer,
+                                                                        PortfolioStockEntity,
+                                                                        PortfolioStockDTO,
+                                                                        PortfolioStockRepository>
     implements MyLogger
 {
     private StockQuoteService stockQuoteService;
@@ -50,8 +50,7 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
     public PortfolioStockDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
@@ -128,49 +127,18 @@ public class PortfolioStockEntityService extends BaseEntityService<Integer,
      */
     public PortfolioStockDTO addPortfolioStock( final PortfolioStockDTO portfolioStockDE )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException, EntityVersionMismatchException
     {
         final String methodName = "addPortfolioStock";
         logMethodBegin( methodName, portfolioStockDE );
         Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
-        PortfolioStockEntity portfolioStockEntity = this.createPortfolioStockEntity( portfolioStockDE );
+        final PortfolioStockEntity portfolioStockEntity = this.createPortfolioStockEntity( portfolioStockDE );
         logDebug( methodName, "inserting: {0}", portfolioStockEntity );
-        PortfolioStockEntity returnCustomerStockEntity = this.portfolioStockRepository.save( portfolioStockEntity );
-        PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
+        final PortfolioStockEntity returnCustomerStockEntity = this.addEntity( portfolioStockEntity );
+        final PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
         this.stockQuoteService.setStockQuoteInformation( returnPortfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnPortfolioStockDTO );
         return returnPortfolioStockDTO;
-    }
-
-    /**
-     * Delete the portfolio stock.
-     * @param portfolioStockId The {@code portfolioId} is the primary key -- generated int
-     */
-    public void deletePortfolioStock( final int portfolioStockId )
-    {
-        final String methodName = "deletePortfolioStock";
-        logMethodBegin( methodName, portfolioStockId );
-        Assert.isTrue( portfolioStockId > 0, "portfolioStockId must be > 0" );
-        portfolioStockRepository.delete( portfolioStockId );
-        logMethodBegin( methodName );
-    }
-
-    /**
-     * Delete a portfolio stock as defined by the {@code portfolioStockDE}
-     * @param portfolioStockDE
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
-     */
-    public void deletePortfolioStock( final PortfolioStockDTO portfolioStockDE )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
-    {
-        final String methodName = "deletePortfolioStock";
-        logMethodBegin( methodName, portfolioStockDE );
-        Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
-        PortfolioStockEntity portfolioStockEntity = createPortfolioStockEntity( portfolioStockDE );
-        this.portfolioStockRepository.delete( portfolioStockEntity );
-        logMethodBegin( methodName );
     }
 
     /**

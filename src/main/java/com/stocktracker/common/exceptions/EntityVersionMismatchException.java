@@ -20,6 +20,7 @@ public class EntityVersionMismatchException extends Exception
     }
 
     private int currentVersion;
+
     /**
      * Create with a message.
      * @param currentVersion The current database version.

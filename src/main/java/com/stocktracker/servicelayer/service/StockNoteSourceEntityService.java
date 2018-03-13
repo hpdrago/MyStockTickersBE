@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
@@ -21,10 +22,10 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class StockNoteSourceEntityService extends DMLEntityService<Integer,
-                                                                   StockNoteSourceEntity,
-                                                                   StockNoteSourceDTO,
-                                                                   StockNoteSourceRepository>
+public class StockNoteSourceEntityService extends VersionedEntityService<Integer,
+                                                                         StockNoteSourceEntity,
+                                                                         StockNoteSourceDTO,
+                                                                         StockNoteSourceRepository>
 {
     private StockNoteSourceRepository stockNoteSourceRepository;
 
@@ -82,8 +83,10 @@ public class StockNoteSourceEntityService extends DMLEntityService<Integer,
      * Check {@code stockNoteSourceDTOContainer} to see if the user entered a new note source.
      * If a new source is detected, a new source will be added to the database for the customer.
      * @param stockNoteSourceDTOContainer This should be the DTO that contains the source id and the source name.
+     * @throws EntityVersionMismatchException
      */
     public void checkForNewSource( final StockNoteSourceDTOContainer stockNoteSourceDTOContainer )
+        throws EntityVersionMismatchException
     {
         final String methodName = "checkForNewSource";
         logDebug( methodName, "{0}", stockNoteSourceDTOContainer );
@@ -113,7 +116,7 @@ public class StockNoteSourceEntityService extends DMLEntityService<Integer,
                 stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceName() );
                 try
                 {
-                    stockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
+                    stockNoteSourceEntity = this.saveEntity( stockNoteSourceEntity );
                     logDebug( methodName, "Created stock note source: {0}", stockNoteSourceEntity );
                     /*
                      * update the reference in the stock note id container
@@ -174,11 +177,12 @@ public class StockNoteSourceEntityService extends DMLEntityService<Integer,
      * @return
      */
     public StockNoteSourceDTO createStockNoteSource( final StockNoteSourceDTO stockNoteSourceDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "createStockNoteSource";
         logMethodBegin( methodName, stockNoteSourceDTO );
         StockNoteSourceEntity stockNoteSourceEntity = this.dtoToEntity( stockNoteSourceDTO );
-        StockNoteSourceEntity newStockNoteSourceEntity = this.stockNoteSourceRepository.save( stockNoteSourceEntity );
+        StockNoteSourceEntity newStockNoteSourceEntity = this.saveEntity( stockNoteSourceEntity );
         StockNoteSourceDTO newStockNoteSourceDTO = this.entityToDTO( newStockNoteSourceEntity );
         logMethodEnd( methodName, newStockNoteSourceDTO );
         return newStockNoteSourceDTO;

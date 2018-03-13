@@ -51,7 +51,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                       @PathVariable( "customerId") final int customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, customerId, stockNotesDTO );
@@ -101,19 +102,15 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
                      method = RequestMethod.DELETE )
-    public ResponseEntity<StockNoteDTO> deleteStockNote( @PathVariable( "customerId" ) final int customerId,
-                                                         @PathVariable( "stockNotesId" ) final int stockNotesId )
+    public ResponseEntity<Void> deleteStockNote( @PathVariable( "customerId" ) final int customerId,
+                                                 @PathVariable( "stockNotesId" ) final int stockNotesId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteStockNote";
         logMethodBegin( methodName, customerId, stockNotesId );
-        StockNoteDTO stockNotesDTO = this.stockNoteService.delete( stockNotesId );
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()
-                                                            .path( "" )
-                                                            .buildAndExpand( stockNotesDTO )
-                                                            .toUri() );
-        logMethodEnd( methodName, stockNotesDTO );
-        return new ResponseEntity<>( stockNotesDTO, httpHeaders, HttpStatus.CREATED );
+        this.stockNoteService.deleteEntity( stockNotesId );
+        logMethodEnd( methodName );
+        return new ResponseEntity<>( HttpStatus.OK );
     }
 
     /**

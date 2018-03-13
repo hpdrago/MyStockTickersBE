@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Created by mike on 12/4/2017.
  */
-public interface StockPositionRepository extends VersionedEntityRepository<Integer,StockPositionEntity>
+public interface StockPositionRepository extends JpaRepository<StockPositionEntity,Integer>
 {
     /**
      * Gets all of the positions for the {@code linkedAccountId}

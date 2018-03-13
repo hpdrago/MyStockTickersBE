@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ public class StockNotesSourceController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/customer/customerId",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteSourceDTO> addStockNoteSource( @RequestBody StockNoteSourceDTO stockNoteSourceDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "addStockNotesSource";
         logMethodBegin( methodName, stockNoteSourceDTO );

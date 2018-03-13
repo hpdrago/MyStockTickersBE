@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer
+public class PortfolioStockDTO extends StockTickerQuote
+                               implements StockQuoteService.StockQuoteContainer,
+                                          VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -28,7 +30,7 @@ public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteSer
     private Integer profitTakingShares;
     private Integer sectorId;
     private BigDecimal avgAnalystPriceTarget;
-
+    private Integer version;
 
     /***** Calculated fields *****/
     private Integer marketValue;
@@ -47,6 +49,18 @@ public class PortfolioStockDTO extends StockTickerQuote implements StockQuoteSer
     public Integer getId()
     {
         return id;
+    }
+
+    @Override
+    public Integer getVersion()
+    {
+        return this.version;
+    }
+
+    @Override
+    public void setVersion( final Integer version )
+    {
+        this.version = version;
     }
 
     public void setId( Integer id )

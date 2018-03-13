@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
 
 import java.io.Serializable;
@@ -31,10 +32,11 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param collection2 Current entity values from the database.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
      */
-    public void compareAndUpdateDatabase( final DMLEntityService<K,E,?,?> entityService,
+    public void compareAndUpdateDatabase( final VersionedEntityService<K,E,?,?> entityService,
                                           final Collection<E> collection1,
                                           final Collection<E> collection2 )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "compareAndUpdateDatabase";
         logMethodBegin( methodName );
@@ -47,11 +49,11 @@ public class EntitySetComparatorService<K extends Serializable,
 
     /**
      * Updates the database for each entity in {@oode matchingEntities}
-     * @param repository
+     * @param service
      * @param updateEntities List of entities to update.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
      */
-    private void updateEntities( final DMLEntityService<K,E,?,?> repository,
+    private void updateEntities( final VersionedEntityService<K,E,?,?> service,
                                  final Set<E> updateEntities )
         throws EntityVersionMismatchException
     {
@@ -60,44 +62,39 @@ public class EntitySetComparatorService<K extends Serializable,
         for ( final E entity: updateEntities )
         {
             logDebug( methodName, "Updating entity (0}", entity );
-            repository.saveEntity( entity );
+            service.saveEntity( entity );
         }
         logMethodEnd( methodName );
     }
 
     /**
      * Delete the entities in {@code deletedEntities}
-     * @param repository
+     * @param service
      * @param deletedEntities The list of entities to delete.
+     * @throws VersionedEntityNotFoundException
      */
-    private void deleteEntities( final DMLEntityService<K,E,?,?> repository,
+    private void deleteEntities( final VersionedEntityService<K,E,?,?> service,
                                  final Set<E> deletedEntities )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteEntities";
         logMethodBegin( methodName );
-        for ( final E entity: deletedEntities )
-        {
-            logDebug( methodName, "Deleting entity (0}", entity );
-            repository.deleteEntity( entity );
-        }
+        service.deleteEntities( deletedEntities );
         logMethodEnd( methodName );
     }
 
     /**
      * Adds all of the entities to the database.
-     * @param repository
+     * @param service
      * @param newEntities
      */
-    private void addEntities( final DMLEntityService<K,E,?,?> repository,
+    private void addEntities( final VersionedEntityService<K,E,?,?> service,
                               final Set<E> newEntities )
+        throws EntityVersionMismatchException
     {
         final String methodName = "addEntities";
         logMethodBegin( methodName );
-        for ( final E entity: newEntities )
-        {
-            logDebug( methodName, "Adding entity (0}", entity );
-            repository.addEntity( entity );
-        }
+        service.addEntities( newEntities );
         logMethodEnd( methodName );
     }
 }

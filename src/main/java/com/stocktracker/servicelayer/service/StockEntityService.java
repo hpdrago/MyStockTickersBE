@@ -5,6 +5,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockEntity;
 import com.stocktracker.repositorylayer.repository.StockRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuote;
@@ -93,11 +94,20 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
      * @throws StockNotFoundInDatabaseException if {@code tickerSymbol} is not found in the stock table
      */
     public StockDTO getStock( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        StockEntity stockEntity = this.stockRepository.findOne( tickerSymbol );
+        StockEntity stockEntity = null;
+        try
+        {
+            stockEntity = this.getEntity( tickerSymbol );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockNotFoundException( tickerSymbol );
+        }
         StockDTO stockDTO = null;
         if ( stockEntity != null )
         {
@@ -125,13 +135,22 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     /**
      * Delete the stock
      * @param tickerSymbol
+     * @throws StockNotFoundException
      */
     public void deleteStock( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "deleteStock";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        this.stockRepository.delete( tickerSymbol );
+        try
+        {
+            this.deleteEntity( tickerSymbol );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockNotFoundException( tickerSymbol );
+        }
         logMethodEnd( methodName );
     }
 
@@ -170,8 +189,12 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     {
         final String methodName = "getStockEntity";
         logMethodBegin( methodName, tickerSymbol );
-        StockEntity stockEntity = stockRepository.findOne( StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN ) );
-        if ( stockEntity == null )
+        StockEntity stockEntity = null;
+        try
+        {
+            stockEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN ) );
+        }
+        catch( VersionedEntityNotFoundException e )
         {
             logDebug( methodName, tickerSymbol + " does note exist in the database, getting quote..." );
             StockQuote stockQuote = this.getStockQuoteService()
@@ -189,10 +212,10 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
                 {
                     this.saveStockEntity( stockEntity );
                 }
-                catch( EntityVersionMismatchException e )
+                catch( EntityVersionMismatchException e2 )
                 {
-                    logError( methodName, "Failed version check but saving stock anyway", e );
-                    stockEntity.setVersion( e.getCurrentVersion() );
+                    logError( methodName, "Failed version check but saving stock anyway", e2 );
+                    stockEntity.setVersion( e2.getCurrentVersion() );
                     this.getRepository()
                         .save( stockEntity );
                 }
@@ -210,13 +233,10 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     {
         final String methodName = "markStockAsDiscontinued";
         logMethodBegin( methodName, tickerSymbol );
-        final StockEntity stockEntity = stockRepository.findOne( StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN ) );
-        if ( stockEntity == null )
+        final StockEntity stockEntity;
+        try
         {
-            logError( methodName, "Stock not found in stock {0} table to mark as discontinued.", tickerSymbol );
-        }
-        else
-        {
+            stockEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN ) );
             stockEntity.setDiscontinuedInd( true );
             try
             {
@@ -229,6 +249,10 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
                 this.stockRepository
                     .save( stockEntity );
             }
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            logError( methodName, "Stock not found in stock {0} table to mark as discontinued.", tickerSymbol );
         }
         logMethodEnd( methodName );
     }

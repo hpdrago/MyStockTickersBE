@@ -5,12 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 /**
  * Created by mike on 5/7/2017.
  */
-public interface StockCatalystEventRepository extends VersionedEntityRepository<Integer,StockCatalystEventEntity>
+public interface StockCatalystEventRepository extends JpaRepository<StockCatalystEventEntity,Integer>
 {
     /**
      * Get all of the stock catalyst event records for a customer

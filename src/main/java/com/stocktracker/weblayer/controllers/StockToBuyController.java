@@ -3,7 +3,8 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.common.exceptions.StockToBuyNoteFoundException;
+import com.stocktracker.common.exceptions.StockToBuyNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockToBuyEntityService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,7 @@ public class StockToBuyController extends AbstractController
                                         @PathVariable int customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
-               StockToBuyNoteFoundException
+               StockToBuyNotFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId, customerId );
@@ -104,10 +105,18 @@ public class StockToBuyController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockToBuy( @PathVariable int stockToBuyId,
                                                   @PathVariable int customerId )
+        throws StockToBuyNotFoundException
     {
         final String methodName = "deleteStockToBuy";
         logMethodBegin( methodName, stockToBuyId, customerId );
-        this.stockToBuyService.deleteStockToBuy( stockToBuyId );
+        try
+        {
+            this.stockToBuyService.deleteEntity( stockToBuyId );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockToBuyNotFoundException( stockToBuyId );
+        }
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -116,13 +125,17 @@ public class StockToBuyController extends AbstractController
      * Create a stock to buy entity.
      * @param stockToBuyDTO
      * @return
+     * @throws StockNotFoundException
+     * @throws StockQuoteUnavailableException
+     * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable int customerId,
                                                         @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException
+               StockQuoteUnavailableException,
+               EntityVersionMismatchException
     {
         final String methodName = "addStockToBuy";
         logMethodBegin( methodName, customerId, stockToBuyDTO );

@@ -10,15 +10,8 @@ import java.util.List;
  *
  * Created by mike on 12/4/2017.
  */
-public interface TradeItAccountRepository extends VersionedEntityRepository<Integer,TradeItAccountEntity>
+public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEntity,Integer>
 {
-    /**
-     * Finds the customer by the id number.  Id numbers are unique as well
-     * @param id
-     * @return
-     */
-    TradeItAccountEntity findById( final int id );
-
     /**
      * Get the list of accounts by the customerId.
      * @param customerId

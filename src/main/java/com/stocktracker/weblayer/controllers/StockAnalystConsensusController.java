@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,7 @@ public class StockAnalystConsensusController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockAnalystConsensusDTO getStockAnalystConsensus( @PathVariable int stockAnalystConsensusId,
                                                               @PathVariable int customerId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId, customerId );
@@ -96,10 +98,11 @@ public class StockAnalystConsensusController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockAnalystConsensus( @PathVariable int stockAnalystConsensusId,
                                                              @PathVariable int customerId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusId );
-        this.stockAnalystConsensusService.deleteStockAnalystConsensus( stockAnalystConsensusId );
+        this.stockAnalystConsensusService.deleteEntity( stockAnalystConsensusId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }

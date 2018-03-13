@@ -4,6 +4,7 @@ import com.stocktracker.common.EntityLoadingStatus;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Service
 @Transactional
-public class LinkedAccountEntityService extends DMLEntityService<Integer,
+public class LinkedAccountEntityService extends VersionedEntityService<Integer,
                                                                  LinkedAccountEntity,
                                                                  LinkedAccountDTO,
                                                                  LinkedAccountRepository>
@@ -91,8 +92,12 @@ public class LinkedAccountEntityService extends DMLEntityService<Integer,
     public LinkedAccountEntity getLinkedAccountEntity( final int customerId, final int linkedAccountId )
         throws LinkedAccountNotFoundException
     {
-        final LinkedAccountEntity linkedAccountEntity = this.linkedAccountRepository.findById( linkedAccountId );
-        if ( linkedAccountEntity == null )
+        final LinkedAccountEntity linkedAccountEntity;
+        try
+        {
+            linkedAccountEntity = this.getEntity( linkedAccountId );
+        }
+        catch( VersionedEntityNotFoundException e )
         {
             throw new LinkedAccountNotFoundException( linkedAccountId );
         }

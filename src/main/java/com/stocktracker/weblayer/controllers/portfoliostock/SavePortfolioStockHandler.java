@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
@@ -25,6 +26,7 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
      */
     @Override
     public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
+        throws EntityVersionMismatchException
     {
         final String methodName = "handleRequest";
         if ( !portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),

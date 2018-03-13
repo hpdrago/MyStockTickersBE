@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 @Entity
 @Table( name = "portfolio_stock", schema = "stocktracker", catalog = "" )
-public class PortfolioStockEntity
+public class PortfolioStockEntity implements VersionedEntity<Integer>
 {
     private Integer id;
     private Integer customerId;
