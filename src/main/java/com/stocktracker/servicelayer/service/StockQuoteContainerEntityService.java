@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,6 +51,32 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
     }
 
     /**
+     * Converts the entities to DTO and gets the stock quote information.
+     * @param entities
+     * @return
+     */
+    protected List<D> entitiesToDTOs( final List<E> entities )
+    {
+        return this.entitiesToDTOs( entities, StockQuoteFetch.FETCH );
+    }
+
+    /**
+     * Converts a list of entities to to a list of DTO's.
+     * @param entities
+     * @return
+     */
+    protected List<D> entitiesToDTOs( @NotNull final List<E> entities,
+                                      @NotNull final StockQuoteFetch stockQuoteFetch )
+    {
+        List<D> dtos = super.entitiesToDTOs( entities );
+        if ( stockQuoteFetch.isFetch() )
+        {
+            this.updateStockQuoteInformation( dtos );
+        }
+        return dtos;
+    }
+
+    /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
      *
      * @param pageRequest The information of the requested page.
@@ -68,24 +95,36 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
         List<D> dtos = this.entitiesToDTOs( entityPage.getContent() );
         if ( stockQuoteFetch.isFetch() )
         {
-            for ( D dto : dtos )
-            {
-                try
-                {
-                    this.stockQuoteService.setStockQuoteInformation( dto, StockQuoteFetchMode.ASYNCHRONOUS );
-                }
-                catch( StockQuoteUnavailableException e )
-                {
-                    logError( methodName, e );
-                }
-                catch( StockNotFoundException e )
-                {
-                    logError( methodName, e );
-                }
-            }
+            this.updateStockQuoteInformation( dtos );
         }
         logMethodEnd( methodName );
         return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
+    }
+
+    /**
+     * Updates the stock quote information for all dtos
+     * @param dtos
+     */
+    protected void updateStockQuoteInformation( final List<D> dtos )
+    {
+        final String methodName = "updateStockQuoteInformation";
+        logMethodBegin( methodName );
+        for ( D dto : dtos )
+        {
+            try
+            {
+                this.stockQuoteService.setStockQuoteInformation( dto, StockQuoteFetchMode.ASYNCHRONOUS );
+            }
+            catch( StockQuoteUnavailableException e )
+            {
+                logError( methodName, e );
+            }
+            catch( StockNotFoundException e )
+            {
+                logError( methodName, e );
+            }
+        }
+        logMethodEnd( methodName );
     }
 
     @Autowired

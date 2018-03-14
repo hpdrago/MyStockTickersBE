@@ -57,18 +57,16 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
-        /*
-        if ( this.stockPositionRepository.countByLinkedAccountId( linkedAccountId ) == 0 )
-        {
-            logError( methodName, "No positions found, synchronizing with TradeIt" );
-            this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
-        }
-        */
         this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
         final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
                                                                     .findByLinkedAccountId( linkedAccountId );
-
         final List<StockPositionDTO> stockPositionDTOs = this.entitiesToDTOs( stockPositionEntities );
+        stockPositionDTOs.forEach( stockPositionDTO ->
+                                   {
+                                       stockPositionDTO.setCustomerId( customerId );
+                                       stockPositionDTO.setLinkedAccountId( linkedAccountId );
+                                       stockPositionDTO.setTradeItAccountId( tradeItAccountId );
+                                   });
         logMethodEnd( methodName, "Returning " + stockPositionDTOs.size() + " positions" );
         return stockPositionDTOs;
     }
@@ -127,12 +125,13 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
          */
         final List<StockPositionDTO> stockPositionList = this.createPositionDTOList( customerId, tradeItAccountId,
                                                                                      linkedAccountId, getPositionsAPIResult );
+        this.updateStockQuoteInformation( stockPositionList );
         logMethodEnd( methodName, stockPositionList.size() + " positions" );
         return stockPositionList;
     }
 
     /**
-     * Exracts the position results from {@code getPositionsAPIResult}
+     * Extracts the position results from {@code getPositionsAPIResult}
      * @param getPositionsAPIResult
      */
     private List<StockPositionDTO> createPositionDTOList( final int customerId,

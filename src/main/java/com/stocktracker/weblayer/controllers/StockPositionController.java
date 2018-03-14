@@ -60,6 +60,7 @@ public class StockPositionController extends AbstractController
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
         final List<StockPositionDTO> positions = this.stockPositionService
                                                      .getPositions( customerId, tradeItAccountId, linkedAccountId );
+        logDebug( methodName, "positions: {0}", positions );
         logMethodEnd( methodName, "positions size: " + positions.size() );
         return positions;
     }
