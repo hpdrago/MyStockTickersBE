@@ -50,7 +50,7 @@ public class StockController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockDTO> getStocks( final Pageable pageRequest )
     {
-        final String methodName = "getStockNotesStocks";
+        final String methodName = "getStocks";
         logMethodBegin( methodName, pageRequest );
         Page<StockDTO> stockDTOs = this.stockService.getPage( pageRequest,false );
         logMethodEnd( methodName, stockDTOs );
@@ -101,6 +101,8 @@ public class StockController extends AbstractController implements MyLogger
         {
             stockTickerQuote = this.stockQuoteService
                                    .getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
+            this.stockService
+                .saveStockQuote( stockTickerQuote );
         }
         catch( StockNotFoundException e )
         {
@@ -138,7 +140,14 @@ public class StockController extends AbstractController implements MyLogger
         /*
          * Search the database first
          */
-        stockDTO = this.stockService.getStock( tickerSymbol );
+        try
+        {
+            stockDTO = this.stockService.getDTO( tickerSymbol );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockNotFoundException( tickerSymbol );
+        }
         logMethodEnd( methodName, stockDTO );
         return stockDTO;
     }

@@ -130,7 +130,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         try
         {
             stockNotesDTO = this.stockNoteService
-                                .getDTO( customerId, stockNotesId );
+                                .getDTO( stockNotesId );
         }
         catch( VersionedEntityNotFoundException e )
         {

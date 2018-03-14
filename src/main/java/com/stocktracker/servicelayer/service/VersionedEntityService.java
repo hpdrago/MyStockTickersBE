@@ -29,11 +29,11 @@ public abstract class VersionedEntityService<ID extends Serializable,
      * @return
      * @throws VersionedEntityNotFoundException
      */
-    public D getDTO( final int customerId, final ID key )
+    public D getDTO( final ID key )
         throws VersionedEntityNotFoundException
     {
-        final String methodName = "getEntity";
-        logMethodBegin( methodName, customerId, key );
+        final String methodName = "getDTO";
+        logMethodBegin( methodName, key );
         Objects.requireNonNull( key, "key cannot be null" );
         final E entity = getEntity( key );
         if ( entity == null )
