@@ -163,10 +163,27 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     {
         final String methodName = "saveStockQuote";
         logDebug( methodName, "Creating new stock table entry" );
-        final StockEntity stockEntity = stockQuoteToStockEntity( stockQuote );
+        StockEntity stockEntity = null;
         try
         {
-            this.saveEntity( stockEntity );
+            try
+            {
+                /*
+                 * Update the existing entity
+                 */
+                stockEntity = this.getEntity( stockQuote.getTickerSymbol() );
+                this.setStockQuoteProperties( stockEntity, stockQuote );
+                this.saveEntity( stockEntity );
+
+            }
+            catch( VersionedEntityNotFoundException e )
+            {
+                /*
+                 * Create a new entity.
+                 */
+                stockEntity = this.stockQuoteToStockEntity( stockQuote );
+                this.saveEntity( stockEntity );
+            }
         }
         catch( EntityVersionMismatchException e2 )
         {
@@ -219,6 +236,17 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     {
         final StockEntity stockEntity;
         stockEntity = new StockEntity();
+        setStockQuoteProperties( stockEntity, stockQuote );
+        return stockEntity;
+    }
+
+    /**
+     * Sets the stock quote propertess on the stock entity.
+     * @param stockEntity
+     * @param stockQuote
+     */
+    private void setStockQuoteProperties( final StockEntity stockEntity, final StockQuote stockQuote )
+    {
         stockEntity.setTickerSymbol( stockQuote.getTickerSymbol() );
         stockEntity.setCompanyName( stockQuote.getCompanyName() );
         stockEntity.setStockExchange( stockQuote.getStockExchange() );
@@ -226,7 +254,6 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
         stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
         stockEntity.setDiscontinuedInd( false );
-        return stockEntity;
     }
 
 
