@@ -59,11 +59,9 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
      * Get companies matching either the company name or ticker symbol strings
      * @param pageRequest
      * @param companiesLike
-     * @param withStockPrices
      * @return
      */
-    public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike,
-                                            final boolean withStockPrices )
+    public Page<StockDTO> getCompaniesLike( final Pageable pageRequest, final String companiesLike )
     {
         final String methodName = "getCompaniesLike";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -77,44 +75,9 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
+        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities, StockQuoteFetch.NONE );
         logMethodEnd( methodName );
         return stockDTOPage;
-    }
-
-    /**
-     * Gets a single stock for the {@code tickerSymbol} from the stock cache or the database if necessary.
-     * If the stock price is not current, a request will be made to update the price asynchronously.  In this case,
-     * the {@code cachedStock.stockQuoteState = StockQuoteState.STALE or StockQuoteState.NOT_FOUND}.  In either case,
-     * a subsequent request will need to be made to retrieve the updated stock price while the background tasks obtains
-     * the update from the stock quote service.
-     *
-     * @param tickerSymbol
-     * @return
-     * @throws StockNotFoundInDatabaseException if {@code tickerSymbol} is not found in the stock table
-     */
-    public StockDTO getStock( final String tickerSymbol )
-        throws StockNotFoundException
-    {
-        final String methodName = "getStock";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        StockEntity stockEntity = null;
-        try
-        {
-            stockEntity = this.getEntity( tickerSymbol );
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            throw new StockNotFoundException( tickerSymbol );
-        }
-        StockDTO stockDTO = null;
-        if ( stockEntity != null )
-        {
-            stockDTO = this.entityToDTO( stockEntity );
-        }
-        logMethodEnd( methodName, stockDTO );
-        return stockDTO;
     }
 
     /**
@@ -130,28 +93,6 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         boolean exists = stockRepository.exists( tickerSymbol );
         logMethodEnd( methodName, exists );
         return exists;
-    }
-
-    /**
-     * Delete the stock
-     * @param tickerSymbol
-     * @throws StockNotFoundException
-     */
-    public void deleteStock( final String tickerSymbol )
-        throws StockNotFoundException
-    {
-        final String methodName = "deleteStock";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        try
-        {
-            this.deleteEntity( tickerSymbol );
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            throw new StockNotFoundException( tickerSymbol );
-        }
-        logMethodEnd( methodName );
     }
 
     /**
@@ -206,22 +147,51 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
             }
             else
             {
-                logDebug( methodName, "Creating new stock table entry" );
-                stockEntity = stockQuoteToStockEntity( stockQuote );
-                try
-                {
-                    this.saveStockEntity( stockEntity );
-                }
-                catch( EntityVersionMismatchException e2 )
-                {
-                    logError( methodName, "Failed version check but saving stock anyway", e2 );
-                    stockEntity.setVersion( e2.getCurrentVersion() );
-                    this.getRepository()
-                        .save( stockEntity );
-                }
+                stockEntity = saveStockQuote( stockQuote );
             }
         }
         logMethodEnd( methodName, stockEntity );
+        return stockEntity;
+    }
+
+    /**
+     * Saves the stock quote to the database.
+     * @param stockQuote
+     * @return
+     */
+    public StockEntity saveStockQuote( final StockQuote stockQuote )
+    {
+        final String methodName = "saveStockQuote";
+        logDebug( methodName, "Creating new stock table entry" );
+        StockEntity stockEntity = null;
+        try
+        {
+            try
+            {
+                /*
+                 * Update the existing entity
+                 */
+                stockEntity = this.getEntity( stockQuote.getTickerSymbol() );
+                this.setStockQuoteProperties( stockEntity, stockQuote );
+                this.saveEntity( stockEntity );
+
+            }
+            catch( VersionedEntityNotFoundException e )
+            {
+                /*
+                 * Create a new entity.
+                 */
+                stockEntity = this.stockQuoteToStockEntity( stockQuote );
+                this.saveEntity( stockEntity );
+            }
+        }
+        catch( EntityVersionMismatchException e2 )
+        {
+            logError( methodName, "Failed version check but saving stock anyway", e2 );
+            stockEntity.setVersion( e2.getCurrentVersion() );
+            this.getRepository()
+                .save( stockEntity );
+        }
         return stockEntity;
     }
 
@@ -240,7 +210,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
             stockEntity.setDiscontinuedInd( true );
             try
             {
-                this.saveStockEntity( stockEntity );
+                this.saveEntity( stockEntity );
             }
             catch( EntityVersionMismatchException e )
             {
@@ -258,21 +228,6 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     }
 
     /**
-     * Saves the {@code stockEntity} to the database.
-     * @param stockEntity
-     * @throws EntityVersionMismatchException
-     */
-    public void saveStockEntity( final StockEntity stockEntity )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "saveStockEntity";
-        logMethodBegin( methodName, stockEntity );
-        Objects.requireNonNull( stockEntity, "stockEntity cannot be null" );
-        this.saveEntity( stockEntity );
-        logMethodEnd( methodName );
-    }
-
-    /**
      * Converts the {@code StockQuote} into a {@code StockEntity}
      * @param stockQuote
      * @return
@@ -281,13 +236,24 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     {
         final StockEntity stockEntity;
         stockEntity = new StockEntity();
+        setStockQuoteProperties( stockEntity, stockQuote );
+        return stockEntity;
+    }
+
+    /**
+     * Sets the stock quote propertess on the stock entity.
+     * @param stockEntity
+     * @param stockQuote
+     */
+    private void setStockQuoteProperties( final StockEntity stockEntity, final StockQuote stockQuote )
+    {
         stockEntity.setTickerSymbol( stockQuote.getTickerSymbol() );
         stockEntity.setCompanyName( stockQuote.getCompanyName() );
         stockEntity.setStockExchange( stockQuote.getStockExchange() );
         stockEntity.setLastPrice( stockQuote.getLastPrice() );
         stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
         stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
-        return stockEntity;
+        stockEntity.setDiscontinuedInd( false );
     }
 
 

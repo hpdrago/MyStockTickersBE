@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,39 +30,101 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
     extends VersionedEntityService<K,E,D,R>
 {
     private StockQuoteService stockQuoteService;
+    protected enum StockQuoteFetch
+    {
+        NONE,
+        FETCH;
+        protected boolean isFetch() { return this == FETCH; }
+    }
 
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
      *
      * @param pageRequest The information of the requested page.
-     * @param entityPage      The {@code Page<ENTITY>} object.
+     * @param entityPage The {@code Page<ENTITY>} object.
      * @return The created {@code Page<DTO>} object.
      */
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage )
+    {
+        return this.entitiesToDTOs( pageRequest, entityPage, StockQuoteFetch.FETCH );
+    }
+
+    /**
+     * Converts the entities to DTO and gets the stock quote information.
+     * @param entities
+     * @return
+     */
+    protected List<D> entitiesToDTOs( final List<E> entities )
+    {
+        return this.entitiesToDTOs( entities, StockQuoteFetch.FETCH );
+    }
+
+    /**
+     * Converts a list of entities to to a list of DTO's.
+     * @param entities
+     * @return
+     */
+    protected List<D> entitiesToDTOs( @NotNull final List<E> entities,
+                                      @NotNull final StockQuoteFetch stockQuoteFetch )
+    {
+        List<D> dtos = super.entitiesToDTOs( entities );
+        if ( stockQuoteFetch.isFetch() )
+        {
+            this.updateStockQuoteInformation( dtos );
+        }
+        return dtos;
+    }
+
+    /**
+     * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
+     *
+     * @param pageRequest The information of the requested page.
+     * @param entityPage The {@code Page<ENTITY>} object.
+     * @param stockQuoteFetch Determines if the stock quotes should be fetched.
+     * @return The created {@code Page<DTO>} object.
+     */
+    protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
+                                      @NotNull final Page<E> entityPage,
+                                      @NotNull final StockQuoteFetch stockQuoteFetch )
     {
         final String methodName = "entitiesToDTOs";
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
         List<D> dtos = this.entitiesToDTOs( entityPage.getContent() );
+        if ( stockQuoteFetch.isFetch() )
+        {
+            this.updateStockQuoteInformation( dtos );
+        }
+        logMethodEnd( methodName );
+        return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
+    }
+
+    /**
+     * Updates the stock quote information for all dtos
+     * @param dtos
+     */
+    protected void updateStockQuoteInformation( final List<D> dtos )
+    {
+        final String methodName = "updateStockQuoteInformation";
+        logMethodBegin( methodName );
         for ( D dto : dtos )
         {
             try
             {
                 this.stockQuoteService.setStockQuoteInformation( dto, StockQuoteFetchMode.ASYNCHRONOUS );
             }
-            catch ( StockQuoteUnavailableException e )
+            catch( StockQuoteUnavailableException e )
             {
                 logError( methodName, e );
             }
-            catch ( StockNotFoundException e )
+            catch( StockNotFoundException e )
             {
                 logError( methodName, e );
             }
         }
         logMethodEnd( methodName );
-        return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
     }
 
     @Autowired

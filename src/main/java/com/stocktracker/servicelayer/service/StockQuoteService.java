@@ -162,52 +162,6 @@ public class StockQuoteService implements MyLogger
     }
 
     /**
-     * Saves the stock information in {@code container} to the stock table.
-     * @param stockQuote
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
-     * @throws EntityVersionMismatchException
-     */
-    public void persistStockQuote( final StockQuote stockQuote )
-        throws StockQuoteUnavailableException,
-               StockNotFoundException,
-               EntityVersionMismatchException
-    {
-        final String methodName = "persistStockQuote";
-        Objects.requireNonNull( stockQuote, "container cannot be null" );
-        Objects.requireNonNull( stockQuote.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        StockEntity stockEntity = this.stockService.getStockEntity( stockQuote.getTickerSymbol() );
-        if ( stockEntity == null )
-        {
-            stockEntity.setCompanyName( stockQuote.getCompanyName() );
-        }
-        stockEntity.setLastPrice( stockQuote.getLastPrice() );
-        stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
-        /*
-         * Can't be discontinued if we found a last price -- keep this in case we marked it discontin
-         */
-        stockEntity.setDiscontinuedInd( false );
-        this.stockService.saveStockEntity( stockEntity );
-        logMethodEnd( methodName, stockQuote );
-    }
-
-    /**
-     * Updates the database stock table with the new price information
-     * @param tickerSymbol
-     * @param stockTickerQuote
-     */
-    private void updateStockPrice( final String tickerSymbol, final StockTickerQuote stockTickerQuote )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
-    {
-        StockEntity stockEntity = this.stockService.getStockEntity( tickerSymbol );
-        stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
-        stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
-        this.stockService.saveStockEntity( stockEntity );
-    }
-
-    /**
      * Using the ticker symbol of {@code container}, obtains and sets the stock's company name on the {@code container}
      * @param container
      * @throws StockNotFoundException
@@ -272,25 +226,6 @@ public class StockQuoteService implements MyLogger
             this.setStockQuoteInformation( container, stockQuoteFetchMode );
         }
         logMethodEnd( methodName );
-    }
-
-    /**
-     * Using the ticker symbol of {@code container}, obtains and sets the stock's company name on the {@code container}
-     * @param container
-     */
-    public void updateStockPrice( final LastPriceContainer container )
-    {
-        final String methodName = "updateStockPrice";
-        Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        logMethodBegin( methodName, container.getTickerSymbol() );
-        /*
-        StockEntity stockEntity = this.stockQuoteCache
-                                      .getStockEntity( container.getTickerSymbol() );
-        final BigDecimal stockPrice = stockEntity.getLastPrice();
-        container.setLastPrice( stockPrice );
-        container.setLastPriceChange(  );
-        logMethodEnd( methodName, stockPrice );
-                                      */
     }
 
     @Autowired

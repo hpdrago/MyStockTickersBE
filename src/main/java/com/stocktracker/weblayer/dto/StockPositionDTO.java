@@ -312,9 +312,11 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "LinkedAccountPositionDTO{" );
-        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", id='" ).append( id ).append( '\'' );
+        final StringBuilder sb = new StringBuilder( "StockPositionDTO{" );
+        sb.append( "tradeItAccountId=" ).append( tradeItAccountId );
+        sb.append( ", linkedAccountId=" ).append( linkedAccountId );
+        sb.append( ", id=" ).append( id );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
         sb.append( ", costBasis=" ).append( costBasis );
         sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
@@ -331,6 +333,7 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         sb.append( ", exchange='" ).append( exchange ).append( '\'' );
         sb.append( ", stockQuoteState=" ).append( stockQuoteState );
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
+        sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();
     }

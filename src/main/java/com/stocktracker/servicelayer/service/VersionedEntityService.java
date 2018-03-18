@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Base Service class for managing database entities.
@@ -28,11 +29,12 @@ public abstract class VersionedEntityService<ID extends Serializable,
      * @return
      * @throws VersionedEntityNotFoundException
      */
-    public D getDTO( final int customerId, final ID key )
+    public D getDTO( final ID key )
         throws VersionedEntityNotFoundException
     {
-        final String methodName = "getEntity";
-        logMethodBegin( methodName, customerId, key );
+        final String methodName = "getDTO";
+        logMethodBegin( methodName, key );
+        Objects.requireNonNull( key, "key cannot be null" );
         final E entity = getEntity( key );
         if ( entity == null )
         {
@@ -54,6 +56,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     {
         final String methodName = "getEntity";
         logMethodBegin( methodName, id );
+        Objects.requireNonNull( id, "id cannot be null" );
         final E entity = this.getRepository()
                              .findOne( id );
         if ( entity == null )
@@ -73,6 +76,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
         throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteEntities";
+        Objects.requireNonNull( deletedEntities, "deletedEntities cannot be null" );
         logMethodBegin( methodName, deletedEntities.size() + " entities" );
         for ( final E entity: deletedEntities )
         {
@@ -90,6 +94,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     public void deleteEntity( final E entity )
         throws VersionedEntityNotFoundException
     {
+        Objects.requireNonNull( entity, "entity cannot be null" );
         this.deleteEntity( entity.getId() );
     }
 
@@ -103,6 +108,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     {
         final String methodName = "deleteEntity";
         logMethodBegin( methodName, id );
+        Objects.requireNonNull( id, "id cannot be null" );
         if ( this.getRepository().exists( id ))
         {
             this.getRepository()
@@ -124,6 +130,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
         throws EntityVersionMismatchException
     {
         final String methodName = "addEntities";
+        Objects.requireNonNull( entities, "entities cannot be null" );
         logMethodBegin( methodName, "Adding {0} entities", entities.size() );
         for ( final E entity: entities )
         {
@@ -144,6 +151,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     {
         final String methodName = "addEntity";
         logMethodBegin( methodName, entity );
+        Objects.requireNonNull( entity, "entity cannot be null" );
         if ( this.getRepository().exists( entity.getId() ) )
         {
             final E currentEntity = this.getRepository()
@@ -169,6 +177,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     {
         final String methodName = "saveDTO";
         logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto cannot be null" );
         checkEntityVersion( dto );
         final E entity = this.dtoToEntity( dto );
         final E savedEntity = this.saveEntity( entity );
@@ -188,6 +197,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     {
         final String methodName = "saveEntity";
         logMethodBegin( methodName, entity );
+        Objects.requireNonNull( entity, "entity cannot be null" );
         this.checkEntityVersion( entity );
         final E savedEntity = this.getRepository()
                                   .save( entity );
@@ -206,6 +216,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     public void checkEntityVersion( final VersionedEntity<ID> entity )
         throws EntityVersionMismatchException
     {
+        Objects.requireNonNull( entity, "entity cannot be null" );
         E dbEntity = null;
         /*
          * If there is an ID then there is a database version of this entity.
