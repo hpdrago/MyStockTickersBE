@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import rx.Observable;
 import rx.subjects.AsyncSubject;
@@ -42,7 +41,15 @@ public class TradeItAsyncUpdateService
     public void prepareToUpdateLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
     {
         final String methodName = "prepareToUpdateLinkedAccount";
+        Objects.requireNonNull( linkedAccountEntity, "linkedAccountEntity cannot be null" );
         log.debug( methodName + " linkedAccountId: " + linkedAccountEntity.getId() );
+        /*
+        if ( this.getAccountOverviewSubjectMap.containsKey( linkedAccountEntity.getId() ) )
+        {
+            throw new IllegalArgumentException( String.format( "A request for linkedAccount: %d already exists",
+                                                               linkedAccountEntity.getId() ));
+        }
+        */
         this.getAccountOverviewSubjectMap.put( linkedAccountEntity.getId(), AsyncSubject.create() );
     }
 
@@ -99,7 +106,7 @@ public class TradeItAsyncUpdateService
                                      final LinkedAccountEntity linkedAccountEntity )
     {
         final String methodName = "updateLinkedAccount";
-        log.debug( String.format( "%s %d %d", methodName, tradeItAccountEntity.getId(), linkedAccountEntity.getId() ));
+        log.debug( String.format( "%s.begin %d %d", methodName, tradeItAccountEntity.getId(), linkedAccountEntity.getId() ));
         try
         {
             final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
@@ -125,7 +132,7 @@ public class TradeItAsyncUpdateService
             log.error( methodName, e );
             this.onGetAccountOverviewException( linkedAccountEntity.getId(), e );
         }
-        log.debug( methodName + " " + tradeItAccountEntity.getId() );
+        log.debug( methodName + ".end " + tradeItAccountEntity.getId() );
     }
 
     /**

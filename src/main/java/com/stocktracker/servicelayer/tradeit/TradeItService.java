@@ -373,7 +373,6 @@ public class TradeItService implements MyLogger
     public KeepSessionAliveDTO keepSessionAlive( final int customerId,
                                                  final int tradeItAccountId )
         throws TradeItAccountNotFoundException,
-               LinkedAccountNotFoundException,
                TradeItAuthenticationException,
                EntityVersionMismatchException
     {
@@ -386,7 +385,8 @@ public class TradeItService implements MyLogger
          * Create the parameter map
          */
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
-                                                                              .addParameter( TradeItParameter.TOKEN_PARAM, tradeItAccountEntity.getAuthToken() );
+                                                                              .addParameter( TradeItParameter.TOKEN_PARAM,
+                                                                                             tradeItAccountEntity.getAuthToken() );
         /*
          * Call TradeIt to keep the session alive.
          */

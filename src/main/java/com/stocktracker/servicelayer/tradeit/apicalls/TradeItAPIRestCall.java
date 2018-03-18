@@ -146,7 +146,6 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     @Autowired
     public void setTradeItURLs( final TradeItURLs tradeItURLs )
     {
-        logInfo( "setTradeItURLs", "Dependency injection of " + tradeItURLs );
         this.tradeItURLs = tradeItURLs;
     }
 }

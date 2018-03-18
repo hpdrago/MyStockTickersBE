@@ -227,7 +227,6 @@ public class TradeItController extends AbstractController
                                                  @PathVariable final int tradeItAccountId )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
-               LinkedAccountNotFoundException,
                EntityVersionMismatchException
     {
         final String methodName = "keepSessionAlive";
@@ -237,11 +236,13 @@ public class TradeItController extends AbstractController
         /*
          * Synchronize the linked accounts identified by TradeIt with the linked account table.
          */
+        /*
         if ( keepSessionAliveDTO.isSuccessful() )
         {
             this.tradeItAccountEntityService
                 .synchronizeTradeItAccount( customerId, tradeItAccountId, keepSessionAliveDTO );
         }
+        */
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
     }
