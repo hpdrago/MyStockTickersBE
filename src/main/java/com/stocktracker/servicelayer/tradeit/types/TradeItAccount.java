@@ -1,7 +1,5 @@
 package com.stocktracker.servicelayer.tradeit.types;
 
-import java.util.Arrays;
-
 /**
  * This class defines the account fields that are returned in TradeIt authenticate call.
  */
@@ -83,7 +81,7 @@ public class TradeItAccount
         sb.append( ", accountBaseCurrency='" ).append( accountBaseCurrency ).append( '\'' );
         sb.append( ", accountIndex='" ).append( accountIndex ).append( '\'' );
         sb.append( ", userCanDisableMargin=" ).append( userCanDisableMargin );
-        sb.append( ", orderCapabilities=" ).append( Arrays.toString( orderCapabilities ) );
+        //sb.append( ", orderCapabilities=" ).append( Arrays.toString( orderCapabilities ) );
         sb.append( '}' );
         return sb.toString();
     }

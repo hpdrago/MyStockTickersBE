@@ -579,7 +579,12 @@ public class TradeItService implements MyLogger
                  * will be made again.
                  */
                 case SESSION_EXPIRED_ERROR:
-                    this.handleSessionExpired( tradeItAccountEntity );
+                    /*
+                     * Update the token as that has changed on a successful re-authenticate.
+                     */
+                    final AuthenticateAPIResult authenticateAPIResult = this.handleSessionExpired( tradeItAccountEntity );
+                    tradeItAPICallParameterMap.addParameter( TradeItParameter.TOKEN_PARAM,
+                                                             authenticateAPIResult.getToken() );
                     logDebug( methodName, "re-executing " + tradeItAPIRestCall.getClass().getSimpleName() );
                     tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
                     logDebug( methodName, "re-execute result: {0}", tradeItAPIResult );
@@ -600,7 +605,7 @@ public class TradeItService implements MyLogger
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
-    private void handleSessionExpired( final TradeItAccountEntity tradeItAccountEntity )
+    private AuthenticateAPIResult handleSessionExpired( final TradeItAccountEntity tradeItAccountEntity )
         throws TradeItAuthenticationException,
                EntityVersionMismatchException
     {
@@ -628,6 +633,7 @@ public class TradeItService implements MyLogger
             throw new TradeItAuthenticationException( authenticateAPIResult );
         }
         logMethodEnd( methodName );
+        return authenticateAPIResult;
     }
 
     @Autowired

@@ -10,8 +10,6 @@ import com.stocktracker.servicelayer.stockinformationprovider.StockQuote;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteCache;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
 import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteState;
-import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
-import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,6 @@ public class StockQuoteService implements MyLogger
 {
     private StockQuoteCache stockQuoteCache;
     private StockEntityService stockService;
-    private StockAnalystConsensusEntityService stockAnalystConsensusService;
 
     public interface StockCompanyNameContainer
     {
@@ -135,23 +132,6 @@ public class StockQuoteService implements MyLogger
             container.setOpenPrice( stockQuote.getOpenPrice() );
             container.setStockQuoteState( stockQuote.getStockQuoteState() );
             container.setLastPriceChange( stockQuote.getLastPriceChange() );
-            /*
-             * Don't like this hack...
-             */
-            if ( !(container instanceof StockAnalystConsensusDTO) &&
-                   container.getCustomerId() != null ) // skip entities that are not customer related
-            {
-                /*
-                 * Set the analyst price target if it exists.
-                 */
-                StockAnalystConsensusDTO stockAnalystConsensusDTO = this.stockAnalystConsensusService
-                    .getStockAnalystConsensus( container.getCustomerId(),
-                                               stockQuote.getTickerSymbol() );
-                if ( stockAnalystConsensusDTO != null )
-                {
-                    container.setAvgAnalystPriceTarget( stockAnalystConsensusDTO.getAvgAnalystPriceTarget() );
-                }
-            }
         }
         else
         {
@@ -239,11 +219,4 @@ public class StockQuoteService implements MyLogger
     {
         this.stockService = stockService;
     }
-
-    @Autowired
-    public void setStockAnalystConsensusService( final StockAnalystConsensusEntityService stockAnalystConsensusService )
-    {
-        this.stockAnalystConsensusService = stockAnalystConsensusService;
-    }
-
 }
