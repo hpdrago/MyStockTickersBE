@@ -49,7 +49,14 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     public void setResults( final AuthenticateAPIResult results )
     {
         super.setResults( results );
-        this.accounts = results.getAccounts().get();
+        if ( results.getAccounts().isPresent() )
+        {
+            this.accounts = results.getAccounts().get();
+        }
+        else
+        {
+            this.accounts = new TradeItAccount[0];
+        }
         this.informationType = results.getInformationType();
         this.securityQuestionOptions = results.getSecurityQuestionOptions();
         this.securityQuestion = results.getSecurityQuestion();
