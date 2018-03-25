@@ -45,10 +45,10 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL,
+    @RequestMapping( value = CONTEXT_URL + "/page",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockDTO> getStocks( final Pageable pageRequest )
+    public Page<StockDTO> getStocksPage( final Pageable pageRequest )
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, pageRequest );

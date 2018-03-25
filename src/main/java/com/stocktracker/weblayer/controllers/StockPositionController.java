@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
@@ -52,7 +53,7 @@ public class StockPositionController extends AbstractController
                                                 final @PathVariable int customerId )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
+               TradeItAPIException,
                EntityVersionMismatchException,
                VersionedEntityNotFoundException
     {

@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Created by mike on 5/7/2017.
  */
@@ -34,4 +36,11 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
      * @return
      */
     StockAnalystConsensusEntity findByCustomerIdAndTickerSymbol( final int customerId, final String tickerSymbol );
+
+    /**
+     * Get all of the stock consensus rows for a customer.
+     * @param customerId
+     * @return
+     */
+    List<StockAnalystConsensusEntity> findByCustomerId( Integer customerId );
 }

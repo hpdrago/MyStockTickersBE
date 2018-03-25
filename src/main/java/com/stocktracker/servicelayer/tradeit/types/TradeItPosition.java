@@ -13,9 +13,9 @@ public class TradeItPosition
     private double quantity;
     private String symbol;
     private String symbolClass;
-    private double todayGainLossDollar;
+    private double todayGainLossAbsolute;
     private double todayGainLossPercentage;
-    private double totalGainLossDollar;
+    private double totalGainLossAbsolute;
     private double totalGainLossPercentage;
 
     /**
@@ -102,14 +102,14 @@ public class TradeItPosition
      * The total gain/loss in dollars for the day for the position [+ / - / null]. If null this field must not be
      * displayed to the user.
      */
-    public double getTodayGainLossDollar()
+    public double getTodayGainLossAbsolute()
     {
-        return todayGainLossDollar;
+        return todayGainLossAbsolute;
     }
 
-    public void setTodayGainLossDollar( double todayGainLossDollar )
+    public void setTodayGainLossAbsolute( double todayGainLossAbsolute )
     {
-        this.todayGainLossDollar = todayGainLossDollar;
+        this.todayGainLossAbsolute = todayGainLossAbsolute;
     }
 
     /**
@@ -128,14 +128,14 @@ public class TradeItPosition
     /**
      * The total gain/loss in dollars for the position [+ / - / null]. If null this field must not be displayed to the user.
      */
-    public double getTotalGainLossDollar()
+    public double getTotalGainLossAbsolute()
     {
-        return totalGainLossDollar;
+        return totalGainLossAbsolute;
     }
 
-    public void setTotalGainLossDollar( double totalGainLossDollar )
+    public void setTotalGainLossAbsolute( double totalGainLossAbsolute )
     {
-        this.totalGainLossDollar = totalGainLossDollar;
+        this.totalGainLossAbsolute = totalGainLossAbsolute;
     }
 
     /**
@@ -161,9 +161,9 @@ public class TradeItPosition
         sb.append( ", quantity=" ).append( quantity );
         sb.append( ", symbol='" ).append( symbol ).append( '\'' );
         sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
-        sb.append( ", todayGainLossDollar=" ).append( todayGainLossDollar );
+        sb.append( ", todayGainLossAbsolute=" ).append( todayGainLossAbsolute );
         sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
-        sb.append( ", totalGainLossDollar=" ).append( totalGainLossDollar );
+        sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( '}' );
         return sb.toString();

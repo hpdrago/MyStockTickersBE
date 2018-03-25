@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.stockinformationprovider;
 
-import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockEntityService;
@@ -47,19 +46,20 @@ public class StockQuoteServiceExecutor
     {
         final String methodName = "asynchronousGetStockQuote";
         logger.debug( methodName + " " + tickerSymbol );
+        final String myTickerSymbol = checkTickerSymbol( tickerSymbol );
         StockTickerQuote stockTickerQuote = null;
         try
         {
-            stockTickerQuote = this.getQuoteFromIEXTrading( tickerSymbol );
+            stockTickerQuote = this.getQuoteFromIEXTrading( myTickerSymbol );
             if ( stockTickerQuote == null )
             {
-                stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+                stockTickerQuote = this.getQuoteFromYahoo( myTickerSymbol );
             }
         }
         catch( Exception e )
         {
             logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage(), e );
-            stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+            stockTickerQuote = this.getQuoteFromYahoo( myTickerSymbol );
         }
         handleStockQuoteResult.handleStockQuoteReturn( stockTickerQuote );
     }
@@ -74,16 +74,17 @@ public class StockQuoteServiceExecutor
     {
         final String methodName = "synchronousGetStockQuote";
         logger.debug( methodName + " " + tickerSymbol );
+        final String myTickerSymbol = checkTickerSymbol( tickerSymbol );
         StockTickerQuote stockTickerQuote = null;
-        if ( !this.discontinuedStocks.contains( tickerSymbol ))
+        if ( !this.discontinuedStocks.contains( myTickerSymbol ))
         {
             boolean triedYahoo = false;
             try
             {
-                stockTickerQuote = this.getQuoteFromIEXTrading( tickerSymbol );
+                stockTickerQuote = this.getQuoteFromIEXTrading( myTickerSymbol );
                 if ( stockTickerQuote == null )
                 {
-                    stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+                    stockTickerQuote = this.getQuoteFromYahoo( myTickerSymbol );
                     triedYahoo = true;
                 }
             }
@@ -92,17 +93,17 @@ public class StockQuoteServiceExecutor
                 logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage(), e );
                 if ( !triedYahoo )
                 {
-                    stockTickerQuote = this.getQuoteFromYahoo( tickerSymbol );
+                    stockTickerQuote = this.getQuoteFromYahoo( myTickerSymbol );
                 }
                 if ( stockTickerQuote == null )
                 {
-                    logger.error( methodName + " Failed to get quote(null) from IEXTrading for " + tickerSymbol );
+                    logger.error( methodName + " Failed to get quote(null) from IEXTrading for " + myTickerSymbol );
                 }
             }
         }
         else
         {
-            logger.info( methodName + " tickerSymbol " + tickerSymbol + " is no longer valid." );
+            logger.info( methodName + " tickerSymbol " + myTickerSymbol + " is no longer valid." );
         }
         return stockTickerQuote;
     }
@@ -211,7 +212,17 @@ public class StockQuoteServiceExecutor
         }
         return stockTickerQuote;
     }
-
+    /*
+     * Remove option target dates which follow spaces.
+     */
+    public static String checkTickerSymbol( final String tickerSymbol )
+    {
+        if ( tickerSymbol.contains( " " ))
+        {
+            return tickerSymbol.substring( 0, tickerSymbol.indexOf( ' ' ));
+        }
+        return tickerSymbol;
+    }
 
     @Autowired
     public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )

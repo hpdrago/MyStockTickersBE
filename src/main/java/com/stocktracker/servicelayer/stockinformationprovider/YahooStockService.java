@@ -93,8 +93,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * @throws FileNotFoundException For invalid or not longer in use ticker symbol.
      */
     public Stock getStock( final String tickerSymbol )
-        throws FileNotFoundException,
-               IOException
+        throws IOException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );

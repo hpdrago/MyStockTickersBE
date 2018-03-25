@@ -159,7 +159,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}",
+    @RequestMapping( value = URL_CONTEXT + "/page/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
@@ -180,7 +180,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = URL_CONTEXT + "/tickerSymbol/{tickerSymbol}/customer/{customerId}",
+    @RequestMapping( value = URL_CONTEXT + "/page/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,

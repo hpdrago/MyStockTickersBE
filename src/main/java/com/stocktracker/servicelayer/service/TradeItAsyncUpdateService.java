@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
@@ -110,21 +111,29 @@ public class TradeItAsyncUpdateService
         try
         {
             final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
-                                        .getAccountOverview( tradeItAccountEntity,
-                                                             linkedAccountEntity.getAccountNumber() );
-            linkedAccountEntity.setGetAccountOverviewValues( getAccountOverviewDTO );
-            try
+                                                                    .getAccountOverview( tradeItAccountEntity,
+                                                                                         linkedAccountEntity.getAccountNumber() );
+            if ( getAccountOverviewDTO.isSuccessful() )
             {
-                /*
-                 * Update the map first so that it's available now to the expected call from the UI.
-                 */
-                this.onGetAccountOverviewSuccess( linkedAccountEntity );
-                this.linkedAccountEntityService
-                    .saveEntity( linkedAccountEntity );
+                linkedAccountEntity.setGetAccountOverviewValues( getAccountOverviewDTO );
+                try
+                {
+                    /*
+                     * Update the map first so that it's available now to the expected call from the UI.
+                     */
+                    this.onGetAccountOverviewSuccess( linkedAccountEntity );
+                    this.linkedAccountEntityService
+                        .saveEntity( linkedAccountEntity );
+                }
+                catch( EntityVersionMismatchException e )
+                {
+                    this.handleEntityMismatchException( linkedAccountEntity, getAccountOverviewDTO );
+                }
             }
-            catch( EntityVersionMismatchException e )
+            else
             {
-                this.handleEntityMismatchException( linkedAccountEntity, getAccountOverviewDTO );
+                TradeItAPIException tradeItAPIException = new TradeItAPIException( getAccountOverviewDTO );
+                this.onGetAccountOverviewException( linkedAccountEntity.getId(), tradeItAPIException );
             }
         }
         catch( Exception e )

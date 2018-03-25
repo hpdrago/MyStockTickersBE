@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
@@ -42,7 +43,7 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * @return List of positions.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
+     * @throws TradeItAPIException
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
      */
@@ -51,7 +52,7 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
                                                 final int linkedAccountId )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
+               TradeItAPIException,
                EntityVersionMismatchException,
                VersionedEntityNotFoundException
     {
@@ -83,13 +84,14 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
+     * @throws TradeItAPIException
      */
     private List<StockPositionDTO> synchronizePositions( final int customerId,
                                                          final int tradeItAccountId,
                                                          final int linkedAccountId )
         throws TradeItAccountNotFoundException,
                LinkedAccountNotFoundException,
-               TradeItAuthenticationException,
+               TradeItAPIException,
                EntityVersionMismatchException,
                VersionedEntityNotFoundException
     {
@@ -105,27 +107,34 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
         final GetPositionsAPIResult getPositionsAPIResult = this.tradeItService
                                                                 .getPositions( tradeItAccountEntity,
                                                                                linkedAccountEntity );
+        List<StockPositionDTO> stockPositionList = new ArrayList<>();
+        if ( getPositionsAPIResult.isSuccessful() )
+        {
+            /*
+             * Get the positions stored in the database.
+             */
+            final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
+                .findAllByLinkedAccountId( linkedAccountId );
 
-        /*
-         * Get the positions stored in the database.
-         */
-        final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
-                                                                     .findAllByLinkedAccountId( linkedAccountId );
+            /*
+             * Compare the positions returned from TradeIt with the contents of the database and make database updated
+             * based on the comparison results.  This is an asynchronous calls so that we don't make the user wait for
+             * the result as TradeIt is the source of truth concerning the positions the user has with the linked account.
+             */
+            final StockPositionComparator stockPositionComparator = new StockPositionComparator( this );
+            stockPositionComparator
+                .comparePositions( linkedAccountEntity, stockPositionEntities, getPositionsAPIResult );
 
-        /*
-         * Compare the positions returned from TradeIt with the contents of the database and make database updated
-         * based on the comparison results.  This is an asynchronous calls so that we don't make the user wait for
-         * the result as TradeIt is the source of truth concerning the positions the user has with the linked account.
-         */
-        final StockPositionComparator stockPositionComparator = new StockPositionComparator( this );
-        stockPositionComparator.comparePositions( linkedAccountEntity, stockPositionEntities, getPositionsAPIResult );
-
-        /*
-         * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
-         */
-        final List<StockPositionDTO> stockPositionList = this.createPositionDTOList( customerId, tradeItAccountId,
-                                                                                     linkedAccountId, getPositionsAPIResult );
-        this.updateStockQuoteInformation( stockPositionList );
+            /*
+             * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
+             */
+            this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId, getPositionsAPIResult );
+            this.updateStockQuoteInformation( stockPositionList );
+        }
+        else
+        {
+            throw new TradeItAPIException( getPositionsAPIResult );
+        }
         logMethodEnd( methodName, stockPositionList.size() + " positions" );
         return stockPositionList;
     }

@@ -21,7 +21,10 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
 {
-    public static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis( 5 );
+    /**
+     * IEXTrading quotes are delayed 15 minutes.
+     */
+    public static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis( 15 );
     private Map<String, StockTickerQuoteCacheEntry> cacheEntryMap = Collections.synchronizedMap( new HashMap<>( ) );
     private StockQuoteServiceExecutor stockQuoteServiceExecutor;
     private StockEntityService stockService;
@@ -150,8 +153,7 @@ public class StockQuoteCache implements MyLogger, HandleStockQuoteReturn
         {
             this.cacheStockQuote( stockTickerQuote );
             this.stockService.checkStockTableEntry( stockTickerQuote.getTickerSymbol() );
-            StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheEntryMap
-                .get( stockTickerQuote.getTickerSymbol() );
+            StockTickerQuoteCacheEntry stockTickerQuoteCacheEntry = this.cacheEntryMap.get( stockTickerQuote.getTickerSymbol() );
             stockTickerQuoteCacheEntry.setStockTableEntryValidated( true );
         }
         logMethodEnd( methodName );

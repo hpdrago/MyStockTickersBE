@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockEntity;
@@ -162,7 +161,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
     public StockEntity saveStockQuote( final StockQuote stockQuote )
     {
         final String methodName = "saveStockQuote";
-        logDebug( methodName, "Creating new stock table entry" );
+        logMethodBegin( methodName, stockQuote );
         StockEntity stockEntity = null;
         try
         {
@@ -174,7 +173,6 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
                 stockEntity = this.getEntity( stockQuote.getTickerSymbol() );
                 this.setStockQuoteProperties( stockEntity, stockQuote );
                 this.saveEntity( stockEntity );
-
             }
             catch( VersionedEntityNotFoundException e )
             {
@@ -192,6 +190,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
             this.getRepository()
                 .save( stockEntity );
         }
+        logMethodEnd( methodName, stockEntity );
         return stockEntity;
     }
 
@@ -251,7 +250,6 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         stockEntity.setCompanyName( stockQuote.getCompanyName() );
         stockEntity.setStockExchange( stockQuote.getStockExchange() );
         stockEntity.setLastPrice( stockQuote.getLastPrice() );
-        stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
         stockEntity.setLastPriceChange( stockQuote.getLastPriceChange() );
         stockEntity.setDiscontinuedInd( false );
     }

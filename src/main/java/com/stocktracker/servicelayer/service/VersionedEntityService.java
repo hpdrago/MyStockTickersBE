@@ -216,6 +216,8 @@ public abstract class VersionedEntityService<ID extends Serializable,
     public void checkEntityVersion( final VersionedEntity<ID> entity )
         throws EntityVersionMismatchException
     {
+        final String methodName = "checkEntityVersion";
+        logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
         E dbEntity = null;
         /*
@@ -225,6 +227,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
         {
             dbEntity = this.getRepository()
                            .findOne( entity.getId() );
+            logDebug( methodName, "dbEntity:{0}", dbEntity );
         }
         if ( dbEntity == null )
         {
@@ -243,5 +246,6 @@ public abstract class VersionedEntityService<ID extends Serializable,
                                                                          dbEntity.getVersion(), entity.getVersion() ) );
             }
         }
+        logMethodEnd( methodName );
     }
 }

@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 
 @Entity
@@ -31,9 +32,9 @@ public class StockPositionEntity implements VersionedEntity<Integer>
     private BigDecimal quantity;
     private String tickerSymbol;
     private String symbolClass;
-    private BigDecimal todayGainLossDollar;
+    private BigDecimal todayGainLossAbsolute;
     private BigDecimal todayGainLossPercentage;
-    private BigDecimal totalGainLossDollar;
+    private BigDecimal totalGainLossAbsolute;
     private BigDecimal totalGainLossPercentage;
     private Timestamp createDate;
     private Timestamp updateDate;
@@ -77,9 +78,9 @@ public class StockPositionEntity implements VersionedEntity<Integer>
         this.quantity = stockPositionEntity.quantity;
         this.tickerSymbol = stockPositionEntity.tickerSymbol;
         this.symbolClass = stockPositionEntity.symbolClass;
-        this.todayGainLossDollar = stockPositionEntity.todayGainLossDollar;
+        this.todayGainLossAbsolute = stockPositionEntity.todayGainLossAbsolute;
         this.todayGainLossPercentage = stockPositionEntity.todayGainLossPercentage;
-        this.totalGainLossDollar = stockPositionEntity.totalGainLossDollar;
+        this.totalGainLossAbsolute = stockPositionEntity.totalGainLossAbsolute;
         this.totalGainLossPercentage = stockPositionEntity.totalGainLossPercentage;
         this.createDate = stockPositionEntity.createDate;
         this.updateDate = stockPositionEntity.updateDate;
@@ -102,16 +103,16 @@ public class StockPositionEntity implements VersionedEntity<Integer>
      */
     public void setValues( final TradeItPosition tradeItPosition )
     {
-        this.costBasis = new BigDecimal( tradeItPosition.getCostbasis() );
+        this.costBasis = this.truncate( tradeItPosition.getCostbasis() );
         this.holdingType = tradeItPosition.getHoldingType();
-        this.lastPrice = new BigDecimal( tradeItPosition.getLastPrice() );
-        this.quantity = new BigDecimal( tradeItPosition.getQuantity() );
+        this.lastPrice = this.truncate( tradeItPosition.getLastPrice() );
+        this.quantity = this.truncate( tradeItPosition.getQuantity() );
         this.tickerSymbol = tradeItPosition.getSymbol();
         this.symbolClass = tradeItPosition.getSymbolClass();
-        this.todayGainLossDollar = new BigDecimal( tradeItPosition.getTodayGainLossDollar() );
-        this.todayGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
-        this.totalGainLossDollar = new BigDecimal( tradeItPosition.getTotalGainLossDollar() );
-        this.totalGainLossPercentage = new BigDecimal( tradeItPosition.getTotalGainLossPercentage() );
+        this.todayGainLossAbsolute = this.truncate( tradeItPosition.getTodayGainLossAbsolute() );
+        this.todayGainLossPercentage = this.truncate( tradeItPosition.getTodayGainLossPercentage() );
+        this.totalGainLossAbsolute = this.truncate( tradeItPosition.getTotalGainLossAbsolute() );
+        this.totalGainLossPercentage = this.truncate( tradeItPosition.getTotalGainLossPercentage() );
     }
 
     @Id
@@ -149,7 +150,7 @@ public class StockPositionEntity implements VersionedEntity<Integer>
 
     public void setCostBasis( final BigDecimal costBasis )
     {
-        this.costBasis = costBasis;
+        this.costBasis = this.truncate( costBasis );
     }
 
     @Basic
@@ -173,7 +174,7 @@ public class StockPositionEntity implements VersionedEntity<Integer>
 
     public void setLastPrice( final BigDecimal lastPrice )
     {
-        this.lastPrice = lastPrice;
+        this.lastPrice = this.truncate( lastPrice );
     }
 
     @Basic
@@ -185,7 +186,7 @@ public class StockPositionEntity implements VersionedEntity<Integer>
 
     public void setQuantity( final BigDecimal quantity )
     {
-        this.quantity = quantity;
+        this.quantity = this.truncate( quantity );
     }
 
     @Basic
@@ -213,15 +214,15 @@ public class StockPositionEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "today_gain_loss_dollar", nullable = true, precision = 2 )
-    public BigDecimal getTodayGainLossDollar()
+    @Column( name = "today_gain_loss_absolute", nullable = true, precision = 2 )
+    public BigDecimal getTodayGainLossAbsolute()
     {
-        return todayGainLossDollar;
+        return todayGainLossAbsolute;
     }
 
-    public void setTodayGainLossDollar( final BigDecimal todayGainLossDollar )
+    public void setTodayGainLossAbsolute( final BigDecimal todayGainLossAbsolute )
     {
-        this.todayGainLossDollar = todayGainLossDollar;
+        this.todayGainLossAbsolute = this.truncate( todayGainLossAbsolute );
     }
 
     @Basic
@@ -233,19 +234,35 @@ public class StockPositionEntity implements VersionedEntity<Integer>
 
     public void setTodayGainLossPercentage( final BigDecimal todayGainLossPercentage )
     {
-        this.todayGainLossPercentage = todayGainLossPercentage;
+        this.todayGainLossPercentage = this.truncate( todayGainLossPercentage );
     }
 
     @Basic
-    @Column( name = "total_gain_loss_dollar", nullable = true, precision = 2 )
-    public BigDecimal getTotalGainLossDollar()
+    @Column( name = "total_gain_loss_absolute", nullable = true, precision = 2 )
+    public BigDecimal getTotalGainLossAbsolute()
     {
-        return totalGainLossDollar;
+        return totalGainLossAbsolute;
     }
 
-    public void setTotalGainLossDollar( final BigDecimal totalGainLossDollar )
+    public void setTotalGainLossAbsolute( final BigDecimal totalGainLossAbsolute )
     {
-        this.totalGainLossDollar = totalGainLossDollar;
+        this.totalGainLossAbsolute = this.truncate( totalGainLossAbsolute );
+    }
+
+    /**
+     * Truncates to two decimal places.  Returns null if value is null.
+     */
+    private BigDecimal truncate( final BigDecimal value )
+    {
+        return value == null ? null : value.setScale( 2, RoundingMode.DOWN );
+    }
+
+    /**
+     * Truncates to two decimal places.  Returns null if value is null.
+     */
+    private BigDecimal truncate( final double value )
+    {
+        return this.truncate( new BigDecimal( value ) );
     }
 
     @Basic
@@ -351,9 +368,9 @@ public class StockPositionEntity implements VersionedEntity<Integer>
         sb.append( ", quantity=" ).append( quantity );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
-        sb.append( ", todayGainLossDollar=" ).append( todayGainLossDollar );
+        sb.append( ", todayGainLossAbsolute=" ).append( todayGainLossAbsolute );
         sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
-        sb.append( ", totalGainLossDollar=" ).append( totalGainLossDollar );
+        sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );

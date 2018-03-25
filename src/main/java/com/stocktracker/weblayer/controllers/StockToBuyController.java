@@ -38,13 +38,11 @@ public class StockToBuyController extends AbstractController
      * Get all of the stock to buy for a customer
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockToBuyDTO> getStockStockToBuy( final Pageable pageRequest,
                                                    final @NotNull @PathVariable int customerId )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getStockStockToBuy";
         logMethodBegin( methodName, pageRequest, customerId );
@@ -58,14 +56,12 @@ public class StockToBuyController extends AbstractController
      * Get all of the stock to buy for a customer and a
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockToBuyDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
                                                    @NotNull @PathVariable int customerId,
                                                    @NotNull @PathVariable String tickerSymbol )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getStockStockToBuyForTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
+
 /**
  * This is the REST Controller for all Stock Analytics methods.
  */
@@ -39,13 +41,30 @@ public class StockAnalystConsensusController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusList( final Pageable pageRequest,
-                                                                        @PathVariable Integer customerId )
+    public List<StockAnalystConsensusDTO> getStockAnalystConsensusList( @PathVariable Integer customerId )
     {
         final String methodName = "getStockAnalystConsensusList";
         logMethodBegin( methodName, customerId );
+        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+                                                                       .getAllStockAnalystConsensus( customerId );
+        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.size() );
+        return stockAnalystConsensusDTOs;
+    }
+
+    /**
+     * Get all of the stock analyst consensus for a customer
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusPage( final Pageable pageRequest,
+                                                                        @PathVariable Integer customerId )
+    {
+        final String methodName = "getStockAnalystConsensusPage";
+        logMethodBegin( methodName, customerId );
         Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
-                                                                       .getStockAnalystConsensusListForCustomerId( pageRequest, customerId );
+            .getStockAnalystConsensusPage( pageRequest, customerId );
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }

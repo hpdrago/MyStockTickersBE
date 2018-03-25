@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -58,23 +59,39 @@ public class StockAnalystConsensusEntityService extends StockQuoteContainerEntit
     }
 
     /**
+     * Gets all of the consensus rows for the customer.
+     * @param customerId
+     * @return
+     */
+    public List<StockAnalystConsensusDTO> getAllStockAnalystConsensus( final Integer customerId )
+    {
+        final String methodName = "getAllStockAnalystConsensusList";
+        logMethodBegin( methodName, customerId );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        final List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+                                                                                    .findByCustomerId( customerId );
+        final List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
+        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " records" );
+        return stockAnalystConsensusDTOS;
+    }
+
+    /**
      * Get the list of all stock summaries for the customer
      *
      * @param pageRequest
      * @param customerId
      * @return
      */
-    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerId( @NotNull final Pageable pageRequest,
-                                                                                     @NotNull final Integer customerId )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusPage( @NotNull final Pageable pageRequest,
+                                                                        @NotNull final Integer customerId )
     {
-        final String methodName = "getStockAnalystConsensusListForCustomerId";
+        final String methodName = "getStockAnalystConsensusPage";
         logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         final  Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
                                                                                      .findByCustomerId( pageRequest, customerId );
         final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
                                                                                               stockAnalystConsensusEntities );
-        logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
         return stockAnalystConsensusDTOS;
     }

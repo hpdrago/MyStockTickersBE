@@ -36,7 +36,7 @@ public class StockCatalystEventController implements MyLogger
      * Get all of the stock catalyst events for a single customer.
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerId( final Pageable pageRequest,

@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
@@ -73,6 +74,10 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
             final ResponseEntity<T> responseEntity = restTemplate.postForEntity( url, request, this.getAPIResultsClass() );
             logDebug( methodName, "ResponseEntity: {0}", responseEntity );
             response = responseEntity.getBody();
+        }
+        catch( HttpClientErrorException e )
+        {
+            throw new TradeItServiceUnavailableException( e );
         }
         catch( HttpServerErrorException e )
         {

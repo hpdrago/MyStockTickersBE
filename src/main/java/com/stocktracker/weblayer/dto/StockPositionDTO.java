@@ -37,11 +37,11 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal quantity;
     @JsonSerialize( using = JSONMoneySerializer.class )
-    private BigDecimal todayGainLossDollar;
+    private BigDecimal todayGainLossAbsolute;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal todayGainLossPercentage;
     @JsonSerialize( using = JSONMoneySerializer.class )
-    private BigDecimal totalGainLossDollar;
+    private BigDecimal totalGainLossAbsolute;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal totalGainLossPercentage;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
@@ -65,9 +65,9 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         this.quantity = new BigDecimal( tradeItPosition.getQuantity() );
         this.tickerSymbol = tradeItPosition.getSymbol();
         this.symbolClass = tradeItPosition.getSymbolClass();
-        this.todayGainLossDollar = new BigDecimal( tradeItPosition.getTodayGainLossDollar() );
+        this.todayGainLossAbsolute = new BigDecimal( tradeItPosition.getTodayGainLossAbsolute() );
         this.todayGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
-        this.totalGainLossDollar = new BigDecimal( tradeItPosition.getTodayGainLossDollar() );
+        this.totalGainLossAbsolute = new BigDecimal( tradeItPosition.getTodayGainLossAbsolute() );
         this.totalGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
     }
 
@@ -216,14 +216,14 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         this.quantity = quantity;
     }
 
-    public BigDecimal getTodayGainLossDollar()
+    public BigDecimal getTodayGainLossAbsolute()
     {
-        return todayGainLossDollar;
+        return todayGainLossAbsolute;
     }
 
-    public void setTodayGainLossDollar( final BigDecimal todayGainLossDollar )
+    public void setTodayGainLossAbsolute( final BigDecimal todayGainLossAbsolute )
     {
-        this.todayGainLossDollar = todayGainLossDollar;
+        this.todayGainLossAbsolute = todayGainLossAbsolute;
     }
 
     public BigDecimal getTodayGainLossPercentage()
@@ -236,14 +236,14 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         this.todayGainLossPercentage = todayGainLossPercentage;
     }
 
-    public BigDecimal getTotalGainLossDollar()
+    public BigDecimal getTotalGainLossAbsolute()
     {
-        return totalGainLossDollar;
+        return totalGainLossAbsolute;
     }
 
-    public void setTotalGainLossDollar( final BigDecimal totalGainLossDollar )
+    public void setTotalGainLossAbsolute( final BigDecimal totalGainLossAbsolute )
     {
-        this.totalGainLossDollar = totalGainLossDollar;
+        this.totalGainLossAbsolute = totalGainLossAbsolute;
     }
 
     public BigDecimal getTotalGainLossPercentage()
@@ -323,9 +323,9 @@ public class StockPositionDTO implements StockQuoteService.StockQuoteContainer,
         sb.append( ", openPrice=" ).append( openPrice );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", quantity=" ).append( quantity );
-        sb.append( ", todayGainLossDollar=" ).append( todayGainLossDollar );
+        sb.append( ", todayGainLossAbsolute=" ).append( todayGainLossAbsolute );
         sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
-        sb.append( ", totalGainLossDollar=" ).append( totalGainLossDollar );
+        sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", customerId=" ).append( customerId );

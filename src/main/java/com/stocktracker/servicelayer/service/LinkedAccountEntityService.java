@@ -128,6 +128,10 @@ public class LinkedAccountEntityService extends VersionedEntityService<Integer,
         logDebug( methodName, "blocking for linked account: {0}", linkedAccountId );
         final LinkedAccountEntity linkedAccountEntity = this.tradeItAsyncUpdateService
                                                             .subscribeToGetAccountOverview( linkedAccountId )
+                                                            .doOnError( throwable ->
+                                                                        {
+                                                                            logError( methodName, throwable.getCause() );
+                                                                        })
                                                             .toBlocking()
                                                             .first();
         logDebug( methodName, "received after blocking {0}", linkedAccountEntity );

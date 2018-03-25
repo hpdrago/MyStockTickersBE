@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ import java.util.Objects;
 @Table( name = "stock", schema = "stocktracker", catalog = "" )
 public class StockEntity implements VersionedEntity<String>
 {
-    public static final int TICKER_SYMBOL_LEN = 5;
+    public static final int TICKER_SYMBOL_LEN = 6;
     private String tickerSymbol;
     private String companyName;
     //private String exchange;
@@ -92,7 +93,7 @@ public class StockEntity implements VersionedEntity<String>
 
     public void setLastPrice( final BigDecimal lastPrice )
     {
-        this.lastPrice = lastPrice;
+        this.lastPrice = lastPrice == null ? null : lastPrice.setScale( 2, RoundingMode.DOWN );
     }
 
     /**
