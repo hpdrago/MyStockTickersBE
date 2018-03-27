@@ -4,6 +4,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,25 @@ public class LinkedAccountController extends AbstractController
     private static final String CONTEXT_URL = "/linkedAccount";
     private LinkedAccountEntityService linkedAccountEntityService;
 
+    /**
+     * Delete the linked account
+     * @param linkedAccountId
+     * @param customerId
+     * @return
+     */
+    @CrossOrigin
+    @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customer/{customerId}",
+                     method = RequestMethod.DELETE )
+    public ResponseEntity<Void> deleteLinkedAccount( @PathVariable int linkedAccountId,
+                                                     @PathVariable int customerId )
+        throws VersionedEntityNotFoundException
+    {
+        final String methodName = "deleteLinkedAccount";
+        logMethodBegin( methodName, linkedAccountId, customerId );
+        this.linkedAccountEntityService.deleteEntity( linkedAccountId );
+        logMethodEnd( methodName );
+        return new ResponseEntity<>( HttpStatus.OK );
+    }
     /**
      * Save the linked account
      * @param linkedAccountId
