@@ -74,7 +74,7 @@ public class StockEntityService extends StockQuoteContainerEntityService<String,
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities, StockQuoteFetch.NONE );
+        Page<StockDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities, StockQuoteFetchAction.NONE );
         logMethodEnd( methodName );
         return stockDTOPage;
     }

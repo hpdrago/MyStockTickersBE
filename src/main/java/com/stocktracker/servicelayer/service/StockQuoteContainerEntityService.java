@@ -13,7 +13,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +29,7 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
     extends VersionedEntityService<K,E,D,R>
 {
     private StockQuoteService stockQuoteService;
-    protected enum StockQuoteFetch
+    protected enum StockQuoteFetchAction
     {
         NONE,
         FETCH;
@@ -47,17 +46,7 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage )
     {
-        return this.entitiesToDTOs( pageRequest, entityPage, StockQuoteFetch.FETCH );
-    }
-
-    /**
-     * Converts the entities to DTO and gets the stock quote information.
-     * @param entities
-     * @return
-     */
-    protected List<D> entitiesToDTOs( final List<E> entities )
-    {
-        return this.entitiesToDTOs( entities, StockQuoteFetch.FETCH );
+        return this.entitiesToDTOs( pageRequest, entityPage, StockQuoteFetchAction.FETCH );
     }
 
     /**
@@ -66,10 +55,10 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
      * @return
      */
     protected List<D> entitiesToDTOs( @NotNull final List<E> entities,
-                                      @NotNull final StockQuoteFetch stockQuoteFetch )
+                                      @NotNull final StockQuoteFetchAction stockQuoteFetchAction )
     {
         List<D> dtos = super.entitiesToDTOs( entities );
-        if ( stockQuoteFetch.isFetch() )
+        if ( stockQuoteFetchAction.isFetch() )
         {
             this.updateStockQuoteInformation( dtos );
         }
@@ -81,19 +70,19 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
      *
      * @param pageRequest The information of the requested page.
      * @param entityPage The {@code Page<ENTITY>} object.
-     * @param stockQuoteFetch Determines if the stock quotes should be fetched.
+     * @param stockQuoteFetchAction Determines if the stock quotes should be fetched.
      * @return The created {@code Page<DTO>} object.
      */
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage,
-                                      @NotNull final StockQuoteFetch stockQuoteFetch )
+                                      @NotNull final StockQuoteFetchAction stockQuoteFetchAction )
     {
         final String methodName = "entitiesToDTOs";
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
-        List<D> dtos = this.entitiesToDTOs( entityPage.getContent() );
-        if ( stockQuoteFetch.isFetch() )
+        List<D> dtos = this.entitiesToDTOs( entityPage.getContent(), stockQuoteFetchAction );
+        if ( stockQuoteFetchAction.isFetch() )
         {
             this.updateStockQuoteInformation( dtos );
         }
