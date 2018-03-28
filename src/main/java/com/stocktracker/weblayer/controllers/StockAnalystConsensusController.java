@@ -73,7 +73,7 @@ public class StockAnalystConsensusController implements MyLogger
      * Get all of the stock analyst consensus for a customer id and ticker symbol
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockAnalystConsensusDTO> getStockAnalystConsensusList( final Pageable pageRequest,

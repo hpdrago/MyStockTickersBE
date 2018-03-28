@@ -56,7 +56,7 @@ public class StockToBuyController extends AbstractController
      * Get all of the stock to buy for a customer and a
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockToBuyDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
