@@ -4,7 +4,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
  * This enum defines how this class will behave when a stock quote is not found in the cache or found in the cache
  * but is stale (CachedStockEntry.lastQuoteRefreshTime > EXPIRATION_TIME)
  */
-public enum StockQuoteFetchMode
+public enum StockPriceFetchMode
 {
     SYNCHRONOUS,
     ASYNCHRONOUS;

@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 

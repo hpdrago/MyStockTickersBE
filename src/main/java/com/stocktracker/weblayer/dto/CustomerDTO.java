@@ -1,11 +1,17 @@
 package com.stocktracker.weblayer.dto;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
 /**
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class CustomerDTO implements VersionedDTO<Integer>
 {
     private Integer id;

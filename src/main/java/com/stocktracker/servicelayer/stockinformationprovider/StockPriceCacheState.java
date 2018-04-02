@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * This enum defines the state of the stock quote returned from this cache.
- * This enum is only needed when the {@code StockQuoteFetchMode} is asynchronous.
+ * This enum is only needed when the {@code StockPriceFetchMode} is asynchronous.
  */
-public enum StockQuoteState
+public enum StockPriceCacheState
 {
     /**
      * The stock quote is up to date within the EXPIRATION_TIME
@@ -18,10 +18,6 @@ public enum StockQuoteState
      */
     STALE,
     /**
-     * The stock quote is not in the cache and will be retrieved
-     */
-    NOT_CACHED,
-    /**
      * The stock ticker symbol was not found
      */
     NOT_FOUND,
@@ -32,7 +28,6 @@ public enum StockQuoteState
 
     public boolean isCurrent() { return this == CURRENT; }
     public boolean isStale() { return this == STALE; }
-    public boolean isNotCached() { return this == NOT_CACHED; }
     public boolean isNotFound() { return this == NOT_FOUND; }
 
 
@@ -42,9 +37,9 @@ public enum StockQuoteState
         return ordinal();
     }
 
-    public static StockQuoteState valueOf( final Integer stockQuoteState )
+    public static StockPriceCacheState valueOf( final Integer stockQuoteState )
     {
-        StockQuoteState returnValue = null;
+        StockPriceCacheState returnValue = null;
         for ( int i = 0; i < values().length; i++ )
         {
             if ( values()[i].ordinal() == stockQuoteState  )
@@ -54,7 +49,7 @@ public enum StockQuoteState
         }
         if ( returnValue == null )
         {
-            throw new IllegalArgumentException( stockQuoteState + " is not a valid StockQuoteState ordinal value" );
+            throw new IllegalArgumentException( stockQuoteState + " is not a valid StockPriceCacheState ordinal value" );
         }
         return returnValue;
     }

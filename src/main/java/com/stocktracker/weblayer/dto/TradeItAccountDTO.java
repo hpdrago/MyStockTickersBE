@@ -3,6 +3,9 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 
@@ -10,6 +13,8 @@ import java.sql.Timestamp;
  * This class defines the data that will be sent to the client when requesting information for a Customer
  * Created by mike on 5/15/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class TradeItAccountDTO implements VersionedDTO<Integer>
 {
     private Integer id;

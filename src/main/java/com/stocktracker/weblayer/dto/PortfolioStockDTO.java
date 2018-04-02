@@ -2,17 +2,22 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
 /**
  * Created by mike on 10/30/2016.
  */
-public class PortfolioStockDTO extends StockTickerQuote
-                               implements StockQuoteService.StockQuoteContainer,
-                                          VersionedDTO<Integer>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class PortfolioStockDTO extends StockPriceDTO
+    implements StockPriceContainer,
+               VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -240,18 +245,6 @@ public class PortfolioStockDTO extends StockTickerQuote
         this.tickerSymbol = tickerSymbol;
     }
 
-    @Override
-    public BigDecimal getAvgAnalystPriceTarget()
-    {
-        return avgAnalystPriceTarget;
-    }
-
-    @Override
-    public void setAvgAnalystPriceTarget( final BigDecimal avgAnalystPriceTarget )
-    {
-        this.avgAnalystPriceTarget = avgAnalystPriceTarget;
-    }
-    
     @Override
     public String toString()
     {

@@ -4,15 +4,20 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
-import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                                          StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                          VersionedDTO<Integer>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class StockAnalystConsensusDTO extends StockPriceDTO implements StockPriceContainer,
+                                                                       StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                       VersionedDTO<Integer>
 {
     /*
      * Entity (DB columns)
@@ -36,11 +41,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     private Integer notesSourceId;
     private String notesSourceName;
     private Integer version;
-
-    /*
-     * Calculated columns
-     */
-    private String companyName;
 
     public static StockAnalystConsensusDTO newInstance()
     {
@@ -135,18 +135,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
     public void setHighAnalystPriceTarget( BigDecimal highAnalystPriceTarget )
     {
         this.highAnalystPriceTarget = highAnalystPriceTarget;
-    }
-
-    @Override
-    public String getCompanyName()
-    {
-        return this.companyName;
-    }
-
-    @Override
-    public void setCompanyName( final String companyName )
-    {
-        this.companyName = companyName;
     }
 
     public Integer getAnalystStrongBuyCount()
@@ -286,7 +274,6 @@ public class StockAnalystConsensusDTO extends StockTickerQuote implements StockQ
         sb.append( ", analystPriceDate='" ).append( analystPriceDate ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", version='" ).append( version ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

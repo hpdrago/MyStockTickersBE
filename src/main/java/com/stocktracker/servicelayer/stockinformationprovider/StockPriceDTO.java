@@ -3,6 +3,8 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.servicelayer.service.stocks.StockOpenPriceContainer;
+import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,56 +16,57 @@ import java.util.Objects;
  *
  * Created by mike on 12/10/2016.
  */
-public class StockTickerQuote implements StockQuote
+public class StockPriceDTO implements StockPriceContainer,
+                                      StockOpenPriceContainer
 {
     private String tickerSymbol;
-    private String companyName;
-    private String stockExchange;
-    @JsonSerialize( using = JSONMoneySerializer.class )
-    private BigDecimal openPrice;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
-    private StockQuoteState stockQuoteState;
+    private StockPriceCacheState stockPriceCacheState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expiration;
+    private BigDecimal openPrice;
 
     /**
      * Create a new instance with the ticker and the state.
      * This method is used when the stock quote is being retrieved asynchronously.
      * @param tickerSymbol
-     * @param stockQuoteState
+     * @param stockPrice
+     * @param stockPriceCacheState
      * @return
      */
-    public static StockTickerQuote newInstance( final String tickerSymbol,
-                                                final StockQuoteState stockQuoteState )
+    public static StockPriceDTO newInstance( final String tickerSymbol,
+                                             final BigDecimal stockPrice,
+                                             final StockPriceCacheState stockPriceCacheState )
     {
-        StockTickerQuote stockTickerQuote = new StockTickerQuote();
-        stockTickerQuote.tickerSymbol = tickerSymbol;
-        stockTickerQuote.stockQuoteState = stockQuoteState;
-        return stockTickerQuote;
+        StockPriceDTO stockPriceDTO = new StockPriceDTO();
+        stockPriceDTO.tickerSymbol = tickerSymbol;
+        stockPriceDTO.stockPriceCacheState = stockPriceCacheState;
+        stockPriceDTO.setLastPrice( stockPrice );
+        return stockPriceDTO;
     }
 
-    public StockQuoteState getStockQuoteState()
+    public StockPriceCacheState getStockPriceCacheState()
     {
-        return stockQuoteState;
+        return stockPriceCacheState;
     }
 
     @Override
-    public Timestamp getExpiration()
+    public Timestamp getExpirationTime()
     {
         return expiration;
     }
 
-    public void setExpiration( final Timestamp expiration )
+    public void setExpirationTime( final Timestamp expiration )
     {
         this.expiration = expiration;
     }
 
-    public void setStockQuoteState( final StockQuoteState stockQuoteState )
+    public void setStockPriceCacheState( final StockPriceCacheState stockPriceCacheState )
     {
-        this.stockQuoteState = stockQuoteState;
+        this.stockPriceCacheState = stockPriceCacheState;
     }
 
     public String getTickerSymbol()
@@ -100,38 +103,14 @@ public class StockTickerQuote implements StockQuote
         this.lastPriceChange = lastPriceChange;
     }
 
-
-    public String getCompanyName()
-    {
-        return companyName;
-    }
-
-    @Override
-    public String getStockExchange()
-    {
-        return stockExchange;
-    }
-
-
     public void setOpenPrice( final BigDecimal openPrice )
     {
         this.openPrice = openPrice;
     }
 
-    @Override
     public BigDecimal getOpenPrice()
     {
         return this.openPrice;
-    }
-
-    public void setCompanyName( final String companyName )
-    {
-        this.companyName = companyName;
-    }
-
-    public void setStockExchange( final String stockExchange )
-    {
-        this.stockExchange = stockExchange;
     }
 
     @Override
@@ -145,7 +124,7 @@ public class StockTickerQuote implements StockQuote
         {
             return false;
         }
-        final StockTickerQuote that = (StockTickerQuote) o;
+        final StockPriceDTO that = (StockPriceDTO) o;
         return Objects.equals( tickerSymbol, that.tickerSymbol );
     }
 
@@ -158,14 +137,12 @@ public class StockTickerQuote implements StockQuote
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockTickerQuote{" );
+        final StringBuilder sb = new StringBuilder( "StockPriceQuote{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
-        sb.append( ", stockExchange='" ).append( companyName ).append( '\'' );
-        sb.append( ", openPrice=" ).append( openPrice );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", stockQuoteState=" ).append( stockQuoteState );
+        sb.append( ", openPrice=" ).append( lastPrice );
+        sb.append( ", stockPriceCacheState=" ).append( stockPriceCacheState );
         sb.append( ", expiration=" ).append( expiration );
         sb.append( '}' );
         return sb.toString();

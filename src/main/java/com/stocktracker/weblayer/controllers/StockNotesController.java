@@ -192,8 +192,8 @@ public class StockNotesController extends AbstractController implements MyLogger
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerIdAndTickerSymbol( pageRequest,
-                                                                                                       customerId,
-                                                                                                       tickerSymbol );
+                                                                                                            customerId,
+                                                                                                            tickerSymbol );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.getTotalElements() );
         return stockNoteDTOs;

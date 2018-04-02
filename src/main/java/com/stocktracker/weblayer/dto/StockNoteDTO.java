@@ -3,8 +3,11 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
-import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -12,9 +15,11 @@ import java.util.Objects;
 /**
  * Created by mike on 5/7/2017.
  */
-public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                              StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                              VersionedDTO<Integer>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class StockNoteDTO extends StockPriceDTO implements StockPriceContainer,
+                                                           StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                           VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -33,7 +38,6 @@ public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.
     private BigDecimal stockPriceWhenCreated;
     private String createDate;
     private String updateDate;
-    private BigDecimal avgAnalystPriceTarget;
     private Integer version;
 
     public Integer getId()
@@ -124,18 +128,6 @@ public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.
     public void setPublicInd( Boolean publicInd )
     {
         this.publicInd = publicInd;
-    }
-
-    @Override
-    public BigDecimal getAvgAnalystPriceTarget()
-    {
-        return avgAnalystPriceTarget;
-    }
-
-    @Override
-    public void setAvgAnalystPriceTarget( final BigDecimal avgAnalystPriceTarget )
-    {
-        this.avgAnalystPriceTarget = avgAnalystPriceTarget;
     }
 
     public Integer getCustomerId()
@@ -247,7 +239,6 @@ public class StockNoteDTO extends StockTickerQuote implements StockQuoteService.
         sb.append( ", actionTaken=" ).append( actionTaken );
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
-        sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", updateDate='" ).append( updateDate ).append( '\'' );

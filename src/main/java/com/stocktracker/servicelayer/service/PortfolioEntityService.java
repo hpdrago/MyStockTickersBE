@@ -9,7 +9,6 @@ import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +27,13 @@ import java.util.Objects;
 @Service
 @Transactional
 public class PortfolioEntityService extends VersionedEntityService<Integer,
-                                                             PortfolioEntity,
-                                                             PortfolioDTO,
-                                                             PortfolioRepository>
+                                                                   PortfolioEntity,
+                                                                   PortfolioDTO,
+                                                                   PortfolioRepository>
     implements MyLogger
 {
     private PortfolioRepository portfolioRepository;
-    private StockEntityService stockService;
+    private StockCompanyEntityService stockCompanyEntityService;
     private PortfolioStockEntityService portfolioStockService;
     private PortfolioCalculator portfolioCalculator;
 
@@ -121,21 +120,15 @@ public class PortfolioEntityService extends VersionedEntityService<Integer,
     }
 
     @Override
-    protected PortfolioDTO entityToDTO( final PortfolioEntity entity )
+    protected PortfolioDTO createDTO()
     {
-        Objects.requireNonNull( entity );
-        PortfolioDTO portfolioDTO = PortfolioDTO.newInstance();
-        BeanUtils.copyProperties( entity, portfolioDTO );
-        return portfolioDTO;
+        return this.context.getBean( PortfolioDTO.class );
     }
 
     @Override
-    protected PortfolioEntity dtoToEntity( final PortfolioDTO dto )
+    protected PortfolioEntity createEntity()
     {
-        Objects.requireNonNull( dto );
-        PortfolioEntity portfolioEntity = PortfolioEntity.newInstance();
-        BeanUtils.copyProperties( dto, portfolioEntity );
-        return portfolioEntity;
+        return this.context.getBean( PortfolioEntity.class );
     }
 
     @Override
@@ -157,9 +150,9 @@ public class PortfolioEntityService extends VersionedEntityService<Integer,
     }
 
     @Autowired
-    public void setStockService( StockEntityService stockService )
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
     {
-        this.stockService = stockService;
+        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 
     @Autowired

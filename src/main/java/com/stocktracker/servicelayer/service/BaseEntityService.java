@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,10 @@ import java.util.Objects;
  * This is the base class for all services that interface with the database to store and retrieve entities from a single
  * table in the database.
  *
+ * <ID> The Primary Key
+ *  <E> The Entity
+ *  <D> The DTO
+ *  <R> The JpaRepository
  * Created by mike on 11/1/2016.
  */
 public abstract class BaseEntityService<ID extends Serializable,
@@ -30,18 +35,42 @@ public abstract class BaseEntityService<ID extends Serializable,
     protected ApplicationContext context;
 
     /**
-     * Subclass must override this method to copy properties from the database entity to the DTO.
-     * @param entity
-     * @return
+     * Creates a new entity instance of type <E> and copies the properties with the same name and type
+     * to the dto.
+     * @param entity Contains the entity information.
+     * @return new DTO instance of type <D> with properties copied from the entity.
      */
-    abstract protected D entityToDTO( final E entity );
+    protected D entityToDTO( final E entity )
+    {
+        final D dto = this.createDTO();
+        BeanUtils.copyProperties( entity, dto );
+        return dto;
+    }
 
     /**
-     * Subclasses must override this method to copy properties from the DTO to the database entity.
-     * @param dto
+     * Subclasses must override this method to create their version of a DTO.
      * @return
      */
-    abstract protected E dtoToEntity( final D dto );
+    protected abstract D createDTO();
+
+    /**
+     * Creates a new entity of type <E> and copies the properties with the same name and data type from the dto.
+     * @param dto of type <D>
+     * @return new DTO instance with values copied form the entity.
+     */
+    protected E dtoToEntity( final D dto )
+    {
+        final E entity = this.createEntity();
+        BeanUtils.copyProperties( dto, entity );
+        return entity;
+    }
+
+    /**
+     * Subclasses must override this method to create their instance of an entity.
+     * @return
+     */
+    protected abstract E createEntity();
+
 
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.

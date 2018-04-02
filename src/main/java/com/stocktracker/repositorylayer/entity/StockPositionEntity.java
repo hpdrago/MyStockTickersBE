@@ -2,8 +2,8 @@ package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

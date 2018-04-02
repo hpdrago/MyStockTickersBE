@@ -1,6 +1,9 @@
 package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +15,8 @@ import java.util.List;
  *
  * Created by mike on 11/19/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockSectorsDTO
 {
     @JsonProperty

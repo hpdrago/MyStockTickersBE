@@ -5,6 +5,9 @@ import com.stocktracker.common.EntityLoadingStatus;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -12,6 +15,8 @@ import java.sql.Timestamp;
 /**
  * This is the DTO class for the {@code LinkedAccountEntity} class.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class LinkedAccountDTO implements VersionedDTO<Integer>
 {
     private Integer id;

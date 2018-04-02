@@ -3,10 +3,6 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by mike on 11/3/2016.

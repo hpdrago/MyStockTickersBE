@@ -22,7 +22,7 @@ public class AppConfig
         pool.setCorePoolSize(5);
         pool.setMaxPoolSize(30);
         pool.setWaitForTasksToCompleteOnShutdown(true);
-        pool.setThreadNamePrefix( "StockQuote-" );
+        pool.setThreadNamePrefix( "IStockPriceQuote-" );
         return pool;
     }
 

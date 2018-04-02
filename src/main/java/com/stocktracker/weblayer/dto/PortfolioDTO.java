@@ -1,10 +1,16 @@
 package com.stocktracker.weblayer.dto;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
 /**
  * Created by mike on 10/23/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class PortfolioDTO implements VersionedDTO<Integer>
 {
     /**

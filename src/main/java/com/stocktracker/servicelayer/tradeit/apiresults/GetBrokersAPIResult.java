@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.stocktracker.servicelayer.tradeit.apicalls.GetBrokersAPICall;
 import com.stocktracker.servicelayer.tradeit.types.TradeItBroker;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;

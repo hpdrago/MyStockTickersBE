@@ -5,7 +5,6 @@ import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -13,7 +12,6 @@ import org.springframework.util.Assert;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -189,21 +187,15 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
     }
 
     @Override
-    protected StockNoteSourceDTO entityToDTO( final StockNoteSourceEntity stockNoteSourceEntity )
+    protected StockNoteSourceDTO createDTO()
     {
-        Objects.requireNonNull( stockNoteSourceEntity );
-        StockNoteSourceDTO stockNoteSourceDTO = StockNoteSourceDTO.newInstance();
-        BeanUtils.copyProperties( stockNoteSourceEntity, stockNoteSourceDTO );
-        return stockNoteSourceDTO;
+        return this.context.getBean( StockNoteSourceDTO.class );
     }
 
     @Override
-    protected StockNoteSourceEntity dtoToEntity( final StockNoteSourceDTO stockNoteSourceDTO )
+    protected StockNoteSourceEntity createEntity()
     {
-        Objects.requireNonNull( stockNoteSourceDTO );
-        StockNoteSourceEntity stockNoteSourceEntity = StockNoteSourceEntity.newInstance();
-        BeanUtils.copyProperties( stockNoteSourceDTO, stockNoteSourceEntity );
-        return stockNoteSourceEntity;
+        return this.context.getBean( StockNoteSourceEntity.class );
     }
 
     @Override

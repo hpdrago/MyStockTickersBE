@@ -1,18 +1,11 @@
 package com.stocktracker.task;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.repositorylayer.entity.StockEntity;
-import com.stocktracker.repositorylayer.repository.StockRepository;
-import com.stocktracker.servicelayer.service.StockEntityService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
+import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.stockinformationprovider.YahooStockService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.sql.Timestamp;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by mike on 12/10/2016.
@@ -23,10 +16,11 @@ public class UpdateStockPricesTask implements MyLogger
     private static final long ONE_HOUR_MILLIS = 3600 * 1000;
     private static final long ONE_DAY_MILLIS = ONE_HOUR_MILLIS * 24;
     private boolean updateStockPrices = false;
-    private StockRepository stockRepository;
-    private StockEntityService stockService;
+    private StockCompanyRepository stockCompanyRepository;
+    private StockCompanyEntityService stockCompanyEntityService;
     private YahooStockService yahooStockService;
 
+    /*
     @Scheduled( initialDelay = 0, fixedRate = ONE_HOUR_MILLIS )
     public void updateStockPricesTask()
     {
@@ -42,13 +36,13 @@ public class UpdateStockPricesTask implements MyLogger
                     stockEntity.getLastPriceUpdate().before( yesterday );
                 if ( updateNeeded )
                 {
-                    StockTickerQuote stockTickerQuote = null;
+                    StockPriceQuote stockTickerQuote = null;
                     try
                     {
-                        stockTickerQuote = this.yahooStockService.getStockTickerQuote( stockEntity.getTickerSymbol() );
+                        stockTickerQuote = this.yahooStockService.getStockPrice( stockEntity.getTickerSymbol() );
                         logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
                                   stockTickerQuote.getLastPrice(), stockTickerQuote.getLastPriceChange() );
-                        stockEntity.setLastPrice( stockTickerQuote.getLastPrice() );
+                        stockEntity.setStockPrice( stockTickerQuote.getLastPrice() );
                         stockEntity.setLastPriceUpdate( new Timestamp( startTime ) );
                         stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
                         this.stockRepository.save( stockEntity );
@@ -66,26 +60,26 @@ public class UpdateStockPricesTask implements MyLogger
             long seconds = TimeUnit.MILLISECONDS.toMinutes( (endTime - startTime) - (minutes * 60 * 1000) );
             logInfo( methodName, "Updating Stock Prices completed in {0}:{1} minutes:seconds", minutes, seconds );
         }
-    }
+    }*/
 
     /**
      * Dependency injection of the StockRepository
      *
-     * @param stockRepository
+     * @param stockCompanyRepository
      */
     @Autowired
-    public void setStockRepository( final StockRepository stockRepository )
+    public void setStockCompanyRepository( final StockCompanyRepository stockCompanyRepository )
     {
-        final String methodName = "setStockRepository";
-        logInfo( methodName, "Dependency Injection of: " + stockRepository );
-        this.stockRepository = stockRepository;
+        final String methodName = "setStockCompanyRepository";
+        logInfo( methodName, "Dependency Injection of: " + stockCompanyRepository );
+        this.stockCompanyRepository = stockCompanyRepository;
     }
 
     @Autowired
-    public void setStockService( final StockEntityService stockService )
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
     {
-        this.stockService = stockService;
-        logInfo( "setStockService", "Dependency Injection of: " + stockRepository );
+        this.stockCompanyEntityService = stockCompanyEntityService;
+        logInfo( "setStockCompanyEntityService", "Dependency Injection of: " + stockCompanyRepository );
     }
 
     @Autowired

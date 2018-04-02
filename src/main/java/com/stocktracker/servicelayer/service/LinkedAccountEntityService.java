@@ -10,7 +10,6 @@ import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +26,9 @@ import java.util.List;
 @Service
 @Transactional
 public class LinkedAccountEntityService extends VersionedEntityService<Integer,
-                                                                 LinkedAccountEntity,
-                                                                 LinkedAccountDTO,
-                                                                 LinkedAccountRepository>
+                                                                       LinkedAccountEntity,
+                                                                       LinkedAccountDTO,
+                                                                       LinkedAccountRepository>
                                         implements MyLogger
 {
     private LinkedAccountRepository linkedAccountRepository;
@@ -144,19 +143,15 @@ public class LinkedAccountEntityService extends VersionedEntityService<Integer,
     }
 
     @Override
-    protected LinkedAccountDTO entityToDTO( final LinkedAccountEntity linkedAccountEntity )
+    protected LinkedAccountDTO createDTO()
     {
-        final LinkedAccountDTO linkedAccountDTO = new LinkedAccountDTO();
-        BeanUtils.copyProperties( linkedAccountEntity, linkedAccountDTO );
-        return linkedAccountDTO;
+        return this.context.getBean( LinkedAccountDTO.class );
     }
 
     @Override
-    protected LinkedAccountEntity dtoToEntity( final LinkedAccountDTO linkedAccountDTO )
+    protected LinkedAccountEntity createEntity()
     {
-        final LinkedAccountEntity linkedAccountEntity = new LinkedAccountEntity();
-        BeanUtils.copyProperties( linkedAccountDTO, linkedAccountEntity );
-        return linkedAccountEntity;
+        return this.context.getBean( LinkedAccountEntity.class );
     }
 
     @Override

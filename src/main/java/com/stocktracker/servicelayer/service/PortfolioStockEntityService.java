@@ -7,7 +7,8 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
-import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.service.stocks.StockInformationService;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
                                                                         PortfolioStockRepository>
     implements MyLogger
 {
-    private StockQuoteService stockQuoteService;
+    private StockInformationService stockInformationService;
     private PortfolioStockRepository portfolioStockRepository;
 
     /**
@@ -64,8 +65,8 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
             throw new PortfolioStockNotFound( customerId, portfolioId, tickerSymbol );
         }
         PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
-        this.stockQuoteService
-            .setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockInformationService
+            .setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
     }
@@ -136,7 +137,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
         logDebug( methodName, "inserting: {0}", portfolioStockEntity );
         final PortfolioStockEntity returnCustomerStockEntity = this.addEntity( portfolioStockEntity );
         final PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
-        this.stockQuoteService.setStockQuoteInformation( returnPortfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockInformationService.setStockPrice( returnPortfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnPortfolioStockDTO );
         return returnPortfolioStockDTO;
     }
@@ -158,7 +159,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
         PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance();
         portfolioStockEntity.setPortfolioId( portfolioStockDTO.getPortfolioId() );
         BeanUtils.copyProperties( portfolioStockDTO, portfolioStockEntity );
-        this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+        this.stockInformationService.setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockEntity );
         return portfolioStockEntity;
     }
@@ -177,24 +178,20 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
         final String methodName = "setStockInformation";
         for ( PortfolioStockDTO portfolioStockDTO : portfolioStockDTOList )
         {
-            this.stockQuoteService.setStockQuoteInformation( portfolioStockDTO, StockQuoteFetchMode.ASYNCHRONOUS );
+            this.stockInformationService.setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         }
     }
 
     @Override
-    protected PortfolioStockDTO entityToDTO( final PortfolioStockEntity entity )
+    protected PortfolioStockDTO createDTO()
     {
-        PortfolioStockDTO dto = PortfolioStockDTO.newInstance();
-        BeanUtils.copyProperties( entity, dto );
-        return dto;
+        return this.context.getBean( PortfolioStockDTO.class );
     }
 
     @Override
-    protected PortfolioStockEntity dtoToEntity( final PortfolioStockDTO dto )
+    protected PortfolioStockEntity createEntity()
     {
-        PortfolioStockEntity entity = PortfolioStockEntity.newInstance();
-        BeanUtils.copyProperties( entity, dto );
-        return entity;
+        return this.context.getBean( PortfolioStockEntity.class );
     }
 
     @Override
@@ -204,9 +201,9 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
     }
 
     @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    public void setStockInformationService( final StockInformationService stockInformationService )
     {
-        this.stockQuoteService = stockQuoteService;
+        this.stockInformationService = stockInformationService;
     }
 
     @Autowired

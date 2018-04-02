@@ -1,15 +1,16 @@
 package com.stocktracker.weblayer.dto;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockNoteCountDTO
 {
     private int customerId;
     private String tickerSymbol;
     private int noteCount;
-
-    public static StockNoteCountDTO newInstance()
-    {
-        return new StockNoteCountDTO();
-    }
 
     public String getTickerSymbol()
     {

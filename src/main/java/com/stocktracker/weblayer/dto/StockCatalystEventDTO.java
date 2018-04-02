@@ -1,25 +1,22 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.servicelayer.service.StockQuoteService;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-public class StockCatalystEventDTO implements StockQuoteService.StockCompanyNameContainer,
-                                              VersionedDTO<Integer>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class StockCatalystEventDTO implements VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;
     private String tickerSymbol;
-    private String companyName;
     private String catalystDate;
     private String catalystDesc;
     private Byte dateOrTimePeriod;
     private Byte timePeriod;
     private Short timePeriodYear;
     private Integer version;
-
-    public static StockCatalystEventDTO newInstance()
-    {
-        return new StockCatalystEventDTO();
-    }
 
     public Integer getId()
     {
@@ -44,17 +41,6 @@ public class StockCatalystEventDTO implements StockQuoteService.StockCompanyName
     public String getTickerSymbol()
     {
         return tickerSymbol;
-    }
-
-    @Override
-    public void setCompanyName( final String companyName )
-    {
-        this.companyName = companyName;
-    }
-
-    public String getCompanyName()
-    {
-        return companyName;
     }
 
     public void setTickerSymbol( String tickerSymbol )
@@ -154,7 +140,6 @@ public class StockCatalystEventDTO implements StockQuoteService.StockCompanyName
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", catalystDate='" ).append( catalystDate ).append( '\'' );
         sb.append( ", catalystDesc='" ).append( catalystDesc ).append( '\'' );
         sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );

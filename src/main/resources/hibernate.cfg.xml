@@ -27,5 +27,8 @@
         <mapping class="com.stocktracker.repositorylayer.entity.TradeItAccountEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.LinkedAccountEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockPositionEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.StockCompanyEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.StockKeyStatsEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.StockQuoteEntity"/>
     </session-factory>
 </hibernate-configuration>

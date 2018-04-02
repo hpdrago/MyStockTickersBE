@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 
+import java.math.BigDecimal;
+
 /**
  * Defines the methods required for a stock quote provider.
  */
@@ -14,11 +16,11 @@ public interface StockQuoteServiceProvider
     String getProviderName();
 
     /**
-     * Get the ticker quote from the provider.
+     * Get the stock price.
      * @param tickerSymbol
      * @return
      */
-    StockTickerQuote getStockTickerQuote( final String tickerSymbol )
+    BigDecimal getStockPrice( final String tickerSymbol )
         throws StockNotFoundException;
 }
 

@@ -1,5 +1,9 @@
 package com.stocktracker.weblayer.dto;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +13,8 @@ import java.util.Objects;
  *
  * Created by mike on 12/3/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class PortfolioStockDTOs
 {
     private List<PortfolioStockDTO> portfolioStocks = new ArrayList<>();

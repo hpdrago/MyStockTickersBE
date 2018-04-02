@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <!--<property name="LOG_FILE" value="/Users/mike/IdeaProjects/MyStockTickersBE/logs/stocktracker.log"/>-->
     <!--<property name="LOG_FILE" value="/Users/michael.earl/Projects/MyStockTickersBE/logs/stocktracker.log"/>-->
-    <property name="LOG_FILE" value="/Users/michael.earl/Projects/MyStockTickersBE/logs/stocktracker.log"/>
+    <property name="LOG_FILE" value="/Users/mike/IdeaProjects/MyStockTickersBE/logs/stocktracker.log"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
 
@@ -25,7 +25,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.StockQuoteService" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.stocks.StockInformationService" level="ALL" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
@@ -35,7 +35,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.stockinformationprovider" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.stockinformationprovider" level="ALL" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>

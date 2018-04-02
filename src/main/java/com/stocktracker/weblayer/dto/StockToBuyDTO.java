@@ -1,16 +1,21 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
-import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockTickerQuote;
+import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService.StockQuoteContainer,
-                                                               StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                               VersionedDTO<Integer>
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
+public class StockToBuyDTO extends StockPriceDTO implements StockPriceContainer,
+                                                            StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                            VersionedDTO<Integer>
 {
     /*
      * Entity (DB columns)
@@ -28,11 +33,6 @@ public class StockToBuyDTO extends StockTickerQuote implements StockQuoteService
     private String[] tags;
     private BigDecimal avgAnalystPriceTarget;
     private Integer version;
-
-    public static StockToBuyDTO newInstance()
-    {
-        return new StockToBuyDTO();
-    }
 
     public Integer getId()
     {

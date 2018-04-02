@@ -14,7 +14,6 @@ import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,7 @@ import java.util.List;
  * This service class handles requests for StockPosition actions.
  */
 @Service
-public class StockPositionService extends StockQuoteContainerEntityService<Integer,
+public class StockPositionService extends StockInformationEntityService<Integer,
                                                                            StockPositionEntity,
                                                                            StockPositionDTO,
                                                                            StockPositionRepository>
@@ -129,7 +128,7 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
              * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
              */
             this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId, getPositionsAPIResult );
-            this.updateStockQuoteInformation( stockPositionList );
+            this.getStockPrices( stockPositionList );
         }
         else
         {
@@ -165,18 +164,15 @@ public class StockPositionService extends StockQuoteContainerEntityService<Integ
     }
 
     @Override
-    protected StockPositionDTO entityToDTO( final StockPositionEntity entity )
+    protected StockPositionDTO createDTO()
     {
-        final StockPositionDTO stockPositionDTO = this.context.getBean( StockPositionDTO.class );
-        BeanUtils.copyProperties( entity, stockPositionDTO );
-        return stockPositionDTO;
+        return this.context.getBean( StockPositionDTO.class );
     }
 
     @Override
-    protected StockPositionEntity dtoToEntity( final StockPositionDTO dto )
+    protected StockPositionEntity createEntity()
     {
-        final StockPositionEntity entity = this.context.getBean( StockPositionEntity.class );
-        return entity;
+        return this.context.getBean( StockPositionEntity.class );
     }
 
     @Override

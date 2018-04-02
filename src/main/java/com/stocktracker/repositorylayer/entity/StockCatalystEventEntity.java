@@ -26,11 +26,6 @@ public class StockCatalystEventEntity implements VersionedEntity<Integer>
     private Timestamp updateDate;
     private Integer version;
 
-    public static StockCatalystEventEntity newInstance()
-    {
-        return new StockCatalystEventEntity();
-    }
-
     @Id
     @Column( name = "id", nullable = false )
     @GeneratedValue( strategy = GenerationType.IDENTITY)

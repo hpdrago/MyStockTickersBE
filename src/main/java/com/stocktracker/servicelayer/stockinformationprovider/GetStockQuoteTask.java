@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class GetStockQuoteTask implements Runnable, MyLogger
 {
     private StockQuoteServiceProvider serviceProvider;
-    private StockQuoteCache stockQuoteCache;
+    private StockPriceCache stockPriceCache;
     private String tickerSymbol;
 
     @Override
@@ -35,9 +35,9 @@ public class GetStockQuoteTask implements Runnable, MyLogger
         this.tickerSymbol = tickerSymbol;
     }
 
-    public void setStockQuoteCache( final StockQuoteCache stockQuoteCache )
+    public void setStockPriceCache( final StockPriceCache stockPriceCache )
     {
-        this.stockQuoteCache = stockQuoteCache;
+        this.stockPriceCache = stockPriceCache;
     }
 
 

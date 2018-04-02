@@ -7,7 +7,7 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
-import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,15 @@ import java.util.Objects;
  */
 @Service
 @Transactional
-public class StockNoteEntityService extends StockQuoteContainerEntityService<Integer,
-                                                                                 StockNoteEntity,
-                                                                                 StockNoteDTO,
-                                                                                 StockNoteRepository>
+public class StockNoteEntityService extends StockInformationEntityService<Integer,
+                                                                             StockNoteEntity,
+                                                                             StockNoteDTO,
+                                                                             StockNoteRepository>
 {
     /**
      * Autowired service classes
      */
-    private StockEntityService stockService;
+    private StockCompanyEntityService stockCompanyEntityService;
     private StockNoteRepository stockNoteRepository;
     private StockTagService stockTagService;
     private StockNoteSourceEntityService stockNoteSourceService;
@@ -106,7 +106,6 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
      */
     public StockNoteDTO createStockNote( final StockNoteDTO stockNoteDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException,
                EntityVersionMismatchException
     {
         final String methodName = "createStockNote";
@@ -116,12 +115,12 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
         /*
          * Check to see if the stock exists
          */
-        this.stockService.checkStockTableEntry( stockNoteDTO.getTickerSymbol() );
+        this.stockCompanyEntityService.checkStockTableEntry( stockNoteDTO.getTickerSymbol() );
         StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
         /*
          * Set the stock price when created for one stock note entity
          */
-        stockNoteEntity.setStockPriceWhenCreated( this.getStockQuoteService()
+        stockNoteEntity.setStockPriceWhenCreated( this.getStockInformationService()
                                                       .getStockPrice( stockNoteEntity.getTickerSymbol() ));
         stockNoteEntity = this.addEntity( stockNoteEntity );
         StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
@@ -157,7 +156,6 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
     @Override
     protected StockNoteDTO entityToDTO( final StockNoteEntity stockNoteEntity )
     {
-        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = new StockNoteDTO();
         BeanUtils.copyProperties( stockNoteEntity, stockNoteDTO );
@@ -169,25 +167,14 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
             stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceId().getName() );
             stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceId().getId() );
         }
-        try
-        {
-            this.getStockQuoteService().setStockQuoteInformation( stockNoteDTO, StockQuoteFetchMode.ASYNCHRONOUS );
-        }
-        catch ( StockQuoteUnavailableException e )
-        {
-            logError( methodName, e );
-        }
-        catch ( StockNotFoundException e )
-        {
-            e.printStackTrace();
-        }
+        this.getStockInformationService().setStockPrice( stockNoteDTO, StockPriceFetchMode.ASYNCHRONOUS );
         return stockNoteDTO;
     }
 
     @Override
     protected StockNoteEntity dtoToEntity( final StockNoteDTO stockNoteDTO )
     {
-        StockNoteEntity stockNoteEntity = StockNoteEntity.newInstance();
+        StockNoteEntity stockNoteEntity = this.createEntity();
         BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
         if ( stockNoteDTO.getNotesSourceId() != null &&
              stockNoteDTO.getNotesSourceId() > 0 )
@@ -198,6 +185,18 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
         }
         stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;
+    }
+
+    @Override
+    protected StockNoteDTO createDTO()
+    {
+        return this.context.getBean( StockNoteDTO.class );
+    }
+
+    @Override
+    protected StockNoteEntity createEntity()
+    {
+        return this.context.getBean( StockNoteEntity.class );
     }
 
     @Override
@@ -215,12 +214,12 @@ public class StockNoteEntityService extends StockQuoteContainerEntityService<Int
     /**
      * Allow DI to set the StockContainerService
      *
-     * @param stockService
+     * @param stockCompanyEntityService
      */
     @Autowired
-    public void setStockService( final StockEntityService stockService )
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
     {
-        this.stockService = stockService;
+        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 
     @Autowired

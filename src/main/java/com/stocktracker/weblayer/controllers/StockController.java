@@ -1,17 +1,13 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.DuplicateTickerSymbolException;
-import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockNotFoundInDatabaseException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.servicelayer.service.StockQuoteService;
-import com.stocktracker.servicelayer.service.StockEntityService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockQuote;
-import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
-import com.stocktracker.weblayer.dto.StockDTO;
+import com.stocktracker.servicelayer.service.StockCompanyEntityService;
+import com.stocktracker.servicelayer.service.stocks.StockInformationService;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
+import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,8 +31,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class StockController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/stocks";
-    private StockEntityService stockService;
-    private StockQuoteService stockQuoteService;
+    private StockCompanyEntityService stockCompanyEntityService;
+    private StockInformationService stockInformationService;
 
     /**
      * Get all of the stocks within the pageRequest parameters
@@ -48,13 +43,13 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/page",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockDTO> getStocksPage( final Pageable pageRequest )
+    public Page<StockCompanyDTO> getStockCompanyPage( final Pageable pageRequest )
     {
-        final String methodName = "getStocks";
+        final String methodName = "getStockCompanyPage";
         logMethodBegin( methodName, pageRequest );
-        Page<StockDTO> stockDTOs = this.stockService.getPage( pageRequest,false );
-        logMethodEnd( methodName, stockDTOs );
-        return stockDTOs;
+        Page<StockCompanyDTO> stockCompanyDTOs = this.stockCompanyEntityService.getPage( pageRequest, false );
+        logMethodEnd( methodName, stockCompanyDTOs );
+        return stockCompanyDTOs;
     }
 
     /**
@@ -66,8 +61,8 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/companiesLike/{companiesLike}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockDTO> getStockCompaniesMatching( final Pageable pageRequest,
-                                                     final @PathVariable( "companiesLike" ) String companiesLike )
+    public Page<StockCompanyDTO> getStockCompaniesMatching( final Pageable pageRequest,
+                                                            final @PathVariable( "companiesLike" ) String companiesLike )
     {
         final String methodName = "getStockCompaniesMatching";
         logMethodBegin( methodName, pageRequest, companiesLike );
@@ -75,8 +70,8 @@ public class StockController extends AbstractController implements MyLogger
         {
             throw new IllegalArgumentException( "companiesLike cannot be null or empty" );
         }
-        Page<StockDTO> stockDTOs = this.stockService
-                                       .getCompaniesLike( pageRequest, companiesLike );
+        Page<StockCompanyDTO> stockDTOs = this.stockCompanyEntityService
+                                              .getCompaniesLike( pageRequest, companiesLike );
         logMethodEnd( methodName, stockDTOs );
         return stockDTOs;
     }
@@ -87,22 +82,19 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/stockQuote/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/stockPrice/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<StockQuote> getStockQuote( @PathVariable final String tickerSymbol )
-        throws StockQuoteUnavailableException
+    public ResponseEntity<StockPriceDTO> getStockPrice( @PathVariable final String tickerSymbol )
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol );
-        StockQuote stockTickerQuote = null;
+        StockPriceDTO stockTickerQuote = null;
         HttpStatus httpStatus = HttpStatus.OK;
         try
         {
-            stockTickerQuote = this.stockQuoteService
-                                   .getStockQuote( tickerSymbol, StockQuoteFetchMode.SYNCHRONOUS );
-            this.stockService
-                .saveStockQuote( stockTickerQuote );
+            stockTickerQuote = this.stockInformationService
+                                   .getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
         }
         catch( StockNotFoundException e )
         {
@@ -131,89 +123,25 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public StockDTO getStock( @PathVariable final String tickerSymbol )
+    public StockCompanyDTO getStock( @PathVariable final String tickerSymbol )
         throws StockNotFoundException
     {
         final String methodName = "getStock";
         logMethodBegin( methodName, tickerSymbol );
-        StockDTO stockDTO;
+        StockCompanyDTO stockCompanyDTO;
         /*
          * Search the database first
          */
         try
         {
-            stockDTO = this.stockService.getDTO( tickerSymbol );
+            stockCompanyDTO = this.stockCompanyEntityService.getDTO( tickerSymbol );
         }
         catch( VersionedEntityNotFoundException e )
         {
             throw new StockNotFoundException( tickerSymbol );
         }
-        logMethodEnd( methodName, stockDTO );
-        return stockDTO;
-    }
-
-    /**
-     * Add a stock to the database
-     *
-     * @return The stock that was added
-     */
-    @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL,
-                      method = RequestMethod.POST )
-    public ResponseEntity<StockDTO> addStock( @RequestBody final StockDTO stockDTO )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "saveStockEntity";
-        logMethodBegin( methodName, stockDTO );
-        if ( this.stockService.isStockExistsInDatabase( stockDTO.getTickerSymbol() ))
-        {
-            logError( methodName, "Duplicate stock: " + stockDTO.getTickerSymbol() );
-            throw new DuplicateTickerSymbolException( stockDTO.getTickerSymbol() );
-        }
-        logDebug( methodName, "call stockDTO: {0}", stockDTO );
-        StockDTO newStockDTO = this.stockService.saveDTO( stockDTO );
-        logDebug( methodName, "return stockDTO: {0}", newStockDTO );
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation( ServletUriComponentsBuilder
-                                     .fromCurrentRequest()
-                                     .path( "" )
-                                     .buildAndExpand( newStockDTO )
-                                     .toUri());
-        logMethodEnd( methodName, newStockDTO );
-        return new ResponseEntity<>( stockDTO, httpHeaders, HttpStatus.CREATED );
-    }
-
-    /**
-     * Delete a stock by ticker symbol
-     * @param tickerSymbol
-     * @return
-     * @throws StockNotFoundInDatabaseException if the stock does not exist
-     */
-    @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/{tickerSymbol}",
-                     method = RequestMethod.DELETE )
-    public ResponseEntity<Void> deleteStock( @PathVariable( "tickerSymbol" ) final String tickerSymbol )
-    {
-        final String methodName = "deleteStock";
-        logMethodBegin( methodName, tickerSymbol );
-        if ( this.stockService.isStockExistsInDatabase( tickerSymbol ))
-        {
-            logDebug( methodName, "tickerSymbol: {0}", tickerSymbol );
-            try
-            {
-                this.stockService.deleteEntity( tickerSymbol );
-            }
-            catch( VersionedEntityNotFoundException e )
-            {
-                throw new StockNotFoundInDatabaseException( tickerSymbol );
-            }
-        }
-        else
-        {
-            throw new StockNotFoundInDatabaseException( tickerSymbol );
-        }
-        logMethodEnd( methodName );
-        return new ResponseEntity<>( HttpStatus.OK );
+        logMethodEnd( methodName, stockCompanyDTO );
+        return stockCompanyDTO;
     }
 
     /**
@@ -230,8 +158,8 @@ public class StockController extends AbstractController implements MyLogger
         final String methodName = "getStockSectors";
         logMethodBegin( methodName );
         /*
-        List<StockSectorDE> stockSectorDEList = this.stockService.getStockSectors();
-        List<StockSubSectorDE> stockSubSectorDEList = this.stockService.getStockSubSectors();
+        List<StockSectorDE> stockSectorDEList = this.stockCompanyEntityService.getStockSectors();
+        List<StockSubSectorDE> stockSubSectorDEList = this.stockCompanyEntityService.getStockSubSectors();
         StockSectorsDTO stockSectorsDTO = StockSectorsDTO.newInstance( stockSectorDEList, stockSubSectorDEList );
         logMethodEnd( methodName, stockSectorsDTO );
         return stockSectorsDTO;
@@ -240,15 +168,15 @@ public class StockController extends AbstractController implements MyLogger
     }
 
     @Autowired
-    public void setStockService( final StockEntityService stockService )
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
     {
-        this.stockService = stockService;
+        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 
     @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    public void setStockInformationService( final StockInformationService stockInformationService )
     {
-        this.stockQuoteService = stockQuoteService;
+        this.stockInformationService = stockInformationService;
     }
 
 }

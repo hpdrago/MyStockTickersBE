@@ -38,11 +38,6 @@ public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteS
     private Timestamp createDate;
     private Timestamp updateDate;
 
-    public static StockToBuyEntity newInstance()
-    {
-        return new StockToBuyEntity();
-    }
-
     @Id
     @Column( name = "id", nullable = false )
     @GeneratedValue( strategy = GenerationType.IDENTITY)
@@ -77,7 +72,7 @@ public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteS
 
     public void setTickerSymbol( final String tickerSymbol )
     {
-        this.tickerSymbol = tickerSymbol == null ? null : StringUtils.truncate( tickerSymbol, StockEntity.TICKER_SYMBOL_LEN );
+        this.tickerSymbol = tickerSymbol == null ? null : StringUtils.truncate( tickerSymbol, StockCompanyEntity.TICKER_SYMBOL_LEN );
     }
 
     @Basic

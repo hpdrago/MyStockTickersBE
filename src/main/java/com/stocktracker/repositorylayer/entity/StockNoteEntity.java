@@ -46,11 +46,6 @@ public class StockNoteEntity implements MyLogger,
     private Timestamp updateDate;
     private Integer version;
 
-    public static StockNoteEntity newInstance()
-    {
-        return new StockNoteEntity();
-    }
-
     @Id
     @Column( name = "id", nullable = false )
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -30,13 +30,13 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * @return -1 if there is an error, otherwise the last stock price will be returned
      * @throws StockNotFoundException if the ticker symbol is no longer valid.
      */
-    public StockTickerQuote getStockTickerQuote( final String tickerSymbol )
+    public BigDecimal getStockPrice( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        StockTickerQuote stockTickerQuote = null;
+        BigDecimal stockPrice = null;
         try
         {
             Stock stock = getStock( tickerSymbol );
@@ -46,8 +46,8 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
             }
             else
             {
-                stockTickerQuote = getStockTickerQuote( stock );
-                logDebug( methodName, "{0} {1}", tickerSymbol, stockTickerQuote.getLastPrice() );
+                stockPrice = stock.getQuote().getPrice();
+                logDebug( methodName, "{0} {1}", tickerSymbol, stockPrice );
             }
         }
         catch( FileNotFoundException e )
@@ -58,24 +58,25 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         {
             logError( methodName, e );
         }
-        logMethodEnd( methodName, stockTickerQuote );
-        return stockTickerQuote;
+        logMethodEnd( methodName, stockPrice );
+        return stockPrice;
     }
 
     /**
-     * Create a {@code StockTickerQuote} from a {@code Stock} Yahoo stock instance
+     * Create a {@code StockPriceQuote} from a {@code Stock} Yahoo stock instance
      * @param stock
      * @return
      */
-    public StockTickerQuote getStockTickerQuote( final Stock stock )
+    /*
+    public StockPriceQuote getStockPrice( final Stock stock )
     {
-        final String methodName = "getStockTickerQuote";
+        final String methodName = "getStockPrice";
         logMethodBegin( methodName, stock );
         Objects.requireNonNull( stock, "stock cannot be null" );
         Objects.requireNonNull( stock.getSymbol(), "stock cannot be null" );
-        StockTickerQuote stockTickerQuote = new StockTickerQuote();
+        StockPriceQuote stockTickerQuote = new StockPriceQuote();
         stockTickerQuote.setTickerSymbol( stock.getSymbol() );
-        stockTickerQuote.setLastPrice( stock.getQuote().getPrice() );
+        stockTickerQuote.setStockPrice( stock.getQuote().getPrice() );
         stockTickerQuote.setOpenPrice( stock.getQuote().getOpen() );
         if ( stock.getQuote().getLastTradeTime() != null )
         {
@@ -84,6 +85,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         logMethodEnd( methodName, stockTickerQuote );
         return stockTickerQuote;
     }
+    */
 
     /**
      * Get the stock information from Yahoo
@@ -107,6 +109,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * Sets the stock price and company name on the {@code container}
      * @param container
      */
+    /*
     public void setStockInformation( final YahooStockContainer container )
         throws IOException
     {
@@ -114,11 +117,12 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         logMethodBegin( methodName, container.getTickerSymbol() );
         Stock stock = getStock( container.getTickerSymbol() ) ;
         container.setCompanyName( stock.getName() );
-        StockTickerQuote stockTickerQuote = this.getStockTickerQuote( stock );
+        StockPriceQuote stockTickerQuote = this.getStockPrice( stock );
         container.setLastPriceChangeTimestamp( stockTickerQuote.getLastPriceChange() );
-        container.setLastPrice( stockTickerQuote.getLastPrice() );
-        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getLastPrice() );
+        container.setStockPrice( stockTickerQuote.getStockPrice() );
+        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getStockPrice() );
     }
+    */
 
     /**
      * This interface defines the methods necessary to obtain stock information for a ticker symbol.

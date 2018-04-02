@@ -15,7 +15,6 @@ import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +32,9 @@ import java.util.Objects;
 @Service
 @Transactional
 public class TradeItAccountEntityService extends VersionedEntityService<Integer,
-                                                                  TradeItAccountEntity,
-                                                                  TradeItAccountDTO,
-                                                                  TradeItAccountRepository>
+                                                                        TradeItAccountEntity,
+                                                                        TradeItAccountDTO,
+                                                                        TradeItAccountRepository>
     implements MyLogger
 {
     private TradeItAccountRepository tradeItAccountRepository;
@@ -288,21 +287,15 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
     }
 
     @Override
-    protected TradeItAccountDTO entityToDTO( final TradeItAccountEntity entity )
+    protected TradeItAccountDTO createDTO()
     {
-        Objects.requireNonNull( entity );
-        TradeItAccountDTO tradeItAccountDTO = TradeItAccountDTO.newInstance();
-        BeanUtils.copyProperties( entity, tradeItAccountDTO );
-        return tradeItAccountDTO;
+        return this.context.getBean( TradeItAccountDTO.class );
     }
 
     @Override
-    protected TradeItAccountEntity dtoToEntity( final TradeItAccountDTO dto )
+    protected TradeItAccountEntity createEntity()
     {
-        Objects.requireNonNull( dto );
-        TradeItAccountEntity tradeItAccountEntity = TradeItAccountEntity.newInstance();
-        BeanUtils.copyProperties( dto, tradeItAccountEntity );
-        return tradeItAccountEntity;
+        return this.context.getBean( TradeItAccountEntity.class );
     }
 
     @Override

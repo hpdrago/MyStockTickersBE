@@ -9,7 +9,6 @@ import com.stocktracker.repositorylayer.repository.CustomerRepository;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.CustomerDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -132,21 +131,15 @@ public class CustomerEntityService extends VersionedEntityService<Integer,
     }
 
     @Override
-    protected CustomerDTO entityToDTO( final CustomerEntity entity )
+    protected CustomerDTO createDTO()
     {
-        Objects.requireNonNull( entity );
-        CustomerDTO customerDTO = CustomerDTO.newInstance();
-        BeanUtils.copyProperties( entity, customerDTO );
-        return customerDTO;
+        return this.context.getBean( CustomerDTO.class );
     }
 
     @Override
-    protected CustomerEntity dtoToEntity( final CustomerDTO dto )
+    protected CustomerEntity createEntity()
     {
-        Objects.requireNonNull( dto );
-        CustomerEntity customerEntity = CustomerEntity.newInstance();
-        BeanUtils.copyProperties( dto, customerEntity );
-        return customerEntity;
+        return this.context.getBean( CustomerEntity.class );
     }
 
     @Override

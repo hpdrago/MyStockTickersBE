@@ -1,9 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
-import com.stocktracker.servicelayer.stockinformationprovider.StockQuoteFetchMode;
+import com.stocktracker.servicelayer.service.stocks.StockInformationService;
+import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.weblayer.dto.VersionedDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,19 +16,19 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This is the base class for services that service DTO's that contain stock quote information.
+ * This is the base class for services that service DTO's that contain stock information.
  * @param <E>
  * @param <D>
  */
-public abstract class StockQuoteContainerEntityService<K extends Serializable,
-                                                       E extends VersionedEntity<K>,
-                                                       D extends StockQuoteService.StockQuoteContainer &
-                                                                 VersionedDTO<K>,
-                                                       R extends JpaRepository<E,K>>
+public abstract class StockInformationEntityService<K extends Serializable,
+                                                    E extends VersionedEntity<K>,
+                                                    D extends StockPriceContainer &
+                                                              VersionedDTO<K>,
+                                                    R extends JpaRepository<E,K>>
     extends VersionedEntityService<K,E,D,R>
 {
-    private StockQuoteService stockQuoteService;
-    protected enum StockQuoteFetchAction
+    private StockInformationService stockInformationService;
+    protected enum StockPriceFetchAction
     {
         NONE,
         FETCH;
@@ -46,7 +45,7 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage )
     {
-        return this.entitiesToDTOs( pageRequest, entityPage, StockQuoteFetchAction.FETCH );
+        return this.entitiesToDTOs( pageRequest, entityPage, StockPriceFetchAction.FETCH );
     }
 
     /**
@@ -55,12 +54,12 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
      * @return
      */
     protected List<D> entitiesToDTOs( @NotNull final List<E> entities,
-                                      @NotNull final StockQuoteFetchAction stockQuoteFetchAction )
+                                      @NotNull final StockPriceFetchAction stockPriceFetchAction )
     {
-        List<D> dtos = super.entitiesToDTOs( entities );
-        if ( stockQuoteFetchAction.isFetch() )
+        final List<D> dtos = super.entitiesToDTOs( entities );
+        if ( stockPriceFetchAction.isFetch() )
         {
-            this.updateStockQuoteInformation( dtos );
+            this.getStockPrices( dtos );
         }
         return dtos;
     }
@@ -70,22 +69,18 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
      *
      * @param pageRequest The information of the requested page.
      * @param entityPage The {@code Page<ENTITY>} object.
-     * @param stockQuoteFetchAction Determines if the stock quotes should be fetched.
+     * @param stockPriceFetchAction Determines if the stock quotes should be fetched.
      * @return The created {@code Page<DTO>} object.
      */
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage,
-                                      @NotNull final StockQuoteFetchAction stockQuoteFetchAction )
+                                      @NotNull final StockPriceFetchAction stockPriceFetchAction )
     {
         final String methodName = "entitiesToDTOs";
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
-        List<D> dtos = this.entitiesToDTOs( entityPage.getContent(), stockQuoteFetchAction );
-        if ( stockQuoteFetchAction.isFetch() )
-        {
-            this.updateStockQuoteInformation( dtos );
-        }
+        List<D> dtos = this.entitiesToDTOs( entityPage.getContent(), stockPriceFetchAction );
         logMethodEnd( methodName );
         return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
     }
@@ -94,15 +89,17 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
      * Updates the stock quote information for all dtos
      * @param dtos
      */
-    protected void updateStockQuoteInformation( final List<D> dtos )
+    protected void getStockPrices( final List<? extends StockPriceContainer> dtos )
     {
-        final String methodName = "updateStockQuoteInformation";
+        final String methodName = "getStockPrices";
         logMethodBegin( methodName );
+        this.stockInformationService.setStockPrice( dtos );
+        /*
         for ( D dto : dtos )
         {
             try
             {
-                this.stockQuoteService.setStockQuoteInformation( dto, StockQuoteFetchMode.ASYNCHRONOUS );
+                this.stockPriceService.setStockPrice( dto, StockPriceFetchMode.ASYNCHRONOUS );
             }
             catch( StockQuoteUnavailableException e )
             {
@@ -113,19 +110,20 @@ public abstract class StockQuoteContainerEntityService<K extends Serializable,
                 logError( methodName, e );
             }
         }
+        */
         logMethodEnd( methodName );
     }
 
     @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    public void setStockInformationService( final StockInformationService stockInformationService )
     {
-        logInfo( "setStockQuoteService", "Dependency Injection of " + stockQuoteService );
-        this.stockQuoteService = stockQuoteService;
+        logInfo( "setStockQuoteService", "Dependency Injection of " + stockInformationService );
+        this.stockInformationService = stockInformationService;
     }
 
-    public StockQuoteService getStockQuoteService()
+    public StockInformationService getStockInformationService()
     {
-        return stockQuoteService;
+        return stockInformationService;
     }
 
 }

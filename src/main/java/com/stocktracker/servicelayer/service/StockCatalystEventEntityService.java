@@ -4,10 +4,10 @@ import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
+import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +25,14 @@ import java.util.Objects;
 @Service
 @Transactional
 public class StockCatalystEventEntityService extends VersionedEntityService<Integer,
-                                                                      StockCatalystEventEntity,
-                                                                      StockCatalystEventDTO,
-                                                                      StockCatalystEventRepository>
+                                                                            StockCatalystEventEntity,
+                                                                            StockCatalystEventDTO,
+                                                                            StockCatalystEventRepository>
     implements MyLogger
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
-    private StockQuoteService stockQuoteService;
-    private StockEntityService stockService;
+    private StockInformationService stockInformationService;
+    private StockCompanyEntityService stockCompanyEntityService;
 
     /**
      * Get the list of all stock catalyst event for the customer
@@ -103,13 +103,12 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
      */
     public StockCatalystEventDTO saveStockCatalystEvent( @NotNull final StockCatalystEventDTO stockCatalystEventDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException,
                EntityVersionMismatchException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventDTO );
         Objects.requireNonNull( stockCatalystEventDTO, "stockCatalystEventDTO cannot be null" );
-        this.stockService.checkStockTableEntry( stockCatalystEventDTO.getTickerSymbol() );
+        this.stockCompanyEntityService.checkStockTableEntry( stockCatalystEventDTO.getTickerSymbol() );
         final StockCatalystEventDTO returnStockCatalystEventDTO = this.saveDTO( stockCatalystEventDTO );
         logMethodEnd( methodName, returnStockCatalystEventDTO );
         return returnStockCatalystEventDTO;
@@ -118,40 +117,39 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
     @Override
     protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
-        final String methodName = "entityToDTO";
         Objects.requireNonNull( stockCatalystEventEntity );
-        StockCatalystEventDTO stockCatalystEventDTO = StockCatalystEventDTO.newInstance();
+        StockCatalystEventDTO stockCatalystEventDTO = this.createDTO();
         BeanUtils.copyProperties( stockCatalystEventEntity, stockCatalystEventDTO );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
             stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));
         }
-        try
-        {
-            this.stockQuoteService.setCompanyName( stockCatalystEventDTO );
-        }
-        catch ( StockNotFoundException e )
-        {
-            logError( methodName, e );
-        }
-        catch ( StockQuoteUnavailableException e )
-        {
-            logError( methodName, e );
-        }
         return stockCatalystEventDTO;
+    }
+
+    @Override
+    protected StockCatalystEventDTO createDTO()
+    {
+        return this.context.getBean( StockCatalystEventDTO.class );
     }
 
     @Override
     protected StockCatalystEventEntity dtoToEntity( final StockCatalystEventDTO stockCatalystEventDTO )
     {
         Objects.requireNonNull( stockCatalystEventDTO );
-        StockCatalystEventEntity stockCatalystEventEntity = StockCatalystEventEntity.newInstance();
+        StockCatalystEventEntity stockCatalystEventEntity = this.createEntity();
         BeanUtils.copyProperties( stockCatalystEventDTO, stockCatalystEventEntity );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
             stockCatalystEventEntity.setCatalystDate( JSONDateConverter.toTimestamp( stockCatalystEventDTO.getCatalystDate() ) );
         }
         return stockCatalystEventEntity;
+    }
+
+    @Override
+    protected StockCatalystEventEntity createEntity()
+    {
+        return this.context.getBean( StockCatalystEventEntity.class );
     }
 
     @Override
@@ -167,14 +165,15 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
     }
 
     @Autowired
-    public void setStockQuoteService( final StockQuoteService stockQuoteService )
+    public void setStockInformationService( final StockInformationService stockInformationService )
     {
-        this.stockQuoteService = stockQuoteService;
+        this.stockInformationService = stockInformationService;
     }
 
     @Autowired
-    public void setStockService( final StockEntityService stockService )
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
     {
-        this.stockService = stockService;
+        this.stockCompanyEntityService = stockCompanyEntityService;
     }
+
 }
