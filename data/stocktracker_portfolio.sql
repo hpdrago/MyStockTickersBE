@@ -1,0 +1,2 @@
+INSERT INTO stocktracker.portfolio (id, name, customer_id, create_date, update_date, version) VALUES (1, 'Mike''s IRA', 1, '2017-10-08 13:11:30', null, 1);
+INSERT INTO stocktracker.portfolio (id, name, customer_id, create_date, update_date, version) VALUES (3, 'Carson''s Scottrade', 1, '2017-10-14 16:20:49', null, 1);

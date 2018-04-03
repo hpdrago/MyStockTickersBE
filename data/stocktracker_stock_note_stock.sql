@@ -1,0 +1,1 @@
+INSERT INTO stocktracker.stock_note_stock (id, stock_note_id, ticker_symbol, customer_id, stock_price, create_date, update_date) VALUES (14, 33, 'VKTX', 1, 2.65, '2017-10-24 14:55:14', null);

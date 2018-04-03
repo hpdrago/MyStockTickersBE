@@ -1,0 +1,1 @@
+INSERT INTO stocktracker.customer_tag (id, customer_id, tag_name, create_date, update_date, version) VALUES (10, 1, 'tag1', '2017-10-26 16:10:48', null, 1);

@@ -2,6 +2,6 @@
 mysqldump -u root -p stocktracker > data\stocktracker.dump.sql
 
 # restore -- use this command, or copy contents of sql script into mysql and run it directly.
-#C:\"Program Files"\MySQL\"MySQL Server 5.7"\bin\mysql -u root -p stocktracker < data\stocktracker.dump.sql
+#####################C:\"Program Files"\MySQL\"MySQL Server 5.7"\bin\mysql -u root -p stocktracker < data\stocktracker.dump.sql
 Just open up MySQL and paste stocktracker.dump.sql into an SQL window and execute it.
 
