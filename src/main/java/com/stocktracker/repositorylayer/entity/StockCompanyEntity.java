@@ -32,7 +32,6 @@ public class StockCompanyEntity implements VersionedEntity<String>
     private Timestamp updateDate;
     private Integer version;
 
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
     @Id
     @Column( name = "ticker_symbol", nullable = false, length = 25 )
     public String getTickerSymbol()

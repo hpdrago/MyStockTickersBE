@@ -49,7 +49,6 @@ public class StockKeyStatsEntity
     private Integer version;
 
     @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
     @Column( name = "ticker_symbol", nullable = false, length = 25 )
     public String getTickerSymbol()
     {

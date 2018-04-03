@@ -199,6 +199,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         try
         {
             stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
+            stockCompanyEntity.setTickerSymbol( company.getSymbol() );
             stockCompanyEntity.setCompanyName( company.getCompanyName() );
             stockCompanyEntity.setCreateDate( new Timestamp( System.currentTimeMillis() ) );
             stockCompanyEntity.setDiscontinuedInd( false );
