@@ -1,6 +1,9 @@
 package com.stocktracker.repositorylayer.entity;
 
 import org.hibernate.annotations.Immutable;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -13,6 +16,8 @@ import java.util.Objects;
 /**
  * Created by mike on 10/30/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Immutable
 @Table( name = "v_portfolio_stock", schema = "stocktracker", catalog = "" )

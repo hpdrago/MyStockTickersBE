@@ -1,5 +1,9 @@
 package com.stocktracker.repositorylayer.entity;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +14,8 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_catalyst_event", schema = "stocktracker", catalog = "" )
 public class StockCatalystEventEntity implements VersionedEntity<Integer>

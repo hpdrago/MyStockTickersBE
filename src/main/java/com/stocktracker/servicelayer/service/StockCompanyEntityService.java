@@ -18,6 +18,10 @@ import pl.zankowski.iextrading4j.api.stocks.Company;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * This is the service class for the stock company table entity.
+ * The stock company table contains all know stocks that are currently in use and those that have been discontinued.
+ */
 @Service
 public class StockCompanyEntityService extends VersionedEntityService<String,
                                                                       StockCompanyEntity,
@@ -32,6 +36,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         final String methodName = "getStockCompany";
         logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final StockCompanyEntity stockCompanyEntity;
         try
         {
@@ -156,6 +161,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         final String methodName = "getStockCompanyEntity";
         logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         StockCompanyEntity stockEntity = null;
         try
         {
@@ -264,4 +270,11 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         this.stockCompanyRepository = stockCompanyRepository;
     }
+
+    @Autowired
+    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
+    {
+        this.iexTradingStockService = iexTradingStockService;
+    }
+
 }

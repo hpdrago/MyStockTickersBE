@@ -1,5 +1,9 @@
 package com.stocktracker.repositorylayer.entity;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +19,8 @@ import java.util.Objects;
  * CUSTOMER_STOCK Entity
  * Created by mike on 10/30/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "portfolio_stock", schema = "stocktracker", catalog = "" )
 public class PortfolioStockEntity implements VersionedEntity<Integer>

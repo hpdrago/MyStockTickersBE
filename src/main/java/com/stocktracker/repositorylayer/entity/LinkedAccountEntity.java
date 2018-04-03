@@ -2,6 +2,9 @@ package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,6 +22,8 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "linked_account", schema = "stocktracker", catalog = "" )
 public class LinkedAccountEntity implements VersionedEntity<Integer>

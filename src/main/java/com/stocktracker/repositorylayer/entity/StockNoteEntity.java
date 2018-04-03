@@ -2,6 +2,9 @@ package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -23,6 +26,8 @@ import java.util.Optional;
  */
 @Entity
 @Table( name = "stock_note", schema = "stocktracker", catalog = "" )
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockNoteEntity implements MyLogger,
                                         StockNoteSourceEntityService.StockNoteSourceEntityContainer,
                                         VersionedEntity<Integer>

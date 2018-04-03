@@ -1,14 +1,22 @@
 package com.stocktracker.repositorylayer.entity;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_company", schema = "stocktracker", catalog = "" )
 public class StockCompanyEntity implements VersionedEntity<String>
@@ -24,6 +32,7 @@ public class StockCompanyEntity implements VersionedEntity<String>
     private Timestamp updateDate;
     private Integer version;
 
+    @GeneratedValue( strategy = GenerationType.IDENTITY)
     @Id
     @Column( name = "ticker_symbol", nullable = false, length = 25 )
     public String getTickerSymbol()

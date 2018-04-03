@@ -2,6 +2,9 @@ package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,6 +21,8 @@ import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.Optional;
 
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
 public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteSourceEntityContainer,

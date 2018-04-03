@@ -18,10 +18,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
 
-@Entity
-@Table( name = "stock_position", schema = "stocktracker", catalog = "" )
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
+@Entity
+@Table( name = "stock_position", schema = "stocktracker", catalog = "" )
 public class StockPositionEntity implements VersionedEntity<Integer>
 {
     private Integer id;

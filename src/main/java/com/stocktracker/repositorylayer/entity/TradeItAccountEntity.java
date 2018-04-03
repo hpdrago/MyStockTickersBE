@@ -1,6 +1,9 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -24,6 +27,8 @@ import java.util.Optional;
  * to a single login and thus there is a 1 to many relationship.
  * Created by Mike on December 4th, 2017
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "tradeit_account", schema = "stocktracker", catalog = "" )
 public class TradeItAccountEntity implements VersionedEntity<Integer>

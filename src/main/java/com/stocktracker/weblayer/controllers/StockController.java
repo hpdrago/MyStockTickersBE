@@ -89,12 +89,12 @@ public class StockController extends AbstractController implements MyLogger
     {
         final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol );
-        StockPriceDTO stockTickerQuote = null;
+        StockPriceDTO stockPriceDTO = null;
         HttpStatus httpStatus = HttpStatus.OK;
         try
         {
-            stockTickerQuote = this.stockInformationService
-                                   .getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
+            stockPriceDTO = this.stockInformationService
+                                .getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
         }
         catch( StockNotFoundException e )
         {
@@ -104,15 +104,15 @@ public class StockController extends AbstractController implements MyLogger
         {
             httpStatus = HttpStatus.NOT_FOUND;
         }
-        logMethodEnd( methodName, stockTickerQuote );
+        logMethodEnd( methodName, stockPriceDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest()
                                      .path( "" )
-                                     .buildAndExpand( stockTickerQuote )
+                                     .buildAndExpand( stockPriceDTO )
                                      .toUri());
-        logMethodEnd( methodName, stockTickerQuote );
-        return new ResponseEntity<>( stockTickerQuote, httpHeaders, httpStatus );
+        logMethodEnd( methodName, stockPriceDTO );
+        return new ResponseEntity<>( stockPriceDTO, httpHeaders, httpStatus );
     }
     /**
      * Get a single stock for {@code tickerSymbol}
