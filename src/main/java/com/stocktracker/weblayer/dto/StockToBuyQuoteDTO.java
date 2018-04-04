@@ -2,7 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,9 +13,9 @@ import java.util.List;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockToBuyDTO extends StockPriceDTO implements StockPriceContainer,
-                                                            StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                            VersionedDTO<Integer>
+public class StockToBuyQuoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
+                                                                      StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                      VersionedDTO<Integer>
 {
     /*
      * Entity (DB columns)
@@ -183,7 +183,7 @@ public class StockToBuyDTO extends StockPriceDTO implements StockPriceContainer,
             return false;
         }
 
-        final StockToBuyDTO that = (StockToBuyDTO) o;
+        final StockToBuyQuoteDTO that = (StockToBuyQuoteDTO) o;
 
         return id.equals( that.id );
     }
@@ -198,7 +198,7 @@ public class StockToBuyDTO extends StockPriceDTO implements StockPriceContainer,
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockToBuyDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockToBuyQuoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", super=" ).append( super.toString() );

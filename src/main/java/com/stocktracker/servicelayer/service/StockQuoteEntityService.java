@@ -36,18 +36,18 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     public StockQuoteEntity getStockQuote( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockPrice";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         StockQuoteEntity stockQuoteEntity = null;
         try
         {
             stockQuoteEntity = this.getEntity( tickerSymbol );
             /*
-             * If the quote is more than a day old, get a new quote.
+             * If the quote is more than 6 hours old.
              */
-            if ( TimeUnit.MILLISECONDS.toDays( stockQuoteEntity.getLastQuoteRequestDate().getTime() ) > 1 )
+            if ( TimeUnit.MILLISECONDS.toHours( stockQuoteEntity.getLastQuoteRequestDate().getTime() ) > 6 )
             {
-                this.getStockQuote( tickerSymbol );
+                stockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
             }
         }
         catch( VersionedEntityNotFoundException e )
@@ -124,7 +124,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         stockQuoteEntity.setDelayedPrice( quote.getDelayedPrice() );
         stockQuoteEntity.setDelayedPriceTime( quote.getDelayedPriceTime() );
         stockQuoteEntity.setPreviousClose( quote.getPreviousClose() );
-        stockQuoteEntity.setChange( quote.getChange() );
+        stockQuoteEntity.setChangeAmount( quote.getChange() );
         stockQuoteEntity.setChangePercent( quote.getChangePercent() );
         stockQuoteEntity.setThirtyDayAvgVolume( quote.getAvgTotalVolume().longValue() );
         stockQuoteEntity.setMarketCap( quote.getMarketCap().longValue() );
@@ -151,7 +151,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     @Override
     protected StockQuoteRepository getRepository()
     {
-        return null;
+        return this.stockQuoteRepository;
     }
 
     @Autowired

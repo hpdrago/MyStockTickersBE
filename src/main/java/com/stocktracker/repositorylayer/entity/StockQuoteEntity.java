@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -36,7 +34,7 @@ public class StockQuoteEntity implements VersionedEntity<String>
     private BigDecimal delayedPrice;
     private Long delayedPriceTime;
     private BigDecimal previousClose;
-    private BigDecimal change;
+    private BigDecimal changeAmount;
     private BigDecimal changePercent;
     private Long thirtyDayAvgVolume;
     private Long marketCap;
@@ -118,7 +116,7 @@ public class StockQuoteEntity implements VersionedEntity<String>
     }
 
     @Basic
-    @Column( name = "calculation_price", nullable = true, length = 12 )
+    @Column( name = "calculation_price", nullable = true, length = 20 )
     public String getCalculationPrice()
     {
         return calculationPrice;
@@ -274,15 +272,15 @@ public class StockQuoteEntity implements VersionedEntity<String>
     }
 
     @Basic
-    @Column( name = "change", nullable = true, length = 45 )
-    public BigDecimal getChange()
+    @Column( name = "change_amount", nullable = true, precision = 2)
+    public BigDecimal getChangeAmount()
     {
-        return change;
+        return changeAmount;
     }
 
-    public void setChange( final BigDecimal change )
+    public void setChangeAmount( final BigDecimal change )
     {
-        this.change = change;
+        this.changeAmount = change;
     }
 
     @Basic
@@ -411,7 +409,7 @@ public class StockQuoteEntity implements VersionedEntity<String>
                Objects.equals( delayedPrice, that.delayedPrice ) &&
                Objects.equals( delayedPriceTime, that.delayedPriceTime ) &&
                Objects.equals( previousClose, that.previousClose ) &&
-               Objects.equals( change, that.change ) &&
+               Objects.equals( changeAmount, that.changeAmount ) &&
                Objects.equals( changePercent, that.changePercent ) &&
                Objects.equals( thirtyDayAvgVolume, that.thirtyDayAvgVolume ) &&
                Objects.equals( marketCap, that.marketCap ) &&
@@ -425,7 +423,41 @@ public class StockQuoteEntity implements VersionedEntity<String>
     @Override
     public int hashCode()
     {
-        return Objects
-            .hash( tickerSymbol, discontinuedInd, createDate, updateDate, version, calculationPrice, openPrice, closePrice, highPrice, lowPrice, latestPrice, latestPriceSource, latestPriceTime, latestUpdate, latestVolume, delayedPrice, delayedPriceTime, previousClose, change, changePercent, thirtyDayAvgVolume, marketCap, peRatio, week52High, week52Low, ytdChangePercent, lastQuoteRequestDate );
+        return Objects.hash( tickerSymbol );
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "StockQuoteEntity{" );
+        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", calculationPrice='" ).append( calculationPrice ).append( '\'' );
+        sb.append( ", openPrice=" ).append( openPrice );
+        sb.append( ", closePrice=" ).append( closePrice );
+        sb.append( ", highPrice=" ).append( highPrice );
+        sb.append( ", lowPrice=" ).append( lowPrice );
+        sb.append( ", latestPrice=" ).append( latestPrice );
+        sb.append( ", latestPriceSource='" ).append( latestPriceSource ).append( '\'' );
+        sb.append( ", latestPriceTime='" ).append( latestPriceTime ).append( '\'' );
+        sb.append( ", latestUpdate=" ).append( latestUpdate );
+        sb.append( ", latestVolume=" ).append( latestVolume );
+        sb.append( ", delayedPrice=" ).append( delayedPrice );
+        sb.append( ", delayedPriceTime=" ).append( delayedPriceTime );
+        sb.append( ", previousClose=" ).append( previousClose );
+        sb.append( ", change=" ).append( changeAmount );
+        sb.append( ", changePercent=" ).append( changePercent );
+        sb.append( ", thirtyDayAvgVolume=" ).append( thirtyDayAvgVolume );
+        sb.append( ", marketCap=" ).append( marketCap );
+        sb.append( ", peRatio=" ).append( peRatio );
+        sb.append( ", week52High=" ).append( week52High );
+        sb.append( ", week52Low=" ).append( week52Low );
+        sb.append( ", ytdChangePercent=" ).append( ytdChangePercent );
+        sb.append( ", lastQuoteRequestDate=" ).append( lastQuoteRequestDate );
+        sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
+        sb.append( ", createDate=" ).append( createDate );
+        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", version=" ).append( version );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

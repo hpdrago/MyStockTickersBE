@@ -1,12 +1,13 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.StockToBuyNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockToBuyEntityService;
-import com.stocktracker.weblayer.dto.StockToBuyDTO;
+import com.stocktracker.weblayer.dto.StockToBuyQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,12 +42,12 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyDTO> getStockStockToBuy( final Pageable pageRequest,
-                                                   final @NotNull @PathVariable int customerId )
+    public Page<StockToBuyQuoteDTO> getStockStockToBuy( final Pageable pageRequest,
+                                                        final @NotNull @PathVariable int customerId )
     {
         final String methodName = "getStockStockToBuy";
         logMethodBegin( methodName, pageRequest, customerId );
-        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
+        Page<StockToBuyQuoteDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerId( pageRequest, customerId );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
@@ -59,13 +60,13 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
-                                                   @NotNull @PathVariable int customerId,
-                                                   @NotNull @PathVariable String tickerSymbol )
+    public Page<StockToBuyQuoteDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
+                                                        @NotNull @PathVariable int customerId,
+                                                        @NotNull @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockStockToBuyForTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
-        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
+        Page<StockToBuyQuoteDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
@@ -78,15 +79,15 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId,
-                                        @PathVariable int customerId )
+    public StockToBuyQuoteDTO getStockToBuy( @PathVariable int stockToBuyId,
+                                             @PathVariable int customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                StockToBuyNotFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId, customerId );
-        StockToBuyDTO stockToBuyDTO = this.stockToBuyService.getStockToBuy( stockToBuyId );
+        StockToBuyQuoteDTO stockToBuyDTO = this.stockToBuyService.getStockToBuy( stockToBuyId );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -122,20 +123,20 @@ public class StockToBuyController extends AbstractController
      * @param stockToBuyDTO
      * @return
      * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
+     * @throws StockCompanyNotFoundException
      * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable int customerId,
-                                                        @RequestBody StockToBuyDTO stockToBuyDTO )
+    public ResponseEntity<StockToBuyQuoteDTO> addStockToBuy( @PathVariable int customerId,
+                                                             @RequestBody StockToBuyQuoteDTO stockToBuyDTO )
         throws StockNotFoundException,
-               StockQuoteUnavailableException,
+               StockCompanyNotFoundException,
                EntityVersionMismatchException
     {
         final String methodName = "addStockToBuy";
         logMethodBegin( methodName, customerId, stockToBuyDTO );
-        StockToBuyDTO newStockToBuyDTO = this.stockToBuyService.createStockToBuy( stockToBuyDTO );
+        StockToBuyQuoteDTO newStockToBuyDTO = this.stockToBuyService.createStockToBuy( stockToBuyDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -155,9 +156,9 @@ public class StockToBuyController extends AbstractController
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int stockToBuyId,
-                                                         @PathVariable int customerId,
-                                                         @RequestBody StockToBuyDTO stockToBuyDTO )
+    public ResponseEntity<StockToBuyQuoteDTO> saveStockToBuy( @PathVariable int stockToBuyId,
+                                                              @PathVariable int customerId,
+                                                              @RequestBody StockToBuyQuoteDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                EntityVersionMismatchException
@@ -167,7 +168,7 @@ public class StockToBuyController extends AbstractController
         /*
          * Save the stock
          */
-        StockToBuyDTO returnStockToBuyDTO = this.stockToBuyService.saveStockToBuy( stockToBuyDTO );
+        StockToBuyQuoteDTO returnStockToBuyDTO = this.stockToBuyService.saveStockToBuy( stockToBuyDTO );
         /*
          * send the response
          */

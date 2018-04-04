@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
- * This exception is thrown when required information is missing in a PortfolioStockDTO
+ * This exception is thrown when required information is missing in a PortfolioStockQuoteDTO
  *
  * Created by mike on 12/03/2016.
  */

@@ -10,7 +10,6 @@
         <mapping class="com.stocktracker.repositorylayer.entity.CustomerEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.PortfolioEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.PortfolioStockEntity"/>
-        <mapping class="com.stocktracker.repositorylayer.entity.StockEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockSectorEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockSubSectorEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.ExceptionEntity"/>

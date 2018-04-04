@@ -1,14 +1,17 @@
 package com.stocktracker.servicelayer.service.stocks;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
+import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCache;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheEntry;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheState;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,32 +53,37 @@ public class StockInformationService implements MyLogger
      * @param stockPriceFetchMode
      * @return
      * @throws StockNotFoundException
+     * @throws StockCompanyNotFoundException
      */
-    public StockPriceDTO getStockPrice( final String tickerSymbol,
-                                        final StockPriceFetchMode stockPriceFetchMode )
-        throws StockNotFoundException
+    public StockPriceQuoteDTO getStockPriceQuote( final String tickerSymbol,
+                                                  final StockPriceFetchMode stockPriceFetchMode )
+        throws StockNotFoundException,
+               StockCompanyNotFoundException
     {
-        final String methodName = "getStockPrice";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache.getStockPrice( tickerSymbol, stockPriceFetchMode );
+        final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
+                                                              .getStockPrice( tickerSymbol, stockPriceFetchMode );
         if ( stockPriceFetchMode.isSynchronous() )
         {
             switch ( stockPriceCacheEntry.getCacheState() )
             {
-                case CURRENT:
-                    break;
                 case FAILURE:
                     throw new StockNotFoundException( tickerSymbol, stockPriceCacheEntry.getFetchException() );
                 case NOT_FOUND:
                     throw new StockNotFoundException( tickerSymbol, stockPriceCacheEntry.getFetchException() );
             }
         }
-        final StockPriceDTO stockPriceDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
-        this.stockCompanyEntityService
-            .checkStockTableEntry( tickerSymbol );
+        final StockPriceQuoteDTO stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
+        final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityService
+                                                          .getStockCompany( tickerSymbol );
+        final StockQuoteEntity stockQuoteEntity = this.stockQuoteEntityService
+                                                      .getStockQuote( tickerSymbol );
+        stockPriceQuoteDTO.setCompanyName( stockCompanyEntity.getCompanyName() );
+        stockPriceQuoteDTO.setOpenPrice( stockQuoteEntity.getOpenPrice() );
         logMethodEnd( methodName, stockPriceCacheEntry );
-        return stockPriceDTO;
+        return stockPriceQuoteDTO;
     }
     /**
      * Obtains the stock information from the stock cache with the current stock information including the price,
@@ -126,15 +134,15 @@ public class StockInformationService implements MyLogger
      * @param stockPriceCacheEntry
      * @return
      */
-    private StockPriceDTO stockPriceCacheEntryToStockPriceDTO( final String tickerSymbol,
-                                                               final StockPriceCacheEntry stockPriceCacheEntry )
+    private StockPriceQuoteDTO stockPriceCacheEntryToStockPriceDTO( final String tickerSymbol,
+                                                                    final StockPriceCacheEntry stockPriceCacheEntry )
     {
-        final StockPriceDTO stockPriceDTO = new StockPriceDTO();
-        stockPriceDTO.setTickerSymbol( tickerSymbol );
-        stockPriceDTO.setLastPrice( stockPriceCacheEntry.getStockPrice() );
-        stockPriceDTO.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
-        stockPriceDTO.setExpirationTime( stockPriceCacheEntry.getExpiration() );
-        return stockPriceDTO;
+        final StockPriceQuoteDTO stockPriceQuoteDTO = new StockPriceQuoteDTO();
+        stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
+        stockPriceQuoteDTO.setLastPrice( stockPriceCacheEntry.getStockPrice() );
+        stockPriceQuoteDTO.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
+        stockPriceQuoteDTO.setExpirationTime( stockPriceCacheEntry.getExpiration() );
+        return stockPriceQuoteDTO;
     }
 
     /**
@@ -142,18 +150,20 @@ public class StockInformationService implements MyLogger
      * @param tickerSymbol
      * @return
      * @throws StockNotFoundException
+     * @throws StockCompanyNotFoundException
      */
-    public BigDecimal getStockPrice( final String tickerSymbol )
-        throws StockNotFoundException
+    public BigDecimal getStockPriceQuote( final String tickerSymbol )
+        throws StockNotFoundException,
+               StockCompanyNotFoundException
     {
-        final String methodName = "getStockPrice";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         BigDecimal stockPrice = null;
-        StockPriceDTO IStockPriceQuote = this.getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
-        if ( !IStockPriceQuote.getStockPriceCacheState().isNotFound() )
+        StockPriceQuoteDTO stockPriceQuoteDTO = this.getStockPriceQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
+        if ( !stockPriceQuoteDTO.getStockPriceCacheState().isNotFound() )
         {
-            stockPrice = this.getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS ).getLastPrice();
+            stockPrice = this.getStockPriceQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS ).getLastPrice();
         }
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
@@ -161,7 +171,7 @@ public class StockInformationService implements MyLogger
 
     /**
      * Makes a call to IEXTrading to get the current stock prices for the list of stock price containers.
-     * Stock prices are feteched asynchronously.
+     * Stock prices are fetched asynchronously.
      * @param containers
      */
     public void setStockPrice( final List<? extends StockPriceContainer> containers )

@@ -97,7 +97,7 @@ public class StockPriceServiceExecutor
      */
     private GetStockPriceResult getStockPrice( final String tickerSymbol )
     {
-        final String methodName = "getStockPrice";
+        final String methodName = "getStockPriceQuote";
         logger.debug( methodName + " " + tickerSymbol );
         final GetStockPriceResult getStockPriceResult = new GetStockPriceResult();
         getStockPriceResult.setTickerSymbol( tickerSymbol );

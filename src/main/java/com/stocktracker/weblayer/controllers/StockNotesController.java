@@ -2,14 +2,14 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockNoteCountEntityService;
 import com.stocktracker.servicelayer.service.StockNoteEntityService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
-import com.stocktracker.weblayer.dto.StockNoteDTO;
+import com.stocktracker.weblayer.dto.StockNoteQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,22 +42,26 @@ public class StockNotesController extends AbstractController implements MyLogger
 
     /**
      * Add a stock note to the database
-     *
+     * @param stockNotesDTO
+     * @param customerId
      * @return The stock note that was added
+     * @throws StockNotFoundException
+     * @throws StockCompanyNotFoundException
+     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/customer/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
-                                                      @PathVariable( "customerId") final int customerId )
+    public ResponseEntity<StockNoteQuoteDTO> addStockNote( @RequestBody final StockNoteQuoteDTO stockNotesDTO,
+                                                           @PathVariable( "customerId") final int customerId )
         throws StockNotFoundException,
-               StockQuoteUnavailableException,
+               StockCompanyNotFoundException,
                EntityVersionMismatchException
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, customerId, stockNotesDTO );
         validateStockNoteDTOPostArgument( stockNotesDTO );
-        StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNotesDTO );
+        StockNoteQuoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNotesDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -74,15 +78,15 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
-                                                         @PathVariable( "customerId" ) final int customerId,
-                                                         @PathVariable( "stockNotesId" ) final int stockNotesId )
+    public ResponseEntity<StockNoteQuoteDTO> updateStockNote( @RequestBody final StockNoteQuoteDTO stockNotesDTO,
+                                                              @PathVariable( "customerId" ) final int customerId,
+                                                              @PathVariable( "stockNotesId" ) final int stockNotesId )
         throws EntityVersionMismatchException
     {
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, customerId, stockNotesId, stockNotesDTO );
         validateStockNoteDTOPostArgument( stockNotesDTO );
-        StockNoteDTO returnStockDTO = null;
+        StockNoteQuoteDTO returnStockDTO = null;
         returnStockDTO = this.stockNoteService.updateStockNote( stockNotesDTO );
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -121,12 +125,12 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customer/{customerId}",
                      method = RequestMethod.GET )
-    public ResponseEntity<StockNoteDTO> getStockNote( @PathVariable( "customerId" ) final int customerId,
-                                                      @PathVariable( "stockNotesId" ) final int stockNotesId )
+    public ResponseEntity<StockNoteQuoteDTO> getStockNote( @PathVariable( "customerId" ) final int customerId,
+                                                           @PathVariable( "stockNotesId" ) final int stockNotesId )
     {
         final String methodName = "getStockNote";
         logMethodBegin( methodName, customerId, stockNotesId );
-        StockNoteDTO stockNotesDTO = null;
+        StockNoteQuoteDTO stockNotesDTO = null;
         try
         {
             stockNotesDTO = this.stockNoteService
@@ -145,7 +149,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         return new ResponseEntity<>( stockNotesDTO, httpHeaders, HttpStatus.OK );
     }
 
-    private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNotesDTO )
+    private void validateStockNoteDTOPostArgument( final StockNoteQuoteDTO stockNotesDTO )
     {
         Objects.requireNonNull( stockNotesDTO.getCustomerId(), "customer id cannot be null" );
         Assert.isTrue( stockNotesDTO.getCustomerId() > 0, "customer id must be > 0" );
@@ -162,13 +166,13 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = URL_CONTEXT + "/page/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
-                                             @PathVariable final int customerId )
+    public Page<StockNoteQuoteDTO> getStockNotes( final Pageable pageRequest,
+                                                  @PathVariable final int customerId )
     {
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, pageRequest, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerId( pageRequest, customerId );
+        Page<StockNoteQuoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerId( pageRequest, customerId );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.getTotalElements() );
         return stockNoteDTOs;
@@ -183,15 +187,15 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = URL_CONTEXT + "/page/tickerSymbol/{tickerSymbol}/customer/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
-                                             @PathVariable final int customerId,
-                                             @PathVariable final String tickerSymbol )
+    public Page<StockNoteQuoteDTO> getStockNotes( final Pageable pageRequest,
+                                                  @PathVariable final int customerId,
+                                                  @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerIdAndTickerSymbol( pageRequest,
+        Page<StockNoteQuoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerIdAndTickerSymbol( pageRequest,
                                                                                                             customerId,
                                                                                                             tickerSymbol );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );

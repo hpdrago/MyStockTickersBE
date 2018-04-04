@@ -16,52 +16,23 @@ import java.util.Objects;
  *
  * Created by mike on 12/10/2016.
  */
-public class StockPriceDTO implements StockPriceContainer,
-                                      StockOpenPriceContainer
+public class StockPriceQuoteDTO implements StockPriceContainer,
+                                           StockOpenPriceContainer
 {
     private String tickerSymbol;
+    private String companyName;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
     private StockPriceCacheState stockPriceCacheState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
-    private Timestamp expiration;
+    private Timestamp expirationTime;
     private BigDecimal openPrice;
-
-    /**
-     * Create a new instance with the ticker and the state.
-     * This method is used when the stock quote is being retrieved asynchronously.
-     * @param tickerSymbol
-     * @param stockPrice
-     * @param stockPriceCacheState
-     * @return
-     */
-    public static StockPriceDTO newInstance( final String tickerSymbol,
-                                             final BigDecimal stockPrice,
-                                             final StockPriceCacheState stockPriceCacheState )
-    {
-        StockPriceDTO stockPriceDTO = new StockPriceDTO();
-        stockPriceDTO.tickerSymbol = tickerSymbol;
-        stockPriceDTO.stockPriceCacheState = stockPriceCacheState;
-        stockPriceDTO.setLastPrice( stockPrice );
-        return stockPriceDTO;
-    }
 
     public StockPriceCacheState getStockPriceCacheState()
     {
         return stockPriceCacheState;
-    }
-
-    @Override
-    public Timestamp getExpirationTime()
-    {
-        return expiration;
-    }
-
-    public void setExpirationTime( final Timestamp expiration )
-    {
-        this.expiration = expiration;
     }
 
     public void setStockPriceCacheState( final StockPriceCacheState stockPriceCacheState )
@@ -113,6 +84,26 @@ public class StockPriceDTO implements StockPriceContainer,
         return this.openPrice;
     }
 
+    public String getCompanyName()
+    {
+        return companyName;
+    }
+
+    public void setCompanyName( final String companyName )
+    {
+        this.companyName = companyName;
+    }
+
+    public Timestamp getExpirationTime()
+    {
+        return expirationTime;
+    }
+
+    public void setExpirationTime( final Timestamp expirationTime )
+    {
+        this.expirationTime = expirationTime;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -124,7 +115,7 @@ public class StockPriceDTO implements StockPriceContainer,
         {
             return false;
         }
-        final StockPriceDTO that = (StockPriceDTO) o;
+        final StockPriceQuoteDTO that = (StockPriceQuoteDTO) o;
         return Objects.equals( tickerSymbol, that.tickerSymbol );
     }
 
@@ -139,11 +130,12 @@ public class StockPriceDTO implements StockPriceContainer,
     {
         final StringBuilder sb = new StringBuilder( "StockPriceQuote{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName'=" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", openPrice=" ).append( lastPrice );
         sb.append( ", stockPriceCacheState=" ).append( stockPriceCacheState );
-        sb.append( ", expiration=" ).append( expiration );
+        sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( '}' );
         return sb.toString();
     }

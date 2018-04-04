@@ -8,7 +8,7 @@ import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioEntityService;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -73,8 +73,8 @@ public class PortfolioController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
-                                                       @PathVariable Integer portfolioId )
+    public List<PortfolioStockQuoteDTO> getPortfolioStocks( @PathVariable Integer customerId,
+                                                            @PathVariable Integer portfolioId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
@@ -82,7 +82,7 @@ public class PortfolioController extends AbstractController implements MyLogger
         logMethodBegin( methodName, customerId, portfolioId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
-        List<PortfolioStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
+        List<PortfolioStockQuoteDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
         logMethodEnd( methodName, portfolioStockDTOs );
         return portfolioStockDTOs;
     }

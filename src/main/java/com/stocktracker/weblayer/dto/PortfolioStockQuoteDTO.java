@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class PortfolioStockDTO extends StockPriceDTO
+public class PortfolioStockQuoteDTO extends StockPriceQuoteDTO
     implements StockPriceContainer,
                VersionedDTO<Integer>
 {
@@ -45,9 +45,9 @@ public class PortfolioStockDTO extends StockPriceDTO
      * Creates a new {@code PortfolioLastStockDTO}
      * @return
      */
-    public static PortfolioStockDTO newInstance()
+    public static PortfolioStockQuoteDTO newInstance()
     {
-        PortfolioStockDTO portfolioStockDTO = new PortfolioStockDTO();
+        PortfolioStockQuoteDTO portfolioStockDTO = new PortfolioStockQuoteDTO();
         return portfolioStockDTO;
     }
 
@@ -248,7 +248,7 @@ public class PortfolioStockDTO extends StockPriceDTO
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "PortfolioStockDTO{" );
+        final StringBuilder sb = new StringBuilder( "PortfolioStockQuoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", portfolioId=" ).append( portfolioId );

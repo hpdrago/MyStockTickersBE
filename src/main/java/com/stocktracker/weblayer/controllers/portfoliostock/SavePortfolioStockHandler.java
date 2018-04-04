@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
-import com.stocktracker.weblayer.dto.PortfolioStockDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * Created by mike on 12/3/2016.
  */
 @Component
-public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO, PortfolioStockDTO>
+public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockQuoteDTO, PortfolioStockQuoteDTO>
 {
     private PortfolioStockEntityService portfolioStockService;
 
@@ -25,7 +25,7 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
      * @return
      */
     @Override
-    public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
+    public PortfolioStockQuoteDTO handleRequest( final PortfolioStockQuoteDTO portfolioStockDTO )
         throws EntityVersionMismatchException
     {
         final String methodName = "handleRequest";
@@ -39,7 +39,7 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
                                               portfolioStockDTO.getTickerSymbol() );
         }
         logDebug( methodName, "call addPorfolioStockDTO: {0}", portfolioStockDTO );
-        PortfolioStockDTO newPortfolioStockDTO = null;
+        PortfolioStockQuoteDTO newPortfolioStockDTO = null;
         try
         {
             newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );

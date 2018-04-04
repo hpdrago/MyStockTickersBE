@@ -17,9 +17,9 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class PortfolioStockDTOs
 {
-    private List<PortfolioStockDTO> portfolioStocks = new ArrayList<>();
+    private List<PortfolioStockQuoteDTO> portfolioStocks = new ArrayList<>();
 
-    public static PortfolioStockDTOs newInstance( final List<PortfolioStockDTO> portfolioStockDTOList )
+    public static PortfolioStockDTOs newInstance( final List<PortfolioStockQuoteDTO> portfolioStockDTOList )
     {
         Objects.requireNonNull( portfolioStockDTOList );
         PortfolioStockDTOs portfolioStockDTOs = new PortfolioStockDTOs();

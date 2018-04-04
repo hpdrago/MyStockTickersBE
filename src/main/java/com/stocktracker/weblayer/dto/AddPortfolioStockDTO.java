@@ -26,7 +26,7 @@ public class AddPortfolioStockDTO
     @JsonProperty
     private PortfolioDTO portfolioDTO;
     @JsonProperty
-    private PortfolioStockDTO portfolioStockDTO;
+    private PortfolioStockQuoteDTO portfolioStockDTO;
     @JsonProperty
     private PortfolioStockDTOs portfolioStockDTOs;
 
@@ -37,9 +37,9 @@ public class AddPortfolioStockDTO
      * @param portfolioStockDTOList
      * @return Fully populated {@code AddPortfolioStockDTO}
      */
-    public static AddPortfolioStockDTO newInstance( final PortfolioStockDTO portfolioStockDTO,
+    public static AddPortfolioStockDTO newInstance( final PortfolioStockQuoteDTO portfolioStockDTO,
                                                     final PortfolioDTO portfolioDTO,
-                                                    final List<PortfolioStockDTO> portfolioStockDTOList )
+                                                    final List<PortfolioStockQuoteDTO> portfolioStockDTOList )
     {
         Objects.requireNonNull( portfolioStockDTO );
         Objects.requireNonNull( portfolioDTO );
@@ -61,12 +61,12 @@ public class AddPortfolioStockDTO
         this.portfolioDTO = portfolioDTO;
     }
 
-    public PortfolioStockDTO getPortfolioStockDTO()
+    public PortfolioStockQuoteDTO getPortfolioStockDTO()
     {
         return portfolioStockDTO;
     }
 
-    public void setPortfolioStockDTO( PortfolioStockDTO portfolioStockDTO )
+    public void setPortfolioStockDTO( PortfolioStockQuoteDTO portfolioStockDTO )
     {
         this.portfolioStockDTO = portfolioStockDTO;
     }

@@ -5,7 +5,7 @@ import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,9 +15,9 @@ import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockAnalystConsensusDTO extends StockPriceDTO implements StockPriceContainer,
-                                                                       StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                       VersionedDTO<Integer>
+public class StockAnalystConsensusQuoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
+                                                                                 StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                                 VersionedDTO<Integer>
 {
     /*
      * Entity (DB columns)
@@ -42,9 +42,9 @@ public class StockAnalystConsensusDTO extends StockPriceDTO implements StockPric
     private String notesSourceName;
     private Integer version;
 
-    public static StockAnalystConsensusDTO newInstance()
+    public static StockAnalystConsensusQuoteDTO newInstance()
     {
-        return new StockAnalystConsensusDTO();
+        return new StockAnalystConsensusQuoteDTO();
     }
 
     public Integer getId()
@@ -244,7 +244,7 @@ public class StockAnalystConsensusDTO extends StockPriceDTO implements StockPric
             return false;
         }
 
-        final StockAnalystConsensusDTO that = (StockAnalystConsensusDTO) o;
+        final StockAnalystConsensusQuoteDTO that = (StockAnalystConsensusQuoteDTO) o;
 
         return id.equals( that.id );
     }
@@ -258,7 +258,7 @@ public class StockAnalystConsensusDTO extends StockPriceDTO implements StockPric
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockAnalystConsensusQuoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", comments='" ).append( comments ).append( '\'' );

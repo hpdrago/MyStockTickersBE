@@ -63,7 +63,7 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
     public StockPriceCacheEntry getStockPrice( @NotNull String tickerSymbol,
                                                @NotNull final StockPriceFetchMode fetchMode )
     {
-        final String methodName = "getStockPrice";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol, fetchMode );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( fetchMode, "fetchMode cannot be null" );

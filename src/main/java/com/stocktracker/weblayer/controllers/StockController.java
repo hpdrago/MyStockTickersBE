@@ -1,12 +1,13 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceDTO;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,37 +83,35 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/stockPrice/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/stockPriceQuote/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<StockPriceDTO> getStockPrice( @PathVariable final String tickerSymbol )
+    public ResponseEntity<StockPriceQuoteDTO> getStockPrice( @PathVariable final String tickerSymbol )
     {
-        final String methodName = "getStockPrice";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
-        StockPriceDTO stockPriceDTO = null;
+        StockPriceQuoteDTO stockPriceQuoteDTO = null;
         HttpStatus httpStatus = HttpStatus.OK;
         try
         {
-            stockPriceDTO = this.stockInformationService
-                                .getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
+            stockPriceQuoteDTO = this.stockInformationService
+                                     .getStockPriceQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
         }
-        catch( StockNotFoundException e )
+        catch( StockNotFoundException |
+               StockCompanyNotFoundException |
+               javax.ws.rs.NotFoundException e )
         {
             httpStatus = HttpStatus.NOT_FOUND;
         }
-        catch( javax.ws.rs.NotFoundException e )
-        {
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-        logMethodEnd( methodName, stockPriceDTO );
+        logMethodEnd( methodName, stockPriceQuoteDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest()
                                      .path( "" )
-                                     .buildAndExpand( stockPriceDTO )
+                                     .buildAndExpand( stockPriceQuoteDTO )
                                      .toUri());
-        logMethodEnd( methodName, stockPriceDTO );
-        return new ResponseEntity<>( stockPriceDTO, httpHeaders, httpStatus );
+        logMethodEnd( methodName, stockPriceQuoteDTO );
+        return new ResponseEntity<>( stockPriceQuoteDTO, httpHeaders, httpStatus );
     }
     /**
      * Get a single stock for {@code tickerSymbol}
