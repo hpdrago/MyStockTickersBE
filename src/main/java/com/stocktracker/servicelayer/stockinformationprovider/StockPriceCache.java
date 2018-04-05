@@ -63,7 +63,7 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
     public StockPriceCacheEntry getStockPrice( @NotNull String tickerSymbol,
                                                @NotNull final StockPriceFetchMode fetchMode )
     {
-        final String methodName = "getStockPriceQuote";
+        final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol, fetchMode );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( fetchMode, "fetchMode cannot be null" );
@@ -141,7 +141,7 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
     private void synchronousPriceFetch( final StockPriceCacheEntry stockPriceCacheEntry )
     {
         Objects.requireNonNull( stockPriceCacheEntry, "stockPriceCacheEntry cannot be null" );
-        final String methodName = "synchronousQuoteFetch";
+        final String methodName = "synchronousPrice";
         final String tickerSymbol = stockPriceCacheEntry.getTickerSymbol();
         logMethodBegin( methodName, tickerSymbol );
         stockPriceCacheEntry.setFetchState( StockPriceFetchState.FETCHING );
@@ -160,7 +160,7 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
     public void handleGetStockPriceResult( final GetStockPriceResult getStockPriceResult )
     {
         Objects.requireNonNull( getStockPriceResult, "getStockPriceResult cannot be null" );
-        final String methodName = "handleStockQuoteReturn";
+        final String methodName = "handleGetStockPriceResult";
         final String tickerSymbol = getStockPriceResult.getTickerSymbol();
         logMethodBegin( methodName, getStockPriceResult );
         StockPriceCacheEntry stockPriceCacheEntry = this.cacheEntryMap.get( getStockPriceResult.getTickerSymbol() );
