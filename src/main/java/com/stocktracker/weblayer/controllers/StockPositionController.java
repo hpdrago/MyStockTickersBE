@@ -45,7 +45,7 @@ public class StockPositionController extends AbstractController
     @RequestMapping( value = CONTEXT_URL
                              + "/linkedAccountId/{linkedAccountId}"
                              + "/tradeItAccountId/{tradeItAccountId}"
-                             + "/customer/{customerId}",
+                             + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<StockPositionDTO> getPositions( final @PathVariable int linkedAccountId,

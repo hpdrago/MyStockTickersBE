@@ -9,7 +9,7 @@ import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
-import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -30,7 +30,7 @@ import java.util.Objects;
 @Transactional
 public class PortfolioStockEntityService extends VersionedEntityService<Integer,
                                                                         PortfolioStockEntity,
-    PortfolioStockQuoteDTO,
+    PortfolioStockDTO,
                                                                         PortfolioStockRepository>
     implements MyLogger
 {
@@ -48,7 +48,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
      * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
-    public PortfolioStockQuoteDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
+    public PortfolioStockDTO getPortfolioStock( final int customerId, final int portfolioId, final String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
                StockQuoteUnavailableException
@@ -64,7 +64,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
         {
             throw new PortfolioStockNotFound( customerId, portfolioId, tickerSymbol );
         }
-        PortfolioStockQuoteDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
+        PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
         this.stockInformationService
             .setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, portfolioStockDTO );
@@ -78,14 +78,14 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
      */
-    public List<PortfolioStockQuoteDTO> getPortfolioStocks( final int portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( final int portfolioId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioId );
         List<PortfolioStockEntity> stocks = portfolioStockRepository.findByPortfolioIdOrderByTickerSymbol( portfolioId );
-        List<PortfolioStockQuoteDTO> portfolioStockDTOs = new ArrayList<>();
+        List<PortfolioStockDTO> portfolioStockDTOs = new ArrayList<>();
         if ( stocks != null )
         {
             portfolioStockDTOs = entitiesToDTOs( stocks );
@@ -126,7 +126,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
      * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
-    public PortfolioStockQuoteDTO addPortfolioStock( final PortfolioStockQuoteDTO portfolioStockDE )
+    public PortfolioStockDTO addPortfolioStock( final PortfolioStockDTO portfolioStockDE )
         throws StockNotFoundException,
                StockQuoteUnavailableException, EntityVersionMismatchException
     {
@@ -136,7 +136,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
         final PortfolioStockEntity portfolioStockEntity = this.createPortfolioStockEntity( portfolioStockDE );
         logDebug( methodName, "inserting: {0}", portfolioStockEntity );
         final PortfolioStockEntity returnCustomerStockEntity = this.addEntity( portfolioStockEntity );
-        final PortfolioStockQuoteDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
+        final PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
         this.stockInformationService.setStockPrice( returnPortfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         logMethodEnd( methodName, returnPortfolioStockDTO );
         return returnPortfolioStockDTO;
@@ -149,7 +149,7 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
      */
-    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockQuoteDTO portfolioStockDTO )
+    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
@@ -171,21 +171,21 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
      * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
-    private void setStockInformation( final List<PortfolioStockQuoteDTO> portfolioStockDTOList )
+    private void setStockInformation( final List<PortfolioStockDTO> portfolioStockDTOList )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "setStockInformation";
-        for ( PortfolioStockQuoteDTO portfolioStockDTO : portfolioStockDTOList )
+        for ( PortfolioStockDTO portfolioStockDTO : portfolioStockDTOList )
         {
             this.stockInformationService.setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
         }
     }
 
     @Override
-    protected PortfolioStockQuoteDTO createDTO()
+    protected PortfolioStockDTO createDTO()
     {
-        return this.context.getBean( PortfolioStockQuoteDTO.class );
+        return this.context.getBean( PortfolioStockDTO.class );
     }
 
     @Override

@@ -10,7 +10,7 @@ import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
-import com.stocktracker.weblayer.dto.StockAnalystConsensusQuoteDTO;
+import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,7 +27,7 @@ import java.util.Objects;
 @Transactional
 public class StockAnalystConsensusEntityService extends StockInformationEntityService<Integer,
                                                                                          StockAnalystConsensusEntity,
-    StockAnalystConsensusQuoteDTO,
+    StockAnalystConsensusDTO,
                                                                                          StockAnalystConsensusRepository>
                                                 implements MyLogger
 {
@@ -41,7 +41,7 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @return
      * @Throws IllegalArgumentException when customerId <= 0 and if tickerSymbol is null
      */
-    public StockAnalystConsensusQuoteDTO getStockAnalystConsensus( final int customerId, final String tickerSymbol )
+    public StockAnalystConsensusDTO getStockAnalystConsensus( final int customerId, final String tickerSymbol )
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, customerId, tickerSymbol );
@@ -49,7 +49,7 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.stockAnalystConsensusRepository
                                                                       .findByCustomerIdAndTickerSymbol( customerId, tickerSymbol );
-        StockAnalystConsensusQuoteDTO stockAnalystConsensusDTO = null;
+        StockAnalystConsensusDTO stockAnalystConsensusDTO = null;
         if ( stockAnalystConsensusEntity != null )
         {
             stockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
@@ -63,14 +63,14 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @param customerId
      * @return
      */
-    public List<StockAnalystConsensusQuoteDTO> getAllStockAnalystConsensus( final Integer customerId )
+    public List<StockAnalystConsensusDTO> getAllStockAnalystConsensus( final Integer customerId )
     {
         final String methodName = "getAllStockAnalystConsensusList";
         logMethodBegin( methodName, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         final List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
                                                                                     .findByCustomerId( customerId );
-        final List<StockAnalystConsensusQuoteDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
+        final List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " records" );
         return stockAnalystConsensusDTOS;
     }
@@ -82,16 +82,16 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @param customerId
      * @return
      */
-    public Page<StockAnalystConsensusQuoteDTO> getStockAnalystConsensusPage( @NotNull final Pageable pageRequest,
-                                                                             @NotNull final Integer customerId )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusPage( @NotNull final Pageable pageRequest,
+                                                                        @NotNull final Integer customerId )
     {
         final String methodName = "getStockAnalystConsensusPage";
         logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         final  Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
                                                                                      .findByCustomerId( pageRequest, customerId );
-        final Page<StockAnalystConsensusQuoteDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
-                                                                                                   stockAnalystConsensusEntities );
+        final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
+                                                                                              stockAnalystConsensusEntities );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
         return stockAnalystConsensusDTOS;
     }
@@ -102,9 +102,9 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @param tickerSymbol
      * @return
      */
-    public Page<StockAnalystConsensusQuoteDTO> getStockAnalystConsensusListForCustomerIdAndTickerSymbol( final Pageable pageRequest,
-                                                                                                         final int customerId,
-                                                                                                         final String tickerSymbol )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusListForCustomerIdAndTickerSymbol( final Pageable pageRequest,
+                                                                                                    final int customerId,
+                                                                                                    final String tickerSymbol )
     {
         final String methodName = "getStockAnalystConsensusListForCustomerIdAndTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
@@ -112,7 +112,7 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
             .findByCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
-        Page<StockAnalystConsensusQuoteDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest, stockAnalystConsensusEntities );
+        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest, stockAnalystConsensusEntities );
         logDebug( methodName, "stockAnalystConsensusList: {0}", stockAnalystConsensusDTOS );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
         return stockAnalystConsensusDTOS;
@@ -123,14 +123,14 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @param stockAnalystConsensusId
      * @return StockAnalystConsensusQuoteDTO instance
      */
-    public StockAnalystConsensusQuoteDTO getStockAnalystConsensus( @NotNull final Integer stockAnalystConsensusId )
+    public StockAnalystConsensusDTO getStockAnalystConsensus( @NotNull final Integer stockAnalystConsensusId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId );
         Objects.requireNonNull( stockAnalystConsensusId, "stockAnalystConsensusId cannot be null" );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.getEntity( stockAnalystConsensusId );
-        StockAnalystConsensusQuoteDTO stockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
+        StockAnalystConsensusDTO stockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
         logMethodEnd( methodName, stockAnalystConsensusDTO );
         return stockAnalystConsensusDTO;
     }
@@ -145,8 +145,8 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @throws StockCompanyNotFoundException
      * @throws EntityVersionMismatchException
      */
-    public StockAnalystConsensusQuoteDTO createStockAnalystConsensus( final Integer customerId,
-                                                                      final StockAnalystConsensusQuoteDTO stockAnalystConsensusDTO )
+    public StockAnalystConsensusDTO createStockAnalystConsensus( final Integer customerId,
+                                                                 final StockAnalystConsensusDTO stockAnalystConsensusDTO )
         throws StockNotFoundException,
                StockCompanyNotFoundException,
                EntityVersionMismatchException
@@ -170,7 +170,7 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
          */
         stockAnalystConsensusEntity = this.saveEntity( stockAnalystConsensusEntity );
         logDebug( methodName, "saved {0}", stockAnalystConsensusEntity );
-        StockAnalystConsensusQuoteDTO returnStockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
+        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
         return returnStockAnalystConsensusDTO;
     }
@@ -180,23 +180,23 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @param stockAnalystConsensusDTO
      * @return
      */
-    public StockAnalystConsensusQuoteDTO saveStockAnalystConsensus( @NotNull final StockAnalystConsensusQuoteDTO stockAnalystConsensusDTO )
+    public StockAnalystConsensusDTO saveStockAnalystConsensus( @NotNull final StockAnalystConsensusDTO stockAnalystConsensusDTO )
         throws EntityVersionMismatchException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusDTO );
         Objects.requireNonNull( stockAnalystConsensusDTO, "stockAnalystConsensusDTO cannot be null" );
         this.stockNoteSourceService.checkForNewSource( stockAnalystConsensusDTO );
-        StockAnalystConsensusQuoteDTO returnStockAnalystConsensusDTO = super.saveDTO( stockAnalystConsensusDTO );
+        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = super.saveDTO( stockAnalystConsensusDTO );
         logMethodEnd( methodName, returnStockAnalystConsensusDTO );
         return returnStockAnalystConsensusDTO;
     }
 
     @Override
-    protected StockAnalystConsensusQuoteDTO entityToDTO( final StockAnalystConsensusEntity stockAnalystConsensusEntity )
+    protected StockAnalystConsensusDTO entityToDTO( final StockAnalystConsensusEntity stockAnalystConsensusEntity )
     {
         Objects.requireNonNull( stockAnalystConsensusEntity );
-        StockAnalystConsensusQuoteDTO stockAnalystConsensusDTO = StockAnalystConsensusQuoteDTO.newInstance();
+        StockAnalystConsensusDTO stockAnalystConsensusDTO = StockAnalystConsensusDTO.newInstance();
         BeanUtils.copyProperties( stockAnalystConsensusEntity, stockAnalystConsensusDTO );
         this.getStockInformationService()
             .setStockPrice( stockAnalystConsensusDTO, StockPriceFetchMode.ASYNCHRONOUS );
@@ -211,13 +211,13 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
     }
 
     @Override
-    protected StockAnalystConsensusQuoteDTO createDTO()
+    protected StockAnalystConsensusDTO createDTO()
     {
-        return this.context.getBean( StockAnalystConsensusQuoteDTO.class );
+        return this.context.getBean( StockAnalystConsensusDTO.class );
     }
 
     @Override
-    protected StockAnalystConsensusEntity dtoToEntity( final StockAnalystConsensusQuoteDTO stockAnalystConsensusDTO )
+    protected StockAnalystConsensusEntity dtoToEntity( final StockAnalystConsensusDTO stockAnalystConsensusDTO )
     {
         Objects.requireNonNull( stockAnalystConsensusDTO );
         StockAnalystConsensusEntity stockAnalystConsensusEntity = StockAnalystConsensusEntity.newInstance();

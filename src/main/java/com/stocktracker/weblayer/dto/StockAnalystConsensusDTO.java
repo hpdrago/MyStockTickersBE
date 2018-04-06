@@ -15,9 +15,9 @@ import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockAnalystConsensusQuoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
-                                                                                 StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                                 VersionedDTO<Integer>
+public class StockAnalystConsensusDTO extends StockPriceQuoteDTO implements StockPriceContainer,
+                                                                            StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                            VersionedDTO<Integer>
 {
     /*
      * Entity (DB columns)
@@ -42,9 +42,9 @@ public class StockAnalystConsensusQuoteDTO extends StockPriceQuoteDTO implements
     private String notesSourceName;
     private Integer version;
 
-    public static StockAnalystConsensusQuoteDTO newInstance()
+    public static StockAnalystConsensusDTO newInstance()
     {
-        return new StockAnalystConsensusQuoteDTO();
+        return new StockAnalystConsensusDTO();
     }
 
     public Integer getId()
@@ -244,7 +244,7 @@ public class StockAnalystConsensusQuoteDTO extends StockPriceQuoteDTO implements
             return false;
         }
 
-        final StockAnalystConsensusQuoteDTO that = (StockAnalystConsensusQuoteDTO) o;
+        final StockAnalystConsensusDTO that = (StockAnalystConsensusDTO) o;
 
         return id.equals( that.id );
     }

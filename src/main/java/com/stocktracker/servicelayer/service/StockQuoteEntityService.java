@@ -74,14 +74,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         StockQuoteEntity stockQuoteEntity = quoteToStockQuoteEntity( quote );
         try
         {
-            if ( this.stockQuoteRepository.exists( tickerSymbol ) )
-            {
-                this.saveEntity( stockQuoteEntity );
-            }
-            else
-            {
-                this.addEntity( stockQuoteEntity );
-            }
+            this.mergeEntity( stockQuoteEntity );
         }
         catch( EntityVersionMismatchException e1 )
         {

@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers.portfoliostock;
 import com.stocktracker.common.exceptions.DuplicatePortfolioStockException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
-import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockQuoteDTO, PortfolioStockQuoteDTO>
+public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO, PortfolioStockDTO>
 {
     private PortfolioStockEntityService portfolioStockService;
 
@@ -23,7 +23,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockQuot
      * @return The Stock that was added, the Portfolio that the stock was added to, and the list of Stocks for the
      *         portfolio in an instance of {@code AddPortfolioStockDTO}
      */
-    public PortfolioStockQuoteDTO handleRequest( final PortfolioStockQuoteDTO portfolioStockDTO )
+    public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
         throws Exception
     {
         final String methodName = "handleRequest";
@@ -33,7 +33,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockQuot
         /*
          * Add to the database
          */
-        PortfolioStockQuoteDTO newPortfolioStockDTO = null;
+        PortfolioStockDTO newPortfolioStockDTO = null;
         newPortfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
         logDebug( methodName, "return addPortfolioStockDTO: {0}", portfolioStockDTO );
         /*
@@ -63,7 +63,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockQuot
      * @param portfolioStockDTO
      * @throws DuplicatePortfolioStockException if the stock is already in the portfolio
      */
-    private void checkForDuplicate( final PortfolioStockQuoteDTO portfolioStockDTO )
+    private void checkForDuplicate( final PortfolioStockDTO portfolioStockDTO )
     {
 
         if ( portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),

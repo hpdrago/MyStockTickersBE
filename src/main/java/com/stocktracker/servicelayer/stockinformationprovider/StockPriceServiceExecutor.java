@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeSet;
 
 /**
@@ -40,6 +41,8 @@ public class StockPriceServiceExecutor
     {
         final String methodName = "asynchronousGetStockPrice";
         logger.debug( methodName + " " + tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Objects.requireNonNull( handleStockQuoteResult, "handleStockQuoteResult cannot be null" );
         final String myTickerSymbol = checkTickerSymbol( tickerSymbol );
         BigDecimal stockPrice = null;
         try
@@ -85,6 +88,7 @@ public class StockPriceServiceExecutor
     {
         final String methodName = "synchronousGetStockPrice";
         logger.debug( methodName + ".begin " + tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final GetStockPriceResult getStockPriceResult = this.getStockPrice( tickerSymbol );
         logger.debug( methodName + ".end " + tickerSymbol + " " + getStockPriceResult );
         return getStockPriceResult;
@@ -99,6 +103,7 @@ public class StockPriceServiceExecutor
     {
         final String methodName = "getStockPriceQuote";
         logger.debug( methodName + " " + tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final GetStockPriceResult getStockPriceResult = new GetStockPriceResult();
         getStockPriceResult.setTickerSymbol( tickerSymbol );
         getStockPriceResult.setStockPriceResult( StockPriceFetchResult.NOT_FOUND );
@@ -167,6 +172,7 @@ public class StockPriceServiceExecutor
     {
         final String methodName = "getPriceFromYahoo";
         logger.debug( methodName + " " + tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
 
         BigDecimal stockPrice = null;
         if ( !this.discontinuedStocks.contains( tickerSymbol ))
@@ -207,6 +213,7 @@ public class StockPriceServiceExecutor
     {
         final String methodName = "handleStockNotFoundException";
         logger.info( methodName + " " + tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         this.discontinuedStocks.add( tickerSymbol );
         this.stockCompanyEntityService
             .markStockAsDiscontinued( tickerSymbol );
@@ -222,6 +229,7 @@ public class StockPriceServiceExecutor
     {
         final String methodName = "getPriceFromIEXTrading";
         logger.debug( methodName + " " + tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         BigDecimal stockPrice = null;
         if ( !this.discontinuedStocks.contains( tickerSymbol ))
         {

@@ -8,7 +8,7 @@ import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioEntityService;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,7 +45,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<PortfolioDTO> getPortfoliosByCustomerId( @PathVariable int customerId )
@@ -70,11 +70,11 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<PortfolioStockQuoteDTO> getPortfolioStocks( @PathVariable Integer customerId,
-                                                            @PathVariable Integer portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
+                                                       @PathVariable Integer portfolioId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
@@ -82,7 +82,7 @@ public class PortfolioController extends AbstractController implements MyLogger
         logMethodBegin( methodName, customerId, portfolioId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
-        List<PortfolioStockQuoteDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
         logMethodEnd( methodName, portfolioStockDTOs );
         return portfolioStockDTOs;
     }
@@ -93,7 +93,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
         method = RequestMethod.POST )
     public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable Integer customerId,
                                                       @RequestBody PortfolioDTO portfolioDto )
@@ -122,7 +122,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.DELETE)
+    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
                                                  @PathVariable( "customerId" ) Integer customerId )
         throws VersionedEntityNotFoundException
@@ -146,7 +146,7 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customer/{customerId}", method = RequestMethod.GET)
+    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}", method = RequestMethod.GET)
     public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable int portfolioId,
                                                       @PathVariable int customerId )
         throws StockNotFoundException,

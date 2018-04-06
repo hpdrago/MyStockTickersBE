@@ -13,9 +13,9 @@ import java.util.List;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockToBuyQuoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
-                                                                      StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                      VersionedDTO<Integer>
+public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceContainer,
+                                                                 StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                 VersionedDTO<Integer>
 {
     /*
      * Entity (DB columns)
@@ -183,7 +183,7 @@ public class StockToBuyQuoteDTO extends StockPriceQuoteDTO implements StockPrice
             return false;
         }
 
-        final StockToBuyQuoteDTO that = (StockToBuyQuoteDTO) o;
+        final StockToBuyDTO that = (StockToBuyDTO) o;
 
         return id.equals( that.id );
     }

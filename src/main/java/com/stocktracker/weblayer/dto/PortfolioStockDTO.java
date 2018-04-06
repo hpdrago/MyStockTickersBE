@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class PortfolioStockQuoteDTO extends StockPriceQuoteDTO
+public class PortfolioStockDTO extends StockPriceQuoteDTO
     implements StockPriceContainer,
                VersionedDTO<Integer>
 {
@@ -45,9 +45,9 @@ public class PortfolioStockQuoteDTO extends StockPriceQuoteDTO
      * Creates a new {@code PortfolioLastStockDTO}
      * @return
      */
-    public static PortfolioStockQuoteDTO newInstance()
+    public static PortfolioStockDTO newInstance()
     {
-        PortfolioStockQuoteDTO portfolioStockDTO = new PortfolioStockQuoteDTO();
+        PortfolioStockDTO portfolioStockDTO = new PortfolioStockDTO();
         return portfolioStockDTO;
     }
 

@@ -17,9 +17,9 @@ import java.util.Objects;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockNoteQuoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
-                                                                     StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                     VersionedDTO<Integer>
+public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
+                                                                StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;
@@ -168,11 +168,11 @@ public class StockNoteQuoteDTO extends StockPriceQuoteDTO implements StockPriceC
         {
             return true;
         }
-        if ( !(o instanceof StockNoteQuoteDTO) )
+        if ( !(o instanceof StockNoteDTO) )
         {
             return false;
         }
-        final StockNoteQuoteDTO that = (StockNoteQuoteDTO) o;
+        final StockNoteDTO that = (StockNoteDTO) o;
         return Objects.equals( id, that.id );
     }
 

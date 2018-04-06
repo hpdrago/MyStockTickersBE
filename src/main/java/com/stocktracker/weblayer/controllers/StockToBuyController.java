@@ -7,7 +7,7 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.StockToBuyNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockToBuyEntityService;
-import com.stocktracker.weblayer.dto.StockToBuyQuoteDTO;
+import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,15 +39,15 @@ public class StockToBuyController extends AbstractController
      * Get all of the stock to buy for a customer
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/page/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/page/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyQuoteDTO> getStockStockToBuy( final Pageable pageRequest,
-                                                        final @NotNull @PathVariable int customerId )
+    public Page<StockToBuyDTO> getStockStockToBuy( final Pageable pageRequest,
+                                                   final @NotNull @PathVariable int customerId )
     {
         final String methodName = "getStockStockToBuy";
         logMethodBegin( methodName, pageRequest, customerId );
-        Page<StockToBuyQuoteDTO> stockToBuyDTOs = this.stockToBuyService
+        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerId( pageRequest, customerId );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
@@ -57,16 +57,16 @@ public class StockToBuyController extends AbstractController
      * Get all of the stock to buy for a customer and a
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyQuoteDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
-                                                        @NotNull @PathVariable int customerId,
-                                                        @NotNull @PathVariable String tickerSymbol )
+    public Page<StockToBuyDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
+                                                   @NotNull @PathVariable int customerId,
+                                                   @NotNull @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockStockToBuyForTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
-        Page<StockToBuyQuoteDTO> stockToBuyDTOs = this.stockToBuyService
+        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
@@ -76,18 +76,18 @@ public class StockToBuyController extends AbstractController
      * Get a single stock to buy
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockToBuyQuoteDTO getStockToBuy( @PathVariable int stockToBuyId,
-                                             @PathVariable int customerId )
+    public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId,
+                                        @PathVariable int customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                StockToBuyNotFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId, customerId );
-        StockToBuyQuoteDTO stockToBuyDTO = this.stockToBuyService.getStockToBuy( stockToBuyId );
+        StockToBuyDTO stockToBuyDTO = this.stockToBuyService.getStockToBuy( stockToBuyId );
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -97,7 +97,7 @@ public class StockToBuyController extends AbstractController
      * @param stockToBuyId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockToBuy( @PathVariable int stockToBuyId,
@@ -126,17 +126,17 @@ public class StockToBuyController extends AbstractController
      * @throws StockCompanyNotFoundException
      * @throws EntityVersionMismatchException
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockToBuyQuoteDTO> addStockToBuy( @PathVariable int customerId,
-                                                             @RequestBody StockToBuyQuoteDTO stockToBuyDTO )
+    public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable int customerId,
+                                                        @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockCompanyNotFoundException,
                EntityVersionMismatchException
     {
         final String methodName = "addStockToBuy";
         logMethodBegin( methodName, customerId, stockToBuyDTO );
-        StockToBuyQuoteDTO newStockToBuyDTO = this.stockToBuyService.createStockToBuy( stockToBuyDTO );
+        StockToBuyDTO newStockToBuyDTO = this.stockToBuyService.createStockToBuy( stockToBuyDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -154,11 +154,11 @@ public class StockToBuyController extends AbstractController
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockToBuyQuoteDTO> saveStockToBuy( @PathVariable int stockToBuyId,
-                                                              @PathVariable int customerId,
-                                                              @RequestBody StockToBuyQuoteDTO stockToBuyDTO )
+    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int stockToBuyId,
+                                                         @PathVariable int customerId,
+                                                         @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                EntityVersionMismatchException
@@ -168,7 +168,7 @@ public class StockToBuyController extends AbstractController
         /*
          * Save the stock
          */
-        StockToBuyQuoteDTO returnStockToBuyDTO = this.stockToBuyService.saveStockToBuy( stockToBuyDTO );
+        StockToBuyDTO returnStockToBuyDTO = this.stockToBuyService.saveStockToBuy( stockToBuyDTO );
         /*
          * send the response
          */

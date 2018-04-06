@@ -8,7 +8,7 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractController;
-import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,12 +50,12 @@ public class PortfolioStockController extends AbstractController
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public PortfolioStockQuoteDTO getPortfolioStock( @PathVariable Integer customerId,
-                                                     @PathVariable Integer portfolioId,
-                                                     @PathVariable String tickerSymbol )
+    public PortfolioStockDTO getPortfolioStock( @PathVariable Integer customerId,
+                                                @PathVariable Integer portfolioId,
+                                                @PathVariable String tickerSymbol )
         throws PortfolioStockNotFound,
                StockNotFoundException,
                StockQuoteUnavailableException,
@@ -63,7 +63,7 @@ public class PortfolioStockController extends AbstractController
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
-        PortfolioStockQuoteDTO portfolioStockDTO = this.portfolioStockService
+        PortfolioStockDTO portfolioStockDTO = this.portfolioStockService
                                                   .getPortfolioStock( customerId, portfolioId, tickerSymbol );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
@@ -76,7 +76,7 @@ public class PortfolioStockController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/{portfolioStockId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/{portfolioStockId}/customerId/{customerId}",
         method = RequestMethod.DELETE,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deletePortfolioStock( @PathVariable Integer portfolioStockId,
@@ -106,18 +106,18 @@ public class PortfolioStockController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}/portfolio/{portfolioId}/stocks",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}/portfolio/{portfolioId}/stocks",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<PortfolioStockQuoteDTO> getPortfolioStocks( @PathVariable Integer customerId,
-                                                            @PathVariable Integer portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
+                                                       @PathVariable Integer portfolioId )
         throws PortfolioStockNotFound,
                StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
-        List<PortfolioStockQuoteDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( portfolioId );
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ) );
         return portfolioStockDTOList;
     }
@@ -128,10 +128,10 @@ public class PortfolioStockController extends AbstractController
      * @return The customer stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<PortfolioStockQuoteDTO> addPortfolioStock( @RequestBody PortfolioStockQuoteDTO portfolioStockDTO,
-                                                                     @PathVariable Integer customerId )
+    public ResponseEntity<PortfolioStockDTO> addPortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
+                                                                @PathVariable Integer customerId )
         throws Exception
     {
         final String methodName = "addPortfolioStock";
@@ -140,7 +140,7 @@ public class PortfolioStockController extends AbstractController
         /*
          * Do the work
          */
-        PortfolioStockQuoteDTO newPortfolioStockDTO = this.addPortfolioStockHandler.handleRequest( portfolioStockDTO );
+        PortfolioStockDTO newPortfolioStockDTO = this.addPortfolioStockHandler.handleRequest( portfolioStockDTO );
         /*
          * send the response
          */
@@ -160,8 +160,8 @@ public class PortfolioStockController extends AbstractController
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
         method = RequestMethod.PUT )
-    public ResponseEntity<PortfolioStockQuoteDTO> savePortfolioStock( @RequestBody PortfolioStockQuoteDTO portfolioStockDTO,
-                                                                      @PathVariable Integer customerId )
+    public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
+                                                                 @PathVariable Integer customerId )
         throws EntityVersionMismatchException
     {
         final String methodName = "savePortfolioStock";
@@ -170,7 +170,7 @@ public class PortfolioStockController extends AbstractController
         /*
          * Save the stock
          */
-        PortfolioStockQuoteDTO returnPortfolioStockDTO = this.savePortfolioStockHandler.handleRequest( portfolioStockDTO );
+        PortfolioStockDTO returnPortfolioStockDTO = this.savePortfolioStockHandler.handleRequest( portfolioStockDTO );
         /*
          * send the response
          */
@@ -186,7 +186,7 @@ public class PortfolioStockController extends AbstractController
      * Checks the {@code portfolioStockDTO} for the required fields
      * @param portfolioStockDTO
      */
-    private void checkRequiredFields( final @RequestBody PortfolioStockQuoteDTO portfolioStockDTO )
+    private void checkRequiredFields( final @RequestBody PortfolioStockDTO portfolioStockDTO )
         throws PortfolioStockMissingDataException
     {
         try

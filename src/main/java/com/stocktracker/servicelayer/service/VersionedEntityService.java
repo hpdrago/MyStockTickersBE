@@ -152,7 +152,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
         final String methodName = "addEntity";
         logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
-        if ( this.getRepository().exists( entity.getId() ) )
+        if ( isExists( entity ) )
         {
             final E currentEntity = this.getRepository()
                                         .findOne( entity.getId() );
@@ -164,6 +164,63 @@ public abstract class VersionedEntityService<ID extends Serializable,
                                    .save( entity );
         logMethodEnd( methodName, returnEntity );
         return returnEntity;
+    }
+
+    /**
+     * Inserts or updates the {@code entity} depending on if it exists already or not.
+     * @param entity
+     * @throws EntityVersionMismatchException
+     */
+    public void mergeEntity( final E entity )
+        throws EntityVersionMismatchException
+    {
+        if ( this.isExists( entity ) )
+        {
+            this.saveEntity( entity );
+        }
+        else
+        {
+            this.saveEntity( entity );
+        }
+    }
+
+    /**
+     * Saves the entity to the database.
+     * @param entity
+     * @return
+     * @throws EntityVersionMismatchException
+     */
+    public E saveEntity( final E entity )
+        throws EntityVersionMismatchException
+    {
+        final String methodName = "saveEntity";
+        logMethodBegin( methodName, entity );
+        Objects.requireNonNull( entity, "entity cannot be null" );
+        this.checkEntityVersion( entity );
+        final E savedEntity = this.getRepository()
+                                  .save( entity );
+        logMethodEnd( methodName, entity );
+        return savedEntity;
+    }
+
+    /**
+     * Determined if the entity exists.
+     * @param entity
+     * @return
+     */
+    public boolean isExists( final E entity )
+    {
+        return this.isExists( entity.getId() );
+    }
+
+    /**
+     * Determines if the key exists.
+     * @param key
+     * @return
+     */
+    public boolean isExists( final ID key )
+    {
+        return this.getRepository().exists( key );
     }
 
     /**
@@ -184,25 +241,6 @@ public abstract class VersionedEntityService<ID extends Serializable,
         final D returnDTO = this.entityToDTO( savedEntity );
         logMethodEnd( methodName, returnDTO );
         return returnDTO;
-    }
-
-    /**
-     * Saves the entity to the database.
-     * @param entity
-     * @return
-     * @throws EntityVersionMismatchException
-     */
-    public E saveEntity( final E entity )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "saveEntity";
-        logMethodBegin( methodName, entity );
-        Objects.requireNonNull( entity, "entity cannot be null" );
-        this.checkEntityVersion( entity );
-        final E savedEntity = this.getRepository()
-                                  .save( entity );
-        logMethodEnd( methodName, entity );
-        return savedEntity;
     }
 
     /**

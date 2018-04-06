@@ -46,7 +46,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @param accountId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public TradeItAccountDTO getAccount( @PathVariable int accountId,
@@ -66,7 +66,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @return The account that was added
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
                                                             @PathVariable final int customerId )
@@ -91,7 +91,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteAccount( @PathVariable int accountId,
@@ -121,7 +121,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @throws TradeItAccountNotFoundException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable int customerId,
                                                           @RequestBody TradeItAccountDTO tradeItAccountDTO )
@@ -143,7 +143,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * Get all of the customer accounts that are registered with TradeIt.
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<TradeItAccountDTO> getAccounts( final @PathVariable int customerId )

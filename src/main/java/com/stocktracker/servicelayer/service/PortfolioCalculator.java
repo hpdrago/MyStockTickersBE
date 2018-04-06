@@ -5,7 +5,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
-import com.stocktracker.weblayer.dto.PortfolioStockQuoteDTO;
+import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -58,12 +58,12 @@ public class PortfolioCalculator implements MyLogger
                StockQuoteUnavailableException,
                EntityVersionMismatchException
     {
-        List<PortfolioStockQuoteDTO> portfolioStocks = this.portfolioStockService
+        List<PortfolioStockDTO> portfolioStocks = this.portfolioStockService
                                                       .getPortfolioStocks( portfolioDTO.getId() );
         int portfolioRealizedGL = 0;
         int portfolioUnRealizedGL = 0;
         int marketValue = 0;
-        for ( PortfolioStockQuoteDTO portfolioStockDTO: portfolioStocks )
+        for ( PortfolioStockDTO portfolioStockDTO: portfolioStocks )
         {
             int stockRealizedGL = portfolioStockDTO.getRealizedGains().intValue() -
                                   portfolioStockDTO.getRealizedLosses().intValue();

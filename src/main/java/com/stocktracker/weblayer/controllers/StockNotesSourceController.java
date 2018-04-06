@@ -35,7 +35,7 @@ public class StockNotesSourceController extends AbstractController
      *
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<StockNoteSourceDTO> getStockNotesSources( final @PathVariable int customerId )
@@ -54,7 +54,7 @@ public class StockNotesSourceController extends AbstractController
      * @return The stock that was added
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/customer/customerId",
+    @RequestMapping( value = CONTEXT_URL + "/customerId/customerId",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteSourceDTO> addStockNoteSource( @RequestBody StockNoteSourceDTO stockNoteSourceDTO )
         throws EntityVersionMismatchException

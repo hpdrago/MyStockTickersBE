@@ -46,7 +46,7 @@ public class LinkedAccountController extends AbstractController
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customerId/{customerId}",
                      method = RequestMethod.DELETE )
     public ResponseEntity<Void> deleteLinkedAccount( @PathVariable int linkedAccountId,
                                                      @PathVariable int customerId )
@@ -67,7 +67,7 @@ public class LinkedAccountController extends AbstractController
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customer/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<LinkedAccountDTO> saveLinkedAccount( @PathVariable int linkedAccountId,
                                                                @PathVariable int customerId,
@@ -101,7 +101,7 @@ public class LinkedAccountController extends AbstractController
      */
     @RequestMapping( value = CONTEXT_URL +
                              "/tradeItAccountId/{tradeItAccountId}" +
-                             "/customer/{customerId}",
+                             "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable int tradeItAccountId,
@@ -135,7 +135,7 @@ public class LinkedAccountController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
                              + "/id/{linkedAccountId}"
                              + "/tradeItAccountId/{tradeItAccountId}"
-                             + "/customer/{customerId}",
+                             + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public LinkedAccountDTO getUpdatedLinkedAccount( @PathVariable final int linkedAccountId,
