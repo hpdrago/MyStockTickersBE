@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 import pl.zankowski.iextrading4j.client.IEXTradingClient;
@@ -38,9 +39,14 @@ public class IEXTradingStockService implements MyLogger
      */
     public BigDecimal getPrice( final String tickerSymbol )
     {
-        BigDecimal price = this.iexTradingClient
-                               .executeRequest( new PriceRequestBuilder().withSymbol( tickerSymbol )
-                               .build() );
+        final String methodName = "getPrice";
+        logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol );
+        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
+        final BigDecimal price = this.iexTradingClient
+                                     .executeRequest( new PriceRequestBuilder().withSymbol( tickerSymbol )
+                                     .build() );
+        logMethodEnd( methodName, tickerSymbol + "=" + price );
         return price;
     }
 
@@ -53,9 +59,10 @@ public class IEXTradingStockService implements MyLogger
     public Quote getQuote( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getIEXTradingQuote";
+        final String methodName = "getQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         Quote quote = null;
         try
         {
@@ -87,9 +94,10 @@ public class IEXTradingStockService implements MyLogger
     public Company getCompany( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getIEXTradingQuote";
+        final String methodName = "getCompany";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         Company company = null;
         try
         {

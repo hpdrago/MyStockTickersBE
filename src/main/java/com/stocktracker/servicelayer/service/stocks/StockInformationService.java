@@ -14,6 +14,7 @@ import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMod
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -63,6 +64,7 @@ public class StockInformationService implements MyLogger
         final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
                                                               .getStockPrice( tickerSymbol, stockPriceFetchMode );
         if ( stockPriceFetchMode.isSynchronous() )
