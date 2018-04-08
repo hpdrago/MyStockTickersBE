@@ -31,6 +31,13 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     private StockCompanyRepository stockCompanyRepository;
     private IEXTradingStockService iexTradingStockService;
 
+    /**
+     * Gets the stock company from the database and if not found throws StockCompanyNotFoundException.
+     * Call {@code getStockCompanyEntity} if you want to add the company to the database if the company is not found.
+     * @param tickerSymbol
+     * @return
+     * @throws StockCompanyNotFoundException
+     */
     public StockCompanyEntity getStockCompany( final String tickerSymbol )
         throws StockCompanyNotFoundException
     {

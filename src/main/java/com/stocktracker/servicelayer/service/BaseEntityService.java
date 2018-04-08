@@ -1,6 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
+import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +35,7 @@ public abstract class BaseEntityService<ID extends Serializable,
 {
     @Autowired
     protected ApplicationContext context;
+    protected StockInformationService stockInformationService;
 
     /**
      * Creates a new entity instance of type <E> and copies the properties with the same name and type
@@ -44,6 +47,16 @@ public abstract class BaseEntityService<ID extends Serializable,
     {
         final D dto = this.createDTO();
         BeanUtils.copyProperties( entity, dto );
+        /*
+         * I think this is a good use of instanceof...
+         * If any stock DTO is a stock company container, it will be populated automatically with the stock company
+         * information.  No need for any sub cvl
+         */
+        if ( dto instanceof StockCompanyContainer )
+        {
+            this.stockInformationService
+                .setCompanyInformation( (StockCompanyContainer)dto );
+        }
         return dto;
     }
 
@@ -86,7 +99,7 @@ public abstract class BaseEntityService<ID extends Serializable,
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
-        Page<D> dtoPage = dtosToPage( pageRequest, entityPage );
+        final Page<D> dtoPage = dtosToPage( pageRequest, entityPage );
         logMethodEnd( methodName, "page size: " + dtoPage.getTotalElements() );
         return dtoPage;
     }
@@ -100,7 +113,7 @@ public abstract class BaseEntityService<ID extends Serializable,
     protected Page<D> dtosToPage( final @NotNull Pageable pageRequest,
                                   final @NotNull Page<E> source )
     {
-        List<D> dtos = this.entitiesToDTOs( source.getContent() );
+        final List<D> dtos = this.entitiesToDTOs( source.getContent() );
         return new PageImpl<>( dtos, pageRequest, source.getTotalElements() );
     }
 
@@ -141,4 +154,11 @@ public abstract class BaseEntityService<ID extends Serializable,
      * @return
      */
     protected abstract R getRepository();
+
+    @Autowired
+    public void setStockInformationService( final StockInformationService stockInformationService )
+    {
+        this.stockInformationService = stockInformationService;
+    }
+
 }

@@ -117,9 +117,7 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
     @Override
     protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
-        Objects.requireNonNull( stockCatalystEventEntity );
-        StockCatalystEventDTO stockCatalystEventDTO = this.createDTO();
-        BeanUtils.copyProperties( stockCatalystEventEntity, stockCatalystEventDTO );
+        StockCatalystEventDTO stockCatalystEventDTO = super.entityToDTO( stockCatalystEventEntity );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
             stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));

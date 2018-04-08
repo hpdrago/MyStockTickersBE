@@ -7,6 +7,7 @@ import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
+import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCache;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheEntry;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheState;
@@ -29,6 +30,30 @@ public class StockInformationService implements MyLogger
     private StockPriceCache stockPriceCache;
     private StockQuoteEntityService stockQuoteEntityService;
     private StockCompanyEntityService stockCompanyEntityService;
+    private IEXTradingStockService iexTradingStockService;
+
+    /**
+     * Loads {@code container} with the company information.
+     * @param container
+     */
+    public void setCompanyInformation( final StockCompanyContainer container )
+    {
+        final String methodName = "setCompanyInformation";
+        logMethodBegin( methodName, container );
+        final StockCompanyEntity stockCompanyEntity;
+        try
+        {
+            stockCompanyEntity = this.stockCompanyEntityService
+                                     .getStockCompanyEntity( container.getTickerSymbol() );
+            container.setCompanyName( stockCompanyEntity.getCompanyName() );
+            container.setIndustry( stockCompanyEntity.getIndustry() );
+            container.setSector( stockCompanyEntity.getSector() );
+        }
+        catch( StockNotFoundException e )
+        {
+            logError( methodName, "Company not found for " + container.getTickerSymbol() );
+        }
+    }
 
     /**
      * Updates the quote cache with the last price.
@@ -205,4 +230,11 @@ public class StockInformationService implements MyLogger
     {
         this.stockQuoteEntityService = stockQuoteEntityService;
     }
+
+    @Autowired
+    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
+    {
+        this.iexTradingStockService = iexTradingStockService;
+    }
+
 }
