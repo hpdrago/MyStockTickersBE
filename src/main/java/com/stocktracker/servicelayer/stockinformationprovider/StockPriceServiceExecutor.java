@@ -136,7 +136,7 @@ public class StockPriceServiceExecutor
             }
             catch( Exception e )
             {
-                logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage(), e );
+                logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage() );
                 if ( !triedYahoo )
                 {
                     try
@@ -231,6 +231,7 @@ public class StockPriceServiceExecutor
      * @throws StockNotFoundException for invalid ticker symbols.
      */
     private BigDecimal getPriceFromIEXTrading( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getPriceFromIEXTrading";
         logger.debug( methodName + " " + tickerSymbol );

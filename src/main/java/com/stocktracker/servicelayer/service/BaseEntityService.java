@@ -158,7 +158,12 @@ public abstract class BaseEntityService<ID extends Serializable,
     @Autowired
     public void setStockInformationService( final StockInformationService stockInformationService )
     {
+        logDebug( "setStockInformationService, ", "dependency injection of " + stockInformationService );
         this.stockInformationService = stockInformationService;
     }
 
+    public StockInformationService getStockInformationService()
+    {
+        return stockInformationService;
+    }
 }

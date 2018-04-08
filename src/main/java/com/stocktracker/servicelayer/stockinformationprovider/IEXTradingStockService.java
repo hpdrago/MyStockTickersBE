@@ -35,19 +35,28 @@ public class IEXTradingStockService implements MyLogger
     /**
      * Get the price for the ticker symbol.
      * @param tickerSymbol
-     * @return
+     * @return price for ticker symbol.
+     * @throws StockNotFoundException
      */
     public BigDecimal getPrice( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "getPrice";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
-        final BigDecimal price = this.iexTradingClient
-                                     .executeRequest( new PriceRequestBuilder().withSymbol( tickerSymbol )
-                                     .build() );
-        logMethodEnd( methodName, tickerSymbol + "=" + price );
-        return price;
+        try
+        {
+            final BigDecimal price = this.iexTradingClient
+                .executeRequest( new PriceRequestBuilder().withSymbol( tickerSymbol )
+                                                          .build() );
+            logMethodEnd( methodName, tickerSymbol + "=" + price );
+            return price;
+        }
+        catch( IllegalStateException e )
+        {
+            throw new StockNotFoundException( tickerSymbol, e );
+        }
     }
 
     /**

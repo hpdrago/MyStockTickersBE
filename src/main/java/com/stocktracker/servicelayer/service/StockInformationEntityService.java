@@ -1,10 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.repositorylayer.entity.VersionedEntity;
-import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.weblayer.dto.VersionedDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +25,6 @@ public abstract class StockInformationEntityService<K extends Serializable,
                                                     R extends JpaRepository<E,K>>
     extends VersionedEntityService<K,E,D,R>
 {
-    private StockInformationService stockInformationService;
     protected enum StockPriceFetchAction
     {
         NONE,
@@ -113,17 +110,4 @@ public abstract class StockInformationEntityService<K extends Serializable,
         */
         logMethodEnd( methodName );
     }
-
-    @Autowired
-    public void setStockInformationService( final StockInformationService stockInformationService )
-    {
-        logInfo( "setStockQuoteService", "Dependency Injection of " + stockInformationService );
-        this.stockInformationService = stockInformationService;
-    }
-
-    public StockInformationService getStockInformationService()
-    {
-        return stockInformationService;
-    }
-
 }
