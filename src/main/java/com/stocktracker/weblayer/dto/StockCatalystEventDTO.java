@@ -6,17 +6,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCatalystEventDTO implements VersionedDTO<Integer>
+public class StockCatalystEventDTO extends BaseStockCompanyDTO
+                                   implements VersionedDTO<Integer>
 {
     private Integer id;
     private Integer customerId;
-    private String tickerSymbol;
     private String catalystDate;
     private String catalystDesc;
     private Byte dateOrTimePeriod;
     private Byte timePeriod;
     private Short timePeriodYear;
     private Integer version;
+    private String companyName;
 
     public Integer getId()
     {
@@ -36,16 +37,6 @@ public class StockCatalystEventDTO implements VersionedDTO<Integer>
     public void setCustomerId( Integer customerId )
     {
         this.customerId = customerId;
-    }
-
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
     }
 
     public String getCatalystDate()
@@ -110,6 +101,16 @@ public class StockCatalystEventDTO implements VersionedDTO<Integer>
         this.version = version;
     }
 
+    public String getCompanyName()
+    {
+        return companyName;
+    }
+
+    public void setCompanyName( final String companyName )
+    {
+        this.companyName = companyName;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -139,7 +140,7 @@ public class StockCatalystEventDTO implements VersionedDTO<Integer>
         final StringBuilder sb = new StringBuilder( "StockCatalystEventDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( getTickerSymbol() ).append( '\'' );
         sb.append( ", catalystDate='" ).append( catalystDate ).append( '\'' );
         sb.append( ", catalystDesc='" ).append( catalystDesc ).append( '\'' );
         sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );

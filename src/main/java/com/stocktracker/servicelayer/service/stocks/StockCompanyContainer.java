@@ -9,8 +9,8 @@ public interface StockCompanyContainer
     void setTickerSymbol( final String tickerSymbol );
     String getCompanyName();
     void setCompanyName( final String companyName );
-    String getCompanyURL();
-    void setCompanyURL( final String quoteUrl );
+    //String getCompanyURL();
+    //void setCompanyURL( final String quoteUrl );
     String getSector();
     void setSector( final String sector );
     String getIndustry();

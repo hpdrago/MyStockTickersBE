@@ -81,7 +81,7 @@ public class StockAnalystConsensusController implements MyLogger
                                                                         @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockAnalystConsensusList";
-        logMethodBegin( methodName, customerId, tickerSymbol );
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
             .getStockAnalystConsensusListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );

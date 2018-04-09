@@ -3,11 +3,9 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
-import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,6 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
     implements MyLogger
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
-    private StockInformationService stockInformationService;
     private StockCompanyEntityService stockCompanyEntityService;
 
     /**
@@ -48,7 +45,7 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
         logMethodBegin( methodName, pageRequest, customerId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Page<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
-            .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
+                                                                        .findByCustomerIdOrderByTickerSymbol( pageRequest, customerId );
         Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
         logMethodEnd( methodName, "Found " + stockCatalystEventEntities.getContent().size() + " catalyst events" );
@@ -102,8 +99,7 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
      * @return
      */
     public StockCatalystEventDTO saveStockCatalystEvent( @NotNull final StockCatalystEventDTO stockCatalystEventDTO )
-        throws StockNotFoundException,
-               EntityVersionMismatchException
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventDTO );
@@ -117,9 +113,7 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
     @Override
     protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
-        Objects.requireNonNull( stockCatalystEventEntity );
-        StockCatalystEventDTO stockCatalystEventDTO = this.createDTO();
-        BeanUtils.copyProperties( stockCatalystEventEntity, stockCatalystEventDTO );
+        StockCatalystEventDTO stockCatalystEventDTO = super.entityToDTO( stockCatalystEventEntity );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
             stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));
@@ -162,12 +156,6 @@ public class StockCatalystEventEntityService extends VersionedEntityService<Inte
     public void setStockCatalystEventRepository( final StockCatalystEventRepository stockCatalystEventRepository )
     {
         this.stockCatalystEventRepository = stockCatalystEventRepository;
-    }
-
-    @Autowired
-    public void setStockInformationService( final StockInformationService stockInformationService )
-    {
-        this.stockInformationService = stockInformationService;
     }
 
     @Autowired

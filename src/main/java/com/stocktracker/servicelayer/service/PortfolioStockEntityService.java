@@ -201,12 +201,6 @@ public class PortfolioStockEntityService extends VersionedEntityService<Integer,
     }
 
     @Autowired
-    public void setStockInformationService( final StockInformationService stockInformationService )
-    {
-        this.stockInformationService = stockInformationService;
-    }
-
-    @Autowired
     public void setPortfolioStockRepository( final PortfolioStockRepository portfolioStockRepository )
     {
         this.portfolioStockRepository = portfolioStockRepository;

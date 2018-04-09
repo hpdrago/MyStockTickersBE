@@ -26,9 +26,9 @@ import java.util.Objects;
 @Service
 @Transactional
 public class StockAnalystConsensusEntityService extends StockInformationEntityService<Integer,
-                                                                                         StockAnalystConsensusEntity,
-    StockAnalystConsensusDTO,
-                                                                                         StockAnalystConsensusRepository>
+                                                                                      StockAnalystConsensusEntity,
+                                                                                      StockAnalystConsensusDTO,
+                                                                                      StockAnalystConsensusRepository>
                                                 implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;

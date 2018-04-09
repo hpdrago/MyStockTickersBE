@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,8 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_company", schema = "stocktracker", catalog = "" )
-public class StockCompanyEntity implements VersionedEntity<String>
+public class StockCompanyEntity implements VersionedEntity<String>,
+                                           StockCompanyContainer
 {
     public static final int TICKER_SYMBOL_LEN = 6;
     private String tickerSymbol;
