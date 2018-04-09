@@ -174,9 +174,9 @@ public abstract class VersionedEntityService<ID extends Serializable,
     public void mergeEntity( final E entity )
         throws EntityVersionMismatchException
     {
-        if ( this.isExists( entity ) )
+        if ( entity.getId() == null )
         {
-            this.saveEntity( entity );
+            this.addEntity( entity );
         }
         else
         {
