@@ -14,4 +14,6 @@ public enum StockPriceFetchResult
     {
         return this == DISCONTINUED;
     }
+
+    public boolean isNotFound() { return this == NOT_FOUND; }
 }

@@ -202,6 +202,9 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         final String methodName = "saveStockCompany";
         logMethodBegin( methodName, company );
+        Objects.requireNonNull( company, "company argument cannot be null" );
+        Objects.requireNonNull( company.getSymbol(), "company.symbol argument cannot be null" );
+        Objects.requireNonNull( company.getCompanyName(), "company.companyName argument cannot be null" );
         StockCompanyEntity stockCompanyEntity = null;
         try
         {

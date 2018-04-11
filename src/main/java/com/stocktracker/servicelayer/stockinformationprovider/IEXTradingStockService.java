@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
+import org.glassfish.jersey.message.internal.MessageBodyProviderNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import pl.zankowski.iextrading4j.api.stocks.Company;
@@ -48,8 +49,8 @@ public class IEXTradingStockService implements MyLogger
         try
         {
             final BigDecimal price = this.iexTradingClient
-                .executeRequest( new PriceRequestBuilder().withSymbol( tickerSymbol )
-                                                          .build() );
+                                         .executeRequest( new PriceRequestBuilder().withSymbol( tickerSymbol )
+                                                                                   .build() );
             logMethodEnd( methodName, tickerSymbol + "=" + price );
             return price;
         }
@@ -113,11 +114,23 @@ public class IEXTradingStockService implements MyLogger
             company = this.iexTradingClient.executeRequest( new CompanyRequestBuilder().withSymbol( tickerSymbol )
                                                                                        .build() );
         }
-        catch( javax.ws.rs.NotFoundException e )
+        catch( javax.ws.rs.NotFoundException | IllegalStateException | MessageBodyProviderNotFoundException e )
         {
             throw new StockNotFoundException( "Stock not found for ticker symbol: " + tickerSymbol, e );
         }
         logMethodEnd( methodName, company );
         return company;
     }
+
+    private boolean isStockNotFoundException( final Exception e )
+    {
+        if ( e instanceof javax.ws.rs.NotFoundException ||
+             e instanceof IllegalStateException ||
+             e instanceof MessageBodyProviderNotFoundException )
+        {
+            return true;
+        }
+        return false;
+    }
+
 }

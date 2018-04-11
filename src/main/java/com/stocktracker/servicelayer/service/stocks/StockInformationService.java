@@ -92,6 +92,7 @@ public class StockInformationService implements MyLogger
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
                                                               .getStockPrice( tickerSymbol, stockPriceFetchMode );
+        StockPriceQuoteDTO stockPriceQuoteDTO = null;
         if ( stockPriceFetchMode.isSynchronous() )
         {
             switch ( stockPriceCacheEntry.getCacheState() )
@@ -99,17 +100,20 @@ public class StockInformationService implements MyLogger
                 case FAILURE:
                     throw new StockNotFoundException( tickerSymbol, stockPriceCacheEntry.getFetchException() );
                 case NOT_FOUND:
-                    throw new StockNotFoundException( tickerSymbol, stockPriceCacheEntry.getFetchException() );
+                    stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
+                    break;
+                case CURRENT:
+                case STALE:
+                    stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
+                    final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityService
+                                                                      .getStockCompany( tickerSymbol );
+                    final StockQuoteEntity stockQuoteEntity = this.stockQuoteEntityService
+                                                                  .getStockQuote( tickerSymbol );
+                    stockPriceQuoteDTO.setCompanyName( stockCompanyEntity.getCompanyName() );
+                    stockPriceQuoteDTO.setOpenPrice( stockQuoteEntity.getOpenPrice() );
             }
         }
-        final StockPriceQuoteDTO stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
-        final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityService
-                                                          .getStockCompany( tickerSymbol );
-        final StockQuoteEntity stockQuoteEntity = this.stockQuoteEntityService
-                                                      .getStockQuote( tickerSymbol );
-        stockPriceQuoteDTO.setCompanyName( stockCompanyEntity.getCompanyName() );
-        stockPriceQuoteDTO.setOpenPrice( stockQuoteEntity.getOpenPrice() );
-        logMethodEnd( methodName, stockPriceCacheEntry );
+        logMethodEnd( methodName, stockPriceQuoteDTO );
         return stockPriceQuoteDTO;
     }
     /**

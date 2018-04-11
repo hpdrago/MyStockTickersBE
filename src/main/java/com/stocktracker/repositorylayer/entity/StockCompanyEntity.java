@@ -47,7 +47,7 @@ public class StockCompanyEntity implements VersionedEntity<String>,
     }
 
     @Basic
-    @Column( name = "company_name", nullable = true, length = 70 )
+    @Column( name = "company_name", nullable = false, length = 70 )
     public String getCompanyName()
     {
         return companyName;

@@ -166,40 +166,39 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
         StockPriceCacheEntry stockPriceCacheEntry = this.cacheEntryMap.get( getStockPriceResult.getTickerSymbol() );
         stockPriceCacheEntry.setFetchState( StockPriceFetchState.NOT_FETCHING );
         /*
-         * Create the stock_company table entry if needed and if we haven't already validated this stock.
-         */
-        if ( !stockPriceCacheEntry.isStockTableEntryValidated() )
-        {
-            this.stockCompanyEntityService.checkStockTableEntry( tickerSymbol );
-            stockPriceCacheEntry.setStockTableEntryValidated( true );
-        }
-        /*
-         * Mark the stock_company table entry as discontinued if the stock was not found.
-         */
-        if ( getStockPriceResult.getStockPriceFetchResult().isDiscontinued() )
-        {
-            this.stockCompanyEntityService.markStockAsDiscontinued( tickerSymbol );
-            stockPriceCacheEntry.setDiscontinued( true );
-
-        }
-        /*
          * Set the results in the cache entry and notify any observers waiting for the stock price update.
          */
         switch ( getStockPriceResult.getStockPriceFetchResult() )
         {
             case SUCCESS:
+                /*
+                 * Create the stock_company table entry if needed and if we haven't already validated this stock.
+                 */
+                if ( !stockPriceCacheEntry.isStockTableEntryValidated() )
+                {
+                    this.stockCompanyEntityService.checkStockTableEntry( tickerSymbol );
+                    stockPriceCacheEntry.setStockTableEntryValidated( true );
+                }
                 stockPriceCacheEntry.setStockPrice( getStockPriceResult.getStockPrice() );
                 stockPriceCacheEntry.setCacheState( StockPriceCacheState.CURRENT );
                 break;
 
             case NOT_FOUND:
                 stockPriceCacheEntry.setCacheState( StockPriceCacheState.NOT_FOUND );
+                stockPriceCacheEntry.setStockPrice( new BigDecimal( 0 ));
                 break;
 
             case EXCEPTION:
                 stockPriceCacheEntry.setCacheState( StockPriceCacheState.FAILURE );
                 stockPriceCacheEntry.setFetchException( getStockPriceResult.getException() );
                 logError( methodName, getStockPriceResult.getException() );
+
+            /*
+             * Mark the stock_company table entry as discontinued if the stock was not found.
+             */
+            case DISCONTINUED:
+                this.stockCompanyEntityService.markStockAsDiscontinued( tickerSymbol );
+                stockPriceCacheEntry.setDiscontinued( true );
                 break;
         }
         stockPriceCacheEntry.notifySubscribers();
