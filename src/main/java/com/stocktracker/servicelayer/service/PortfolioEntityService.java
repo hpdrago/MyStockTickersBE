@@ -25,7 +25,7 @@ import java.util.Objects;
  * Created by mike on 10/23/2016.
  */
 @Service
-@Transactional
+//@Transactional
 public class PortfolioEntityService extends VersionedEntityService<Integer,
                                                                    PortfolioEntity,
                                                                    PortfolioDTO,

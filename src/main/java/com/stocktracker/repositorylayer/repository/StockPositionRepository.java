@@ -2,19 +2,23 @@ package com.stocktracker.repositorylayer.repository;
 
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * TradeItAccount entity repository
- *
+ * <p>
  * Created by mike on 12/4/2017.
  */
-public interface StockPositionRepository extends JpaRepository<StockPositionEntity,Integer>
+@Transactional( readOnly = true )
+public interface StockPositionRepository extends JpaRepository<StockPositionEntity, Integer>
 {
     /**
      * Gets all of the positions for the {@code linkedAccountId}
+     *
      * @param linkedAccountId
      * @return
      */
@@ -22,6 +26,7 @@ public interface StockPositionRepository extends JpaRepository<StockPositionEnti
 
     /**
      * Gets a page worth of stock positions.
+     *
      * @param linkedAccountId
      * @return
      */
@@ -29,9 +34,40 @@ public interface StockPositionRepository extends JpaRepository<StockPositionEnti
 
     /**
      * Count the number of positions in the linked account.
+     *
      * @param linkedAccountId
      * @return
      */
-    @Query( "SELECT COUNT(SP) FROM StockPositionEntity SP WHERE SP.linkedAccountId=?1")
+    @Query( "SELECT COUNT(SP) FROM StockPositionEntity SP WHERE SP.linkedAccountId=?1" )
     Long countByLinkedAccountId( final int linkedAccountId );
+
+    @Override
+    @Transactional
+    @Modifying
+    StockPositionEntity save( StockPositionEntity stockPositionEntity );
+
+    @Override
+    @Transactional
+    @Modifying
+    <S extends StockPositionEntity> List<S> save( Iterable<S> iterable );
+
+    @Override
+    @Transactional
+    @Modifying
+    <S extends StockPositionEntity> S saveAndFlush( S s );
+
+    @Override
+    @Transactional
+    @Modifying
+    void delete( Integer integer );
+
+    @Override
+    @Transactional
+    @Modifying
+    void delete( StockPositionEntity stockPositionEntity );
+
+    @Override
+    @Transactional
+    @Modifying
+    void deleteInBatch( Iterable<StockPositionEntity> iterable );
 }

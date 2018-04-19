@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * Service class for the StockNoteSource entity interface to the database.
  */
 @Service
-@Transactional
+//@Transactional
 public class StockNoteSourceEntityService extends VersionedEntityService<Integer,
                                                                          StockNoteSourceEntity,
                                                                          StockNoteSourceDTO,

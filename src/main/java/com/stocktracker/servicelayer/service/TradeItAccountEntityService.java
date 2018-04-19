@@ -30,7 +30,7 @@ import java.util.Objects;
  * Created by mike on 12/4/2017.
  */
 @Service
-@Transactional
+//@Transactional
 public class TradeItAccountEntityService extends VersionedEntityService<Integer,
                                                                         TradeItAccountEntity,
                                                                         TradeItAccountDTO,

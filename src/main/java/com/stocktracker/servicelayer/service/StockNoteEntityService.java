@@ -26,7 +26,7 @@ import java.util.Objects;
  * Created by mike on 5/7/2017.
  */
 @Service
-@Transactional
+//@Transactional
 public class StockNoteEntityService extends StockInformationEntityService<Integer,
                                                                              StockNoteEntity,
     StockNoteDTO,

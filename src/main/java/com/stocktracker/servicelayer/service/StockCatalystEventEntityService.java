@@ -21,7 +21,7 @@ import java.util.Objects;
  * This is the service class for the Stock Catalyst Event table/entity
  */
 @Service
-@Transactional
+//@Transactional
 public class StockCatalystEventEntityService extends VersionedEntityService<Integer,
                                                                             StockCatalystEventEntity,
                                                                             StockCatalystEventDTO,

@@ -23,7 +23,7 @@ import java.util.Objects;
  * Created by mike on 5/15/2016.
  */
 @Service
-@Transactional
+//@Transactional
 public class CustomerEntityService extends VersionedEntityService<Integer,
                                                                   CustomerEntity,
                                                                   CustomerDTO,

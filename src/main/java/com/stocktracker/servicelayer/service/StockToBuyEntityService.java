@@ -25,7 +25,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Service
-@Transactional
+//@Transactional
 public class StockToBuyEntityService extends StockInformationEntityService<Integer,
                                                                               StockToBuyEntity,
     StockToBuyDTO,
