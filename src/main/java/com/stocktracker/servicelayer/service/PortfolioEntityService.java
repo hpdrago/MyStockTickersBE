@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -11,7 +10,6 @@ import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +24,9 @@ import java.util.UUID;
  */
 @Service
 //@Transactional
-public class PortfolioEntityService extends UuidEntityService<Integer,
-                                                                   PortfolioEntity,
-                                                                   PortfolioDTO,
-                                                                   PortfolioRepository>
-    implements MyLogger
+public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
+                                                              PortfolioDTO,
+                                                              PortfolioRepository>
 {
     private PortfolioRepository portfolioRepository;
     private StockCompanyEntityService stockCompanyEntityService;

@@ -67,7 +67,7 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 
     @Override
     @Transactional

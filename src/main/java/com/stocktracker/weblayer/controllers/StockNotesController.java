@@ -18,7 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -213,12 +212,11 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = URL_CONTEXT + "/customerId/{customerId}/tickerSymbols",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( @PathVariable final int customerId )
+    public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( @PathVariable final String customerId )
     {
         final String methodName = "getStockNotesTickerSymbols";
         logMethodBegin( methodName, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteCountService.getStockNotesCount( customerId );
+        List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteCountService.getStockNotesCount( UUIDUtil.uuid( customerId ) );
         logMethodEnd( methodName, stockNoteCountDTOs.size() );
         return stockNoteCountDTOs;
     }

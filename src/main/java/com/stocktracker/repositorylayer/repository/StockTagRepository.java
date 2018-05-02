@@ -33,7 +33,7 @@ public interface StockTagRepository extends JpaRepository<StockTagEntity, UUID>
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 
     @Override
     @Transactional

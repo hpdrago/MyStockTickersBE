@@ -5,12 +5,13 @@ import com.stocktracker.repositorylayer.repository.VStockNoteCountRepository;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
-public class StockNoteCountEntityService extends BaseEntityService<Integer,
+public class StockNoteCountEntityService extends BaseEntityService<UUID,
                                                                    VStockNoteCountEntity,
                                                                    String,
                                                                    StockNoteCountDTO,
@@ -26,16 +27,16 @@ public class StockNoteCountEntityService extends BaseEntityService<Integer,
 
     /**
      * Aggregates the number of notices for each stock (ticker symbol) for a customer.
-     * @param customerId The customer id.
+     * @param customerUuid The customer id.
      * @return List of {@code StockNoteCountDE} instances.
      */
-    public List<StockNoteCountDTO> getStockNotesCount( final int customerId )
+    public List<StockNoteCountDTO> getStockNotesCount( final UUID customerUuid )
     {
         final String methodName = "getStockNotesCount";
-        logMethodBegin( methodName, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        logMethodBegin( methodName, customerUuid );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         List<VStockNoteCountEntity> stockNoteTickerSymbolCountEntities =
-            this.vStockNoteCountRepository.findByCustomerUuid( customerId );
+            this.vStockNoteCountRepository.findByCustomerUuid( customerUuid );
         List<StockNoteCountDTO> stockNoteCountDTOs = this.entitiesToDTOs( stockNoteTickerSymbolCountEntities );
         logMethodEnd( methodName, stockNoteTickerSymbolCountEntities.size() );
         return stockNoteCountDTOs;

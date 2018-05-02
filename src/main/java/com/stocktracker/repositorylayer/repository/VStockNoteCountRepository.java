@@ -12,7 +12,7 @@ import java.util.UUID;
  * Created by mike on 5/7/2017.
  */
 @Transactional( readOnly = true )
-public interface VStockNoteCountRepository extends JpaRepository<VStockNoteCountEntity, UUID>
+public interface VStockNoteCountRepository extends JpaRepository<VStockNoteCountEntity,UUID>
 {
     /**
      * Get the list of ticker symbols and the number of notes for a single customer.
@@ -41,7 +41,7 @@ public interface VStockNoteCountRepository extends JpaRepository<VStockNoteCount
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 
     @Override
     @Transactional

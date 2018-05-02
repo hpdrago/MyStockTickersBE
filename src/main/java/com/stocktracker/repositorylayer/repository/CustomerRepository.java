@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 import java.util.UUID;
 
 /**
@@ -15,7 +14,7 @@ import java.util.UUID;
  * Created by mike on 5/14/2016.
  */
 @Transactional( readOnly = true )
-public interface CustomerRepository extends JpaRepository<CustomerEntity, Integer>
+public interface CustomerRepository extends JpaRepository<CustomerEntity,UUID>
 {
     /**
      * Finds the customer for the email. Email address are unique
@@ -43,7 +42,7 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity, Intege
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 
     @Override
     @Transactional

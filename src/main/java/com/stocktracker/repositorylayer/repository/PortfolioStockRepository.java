@@ -12,7 +12,7 @@ import java.util.UUID;
  * Created by mike on 10/30/2016.
  */
 @Transactional( readOnly = true )
-public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEntity, Integer>
+public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEntity,UUID>
 {
     /**
      * Find one by the primary key
@@ -34,7 +34,7 @@ public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEn
                                                                                  final UUID portfolioUuid,
                                                                                  final String tickerSymbol );
 
-    List<PortfolioStockEntity> findByPortfolioUuidOrderByTickerSymbol( int portfolioId );
+    List<PortfolioStockEntity> findByPortfolioUuidOrderByTickerSymbol( final UUID portfolioUuid );
 
     @Override
     @Transactional
@@ -54,7 +54,7 @@ public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEn
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( UUID uuid );
 
     @Override
     @Transactional

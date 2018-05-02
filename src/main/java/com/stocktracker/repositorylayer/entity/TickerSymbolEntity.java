@@ -44,7 +44,7 @@ public abstract class TickerSymbolEntity extends BaseEntity<String> implements V
     public void setTickerSymbol( final String tickerSymbol )
     {
         Objects.requireNonNull( "ticker symbol cannot be null" );
-        this.tickerSymbol = tickerSymbol.toUpperCase();
+        this.tickerSymbol = tickerSymbol;
     }
 
     @Override

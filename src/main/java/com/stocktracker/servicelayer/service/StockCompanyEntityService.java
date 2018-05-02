@@ -201,7 +201,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                         }
                         catch( EntityVersionMismatchException e )
                         {
-                            stockEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockCompanyEntity.TICKER_SYMBOL_LEN ) );
+                            stockEntity = this.getEntity( tickerSymbol );
                             mismatch = true;
                             logWarn( methodName, "Entity mismatch trying to save company {0}, trying again",
                                      stockEntity );

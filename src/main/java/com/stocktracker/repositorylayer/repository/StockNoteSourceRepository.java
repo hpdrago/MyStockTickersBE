@@ -49,7 +49,7 @@ public interface StockNoteSourceRepository extends JpaRepository<StockNoteSource
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 
     @Override
     @Transactional

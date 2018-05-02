@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
@@ -25,7 +23,6 @@ import java.util.UUID;
 public class StockCatalystEventEntityService extends UuidEntityService<StockCatalystEventEntity,
                                                                             StockCatalystEventDTO,
                                                                             StockCatalystEventRepository>
-    implements MyLogger
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockCompanyEntityService stockCompanyEntityService;

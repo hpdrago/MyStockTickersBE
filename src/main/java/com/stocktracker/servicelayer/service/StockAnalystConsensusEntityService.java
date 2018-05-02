@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.DuplicateAnalystConsensusException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -27,7 +25,6 @@ import java.util.UUID;
 public class StockAnalystConsensusEntityService extends StockInformationEntityService<StockAnalystConsensusEntity,
                                                                                       StockAnalystConsensusDTO,
                                                                                       StockAnalystConsensusRepository>
-                                                implements MyLogger
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
     private StockNoteSourceEntityService stockNoteSourceService;

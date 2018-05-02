@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by mike on 12/4/2017.
  */
 @Transactional( readOnly = true )
-public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEntity, Integer>
+public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEntity,UUID>
 {
     /**
      * Get all of the linked accounts by customer id and parent account id.  It is not really necessary to include the
@@ -23,7 +23,7 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
      * @param tradeItAccountUuid
      * @return
      */
-    List<LinkedAccountEntity> findAllByTradeItAccountId( final int tradeItAccountId );
+    List<LinkedAccountEntity> findAllByTradeItAccountUuid( final UUID tradeItAccountUuid );
 
     @Override
     @Transactional
@@ -53,5 +53,5 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 }

@@ -13,15 +13,15 @@ import java.util.UUID;
  */
 
 @Transactional( readOnly = true )
-public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Integer>
+public interface PortfolioRepository extends JpaRepository<PortfolioEntity,UUID>
 {
     /**
      * Get a list of the portfolios for a customer
      *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    List<PortfolioEntity> findByCustomerUuid( int customerUuid );
+    List<PortfolioEntity> findByCustomerUuid( UUID customerUuid );
 
     @Override
     @Transactional
@@ -41,7 +41,7 @@ public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Inte
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( UUID uuid );
 
     @Override
     @Transactional

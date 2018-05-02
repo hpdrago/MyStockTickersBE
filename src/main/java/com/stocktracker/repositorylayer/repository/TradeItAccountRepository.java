@@ -14,7 +14,7 @@ import java.util.UUID;
  * Created by mike on 12/4/2017.
  */
 @Transactional( readOnly = true )
-public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEntity,Integer>
+public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEntity,UUID>
 {
     /**
      * Get the list of accounts by the customerId.
@@ -49,7 +49,7 @@ public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEn
     @Override
     @Transactional
     @Modifying
-    void delete( Integer integer );
+    void delete( final UUID uuid );
 
     @Override
     @Transactional

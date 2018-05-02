@@ -25,11 +25,11 @@ import java.util.UUID;
  */
 @Service
 //@Transactional
-public class CustomerEntityService extends VersionedEntityService<Integer,
+public class CustomerEntityService extends VersionedEntityService<UUID,
                                                                   CustomerEntity,
+                                                                  String,
                                                                   CustomerDTO,
                                                                   CustomerRepository>
-    implements MyLogger
 {
     private PortfolioEntityService portfolioService;
     private CustomerRepository customerRepository;

@@ -35,7 +35,6 @@ import java.util.UUID;
 public class TradeItAccountEntityService extends UuidEntityService<TradeItAccountEntity,
                                                                    TradeItAccountDTO,
                                                                    TradeItAccountRepository>
-    implements MyLogger
 {
     private TradeItAccountRepository tradeItAccountRepository;
     private LinkedAccountEntityService linkedAccountEntityService;

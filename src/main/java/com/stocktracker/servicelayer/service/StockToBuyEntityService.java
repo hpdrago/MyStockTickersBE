@@ -2,7 +2,6 @@ package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -30,7 +28,6 @@ import java.util.UUID;
 public class StockToBuyEntityService extends StockInformationEntityService<StockToBuyEntity,
                                                                            StockToBuyDTO,
                                                                            StockToBuyRepository>
-    implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
     private StockTagService stockTagService;

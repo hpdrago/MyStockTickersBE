@@ -2,7 +2,6 @@ package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.EntityLoadingStatus;
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
@@ -12,7 +11,6 @@ import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +27,6 @@ import java.util.UUID;
 public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountEntity,
                                                                   LinkedAccountDTO,
                                                                   LinkedAccountRepository>
-                                        implements MyLogger
 {
     private LinkedAccountRepository linkedAccountRepository;
     private TradeItAsyncUpdateService tradeItAsyncUpdateService;

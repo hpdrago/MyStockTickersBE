@@ -33,11 +33,11 @@ public abstract class BaseEntityService<EK extends Serializable,
                                         DK extends Serializable,
                                         D,
                                         R extends JpaRepository<E, EK>>
-                                        implements MyLogger
 {
     @Autowired
     protected ApplicationContext context;
     protected StockInformationService stockInformationService;
+    private ServiceLogger serviceLogger = new ServiceLogger();
 
     /**
      * Creates a new entity instance of type <E> and copies the properties with the same name and type
@@ -167,5 +167,69 @@ public abstract class BaseEntityService<EK extends Serializable,
     public StockInformationService getStockInformationService()
     {
         return stockInformationService;
+    }
+
+    private class ServiceLogger implements MyLogger
+    {
+    }
+
+    protected void logMethodBegin( final String methodName, final Object ... args )
+    {
+        this.serviceLogger.logMethodBegin( methodName, args );
+    }
+
+    protected void logMethodEnd( final String methodName, final Object returnValue )
+    {
+        this.serviceLogger.logMethodEnd( methodName, returnValue );
+    }
+
+    protected void logMethodEnd( final String methodName )
+    {
+        this.serviceLogger.logMethodEnd( methodName );
+    }
+
+    protected void logDebug( final String methodName, final String logMessage )
+    {
+        this.serviceLogger.logDebug( methodName, logMessage );
+    }
+
+    protected void logDebug( final String methodName, final String messageFormat, final Object ... args )
+    {
+        this.serviceLogger.logDebug( methodName, messageFormat, args );
+    }
+
+    protected void logError( final String methodName, final Throwable throwable )
+    {
+        this.serviceLogger.logError( methodName, throwable );
+    }
+
+    protected void logError( final String methodName, final String logMessage )
+    {
+        this.serviceLogger.logError( methodName, logMessage );
+    }
+
+    protected void logWarn( final String methodName, final String logMessage )
+    {
+        this.serviceLogger.logWarn( methodName, logMessage );
+    }
+
+    protected void logWarn( final String methodName, final String messageFormat, final Object ... args )
+    {
+        this.serviceLogger.logWarn( methodName, messageFormat, args );
+    }
+
+    protected void logInfo( final String methodName, final String logMessage )
+    {
+        this.serviceLogger.logInfo( methodName, logMessage );
+    }
+
+    protected void logInfo( final String methodName, final String messageFormat, final Object ... args )
+    {
+        this.serviceLogger.logInfo( methodName, messageFormat, args );
+    }
+
+    void logError( final String methodName, final String messageFormat, final Object ... args )
+    {
+        this.serviceLogger.logError( methodName, messageFormat, args );
     }
 }
