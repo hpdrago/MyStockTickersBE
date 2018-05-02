@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -94,7 +95,7 @@ public class TradeItController extends AbstractController
                                          + "/oAuthVerifier/{oAuthVerifier}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public GetOAuthAccessTokenDTO getOAuthAccessToken( @PathVariable final int customerId,
+    public GetOAuthAccessTokenDTO getOAuthAccessToken( @PathVariable final String customerId,
                                                        @PathVariable final String broker,
                                                        @PathVariable final String accountName,
                                                        @PathVariable final String oAuthVerifier )
@@ -102,9 +103,11 @@ public class TradeItController extends AbstractController
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerId, oAuthVerifier );
-        final GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = this.tradeItService.getOAuthAccessToken( customerId, broker,
-                                                                                                       accountName,
-                                                                                                       oAuthVerifier );
+        final GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = this.tradeItService
+                                                                  .getOAuthAccessToken( UUIDUtil.uuid( customerId ),
+                                                                                        broker,
+                                                                                        accountName,
+                                                                                        oAuthVerifier );
         logMethodEnd( methodName, getOAuthAccessTokenDTO );
         return getOAuthAccessTokenDTO;
     }
@@ -121,17 +124,17 @@ public class TradeItController extends AbstractController
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final int customerId,
-                                                                   @PathVariable final int accountId )
+    public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final String customerId,
+                                                                   @PathVariable final String accountId )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );
-        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO = this.tradeItService
-                                                                                    .getOAuthTokenUpdateURL( customerId,
-                                                                                                             accountId );
+        final GetOAuthAccessTokenUpdateURLDTO getOAuthAccessTokenUpdateURLDTO =
+            this.tradeItService
+                .getOAuthTokenUpdateURL( UUIDUtil.uuid( accountId ));
         logMethodEnd( methodName, getOAuthAccessTokenUpdateURLDTO );
         return getOAuthAccessTokenUpdateURLDTO;
     }
@@ -141,8 +144,8 @@ public class TradeItController extends AbstractController
      * @param customerId
      * @param accountId
      * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
-     * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
+     * @throws LinkedAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
@@ -151,24 +154,24 @@ public class TradeItController extends AbstractController
                                          + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public AuthenticateDTO authenticate( @PathVariable final int customerId,
-                                         @PathVariable final int accountId )
-        throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
+    public AuthenticateDTO authenticate( @PathVariable final String customerId,
+                                         @PathVariable final String accountId )
+        throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               LinkedAccountNotFoundException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, accountId, customerId );
         final AuthenticateDTO authenticateDTO = this.tradeItService
-                                                    .authenticate( customerId, accountId );
+                                                    .authenticate( UUIDUtil.uuid( customerId ) );
         /*
          * Synchronize the linked accounts identified by TradeIt with the linked account table.
          */
         if ( authenticateDTO.isSuccessful() )
         {
             this.tradeItAccountEntityService
-                .synchronizeTradeItAccount( customerId, accountId, authenticateDTO );
+                .synchronizeTradeItAccount( UUIDUtil.uuid( accountId ), authenticateDTO );
         }
         logMethodEnd( methodName, authenticateDTO );
         return authenticateDTO;
@@ -191,8 +194,8 @@ public class TradeItController extends AbstractController
                                          + "/customerId/{customerId}",
                      method = RequestMethod.POST,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public AnswerSecurityQuestionDTO answerSecurityQuestion( @PathVariable final int customerId,
-                                                             @PathVariable final int accountId,
+    public AnswerSecurityQuestionDTO answerSecurityQuestion( @PathVariable final String customerId,
+                                                             @PathVariable final String accountId,
                                                              @RequestBody final String answer )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
@@ -202,7 +205,7 @@ public class TradeItController extends AbstractController
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, answer );
         final AnswerSecurityQuestionDTO answerSecurityQuestionDTO = this.tradeItService
-                                                                        .answerSecurityQuestion( customerId, accountId,
+                                                                        .answerSecurityQuestion( UUIDUtil.uuid( accountId ),
                                                                                                  answer );
         logMethodEnd( methodName, answerSecurityQuestionDTO );
         return answerSecurityQuestionDTO;
@@ -223,8 +226,8 @@ public class TradeItController extends AbstractController
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public KeepSessionAliveDTO keepSessionAlive( @PathVariable final int customerId,
-                                                 @PathVariable final int tradeItAccountId )
+    public KeepSessionAliveDTO keepSessionAlive( @PathVariable final String customerId,
+                                                 @PathVariable final String tradeItAccountId )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
                EntityVersionMismatchException
@@ -232,7 +235,7 @@ public class TradeItController extends AbstractController
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, customerId, tradeItAccountId );
         final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService
-                                                            .keepSessionAlive( customerId, tradeItAccountId );
+                                                            .keepSessionAlive( UUIDUtil.uuid( tradeItAccountId ));
         /*
          * Synchronize the linked accounts identified by TradeIt with the linked account table.
          */
@@ -259,14 +262,14 @@ public class TradeItController extends AbstractController
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public CloseSessionDTO closeSession( @PathVariable final int customerId,
-                                         @PathVariable final int accountId )
+    public CloseSessionDTO closeSession( @PathVariable final String customerId,
+                                         @PathVariable final String accountId )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "closeSession";
         logMethodBegin( methodName, accountId, customerId );
         final CloseSessionDTO closeSessionDTO = this.tradeItService
-                                                    .closeSession( customerId, accountId );
+                                                    .closeSession( UUIDUtil.uuid( accountId ));
         logMethodEnd( methodName, closeSessionDTO );
         return closeSessionDTO;
     }

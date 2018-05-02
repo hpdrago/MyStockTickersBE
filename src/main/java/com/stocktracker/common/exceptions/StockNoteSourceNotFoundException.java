@@ -3,6 +3,8 @@ package com.stocktracker.common.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.UUID;
+
 /**
  * Created by mike on 5/15/2016.
  */
@@ -11,11 +13,15 @@ public class StockNoteSourceNotFoundException extends RuntimeException
 {
     /**
      * PortfolioDE id not found
-     * @param id
+     * @param uuid
      */
-    public StockNoteSourceNotFoundException( final int id )
+    public StockNoteSourceNotFoundException( final String uuid )
     {
-        super( "Stock note source id: " + id + " was not found" );
+        super( "Stock note source id: " + uuid + " was not found" );
     }
 
+    public StockNoteSourceNotFoundException( final UUID stockNoteSourceUuid )
+    {
+        this( stockNoteSourceUuid.toString() );
+    }
 }

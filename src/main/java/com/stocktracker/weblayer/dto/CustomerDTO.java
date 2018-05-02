@@ -12,9 +12,9 @@ import java.util.List;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class CustomerDTO implements VersionedDTO<Integer>
+public class CustomerDTO implements UuidDTO
 {
-    private Integer id;
+    private String id;
     private String email;
     private Integer version;
     private List<PortfolioDTO> portfolios;
@@ -33,12 +33,12 @@ public class CustomerDTO implements VersionedDTO<Integer>
     {
     }
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( Integer id )
+    public void setId( final String id )
     {
         this.id = id;
     }

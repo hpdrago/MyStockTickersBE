@@ -8,43 +8,21 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.sql.Timestamp;
-import java.util.Objects;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_company", schema = "stocktracker", catalog = "" )
-public class StockCompanyEntity implements VersionedEntity<String>,
-                                           StockCompanyContainer
+public class StockCompanyEntity extends TickerSymbolEntity
+                                implements StockCompanyContainer
 {
-    public static final int TICKER_SYMBOL_LEN = 6;
-    private String tickerSymbol;
     private String companyName;
     private String companyURL;
     private String sector;
     private String industry;
     private String discontinuedInd;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
-
-    @Id
-    @Column( name = "ticker_symbol", nullable = false, length = 25 )
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
 
     @Basic
     @Column( name = "company_name", nullable = false, length = 70 )
@@ -118,84 +96,17 @@ public class StockCompanyEntity implements VersionedEntity<String>,
         return this.discontinuedInd == null ? false : this.discontinuedInd.equalsIgnoreCase( "Y" );
     }
 
-    @Basic
-    @Column( name = "create_date", nullable = false )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Transient
-    @Override
-    public String getId()
-    {
-        return this.tickerSymbol;
-    }
-
-    @Basic
-    @Column( name = "version", nullable = false )
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockCompanyEntity that = (StockCompanyEntity) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects
-            .hash( tickerSymbol, companyName, companyURL, sector, industry, discontinuedInd, createDate, updateDate, version );
-    }
-
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockCompanyEntity{" );
-        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( "tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", quoteUrl='" ).append( companyURL ).append( '\'' );
         sb.append( ", sector='" ).append( sector ).append( '\'' );
         sb.append( ", industry='" ).append( industry ).append( '\'' );
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

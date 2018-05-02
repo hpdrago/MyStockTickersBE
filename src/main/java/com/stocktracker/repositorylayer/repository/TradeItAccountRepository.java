@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * TradeItAccount entity repository
@@ -13,24 +14,22 @@ import java.util.List;
  * Created by mike on 12/4/2017.
  */
 @Transactional( readOnly = true )
-public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEntity, Integer>
+public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEntity,Integer>
 {
     /**
      * Get the list of accounts by the customerId.
-     *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    List<TradeItAccountEntity> findByCustomerId( final int customerId );
+    List<TradeItAccountEntity> findByCustomerUuid( final UUID customerUuid );
 
     /**
      * Get the customer's account by the name of the account.
-     *
-     * @param customerId
+     * @param customerUuid
      * @param name
      * @return
      */
-    TradeItAccountEntity findByCustomerIdAndName( final int customerId, final String name );
+    TradeItAccountEntity findByCustomerUuidAndName( final UUID customerUuid, final String name );
 
     @Override
     @Transactional

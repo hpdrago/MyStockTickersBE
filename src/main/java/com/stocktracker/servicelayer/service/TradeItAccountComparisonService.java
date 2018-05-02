@@ -193,12 +193,12 @@ public class TradeItAccountComparisonService implements MyLogger
      * @return {@code ValidateLinkedAccountResult}
      */
     private SetComparator<String>.SetComparatorResults validateLinkedAccounts( final TradeItAccountEntity tradeItAccountEntity,
-                                                                                final AuthenticateAPIResult authenticateAPIResult )
+                                                                               final AuthenticateAPIResult authenticateAPIResult )
     {
         final String methodName = "validateLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
         Set<String> currentAccounts = new TreeSet();
-        tradeItAccountEntity.getLinkedAccountsById()
+        tradeItAccountEntity.getLinkedAccountsByUuid()
                             .forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
         Set<String> tradeItAccounts = new TreeSet<>();
         if ( authenticateAPIResult.getAccounts().isPresent() )

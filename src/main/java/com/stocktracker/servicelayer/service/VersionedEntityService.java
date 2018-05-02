@@ -2,26 +2,29 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
+import com.stocktracker.repositorylayer.VersionedEntity;
 import com.stocktracker.weblayer.dto.VersionedDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 
 /**
  * Base Service class for managing database entities.
- * @param <ID> The primary key type.
+ * @param <EK> The entity key type.
  * @param <E> The database entity type.
+ * @param <DK> The DTO key.
  * @param <D> The DTO type.
  * @param <R> The entity repository type.
  */
-public abstract class VersionedEntityService<ID extends Serializable,
-                                             E extends VersionedEntity<ID>,
-                                             D extends VersionedDTO<ID>,
-                                             R extends JpaRepository<E, ID>>
-    extends BaseEntityService<ID,E,D,R>
+public abstract class VersionedEntityService<EK extends Serializable,
+                                             E extends VersionedEntity<EK>,
+                                             DK extends Serializable,
+                                             D extends VersionedDTO<DK>,
+                                             R extends JpaRepository<E, EK>>
+    extends BaseEntityService<EK,E,DK,D,R>
 {
     /**
      * Get the DTO for the entity matching key.
@@ -29,7 +32,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
      * @return
      * @throws VersionedEntityNotFoundException
      */
-    public D getDTO( final ID key )
+    public D getDTO( final EK key )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getDTO";
@@ -47,21 +50,21 @@ public abstract class VersionedEntityService<ID extends Serializable,
 
     /**
      * Get a single entity.
-     * @param id The primary key.
+     * @param EK The primary key.
      * @return The entity.
-     * @throws VersionedEntityNotFoundException If the entity is not found by id
+     * @throws VersionedEntityNotFoundException If the entity is not found by EK
      */
-    public E getEntity( final ID id )
+    public E getEntity( final EK EK )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getEntity";
-        logMethodBegin( methodName, id );
-        Objects.requireNonNull( id, "id cannot be null" );
+        logMethodBegin( methodName, EK );
+        Objects.requireNonNull( EK, "EK cannot be null" );
         final E entity = this.getRepository()
-                             .findOne( id );
+                             .findOne( EK );
         if ( entity == null )
         {
-            throw new VersionedEntityNotFoundException( id );
+            throw new VersionedEntityNotFoundException( EK );
         }
         logMethodEnd( methodName, entity );
         return entity;
@@ -100,23 +103,23 @@ public abstract class VersionedEntityService<ID extends Serializable,
 
     /**
      * Delete the entity.
-     * @param id
+     * @param EK
      * @throws VersionedEntityNotFoundException
      */
-    public void deleteEntity( final ID id )
+    public void deleteEntity( final EK EK )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteEntity";
-        logMethodBegin( methodName, id );
-        Objects.requireNonNull( id, "id cannot be null" );
-        if ( this.getRepository().exists( id ))
+        logMethodBegin( methodName, EK );
+        Objects.requireNonNull( EK, "EK cannot be null" );
+        if ( this.getRepository().exists( EK ))
         {
             this.getRepository()
-                .delete( id );
+                .delete( EK );
         }
         else
         {
-            throw new VersionedEntityNotFoundException( id );
+            throw new VersionedEntityNotFoundException( EK );
         }
         logMethodEnd( methodName );
     }
@@ -160,6 +163,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
                                                       "Attempting to create a new entity that already exists: " + entity );
         }
         entity.setVersion( 1 );
+        entity.setCreateDate( new Timestamp( System.currentTimeMillis() ));
         final E returnEntity = this.getRepository()
                                    .save( entity );
         logMethodEnd( methodName, returnEntity );
@@ -174,7 +178,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
     public void mergeEntity( final E entity )
         throws EntityVersionMismatchException
     {
-        if ( entity.getId() == null )
+        if ( entity.getId() == null || !this.isExists( entity ) )
         {
             this.addEntity( entity );
         }
@@ -218,7 +222,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
      * @param key
      * @return
      */
-    public boolean isExists( final ID key )
+    public boolean isExists( final EK key )
     {
         return this.getRepository().exists( key );
     }
@@ -235,8 +239,8 @@ public abstract class VersionedEntityService<ID extends Serializable,
         final String methodName = "saveDTO";
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto cannot be null" );
-        checkEntityVersion( dto );
         final E entity = this.dtoToEntity( dto );
+        this.checkEntityVersion( entity );
         final E savedEntity = this.saveEntity( entity );
         final D returnDTO = this.entityToDTO( savedEntity );
         logMethodEnd( methodName, returnDTO );
@@ -251,7 +255,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
      * @throws EntityVersionMismatchException if the database entity (if found) doesn't match the {@code entity}
      *         argument's version.
      */
-    public void checkEntityVersion( final VersionedEntity<ID> entity )
+    public void checkEntityVersion( final VersionedEntity<EK> entity )
         throws EntityVersionMismatchException
     {
         final String methodName = "checkEntityVersion";
@@ -259,7 +263,7 @@ public abstract class VersionedEntityService<ID extends Serializable,
         Objects.requireNonNull( entity, "entity cannot be null" );
         E dbEntity = null;
         /*
-         * If there is an ID then there is a database version of this entity.
+         * If there is an EK then there is a database version of this entity.
          */
         if ( entity.getId() != null )
         {

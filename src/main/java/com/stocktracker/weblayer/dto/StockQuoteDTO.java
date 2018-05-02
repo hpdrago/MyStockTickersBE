@@ -35,6 +35,8 @@ public class StockQuoteDTO implements VersionedDTO<String>
     private BigDecimal week52Change;
     private BigDecimal ytdChangePercent;
     private Timestamp lastQuoteRequestDate;
+    private String discontinuedInd;
+    private Integer version;
 
     public String getTickerSymbol()
     {
@@ -286,13 +288,10 @@ public class StockQuoteDTO implements VersionedDTO<String>
         this.discontinuedInd = discontinuedInd;
     }
 
-    private String discontinuedInd;
-    private Integer version;
-
     @Override
     public String getId()
     {
-        return null;
+        return this.tickerSymbol;
     }
 
     @Override

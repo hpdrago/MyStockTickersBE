@@ -5,15 +5,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
+ * This DTO contains the information for the source information of a stock note.
  * Created by mike on 9/10/2017.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockNoteSourceDTO implements VersionedDTO<Integer>
+public class StockNoteSourceDTO implements UuidDTO,
+                                           CustomerIdContainer
 {
-    private Integer id;
+    private String id;
     private String name;
-    private Integer customerId;
+    private String customerId;
     private Integer version;
 
     public static StockNoteSourceDTO newInstance()
@@ -22,12 +24,12 @@ public class StockNoteSourceDTO implements VersionedDTO<Integer>
         return stockNoteSourceDTO;
     }
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( final Integer id )
+    public void setId( final String id )
     {
         this.id = id;
     }
@@ -42,12 +44,12 @@ public class StockNoteSourceDTO implements VersionedDTO<Integer>
         this.name = name;
     }
 
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerId( final String customerId )
     {
         this.customerId = customerId;
     }

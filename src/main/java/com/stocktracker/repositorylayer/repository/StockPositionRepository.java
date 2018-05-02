@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * TradeItAccount entity repository
@@ -14,32 +15,29 @@ import java.util.List;
  * Created by mike on 12/4/2017.
  */
 @Transactional( readOnly = true )
-public interface StockPositionRepository extends JpaRepository<StockPositionEntity, Integer>
+public interface StockPositionRepository extends JpaRepository<StockPositionEntity,UUID>
 {
     /**
      * Gets all of the positions for the {@code linkedAccountId}
-     *
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      * @return
      */
-    List<StockPositionEntity> findAllByLinkedAccountId( int linkedAccountId );
+    List<StockPositionEntity> findAllByLinkedAccountUuid( UUID linkedAccountUuid );
 
     /**
      * Gets a page worth of stock positions.
-     *
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      * @return
      */
-    List<StockPositionEntity> findByLinkedAccountId( final int linkedAccountId );
+    List<StockPositionEntity> findByLinkedAccountUuid( final UUID linkedAccountUuid );
 
     /**
      * Count the number of positions in the linked account.
-     *
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      * @return
      */
-    @Query( "SELECT COUNT(SP) FROM StockPositionEntity SP WHERE SP.linkedAccountId=?1" )
-    Long countByLinkedAccountId( final int linkedAccountId );
+    @Query( "SELECT COUNT(SP) FROM StockPositionEntity SP WHERE SP.linkedAccountUuid=?1" )
+    Long countByLinkedAccountId( final int linkedAccountUuid );
 
     @Override
     @Transactional

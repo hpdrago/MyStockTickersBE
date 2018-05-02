@@ -8,48 +8,46 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mike on 5/7/2017.
  */
 @Transactional( readOnly = true )
-public interface StockAnalystConsensusRepository extends JpaRepository<StockAnalystConsensusEntity, Integer>
+public interface StockAnalystConsensusRepository extends JpaRepository<StockAnalystConsensusEntity,UUID>
 {
     /**
      * Get all of the stock analytics records for a customer
-     *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    Page<StockAnalystConsensusEntity> findByCustomerId( final Pageable pageRequest,
-                                                        final int customerId );
+    Page<StockAnalystConsensusEntity> findByCustomerUuid( final Pageable pageRequest,
+                                                          final UUID customerUuid );
 
     /**
      * Get the list of analyst consensus by customer and ticker symbol.
-     *
-     * @param customerId
+     * @param customerUuid
      * @param tickerSymbol
      * @return
      */
-    Page<StockAnalystConsensusEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest,
-                                                                       final int customerId, final String tickerSymbol );
+    Page<StockAnalystConsensusEntity> findByCustomerUuidAndTickerSymbol( final Pageable pageRequest,
+                                                                         final UUID customerUuid,
+                                                                         final String tickerSymbol );
 
     /**
      * Get the list of analyst consensus by customer and ticker symbol.
-     *
-     * @param customerId
+     * @param customerUuid
      * @param tickerSymbol
      * @return
      */
-    StockAnalystConsensusEntity findByCustomerIdAndTickerSymbol( final int customerId, final String tickerSymbol );
+    StockAnalystConsensusEntity findByCustomerUuidAndTickerSymbol( final UUID customerUuid, final String tickerSymbol );
 
     /**
      * Get all of the stock consensus rows for a customer.
-     *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    List<StockAnalystConsensusEntity> findByCustomerId( Integer customerId );
+    List<StockAnalystConsensusEntity> findByCustomerUuid( final UUID customerUuid );
 
     @Override
     @Transactional

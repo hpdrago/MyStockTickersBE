@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -7,12 +8,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
-import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Created by mike on 9/4/2016.
@@ -21,14 +18,11 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "portfolio", schema = "stocktracker", catalog = "" )
-public class PortfolioEntity implements VersionedEntity<Integer>
+public class PortfolioEntity extends UUIDEntity
+                             implements CustomerUuidContainer
 {
-    private Integer id;
     private String name;
-    private Integer customerId;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
+    private UUID customerUuid;
 
     /**
      * Create a new instance from a PortfolioDTO
@@ -38,19 +32,6 @@ public class PortfolioEntity implements VersionedEntity<Integer>
     {
         PortfolioEntity portfolioEntity = new PortfolioEntity();
         return portfolioEntity;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column( name = "id", nullable = false )
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
     }
 
     @Basic
@@ -66,88 +47,25 @@ public class PortfolioEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "customer_id", nullable = false )
-    public Integer getCustomerId()
+    @Column( name = "customer_uuid", nullable = false )
+    public UUID getCustomerUuid()
     {
-        return customerId;
+        return customerUuid;
     }
 
-    public void setCustomerId( Integer customerId )
+    public void setCustomerUuid( UUID customerId )
     {
-        this.customerId = customerId;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    /**
-     * Can be null as default value will be set by the DB.
-     * @return
-     */
-    @Basic
-    @Column( name = "create_date", nullable = false )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final PortfolioEntity that = (PortfolioEntity) o;
-        return getId() == that.getId() &&
-               Objects.equals( name, that.name );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( getId(), name );
+        this.customerUuid = customerId;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "PortfolioEntity{" );
-        sb.append( "id=" ).append( id );
+        sb.append( "uuid=" ).append( getUuidString() );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", customerUuid=" ).append( customerUuid );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

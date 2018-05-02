@@ -25,7 +25,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.stocks.StockInformationService" level="ALL" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.stocks.StockInformationService" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
@@ -35,7 +35,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.stockinformationprovider" level="ALL" additivity="false">
+    <logger name="com.stocktracker.servicelayer.stockinformationprovider" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>

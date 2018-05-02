@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -49,13 +50,14 @@ public class TradeItAccountController extends AbstractController implements MyLo
     @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public TradeItAccountDTO getAccount( @PathVariable int accountId,
-                                         @PathVariable int customerId )
+    public TradeItAccountDTO getAccount( @PathVariable String accountId,
+                                         @PathVariable String customerId )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccount";
         logMethodBegin( methodName, accountId );
-        TradeItAccountDTO tradeItAccountDTO = tradeItAccountService.getAccountDTO( customerId, accountId );
+        TradeItAccountDTO tradeItAccountDTO = this.tradeItAccountService
+                                                  .getAccountDTO( UUIDUtil.uuid( accountId ));
         logMethodEnd( methodName, tradeItAccountDTO );
         return tradeItAccountDTO;
     }
@@ -69,13 +71,14 @@ public class TradeItAccountController extends AbstractController implements MyLo
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
-                                                            @PathVariable final int customerId )
+                                                            @PathVariable final String customerId )
         throws EntityVersionMismatchException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
         TradeItAccountDTO returnStockDTO = this.tradeItAccountService
-                                               .createAccount( customerId, tradeItAccountDTO );
+                                               .createAccount( UUIDUtil.uuid( customerId ),
+                                                               tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -94,15 +97,15 @@ public class TradeItAccountController extends AbstractController implements MyLo
     @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deleteAccount( @PathVariable int accountId,
-                                               @PathVariable int customerId )
+    public ResponseEntity<Void> deleteAccount( @PathVariable String accountId,
+                                               @PathVariable String customerId )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "deleteAccount";
         logMethodBegin( methodName, accountId, customerId );
         try
         {
-            this.tradeItAccountService.deleteEntity( accountId );
+            this.tradeItAccountService.deleteEntity( UUIDUtil.uuid( accountId ));
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -146,12 +149,12 @@ public class TradeItAccountController extends AbstractController implements MyLo
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<TradeItAccountDTO> getAccounts( final @PathVariable int customerId )
+    public List<TradeItAccountDTO> getAccounts( final @PathVariable String customerId )
     {
         final String methodName = "getAccounts";
         logMethodBegin( methodName, customerId );
         List<TradeItAccountDTO> accounts = this.tradeItAccountService
-                                               .getAccounts( customerId );
+                                               .getAccounts( UUIDUtil.uuid( customerId ));
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }

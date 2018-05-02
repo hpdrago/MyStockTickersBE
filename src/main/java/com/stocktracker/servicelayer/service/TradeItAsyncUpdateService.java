@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This service provides an asynchronous method to get the account overview information which is stored in the
@@ -32,7 +33,7 @@ public class TradeItAsyncUpdateService
     private static final Logger log = LoggerFactory.getLogger( TradeItAsyncUpdateService.class );
     private TradeItService tradeItService;
     private LinkedAccountEntityService linkedAccountEntityService;
-    private static final Map<Integer, AsyncSubject<LinkedAccountEntity>> getAccountOverviewSubjectMap =
+    private static final Map<UUID, AsyncSubject<LinkedAccountEntity>> getAccountOverviewSubjectMap =
         Collections.synchronizedMap( new HashMap<>() );
 
     /**
@@ -45,10 +46,10 @@ public class TradeItAsyncUpdateService
         Objects.requireNonNull( linkedAccountEntity, "linkedAccountEntity cannot be null" );
         log.debug( methodName + " linkedAccountId: " + linkedAccountEntity.getId() );
         /*
-        if ( this.getAccountOverviewSubjectMap.containsKey( linkedAccountEntity.getId() ) )
+        if ( this.getAccountOverviewSubjectMap.containsKey( linkedAccountEntity.getUuid() ) )
         {
             throw new IllegalArgumentException( String.format( "A request for linkedAccount: %d already exists",
-                                                               linkedAccountEntity.getId() ));
+                                                               linkedAccountEntity.getUuid() ));
         }
         */
         this.getAccountOverviewSubjectMap.put( linkedAccountEntity.getId(), AsyncSubject.create() );
@@ -56,43 +57,43 @@ public class TradeItAsyncUpdateService
 
     /**
      * Register to receive the getAccountOverview result when it has completed.
-     * @param linkedAccountId The account to wait for.
+     * @param linkedAccountUuid The account to wait for.
      * @return
      */
-    public Observable<LinkedAccountEntity> subscribeToGetAccountOverview( final Integer linkedAccountId )
+    public Observable<LinkedAccountEntity> subscribeToGetAccountOverview( final UUID linkedAccountUuid )
     {
         final String methodName = "subscribeToGetAccountOverview";
-        log.debug( methodName + " linkedAccountId: " + linkedAccountId );
-        this.checkGetAccountOverviewExists( linkedAccountId );
+        log.debug( methodName + " linkedAccountId: " + linkedAccountUuid );
+        this.checkGetAccountOverviewExists( linkedAccountUuid );
         return this.getAccountOverviewSubjectMap
-                   .get( linkedAccountId )
+                   .get( linkedAccountUuid )
                    .asObservable();
     }
 
     /**
      * Checks that a request has been made for the {@code linkedAccountId}
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      * @throws IllegalArgumentException if the {@code linkedAccountId} request does not exist.
      */
-    public void checkGetAccountOverviewExists( final Integer linkedAccountId )
+    public void checkGetAccountOverviewExists( final UUID linkedAccountUuid )
     {
-        if ( this.getAccountOverviewSubjectMap.get( linkedAccountId ) == null )
+        if ( this.getAccountOverviewSubjectMap.get( linkedAccountUuid ) == null )
         {
-            throw new IllegalArgumentException( "Get account overview for linked account " + linkedAccountId +
+            throw new IllegalArgumentException( "Get account overview for linked account " + linkedAccountUuid +
                                                 " has not been requested" );
         }
     }
 
     /**
      * Removes the get account overview request.
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      */
-    public void removeGetAccountOverviewRequest( final Integer linkedAccountId )
+    public void removeGetAccountOverviewRequest( final UUID linkedAccountUuid )
     {
         final String methodName = "removeGetAccountOverviewRequest";
-        log.debug( methodName + " linkedAccountID: " + linkedAccountId );
-        this.checkGetAccountOverviewExists( linkedAccountId );
-        this.getAccountOverviewSubjectMap.remove( linkedAccountId );
+        log.debug( methodName + " linkedAccountID: " + linkedAccountUuid );
+        this.checkGetAccountOverviewExists( linkedAccountUuid );
+        this.getAccountOverviewSubjectMap.remove( linkedAccountUuid );
     }
 
     /**
@@ -107,7 +108,7 @@ public class TradeItAsyncUpdateService
                                      final LinkedAccountEntity linkedAccountEntity )
     {
         final String methodName = "updateLinkedAccount";
-        log.debug( String.format( "%s.begin %d %d", methodName, tradeItAccountEntity.getId(), linkedAccountEntity.getId() ));
+        log.debug( String.format( "%s.begin %d %d", methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getId() ));
         try
         {
             final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
@@ -141,7 +142,7 @@ public class TradeItAsyncUpdateService
             log.error( methodName, e );
             this.onGetAccountOverviewException( linkedAccountEntity.getId(), e );
         }
-        log.debug( methodName + ".end " + tradeItAccountEntity.getId() );
+        log.debug( methodName + ".end " + tradeItAccountEntity.getUuid() );
     }
 
     /**
@@ -162,8 +163,7 @@ public class TradeItAsyncUpdateService
          * Refresh the entity and try again.
          */
         final LinkedAccountEntity currentLinkedAccountEntity = this.linkedAccountEntityService
-                                                                   .getLinkedAccountEntity( linkedAccountEntity.getCustomerId(),
-                                                                                            linkedAccountEntity.getId() );
+                                                                   .getLinkedAccountEntity( linkedAccountEntity.getId() );
         try
         {
             currentLinkedAccountEntity.setGetAccountOverviewValues( getAccountOverviewDTO );
@@ -184,20 +184,20 @@ public class TradeItAsyncUpdateService
 
     /**
      * Notifies the observer that an exception occurred.
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      * @param exception
      */
-    private void onGetAccountOverviewException( final Integer linkedAccountId,
+    private void onGetAccountOverviewException( final UUID linkedAccountUuid,
                                                 final Exception exception )
     {
         final String methodName = "onGetAccountOverviewException";
-        log.debug( String.format( "%s.begin linkedAccountId: %d", methodName, linkedAccountId ));
-        this.checkGetAccountOverviewExists( linkedAccountId );
+        log.debug( String.format( "%s.begin linkedAccountId: %d", methodName, linkedAccountUuid ));
+        this.checkGetAccountOverviewExists( linkedAccountUuid );
         final AsyncSubject<LinkedAccountEntity> getAccountOverviewSubject = this.getAccountOverviewSubjectMap
-                                                                                .get( linkedAccountId );
+                                                                                .get( linkedAccountUuid );
         getAccountOverviewSubject.onError( exception );
         getAccountOverviewSubject.onCompleted();
-        log.debug( String.format( "%s.end linkedAccountId: %d", methodName, linkedAccountId ));
+        log.debug( String.format( "%s.end linkedAccountId: %d", methodName, linkedAccountUuid ));
     }
 
     /**

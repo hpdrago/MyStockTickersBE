@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -48,13 +49,13 @@ public class LinkedAccountController extends AbstractController
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customerId/{customerId}",
                      method = RequestMethod.DELETE )
-    public ResponseEntity<Void> deleteLinkedAccount( @PathVariable int linkedAccountId,
-                                                     @PathVariable int customerId )
+    public ResponseEntity<Void> deleteLinkedAccount( @PathVariable String linkedAccountId,
+                                                     @PathVariable String customerId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteLinkedAccount";
         logMethodBegin( methodName, linkedAccountId, customerId );
-        this.linkedAccountEntityService.deleteEntity( linkedAccountId );
+        this.linkedAccountEntityService.deleteEntity( UUIDUtil.uuid( linkedAccountId ));
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -69,8 +70,8 @@ public class LinkedAccountController extends AbstractController
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<LinkedAccountDTO> saveLinkedAccount( @PathVariable int linkedAccountId,
-                                                               @PathVariable int customerId,
+    public ResponseEntity<LinkedAccountDTO> saveLinkedAccount( @PathVariable String linkedAccountId,
+                                                               @PathVariable String customerId,
                                                                @RequestBody LinkedAccountDTO linkedAccountDTO )
         throws EntityVersionMismatchException
     {
@@ -95,7 +96,6 @@ public class LinkedAccountController extends AbstractController
     /**
      * Get all of the accounts linked to the brokerage account registered at TradeIt.
      * @param tradeItAccountId
-     * @param customerId
      * @return
      * @throws TradeItAccountNotFoundException
      */
@@ -104,14 +104,14 @@ public class LinkedAccountController extends AbstractController
                              "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable int tradeItAccountId,
-                                                     final @PathVariable int customerId )
+    public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable String tradeItAccountId,
+                                                     final @PathVariable String customerId )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountId, customerId );
         List<LinkedAccountDTO> accounts = this.linkedAccountEntityService
-                                              .getLinkedAccounts( customerId, tradeItAccountId );
+                                              .getLinkedAccounts( UUIDUtil.uuid( tradeItAccountId ));
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }
@@ -138,14 +138,14 @@ public class LinkedAccountController extends AbstractController
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public LinkedAccountDTO getUpdatedLinkedAccount( @PathVariable final int linkedAccountId,
-                                                     @PathVariable final int tradeItAccountId,
-                                                     @PathVariable final int customerId )
+    public LinkedAccountDTO getUpdatedLinkedAccount( @PathVariable final String linkedAccountId,
+                                                     @PathVariable final String tradeItAccountId,
+                                                     @PathVariable final String customerId )
     {
         final String methodName = "getUpdatedLinkedAccount";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
         final LinkedAccountDTO linkedAccountDTO = this.linkedAccountEntityService
-                                                      .getUpdatedLinkedAccount( customerId, linkedAccountId );
+                                                      .getUpdatedLinkedAccount( UUIDUtil.uuid( linkedAccountId ) );
         logMethodEnd( methodName, linkedAccountDTO );
         return linkedAccountDTO;
     }

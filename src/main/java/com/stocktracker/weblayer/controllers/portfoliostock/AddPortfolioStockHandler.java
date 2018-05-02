@@ -39,7 +39,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
         /*
          * Gather the rest of the return data
          */
-        //PortfolioDE portfolioDE = this.portfolioService.getPortfolioById( portfolioStockDTO.getPortfolioId() );
+        //PortfolioDE portfolioDE = this.portfolioService.getPortfolioByUuid( portfolioStockDTO.getPortfolioId() );
         //List<PortfolioLastStockDTO> portfolioStockDTOList = this.portfolioService.getPortfolioStocks( portfolioStockDTO.getPortfolioId() );
         /*
          * Convert the DE's to DTO's

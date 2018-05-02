@@ -11,13 +11,14 @@ import java.util.Objects;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class PortfolioDTO implements VersionedDTO<Integer>
+public class PortfolioDTO implements UuidDTO,
+                                     CustomerIdContainer
 {
     /**
      * The portfolio id
      */
-    private Integer id;
-    private Integer customerId;
+    private String id;
+    private String customerId;
 
     /**
      * The portfolio name
@@ -44,12 +45,12 @@ public class PortfolioDTO implements VersionedDTO<Integer>
     {
     }
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
     }
@@ -69,12 +70,12 @@ public class PortfolioDTO implements VersionedDTO<Integer>
      */ /**
      * The customer id
      */
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( Integer customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
     }

@@ -1,4 +1,6 @@
-package com.stocktracker.repositorylayer.entity;
+package com.stocktracker.repositorylayer;
+
+import java.sql.Timestamp;
 
 /**
  * Defines the necessary methods for an entity that maintains a version for each table entity row.
@@ -20,7 +22,13 @@ public interface VersionedEntity<K>
 
     /**
      * Set the entity version.
-     * @param i
+     * @param version
      */
     void setVersion( final Integer version );
+
+    /**
+     * Set the create date.
+     * @param createDate
+     */
+    void setCreateDate( final Timestamp createDate );
 }

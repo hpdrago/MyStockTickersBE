@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mike on 10/23/2016.
@@ -20,7 +21,7 @@ public interface PortfolioRepository extends JpaRepository<PortfolioEntity, Inte
      * @param customerId
      * @return
      */
-    List<PortfolioEntity> findByCustomerId( int customerId );
+    List<PortfolioEntity> findByCustomerUuid( int customerUuid );
 
     @Override
     @Transactional

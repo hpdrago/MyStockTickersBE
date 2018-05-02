@@ -3,6 +3,8 @@ package com.stocktracker.common.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.UUID;
+
 /**
  * Created by mike on 5/15/2016.
  */
@@ -25,5 +27,10 @@ public class PortfolioNotFoundException extends RuntimeException
     public PortfolioNotFoundException( final String portfolioName )
     {
         super( "PortfolioDE portfolioName: " + portfolioName + " was not found" );
+    }
+
+    public PortfolioNotFoundException( final UUID portfolioUuid )
+    {
+        this( portfolioUuid.toString() );
     }
 }

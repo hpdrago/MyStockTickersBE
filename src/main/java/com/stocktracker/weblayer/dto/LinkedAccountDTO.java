@@ -17,11 +17,12 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class LinkedAccountDTO implements VersionedDTO<Integer>
+public class LinkedAccountDTO implements UuidDTO,
+                                         CustomerIdContainer
 {
-    private Integer id;
-    private Integer customerId;
-    private Integer tradeItAccountId;
+    private String id;
+    private String customerId;
+    private String tradeItAccountId;
     private String accountNumber;
     private String accountName;
     private Integer accountIndex;
@@ -48,22 +49,22 @@ public class LinkedAccountDTO implements VersionedDTO<Integer>
     private BigDecimal marginCash;
     private String loadingStatus;
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( Integer id )
+    public void setId( final String id )
     {
         this.id = id;
     }
 
-    public Integer getTradeItAccountId()
+    public String getTradeItAccountId()
     {
         return tradeItAccountId;
     }
 
-    public void setTradeItAccountId( Integer tradeItAccountId )
+    public void setTradeItAccountId( String tradeItAccountId )
     {
         this.tradeItAccountId = tradeItAccountId;
     }
@@ -198,12 +199,12 @@ public class LinkedAccountDTO implements VersionedDTO<Integer>
         this.marginCash = marginCash;
     }
 
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerId( final String customerId )
     {
         this.customerId = customerId;
     }

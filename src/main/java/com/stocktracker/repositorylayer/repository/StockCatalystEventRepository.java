@@ -9,31 +9,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.UUID;
+
 /**
  * Created by mike on 5/7/2017.
  */
 @Transactional( readOnly = true )
-public interface StockCatalystEventRepository extends JpaRepository<StockCatalystEventEntity, Integer>
+public interface StockCatalystEventRepository extends JpaRepository<StockCatalystEventEntity,UUID>
 {
     /**
      * Get all of the stock catalyst event records for a customer
-     *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    Page<StockCatalystEventEntity> findByCustomerIdOrderByTickerSymbol( final Pageable pageRequest,
-                                                                        final int customerId );
+    Page<StockCatalystEventEntity> findByCustomerUuidOrderByTickerSymbol( final Pageable pageRequest,
+                                                                          final UUID customerUuid );
 
     /**
      * Get the catalyst events for a customer and a ticker symbol.
-     *
-     * @param customerId
+     * @param customerUuid
      * @param tickerSymbol
      * @return
      */
-    Page<StockCatalystEventEntity> findByCustomerIdAndTickerSymbolOrderByTickerSymbol( final Pageable pageRequest,
-                                                                                       final int customerId,
-                                                                                       final String tickerSymbol );
+    Page<StockCatalystEventEntity> findByCustomerUuidAndTickerSymbolOrderByTickerSymbol( final Pageable pageRequest,
+                                                                                         final UUID customerUuid,
+                                                                                         final String tickerSymbol );
 
     @Override
     @Transactional

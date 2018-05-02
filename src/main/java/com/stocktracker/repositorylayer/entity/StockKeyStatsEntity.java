@@ -7,21 +7,16 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_key_stats", schema = "stocktracker", catalog = "" )
-public class StockKeyStatsEntity
+public class StockKeyStatsEntity extends TickerSymbolEntity
 {
-    private String tickerSymbol;
     private Integer beta;
     private BigDecimal week52High;
     private BigDecimal week52Low;
@@ -44,21 +39,6 @@ public class StockKeyStatsEntity
     private BigDecimal day5ChangePercent;
     private Timestamp keyStatsRequestDate;
     private String discontinuedInd;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
-
-    @Id
-    @Column( name = "ticker_symbol", nullable = false, length = 25 )
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
 
     @Basic
     @Column( name = "beta", nullable = true )
@@ -324,87 +304,35 @@ public class StockKeyStatsEntity
         this.discontinuedInd = discontinuedInd;
     }
 
-    @Basic
-    @Column( name = "create_date", nullable = false )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Basic
-    @Column( name = "version", nullable = false )
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
     @Override
-    public boolean equals( final Object o )
+    public String toString()
     {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockKeyStatsEntity that = (StockKeyStatsEntity) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-               Objects.equals( beta, that.beta ) &&
-               Objects.equals( week52High, that.week52High ) &&
-               Objects.equals( week52Low, that.week52Low ) &&
-               Objects.equals( week52Change, that.week52Change ) &&
-               Objects.equals( shortInterest, that.shortInterest ) &&
-               Objects.equals( latestEps, that.latestEps ) &&
-               Objects.equals( sharesOutstanding, that.sharesOutstanding ) &&
-               Objects.equals( currentFloat, that.currentFloat ) &&
-               Objects.equals( day200MovingAvg, that.day200MovingAvg ) &&
-               Objects.equals( day50MovingAvg, that.day50MovingAvg ) &&
-               Objects.equals( institutionalPercent, that.institutionalPercent ) &&
-               Objects.equals( shortRatio, that.shortRatio ) &&
-               Objects.equals( year5ChangePercent, that.year5ChangePercent ) &&
-               Objects.equals( year2ChangePercent, that.year2ChangePercent ) &&
-               Objects.equals( year1ChangePercent, that.year1ChangePercent ) &&
-               Objects.equals( ytdChangePercent, that.ytdChangePercent ) &&
-               Objects.equals( month6ChangePercent, that.month6ChangePercent ) &&
-               Objects.equals( month3ChangePercent, that.month3ChangePercent ) &&
-               Objects.equals( month1ChangePercent, that.month1ChangePercent ) &&
-               Objects.equals( day5ChangePercent, that.day5ChangePercent ) &&
-               Objects.equals( keyStatsRequestDate, that.keyStatsRequestDate ) &&
-               Objects.equals( discontinuedInd, that.discontinuedInd ) &&
-               Objects.equals( createDate, that.createDate ) &&
-               Objects.equals( updateDate, that.updateDate ) &&
-               Objects.equals( version, that.version );
-    }
-
-    @Override
-    public int hashCode()
-    {
-
-        return Objects
-            .hash( tickerSymbol, beta, week52High, week52Low, week52Change, shortInterest, latestEps, sharesOutstanding, currentFloat, day200MovingAvg, day50MovingAvg, institutionalPercent, shortRatio, year5ChangePercent, year2ChangePercent, year1ChangePercent, ytdChangePercent, month6ChangePercent, month3ChangePercent, month1ChangePercent, day5ChangePercent, keyStatsRequestDate, discontinuedInd, createDate, updateDate, version );
+        final StringBuilder sb = new StringBuilder( "StockKeyStatsEntity{" );
+        sb.append( "tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
+        sb.append( ", beta=" ).append( beta );
+        sb.append( ", week52High=" ).append( week52High );
+        sb.append( ", week52Low=" ).append( week52Low );
+        sb.append( ", week52Change=" ).append( week52Change );
+        sb.append( ", shortInterest=" ).append( shortInterest );
+        sb.append( ", latestEps=" ).append( latestEps );
+        sb.append( ", sharesOutstanding=" ).append( sharesOutstanding );
+        sb.append( ", currentFloat=" ).append( currentFloat );
+        sb.append( ", day200MovingAvg=" ).append( day200MovingAvg );
+        sb.append( ", day50MovingAvg=" ).append( day50MovingAvg );
+        sb.append( ", institutionalPercent=" ).append( institutionalPercent );
+        sb.append( ", shortRatio=" ).append( shortRatio );
+        sb.append( ", year5ChangePercent=" ).append( year5ChangePercent );
+        sb.append( ", year2ChangePercent=" ).append( year2ChangePercent );
+        sb.append( ", year1ChangePercent=" ).append( year1ChangePercent );
+        sb.append( ", ytdChangePercent=" ).append( ytdChangePercent );
+        sb.append( ", month6ChangePercent=" ).append( month6ChangePercent );
+        sb.append( ", month3ChangePercent=" ).append( month3ChangePercent );
+        sb.append( ", month1ChangePercent=" ).append( month1ChangePercent );
+        sb.append( ", day5ChangePercent=" ).append( day5ChangePercent );
+        sb.append( ", keyStatsRequestDate=" ).append( keyStatsRequestDate );
+        sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
+        sb.append( ", super=" ).append( super.toString() );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

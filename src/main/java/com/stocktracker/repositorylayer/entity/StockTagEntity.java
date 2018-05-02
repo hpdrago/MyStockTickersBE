@@ -7,25 +7,19 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
+import java.util.UUID;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_tag", schema = "stocktracker", catalog = "" )
-public class StockTagEntity
+public class StockTagEntity extends UUIDEntity
 {
-    private Integer id;
-    private Integer customerTagId;
+    private UUID customerTagUuid;
     private String tickerSymbol;
     private Integer referenceType;
-    private Integer referenceId;
-    private Timestamp createDate;
-    private Timestamp updateDate;
+    private UUID referenceUuid;
 
     public enum StockTagReferenceType
     {
@@ -62,29 +56,16 @@ public class StockTagEntity
         }
     }
 
-    @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "id" )
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
-    }
-
     @Basic
-    @Column( name = "customer_tag_id" )
-    public Integer getCustomerTagId()
+    @Column( name = "customer_tag_uuid" )
+    public UUID getCustomerTagUuid()
     {
-        return customerTagId;
+        return customerTagUuid;
     }
 
-    public void setCustomerTagId( final Integer customerTagId )
+    public void setCustomerTagUuid( final UUID customerTagUuid )
     {
-        this.customerTagId = customerTagId;
+        this.customerTagUuid = customerTagUuid;
     }
 
     @Basic
@@ -112,75 +93,27 @@ public class StockTagEntity
     }
 
     @Basic
-    @Column( name = "reference_id" )
-    public Integer getReferenceId()
+    @Column( name = "reference_uuid" )
+    public UUID getReferenceUuid()
     {
-        return referenceId;
+        return referenceUuid;
     }
 
-    public void setReferenceId( final Integer referenceId )
+    public void setReferenceUuid( final UUID referenceUuid )
     {
-        this.referenceId = referenceId;
-    }
-
-    @Basic
-    @Column( name = "create_date" )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date" )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        final StockTagEntity that = (StockTagEntity) o;
-
-        return id.equals( that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
+        this.referenceUuid = referenceUuid;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockTagEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerTagId=" ).append( customerTagId );
+        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( ", customerTagUuid=" ).append( customerTagUuid );
         sb.append( ", tickerSymbol=" ).append( tickerSymbol );
         sb.append( ", referenceType=" ).append( referenceType );
-        sb.append( ", referenceType=" ).append( referenceId );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", referenceUuid=" ).append( referenceUuid );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

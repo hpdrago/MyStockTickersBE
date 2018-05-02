@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
@@ -7,12 +8,13 @@ import com.stocktracker.repositorylayer.repository.StockNoteSourceRepository;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -20,10 +22,9 @@ import java.util.stream.Collectors;
  */
 @Service
 //@Transactional
-public class StockNoteSourceEntityService extends VersionedEntityService<Integer,
-                                                                         StockNoteSourceEntity,
-                                                                         StockNoteSourceDTO,
-                                                                         StockNoteSourceRepository>
+public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSourceEntity,
+                                                                    StockNoteSourceDTO,
+                                                                    StockNoteSourceRepository>
 {
     private StockNoteSourceRepository stockNoteSourceRepository;
 
@@ -36,36 +37,41 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
     public interface StockNoteSourceEntityContainer
     {
         Optional<StockNoteSourceEntity> getNotesSourceEntity();
-        Optional<Integer> getStockNoteSourceId();
+        Optional<UUID> getStockNoteSourceUuid();
         void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity );
     }
 
+    /*
+     * DTO's that contain stock notes source information must implement this interface in order for common
+     * methods can be used to extract the necessary information to create the stock note source.
+     */
     public interface StockNoteSourceDTOContainer
     {
-        Integer getCustomerId();
+        String getCustomerId();
         void setNotesSourceName( final String noteSourceName );
-        void setNotesSourceId( final Integer notesSourceId );
+        void setNotesSourceId( final String notesSourceId );
         String getNotesSourceName();
-        Integer getNotesSourceId();
-
+        String getNotesSourceId();
     }
 
     /**
      * Sets the source name for all {@Code StockNoteSourceContainer} entries
-     * @param customerId The customer id is used to retrieve the sources for the customer.
+     * @param customerUuid The customer id is used to retrieve the sources for the customer.
      * @param stockNoteSourceDTOContainers The list of {@code StockNoteSourceDTOContainer} instances.
      */
-    public void setNotesSourceName( final Integer customerId,
+    public void setNotesSourceName( final UUID customerUuid,
                                     final List<? extends StockNoteSourceDTOContainer> stockNoteSourceDTOContainers )
     {
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
+        Objects.requireNonNull( stockNoteSourceDTOContainers, "stockNoteSourceDTOContainers cannot be null" );
         /*
          * For now, maybe until we create a view -- if that makes sense, load the sources and populate the source
          * values in the DTOs
          */
         List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository
-            .findByCustomerIdOrderByTimesUsedDesc( customerId );
-        Map<Integer, String> sourceEntityMap = customerSources.stream()
-                                                              .collect( Collectors.toMap( StockNoteSourceEntity::getId,
+            .findByCustomerUuidOrderByTimesUsedDesc( customerUuid );
+        Map<UUID, String> sourceEntityMap = customerSources.stream()
+                                                              .collect( Collectors.toMap( StockNoteSourceEntity::getUuid,
                                                                                           StockNoteSourceEntity::getName ) );
         for ( StockNoteSourceDTOContainer stockNoteSourceDTOContainer : stockNoteSourceDTOContainers )
         {
@@ -99,8 +105,8 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
              * Make sure it doesn't already exist
              */
             StockNoteSourceEntity stockNoteSourceEntity =
-                this.stockNoteSourceRepository.findByCustomerIdAndName( stockNoteSourceDTOContainer.getCustomerId(),
-                                                                        stockNoteSourceDTOContainer.getNotesSourceName() ) ;
+                this.stockNoteSourceRepository.findByCustomerUuidAndName( UUIDUtil.uuid( stockNoteSourceDTOContainer.getCustomerId()),
+                                                                          stockNoteSourceDTOContainer.getNotesSourceName());
             logDebug( methodName, "stockNoteSourceEntity: {0}", stockNoteSourceEntity );
             if ( stockNoteSourceEntity != null )
             {
@@ -110,7 +116,7 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
             {
                 logDebug( methodName, "Saving stock note source entity" );
                 stockNoteSourceEntity = new StockNoteSourceEntity();
-                stockNoteSourceEntity.setCustomerId( stockNoteSourceDTOContainer.getCustomerId() );
+                stockNoteSourceEntity.setCustomerUuid( UUIDUtil.uuid( stockNoteSourceDTOContainer.getCustomerId() ));
                 stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceName() );
                 try
                 {
@@ -119,7 +125,7 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
                     /*
                      * update the reference in the stock note id container
                      */
-                    stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getId() );
+                    stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getUuid().toString() );
                 }
                 catch( org.springframework.dao.DataIntegrityViolationException e )
                 {
@@ -132,21 +138,33 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
     }
 
     /**
-     * Get the stock note source for the stock note source id.
+     * Get the stock note source for the stock note source uuid.
      *
-     * @param stockNoteSourceId The id for the stock note source
-     * @return StockNoteSourceDE domain entity for stock note source id
+     * @param notesSourceId The id for the stock note source
+     * @return StockNoteSourceEntity domain entity for stock note source id
      * @throws StockNoteSourceNotFoundException If the stock source is not found
      */
-    public StockNoteSourceEntity getStockNoteSource( final int stockNoteSourceId )
+    public StockNoteSourceEntity getStockNoteSource( final String notesSourceId )
+    {
+        return this.getStockNoteSource( UUIDUtil.uuid( notesSourceId ) );
+    }
+
+    /**
+     * Get the stock note source for the stock note source uuid.
+     *
+     * @param stockNoteSourceUuid The id for the stock note source
+     * @return StockNoteSourceEntity domain entity for stock note source id
+     * @throws StockNoteSourceNotFoundException If the stock source is not found
+     */
+    public StockNoteSourceEntity getStockNoteSource( final UUID stockNoteSourceUuid )
     {
         final String methodName = "getStockNoteSource";
-        logMethodBegin( methodName, stockNoteSourceId );
-        Assert.isTrue( stockNoteSourceId > 0, "stockNoteId must be > 0" );
-        StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceRepository.findOne( stockNoteSourceId );
+        logMethodBegin( methodName, stockNoteSourceUuid );
+        Objects.requireNonNull( stockNoteSourceUuid, "stockNotesSourceUuid cannot be null" );
+        StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceRepository.findOne( stockNoteSourceUuid );
         if ( stockNoteSourceEntity == null )
         {
-            throw new StockNoteSourceNotFoundException( stockNoteSourceId );
+            throw new StockNoteSourceNotFoundException( stockNoteSourceUuid );
         }
         logMethodEnd( methodName, stockNoteSourceEntity );
         return stockNoteSourceEntity;
@@ -155,15 +173,15 @@ public class StockNoteSourceEntityService extends VersionedEntityService<Integer
     /**
      * Get all of the stock notes sources for a customer
      *
-     * @param customerId The id for the stock note source
+     * @param customerUuid The id for the stock note source
      */
-    public List<StockNoteSourceDTO> getStockNoteSources( final int customerId )
+    public List<StockNoteSourceDTO> getStockNoteSources( final UUID customerUuid )
     {
         final String methodName = "getStockNoteSources";
-        logMethodBegin( methodName, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        logMethodBegin( methodName, customerUuid );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         List<StockNoteSourceEntity> stockNoteSourceEntities =
-            stockNoteSourceRepository.findByCustomerIdOrderByTimesUsedDesc( customerId );
+            stockNoteSourceRepository.findByCustomerUuidOrderByTimesUsedDesc( customerUuid );
         List<StockNoteSourceDTO> stockNoteSourceDTOs = this.entitiesToDTOs( stockNoteSourceEntities );
         logMethodEnd( methodName, stockNoteSourceEntities.size() + " sources found" );
         return stockNoteSourceDTOs;

@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
@@ -106,8 +107,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customerId/{customerId}",
                      method = RequestMethod.DELETE )
-    public ResponseEntity<Void> deleteStockNote( @PathVariable( "customerId" ) final int customerId,
-                                                 @PathVariable( "stockNotesId" ) final int stockNotesId )
+    public ResponseEntity<Void> deleteStockNote( @PathVariable( "customerId" ) final String customerId,
+                                                 @PathVariable( "stockNotesId" ) final String stockNotesId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteStockNote";
@@ -125,8 +126,8 @@ public class StockNotesController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customerId/{customerId}",
                      method = RequestMethod.GET )
-    public ResponseEntity<StockNoteDTO> getStockNote( @PathVariable( "customerId" ) final int customerId,
-                                                      @PathVariable( "stockNotesId" ) final int stockNotesId )
+    public ResponseEntity<StockNoteDTO> getStockNote( @PathVariable( "customerId" ) final String customerId,
+                                                      @PathVariable( "stockNotesId" ) final String stockNotesId )
     {
         final String methodName = "getStockNote";
         logMethodBegin( methodName, customerId, stockNotesId );
@@ -152,9 +153,7 @@ public class StockNotesController extends AbstractController implements MyLogger
     private void validateStockNoteDTOPostArgument( final StockNoteDTO stockNotesDTO )
     {
         Objects.requireNonNull( stockNotesDTO.getCustomerId(), "customer id cannot be null" );
-        Assert.isTrue( stockNotesDTO.getCustomerId() > 0, "customer id must be > 0" );
         Objects.requireNonNull( stockNotesDTO.getNotes(),"notes cannot be null" );
-        Assert.isTrue( stockNotesDTO.getNotes().length() > 0, "notes length must be > 0" );
     }
 
     /**
@@ -167,12 +166,13 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
-                                             @PathVariable final int customerId )
+                                             @PathVariable final String customerId )
     {
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, pageRequest, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerId( pageRequest, customerId );
+        Page<StockNoteDTO> stockNoteDTOs = this.stockNoteService
+                                               .getStockNotesForCustomerUuid( pageRequest,
+                                                                            UUIDUtil.uuid( customerId ));
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.getTotalElements() );
         return stockNoteDTOs;
@@ -188,16 +188,17 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
-                                             @PathVariable final int customerId,
+                                             @PathVariable final String customerId,
                                              @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        Page<StockNoteDTO> stockNoteDTOs = stockNoteService.getStockNotesForCustomerIdAndTickerSymbol( pageRequest,
-                                                                                                       customerId,
-                                                                                                       tickerSymbol );
+        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        Page<StockNoteDTO> stockNoteDTOs = this.stockNoteService
+                                               .getStockNotesForCustomerUuidAndTickerSymbol( pageRequest,
+                                                                                           UUIDUtil.uuid( customerId ),
+                                                                                           tickerSymbol );
         //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.getTotalElements() );
         return stockNoteDTOs;

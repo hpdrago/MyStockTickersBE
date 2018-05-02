@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -7,52 +8,33 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
+import java.util.UUID;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "customer_tag", schema = "stocktracker", catalog = "" )
-public class CustomerTagEntity implements VersionedEntity<Integer>
+public class CustomerTagEntity extends UUIDEntity
+                               implements CustomerUuidContainer
 {
-    private Integer id;
-    private Integer customerId;
+    private UUID customerUuid;
     private String tagName;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
 
-    @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "id" )
-    public Integer getId()
+    @Basic
+    @Column( name = "customer_uuid", nullable = false )
+    public UUID getCustomerUuid()
     {
-        return id;
+        return customerUuid;
     }
 
-    public void setId( final Integer id )
+    public void setCustomerUuid( final UUID customerUuid )
     {
-        this.id = id;
+        this.customerUuid = customerUuid;
     }
 
     @Basic
-    @Column( name = "customer_id" )
-    public Integer getCustomerId()
-    {
-        return customerId;
-    }
-
-    public void setCustomerId( final Integer customerId )
-    {
-        this.customerId = customerId;
-    }
-
-    @Basic
-    @Column( name = "tag_name" )
+    @Column( name = "tag_name", nullable = false, length = 20 )
     public String getTagName()
     {
         return tagName;
@@ -63,73 +45,13 @@ public class CustomerTagEntity implements VersionedEntity<Integer>
         this.tagName = tagName;
     }
 
-    @Basic
-    @Column( name = "create_date" )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date" )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        final CustomerTagEntity that = (CustomerTagEntity) o;
-
-        return id.equals( that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
-
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "CustomerTagEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
+        sb.append( "uuid=" ).append( getUuidString() );
         sb.append( ", tagName='" ).append( tagName ).append( '\'' );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( tagName ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

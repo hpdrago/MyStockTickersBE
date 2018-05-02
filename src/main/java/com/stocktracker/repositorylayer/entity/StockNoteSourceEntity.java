@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -7,14 +8,11 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Created by mike on 5/7/2017.
@@ -23,14 +21,12 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_note_source", schema = "stocktracker", catalog = "" )
-public class StockNoteSourceEntity implements VersionedEntity<Integer>
+public class StockNoteSourceEntity extends UUIDEntity
+                                   implements CustomerUuidContainer
 {
-    private Integer id;
     private String name;
-    private Integer customerId;
+    private UUID customerUuid;
     private Integer timesUsed;
-    private Timestamp dateCreated;
-    private Integer version;
     private Collection<StockAnalystConsensusEntity> stockAnalystConsensusesById;
     private Collection<StockNoteEntity> stockNotesById;
     private Collection<StockToBuyEntity> stockToBuysById;
@@ -39,19 +35,6 @@ public class StockNoteSourceEntity implements VersionedEntity<Integer>
     {
         StockNoteSourceEntity stockNoteSourceEntity = new StockNoteSourceEntity();
         return stockNoteSourceEntity;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column( name = "id", nullable = false )
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
     }
 
     @Basic
@@ -67,15 +50,15 @@ public class StockNoteSourceEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "customer_id", nullable = false )
-    public Integer getCustomerId()
+    @Column( name = "customer_uuid", nullable = false )
+    public UUID getCustomerUuid()
     {
-        return customerId;
+        return customerUuid;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerUuid( final UUID customerId )
     {
-        this.customerId = customerId;
+        this.customerUuid = customerId;
     }
 
     @Basic
@@ -90,69 +73,7 @@ public class StockNoteSourceEntity implements VersionedEntity<Integer>
         this.timesUsed = timesUsed;
     }
 
-    @Basic
-    @Column( name = "date_created", nullable = false, insertable = false, updatable = false )
-    public Timestamp getDateCreated()
-    {
-        return dateCreated;
-    }
-
-    public void setDateCreated( final Timestamp dateCreated )
-    {
-        this.dateCreated = dateCreated;
-    }
-
-    @Basic
-    @Column( name = "version" )
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockNoteSourceEntity that = (StockNoteSourceEntity) o;
-        return Objects.equals( id, that.id ) &&
-               Objects.equals( name, that.name ) &&
-               Objects.equals( customerId, that.customerId ) &&
-               Objects.equals( dateCreated, that.dateCreated );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( id, name, customerId, dateCreated );
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder( "StockNoteSourceEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", timesUsed=" ).append( timesUsed );
-        sb.append( ", dateCreated=" ).append( dateCreated );
-        sb.append( ", version=" ).append( dateCreated );
-        sb.append( '}' );
-        return sb.toString();
-    }
-
-    @OneToMany( mappedBy = "stockNoteSourceByNoteSourceId" )
+    @OneToMany( mappedBy = "stockNoteSourceByNoteSourceUuid" )
     public Collection<StockAnalystConsensusEntity> getStockAnalystConsensusesById()
     {
         return stockAnalystConsensusesById;
@@ -163,7 +84,7 @@ public class StockNoteSourceEntity implements VersionedEntity<Integer>
         this.stockAnalystConsensusesById = stockAnalystConsensusesById;
     }
 
-    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceId" )
+    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceUuid" )
     public Collection<StockNoteEntity> getStockNotesById()
     {
         return stockNotesById;
@@ -174,7 +95,7 @@ public class StockNoteSourceEntity implements VersionedEntity<Integer>
         this.stockNotesById = stockNotesById;
     }
 
-    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceId" )
+    @OneToMany( mappedBy = "stockNoteSourceByNotesSourceUuid" )
     public Collection<StockToBuyEntity> getStockToBuysById()
     {
         return stockToBuysById;
@@ -183,5 +104,18 @@ public class StockNoteSourceEntity implements VersionedEntity<Integer>
     public void setStockToBuysById( final Collection<StockToBuyEntity> stockToBuysById )
     {
         this.stockToBuysById = stockToBuysById;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "StockNoteSourceEntity{" );
+        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", customerUuid=" ).append( customerUuid );
+        sb.append( ", timesUsed=" ).append( timesUsed );
+        sb.append( ", super=" ).append( super.toString() );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

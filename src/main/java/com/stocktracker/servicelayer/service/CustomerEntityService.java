@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This service communicates between the Web layer and Repositories using the Domain Model
@@ -39,7 +40,7 @@ public class CustomerEntityService extends VersionedEntityService<Integer,
      * @param id
      * @return
      */
-    public CustomerDTO getCustomerDTO( final int id )
+    public CustomerDTO getCustomerDTO( final UUID id )
     {
         final String methodName = "getCustomerDTO";
         logMethodBegin( methodName, id );
@@ -51,20 +52,20 @@ public class CustomerEntityService extends VersionedEntityService<Integer,
 
     /**
      * Gets the customer entity for the {@code customerId}
-     * @param customerId
+     * @param customerUuid
      * @return
      * @throws CustomerNotFoundException
      */
-    public CustomerEntity getCustomerEntity( final int customerId )
+    public CustomerEntity getCustomerEntity( final UUID customerUuid )
     {
         CustomerEntity customerEntity = null;
         try
         {
-            customerEntity = this.getEntity( customerId );
+            customerEntity = this.getEntity( customerUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
-            throw new CustomerNotFoundException( customerId );
+            throw new CustomerNotFoundException( customerUuid );
         }
         return customerEntity;
     }
@@ -105,7 +106,7 @@ public class CustomerEntityService extends VersionedEntityService<Integer,
         /*
          * Get the portfolios for the customer from the database
          */
-        List<PortfolioEntity> customerPortfolios = portfolioRepository.findByCustomerId( customerEntity.getId() );
+        List<PortfolioEntity> customerPortfolios = portfolioRepository.findByCustomerUuid( customerEntity.getId() );
         List<PortfolioDTO> customerDTOPortfolios = this.portfolioService.entitiesToDTOs( customerPortfolios );
         customerDTO.setPortfolios( customerDTOPortfolios );
         logMethodEnd( methodName, customerEntity );

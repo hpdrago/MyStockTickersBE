@@ -1,1 +1,1 @@
-INSERT INTO stocktracker.v_stock_tag (id, customer_id, reference_type, reference_id, customer_tag_id, tag_name, ticker_symbol, create_date, update_date) VALUES (7, 1, 1, 3, 10, 'tag1', 'ABX', '2017-10-26 16:10:48', null);
+INSERT INTO stocktracker.v_stock_tag (uuid, customer_id, reference_type, reference_id, customer_tag_id, tag_name, ticker_symbol, create_date, update_date) VALUES (7, 1, 1, 3, 10, 'tag1', 'ABX', '2017-10-26 16:10:48', null);

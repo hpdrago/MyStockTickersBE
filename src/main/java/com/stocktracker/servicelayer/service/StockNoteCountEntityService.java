@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 public class StockNoteCountEntityService extends BaseEntityService<Integer,
                                                                    VStockNoteCountEntity,
+                                                                   String,
                                                                    StockNoteCountDTO,
                                                                    VStockNoteCountRepository>
 {
@@ -34,7 +35,7 @@ public class StockNoteCountEntityService extends BaseEntityService<Integer,
         logMethodBegin( methodName, customerId );
         Assert.isTrue( customerId > 0, "customerId must be > 0" );
         List<VStockNoteCountEntity> stockNoteTickerSymbolCountEntities =
-            this.vStockNoteCountRepository.findByCustomerId( customerId );
+            this.vStockNoteCountRepository.findByCustomerUuid( customerId );
         List<StockNoteCountDTO> stockNoteCountDTOs = this.entitiesToDTOs( stockNoteTickerSymbolCountEntities );
         logMethodEnd( methodName, stockNoteTickerSymbolCountEntities.size() );
         return stockNoteCountDTOs;

@@ -15,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -25,6 +24,7 @@ import java.util.Objects;
 @Service
 public class StockCompanyEntityService extends VersionedEntityService<String,
                                                                       StockCompanyEntity,
+                                                                      String,
                                                                       StockCompanyDTO,
                                                                       StockCompanyRepository>
 {
@@ -70,11 +70,11 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Get the page from the database
          */
-        Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository.findAll( pageRequest );
+        final Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository.findAll( pageRequest );
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockCompanyDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
+        final Page<StockCompanyDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
         logMethodEnd( methodName );
         return stockDTOPage;
     }
@@ -94,12 +94,12 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Get the page from the database
          */
-        Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository.findByCompanyNameIsLikeOrTickerSymbolIsLike(
+        final Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository.findByCompanyNameIsLikeOrTickerSymbolIsLike(
             pageRequest, companiesLike + "%", companiesLike + "%" );
         /*
          * Map from Entity to DomainEntity
          */
-        Page<StockCompanyDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
+        final Page<StockCompanyDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
         logMethodEnd( methodName );
         return stockDTOPage;
     }
@@ -173,12 +173,49 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         try
         {
             stockEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockCompanyEntity.TICKER_SYMBOL_LEN ) );
+            /*
+             * Update old records with new data
+             */
+            if ( stockEntity.getSector() == null )
+            {
+                final Company company = this.iexTradingStockService
+                                            .getCompany( tickerSymbol );
+                if ( company == null )
+                {
+                    logDebug( methodName, "Cannot get a quote for stock " + tickerSymbol );
+                    throw new StockNotFoundException( tickerSymbol );
+                }
+                else
+                {
+                    /*
+                     * Mismatch retry logic, need to encapsulate this
+                     */
+                    boolean mismatch = false;
+                    do
+                    {
+                        mismatch = false;
+                        setCompanyProperties( company, stockEntity );
+                        try
+                        {
+                            this.saveEntity( stockEntity );
+                        }
+                        catch( EntityVersionMismatchException e )
+                        {
+                            stockEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockCompanyEntity.TICKER_SYMBOL_LEN ) );
+                            mismatch = true;
+                            logWarn( methodName, "Entity mismatch trying to save company {0}, trying again",
+                                     stockEntity );
+                        }
+                    }
+                    while( mismatch );
+                }
+            }
         }
         catch( VersionedEntityNotFoundException e )
         {
             logDebug( methodName, tickerSymbol + " does note exist in the database, getting quote..." );
-            Company company = this.iexTradingStockService
-                                  .getCompany( tickerSymbol );
+            final Company company = this.iexTradingStockService
+                                        .getCompany( tickerSymbol );
             if ( company == null )
             {
                 logDebug( methodName, "Cannot get a quote for stock " + tickerSymbol );
@@ -209,13 +246,8 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         try
         {
             stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
-            stockCompanyEntity.setTickerSymbol( company.getSymbol() );
-            stockCompanyEntity.setCompanyName( company.getCompanyName() );
-            stockCompanyEntity.setCreateDate( new Timestamp( System.currentTimeMillis() ) );
             stockCompanyEntity.setDiscontinuedInd( false );
-            stockCompanyEntity.setIndustry( company.getIndustry() );
-            stockCompanyEntity.setSector( company.getSector() );
-            stockCompanyEntity.setCompanyURL( company.getWebsite() );
+            setCompanyProperties( company, stockCompanyEntity );
             this.addEntity( stockCompanyEntity );
         }
         catch( EntityVersionMismatchException e )
@@ -224,6 +256,20 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         }
         logMethodEnd( methodName, stockCompanyEntity );
         return stockCompanyEntity;
+    }
+
+    /**
+     * Copies the property values from {@code company} to {@code stockCompanyEntity}
+     * @param company
+     * @param stockCompanyEntity
+     */
+    private void setCompanyProperties( final Company company, final StockCompanyEntity stockCompanyEntity )
+    {
+        stockCompanyEntity.setTickerSymbol( company.getSymbol() );
+        stockCompanyEntity.setCompanyName( company.getCompanyName() );
+        stockCompanyEntity.setIndustry( company.getIndustry() );
+        stockCompanyEntity.setSector( company.getSector() );
+        stockCompanyEntity.setCompanyURL( company.getWebsite() );
     }
 
     /**

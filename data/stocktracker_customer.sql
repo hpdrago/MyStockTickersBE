@@ -1,1 +1,1 @@
-INSERT INTO stocktracker.customer (id, email, password, create_date, update_date, version) VALUES (1, 'michael.earl.65@gmail.com', 'usarmy84', '2017-03-17 12:52:58', null, 1);
+INSERT INTO stocktracker.customer (uuid, email, password, create_date, update_date, version) VALUES (1, 'michael.earl.65@gmail.com', 'usarmy84', '2017-03-17 12:52:58', null, 1);

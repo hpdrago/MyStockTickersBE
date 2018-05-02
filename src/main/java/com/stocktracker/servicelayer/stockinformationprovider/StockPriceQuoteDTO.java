@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.stockinformationprovider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.servicelayer.service.stocks.StockOpenPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 
@@ -17,10 +18,13 @@ import java.util.Objects;
  * Created by mike on 12/10/2016.
  */
 public class StockPriceQuoteDTO implements StockPriceContainer,
-                                           StockOpenPriceContainer
+                                           StockOpenPriceContainer,
+                                           StockCompanyContainer
 {
     private String tickerSymbol;
     private String companyName;
+    private String sector;
+    private String industry;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
@@ -94,6 +98,30 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
         this.companyName = companyName;
     }
 
+    @Override
+    public String getSector()
+    {
+        return this.sector;
+    }
+
+    @Override
+    public void setSector( final String sector )
+    {
+        this.sector = sector;
+    }
+
+    @Override
+    public String getIndustry()
+    {
+        return this.industry;
+    }
+
+    @Override
+    public void setIndustry( final String industry )
+    {
+        this.industry = industry;
+    }
+
     public Timestamp getExpirationTime()
     {
         return expirationTime;
@@ -136,6 +164,8 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
         sb.append( ", openPrice=" ).append( lastPrice );
         sb.append( ", stockPriceCacheState=" ).append( stockPriceCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
+        sb.append( ", industry'=" ).append( industry ).append( '\'' );
+        sb.append( ", sector'=" ).append( sector ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

@@ -6,29 +6,30 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mike on 5/7/2017.
  */
 @Transactional( readOnly = true )
-public interface StockNoteSourceRepository extends JpaRepository<StockNoteSourceEntity, Integer>
+public interface StockNoteSourceRepository extends JpaRepository<StockNoteSourceEntity,UUID>
 {
     /**
      * Retrieves all of the stock notes sources for a single customer
      *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    List<StockNoteSourceEntity> findByCustomerIdOrderByTimesUsedDesc( final int customerId );
+    List<StockNoteSourceEntity> findByCustomerUuidOrderByTimesUsedDesc( final UUID customerUuid );
 
     /**
      * Finds a customer's stock note source by name
      *
-     * @param customerId
+     * @param customerUuid
      * @param sourceName
      * @return
      */
-    StockNoteSourceEntity findByCustomerIdAndName( final int customerId, final String sourceName );
+    StockNoteSourceEntity findByCustomerUuidAndName( final UUID customerUuid, final String sourceName );
 
     @Override
     @Transactional

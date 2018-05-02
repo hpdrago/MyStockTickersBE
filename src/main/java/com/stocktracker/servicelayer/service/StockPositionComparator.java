@@ -133,7 +133,7 @@ public class StockPositionComparator implements MyLogger
              * Need to unwrap the class because JPA doesn't know about the My*
              */
             StockPositionEntity stockPositionEntity = StockPositionEntity.newInstance( myStockPositionEntity );
-            stockPositionEntity.setLinkedAccountByLinkedAccountId( this.linkedAccountEntity );
+            stockPositionEntity.setLinkedAccountByLinkedAccountUuid( this.linkedAccountEntity );
             stockPositionEntity.setVersion( 1 );
             this.stockPositionService
                 .saveEntity( stockPositionEntity );
@@ -193,7 +193,7 @@ public class StockPositionComparator implements MyLogger
                     if ( databaseStockPositionEntity == null )
                     {
                         final MyStockPositionEntity stockPositionEntity = new MyStockPositionEntity( tradeItPosition );
-                        stockPositionEntity.setLinkedAccountByLinkedAccountId( linkedAccountEntity );
+                        stockPositionEntity.setLinkedAccountByLinkedAccountUuid( linkedAccountEntity );
                         tradeItStockPositionEntities.add( stockPositionEntity );
                     }
                     /*

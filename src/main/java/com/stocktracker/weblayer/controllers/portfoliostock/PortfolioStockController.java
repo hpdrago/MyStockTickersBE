@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
@@ -45,26 +46,22 @@ public class PortfolioStockController extends AbstractController
      * @param tickerSymbol
      * @return
      * @throws PortfolioStockNotFound
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
-     * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}/portfolio/{portfolioId}/stock/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public PortfolioStockDTO getPortfolioStock( @PathVariable Integer customerId,
-                                                @PathVariable Integer portfolioId,
+    public PortfolioStockDTO getPortfolioStock( @PathVariable String customerId,
+                                                @PathVariable String portfolioId,
                                                 @PathVariable String tickerSymbol )
-        throws PortfolioStockNotFound,
-               StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+        throws PortfolioStockNotFound
     {
         final String methodName = "getPortfolioStock";
         logMethodBegin( methodName, customerId, portfolioId, tickerSymbol );
         PortfolioStockDTO portfolioStockDTO = this.portfolioStockService
-                                                  .getPortfolioStock( customerId, portfolioId, tickerSymbol );
+                                                  .getPortfolioStock( UUIDUtil.uuid( customerId ),
+                                                                      UUIDUtil.uuid( portfolioId ),
+                                                                      tickerSymbol );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
     }
@@ -79,8 +76,8 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/{portfolioStockId}/customerId/{customerId}",
         method = RequestMethod.DELETE,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deletePortfolioStock( @PathVariable Integer portfolioStockId,
-                                                      @PathVariable Integer customerId )
+    public ResponseEntity<Void> deletePortfolioStock( @PathVariable String portfolioStockId,
+                                                      @PathVariable String customerId )
         throws PortfolioStockNotFound
     {
         final String methodName = "deletePortfolioStock";
@@ -109,15 +106,16 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}/portfolio/{portfolioId}/stocks",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
-                                                       @PathVariable Integer portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable String customerId,
+                                                       @PathVariable String portfolioId )
         throws PortfolioStockNotFound,
                StockNotFoundException,
                StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
-        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService.getPortfolioStocks( portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOList = this.portfolioStockService
+                                                            .getPortfolioStocks( UUIDUtil.uuid( portfolioId ));
         logMethodEnd( methodName, String.format( "Found %d stocks", portfolioStockDTOList.size() ) );
         return portfolioStockDTOList;
     }

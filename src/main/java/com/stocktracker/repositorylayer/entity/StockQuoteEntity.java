@@ -7,20 +7,16 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_quote", schema = "stocktracker", catalog = "" )
-public class StockQuoteEntity implements VersionedEntity<String>
+public class StockQuoteEntity extends TickerSymbolEntity
 {
-    private String tickerSymbol;
     private String calculationPrice;
     private BigDecimal openPrice;
     private BigDecimal closePrice;
@@ -44,21 +40,6 @@ public class StockQuoteEntity implements VersionedEntity<String>
     private BigDecimal ytdChangePercent;
     private Timestamp lastQuoteRequestDate;
     private String discontinuedInd;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
-
-    @Id
-    @Column( name = "ticker_symbol", nullable = false, length = 25 )
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
 
     @Basic
     @Column( name = "discontinued_ind", nullable = true, length = 1 )
@@ -70,49 +51,6 @@ public class StockQuoteEntity implements VersionedEntity<String>
     public void setDiscontinuedInd( final String discontinuedInd )
     {
         this.discontinuedInd = discontinuedInd;
-    }
-
-    @Basic
-    @Column( name = "create_date", nullable = false )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Transient
-    @Override
-    public String getId()
-    {
-        return this.tickerSymbol;
-    }
-
-    @Basic
-    @Column( name = "version", nullable = false )
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
     }
 
     @Basic
@@ -380,57 +318,10 @@ public class StockQuoteEntity implements VersionedEntity<String>
     }
 
     @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-        final StockQuoteEntity that = (StockQuoteEntity) o;
-        return Objects.equals( tickerSymbol, that.tickerSymbol ) &&
-               Objects.equals( discontinuedInd, that.discontinuedInd ) &&
-               Objects.equals( createDate, that.createDate ) &&
-               Objects.equals( updateDate, that.updateDate ) &&
-               Objects.equals( version, that.version ) &&
-               Objects.equals( calculationPrice, that.calculationPrice ) &&
-               Objects.equals( openPrice, that.openPrice ) &&
-               Objects.equals( closePrice, that.closePrice ) &&
-               Objects.equals( highPrice, that.highPrice ) &&
-               Objects.equals( lowPrice, that.lowPrice ) &&
-               Objects.equals( latestPrice, that.latestPrice ) &&
-               Objects.equals( latestPriceSource, that.latestPriceSource ) &&
-               Objects.equals( latestPriceTime, that.latestPriceTime ) &&
-               Objects.equals( latestUpdate, that.latestUpdate ) &&
-               Objects.equals( latestVolume, that.latestVolume ) &&
-               Objects.equals( delayedPrice, that.delayedPrice ) &&
-               Objects.equals( delayedPriceTime, that.delayedPriceTime ) &&
-               Objects.equals( previousClose, that.previousClose ) &&
-               Objects.equals( changeAmount, that.changeAmount ) &&
-               Objects.equals( changePercent, that.changePercent ) &&
-               Objects.equals( thirtyDayAvgVolume, that.thirtyDayAvgVolume ) &&
-               Objects.equals( marketCap, that.marketCap ) &&
-               Objects.equals( peRatio, that.peRatio ) &&
-               Objects.equals( week52High, that.week52High ) &&
-               Objects.equals( week52Low, that.week52Low ) &&
-               Objects.equals( ytdChangePercent, that.ytdChangePercent ) &&
-               Objects.equals( lastQuoteRequestDate, that.lastQuoteRequestDate );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( tickerSymbol );
-    }
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockQuoteEntity{" );
-        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( "tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
         sb.append( ", calculationPrice='" ).append( calculationPrice ).append( '\'' );
         sb.append( ", openPrice=" ).append( openPrice );
         sb.append( ", closePrice=" ).append( closePrice );
@@ -454,9 +345,7 @@ public class StockQuoteEntity implements VersionedEntity<String>
         sb.append( ", ytdChangePercent=" ).append( ytdChangePercent );
         sb.append( ", lastQuoteRequestDate=" ).append( lastQuoteRequestDate );
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

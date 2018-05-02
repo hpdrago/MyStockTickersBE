@@ -8,24 +8,20 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Timestamp;
+import java.util.UUID;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_position", schema = "stocktracker", catalog = "" )
-public class StockPositionEntity implements VersionedEntity<Integer>
+public class StockPositionEntity extends UUIDEntity
 {
-    private Integer id;
-    private Integer linkedAccountId;
+    private UUID linkedAccountUuid;
     private BigDecimal costBasis;
     private String holdingType;
     private BigDecimal lastPrice;
@@ -36,10 +32,43 @@ public class StockPositionEntity implements VersionedEntity<Integer>
     private BigDecimal todayGainLossPercentage;
     private BigDecimal totalGainLossAbsolute;
     private BigDecimal totalGainLossPercentage;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
-    private LinkedAccountEntity linkedAccountByLinkedAccountId;
+    private LinkedAccountEntity linkedAccountByLinkedAccountUuid;
+
+    public StockPositionEntity()
+    {
+    }
+
+    /**
+     * Copy constructor.
+     * @param stockPositionEntity
+     */
+    public StockPositionEntity( final StockPositionEntity stockPositionEntity )
+    {
+        this.setUuid( stockPositionEntity.getUuid() );
+        this.costBasis = stockPositionEntity.costBasis;
+        this.holdingType = stockPositionEntity.holdingType;
+        this.lastPrice = stockPositionEntity.lastPrice;
+        this.quantity = stockPositionEntity.quantity;
+        this.tickerSymbol = stockPositionEntity.tickerSymbol;
+        this.symbolClass = stockPositionEntity.symbolClass;
+        this.todayGainLossAbsolute = stockPositionEntity.todayGainLossAbsolute;
+        this.todayGainLossPercentage = stockPositionEntity.todayGainLossPercentage;
+        this.totalGainLossAbsolute = stockPositionEntity.totalGainLossAbsolute;
+        this.totalGainLossPercentage = stockPositionEntity.totalGainLossPercentage;
+        this.setCreateDate( stockPositionEntity.getCreateDate() );
+        this.setUpdateDate( stockPositionEntity.getUpdateDate() );
+        this.setVersion( stockPositionEntity.getVersion() );
+        this.linkedAccountByLinkedAccountUuid = stockPositionEntity.linkedAccountByLinkedAccountUuid;
+    }
+
+    /**
+     * Creates a new entity instance from a TradeItPosition.
+     * @param tradeItPosition
+     */
+    public StockPositionEntity( final TradeItPosition tradeItPosition )
+    {
+        this.setValues( tradeItPosition );
+    }
 
     /**
      * Create a new instance from a TradeItPosition instance.
@@ -61,42 +90,6 @@ public class StockPositionEntity implements VersionedEntity<Integer>
         return new StockPositionEntity( stockPositionEntity );
     }
 
-    public StockPositionEntity()
-    {
-    }
-
-    /**
-     * Copy constructor.
-     * @param stockPositionEntity
-     */
-    public StockPositionEntity( final StockPositionEntity stockPositionEntity )
-    {
-        this.id = stockPositionEntity.id;
-        this.costBasis = stockPositionEntity.costBasis;
-        this.holdingType = stockPositionEntity.holdingType;
-        this.lastPrice = stockPositionEntity.lastPrice;
-        this.quantity = stockPositionEntity.quantity;
-        this.tickerSymbol = stockPositionEntity.tickerSymbol;
-        this.symbolClass = stockPositionEntity.symbolClass;
-        this.todayGainLossAbsolute = stockPositionEntity.todayGainLossAbsolute;
-        this.todayGainLossPercentage = stockPositionEntity.todayGainLossPercentage;
-        this.totalGainLossAbsolute = stockPositionEntity.totalGainLossAbsolute;
-        this.totalGainLossPercentage = stockPositionEntity.totalGainLossPercentage;
-        this.createDate = stockPositionEntity.createDate;
-        this.updateDate = stockPositionEntity.updateDate;
-        this.version = stockPositionEntity.version;
-        this.linkedAccountByLinkedAccountId = stockPositionEntity.linkedAccountByLinkedAccountId;
-    }
-
-    /**
-     * Creates a new entity instance from a TradeItPosition.
-     * @param tradeItPosition
-     */
-    public StockPositionEntity( final TradeItPosition tradeItPosition )
-    {
-        this.setValues( tradeItPosition );
-    }
-
     /**
      * Set the TradeItPosition values.
      * @param tradeItPosition
@@ -115,30 +108,16 @@ public class StockPositionEntity implements VersionedEntity<Integer>
         this.totalGainLossPercentage = this.truncate( tradeItPosition.getTotalGainLossPercentage() );
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column( name = "id", nullable = false )
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
-    }
-
-
     @Basic
-    @Column( name = "linked_account_id", updatable = false, insertable = false, nullable = true )
-    public Integer getLinkedAccountId()
+    @Column( name = "linked_account_uuid", updatable = false, insertable = false, nullable = false )
+    public UUID getLinkedAccountUuid()
     {
-        return linkedAccountId;
+        return linkedAccountUuid;
     }
 
-    public void setLinkedAccountId( final Integer linkedAccountId )
+    public void setLinkedAccountUuid( final UUID linkedAccountUuid )
     {
-        this.linkedAccountId = linkedAccountId;
+        this.linkedAccountUuid = linkedAccountUuid;
     }
 
     @Basic
@@ -190,7 +169,7 @@ public class StockPositionEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "ticker_symbol", nullable = true, length = 5 )
+    @Column( name = "ticker_symbol", nullable = true, length = 25 )
     public String getTickerSymbol()
     {
         return tickerSymbol;
@@ -277,91 +256,25 @@ public class StockPositionEntity implements VersionedEntity<Integer>
         this.totalGainLossPercentage = totalGainLossPercentage;
     }
 
-    @Basic
-    @Column( name = "create_date", nullable = true )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Override
-    @Basic
-    @Column( name = "version", nullable = true )
-    public Integer getVersion()
-    {
-        return null;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
     @ManyToOne
-    @JoinColumn( name = "linked_account_id", referencedColumnName = "id" )
-    public LinkedAccountEntity getLinkedAccountByLinkedAccountId()
+    @JoinColumn( name = "linked_account_uuid", referencedColumnName = "uuid" )
+    public LinkedAccountEntity getLinkedAccountByLinkedAccountUuid()
     {
-        return linkedAccountByLinkedAccountId;
+        return linkedAccountByLinkedAccountUuid;
     }
 
-    public void setLinkedAccountByLinkedAccountId( final LinkedAccountEntity linkedAccountByLinkedAccountId )
+    public void setLinkedAccountByLinkedAccountUuid( final LinkedAccountEntity linkedAccount )
     {
-        this.linkedAccountByLinkedAccountId = linkedAccountByLinkedAccountId;
-        this.linkedAccountId = linkedAccountByLinkedAccountId.getId();
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !(o instanceof StockPositionEntity) )
-        {
-            return false;
-        }
-
-        final StockPositionEntity that = (StockPositionEntity) o;
-
-        if ( !id.equals( that.id ) )
-        {
-            return false;
-        }
-        return tickerSymbol.equals( that.tickerSymbol );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = id.hashCode();
-        result = 31 * result + tickerSymbol.hashCode();
-        return result;
+        this.linkedAccountByLinkedAccountUuid = linkedAccount;
+        this.linkedAccountUuid = linkedAccount.getId();
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "LinkedAccountPositionEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", linkedAccountId=" ).append( linkedAccountId );
+        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( ", linkedAccountUuid=" ).append( linkedAccountUuid );
         sb.append( ", costBasis=" ).append( costBasis );
         sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
@@ -372,9 +285,7 @@ public class StockPositionEntity implements VersionedEntity<Integer>
         sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
         sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

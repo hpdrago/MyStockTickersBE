@@ -3,6 +3,8 @@ package com.stocktracker.common.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.UUID;
+
 /**
  * Created by mike on 5/15/2016.
  */
@@ -13,7 +15,7 @@ public class CustomerNotFoundException extends RuntimeException
      * CustomerDE id not found
      * @param id
      */
-    public CustomerNotFoundException( final int id )
+    public CustomerNotFoundException( final UUID id )
     {
         super( "CustomerDE id: " + id + " was not found" );
     }

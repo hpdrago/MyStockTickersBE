@@ -1,29 +1,29 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
+import com.stocktracker.repositorylayer.entity.UUIDEntity;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.weblayer.dto.VersionedDTO;
+import com.stocktracker.weblayer.dto.UuidDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This is the base class for services that service DTO's that contain stock information.
- * @param <E>
- * @param <D>
+ * @param <E> Entity type.
+ * @param <D> DTO type.
+ * @param <R> Repository type.
  */
-public abstract class StockInformationEntityService<K extends Serializable,
-                                                    E extends VersionedEntity<K>,
+public abstract class StockInformationEntityService<E extends UUIDEntity,
                                                     D extends StockPriceContainer &
-                                                              VersionedDTO<K>,
-                                                    R extends JpaRepository<E,K>>
-    extends VersionedEntityService<K,E,D,R>
+                                                              UuidDTO,
+                                                    R extends JpaRepository<E,UUID>>
+    extends UuidEntityService<E,D,R>
 {
     protected enum StockPriceFetchAction
     {

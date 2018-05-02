@@ -55,12 +55,12 @@ public class VPortfolioStockEntity
 
     @Basic
     @Column( name = "customer_id", nullable = false )
-    public Integer getCustomerId()
+    public Integer getCustomerUuid()
     {
         return customerId;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerUuid( final Integer customerId )
     {
         this.customerId = customerId;
     }

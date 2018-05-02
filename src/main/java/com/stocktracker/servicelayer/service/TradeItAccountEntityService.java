@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This service communicates between the Web layer and Repositories using the Domain Model
@@ -30,11 +31,10 @@ import java.util.Objects;
  * Created by mike on 12/4/2017.
  */
 @Service
-//@Transactional
-public class TradeItAccountEntityService extends VersionedEntityService<Integer,
-                                                                        TradeItAccountEntity,
-                                                                        TradeItAccountDTO,
-                                                                        TradeItAccountRepository>
+@Transactional
+public class TradeItAccountEntityService extends UuidEntityService<TradeItAccountEntity,
+                                                                   TradeItAccountDTO,
+                                                                   TradeItAccountRepository>
     implements MyLogger
 {
     private TradeItAccountRepository tradeItAccountRepository;
@@ -44,17 +44,16 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
 
     /**
      * Get the account by id request
-     * @param customerId
-     * @param accountId
+     * @param accountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    public TradeItAccountDTO getAccountDTO( final int customerId, final int accountId )
+    public TradeItAccountDTO getAccountDTO( final UUID accountUuid )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccountDTO";
-        logMethodBegin( methodName, customerId, accountId );
-        TradeItAccountEntity tradeItAccountEntity = this.getTradeItAccountEntity( customerId, accountId );
+        logMethodBegin( methodName, accountUuid );
+        TradeItAccountEntity tradeItAccountEntity = this.getTradeItAccountEntity( accountUuid );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
         logMethodEnd( methodName, tradeItAccountDTO );
         return tradeItAccountDTO;
@@ -62,24 +61,23 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
 
     /**
      * Get the account for the customer and account id.
-     * @param customerId
-     * @param tradeItAccountId
+     * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    public TradeItAccountEntity getTradeItAccountEntity( final int customerId, final int tradeItAccountId )
+    public TradeItAccountEntity getTradeItAccountEntity( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "getAccountDTO";
-        logMethodBegin( methodName, customerId, tradeItAccountId );
+        logMethodBegin( methodName, tradeItAccountUuid );
         TradeItAccountEntity tradeItAccountEntity = null;
         try
         {
-            tradeItAccountEntity = this.getEntity( tradeItAccountId );
+            tradeItAccountEntity = this.getEntity( tradeItAccountUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
-            throw new TradeItAccountNotFoundException( customerId, tradeItAccountId );
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid );
         }
         logMethodEnd( methodName, tradeItAccountEntity );
         return tradeItAccountEntity;
@@ -87,21 +85,21 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
 
     /**
      * Create the account for the customer.
-     * @param customerId
+     * @param customerUuid
      * @param tradeItAccountDTO
      * @return TradeItAccountDTO
      * @throws EntityVersionMismatchException
      */
-    public TradeItAccountDTO createAccount( final int customerId, final TradeItAccountDTO tradeItAccountDTO )
+    public TradeItAccountDTO createAccount( final UUID customerUuid, final TradeItAccountDTO tradeItAccountDTO )
         throws EntityVersionMismatchException
     {
         final String methodName = "createAccount";
-        logMethodBegin( methodName, customerId, tradeItAccountDTO );
+        logMethodBegin( methodName, customerUuid, tradeItAccountDTO );
         TradeItAccountEntity tradeItAccountEntity = this.dtoToEntity( tradeItAccountDTO );
         tradeItAccountEntity.setVersion( 1 );
-        CustomerEntity customerEntity = this.customerService.getCustomerEntity( customerId );
+        CustomerEntity customerEntity = this.customerService.getCustomerEntity( customerUuid );
         logDebug( methodName, "customerEntity: {0}", customerEntity );
-        tradeItAccountEntity.setCustomerByCustomerId( customerEntity );
+        tradeItAccountEntity.setCustomerByCustomerUuid( customerEntity );
         /*
          * Set it to null on create, there were JSON conversion issues on create.
          */
@@ -115,7 +113,7 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
 
     /**
      * This method is called during the GetOAuthAccessTokenAPIResult TradeIt call
-     * @param customerId
+     * @param customerUuid
      * @param broker
      * @param accountName
      * @param userId
@@ -123,23 +121,23 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
      * @return
      * @throws EntityVersionMismatchException
      */
-    public TradeItAccountDTO createAccount( final int customerId, final String broker, final String accountName,
+    public TradeItAccountDTO createAccount( final UUID customerUuid, final String broker, final String accountName,
                                             final String userId, final String userToken )
         throws EntityVersionMismatchException
     {
         final String methodName = "createAccount";
-        logMethodBegin( methodName, customerId, broker, accountName, userId, userToken );
+        logMethodBegin( methodName, customerUuid, broker, accountName, userId, userToken );
         Objects.requireNonNull( broker, "broker cannot be null" );
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( userId, "userId cannot be null" );
         Objects.requireNonNull( userToken, "userToken cannot be null" );
         TradeItAccountEntity tradeItAccountEntity = TradeItAccountEntity.newInstance();
-        tradeItAccountEntity.setCustomerId( customerId );
         tradeItAccountEntity.setBrokerage( broker );
         tradeItAccountEntity.setName( accountName );
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
-        tradeItAccountEntity.setCustomerByCustomerId( this.customerService.getCustomerEntity( customerId ) );
+        tradeItAccountEntity.setCustomerByCustomerUuid( this.customerService
+                                                          .getCustomerEntity( customerUuid ) );
         tradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
@@ -149,14 +147,14 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
 
     /**
      * Get the list of customer accounts.
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    public List<TradeItAccountDTO> getAccounts( final int customerId )
+    public List<TradeItAccountDTO> getAccounts( final UUID customerUuid )
     {
         final String methodName = "getAccounts";
-        logMethodBegin( methodName, customerId );
-        List<TradeItAccountEntity> accountEntities = this.tradeItAccountRepository.findByCustomerId( customerId );
+        logMethodBegin( methodName, customerUuid );
+        List<TradeItAccountEntity> accountEntities = this.tradeItAccountRepository.findByCustomerUuid( customerUuid );
         List<TradeItAccountDTO> tradeItAccountDTOS = this.entitiesToDTOs( accountEntities );
         logMethodEnd( methodName, tradeItAccountDTOS );
         return tradeItAccountDTOS;
@@ -165,30 +163,28 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
     /**
      * This method is called after a successful authentication call.  This is a wrapper method for the follow method
      * with the same name.
-     * @param customerId
-     * @param tradeItAccountId
+     * @param tradeItAccountUuid
      * @param authenticateDTO
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws EntityVersionMismatchException
      */
-    public void synchronizeTradeItAccount( final int customerId,
-                                           final int tradeItAccountId,
+    public void synchronizeTradeItAccount( final UUID tradeItAccountUuid,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
                EntityVersionMismatchException
     {
         final String methodName = "synchronizeTradeItAccount";
-        logMethodBegin( methodName, customerId, tradeItAccountId, authenticateDTO );
+        logMethodBegin( methodName, tradeItAccountUuid, authenticateDTO );
         TradeItAccountEntity tradeItAccountEntity = null;
         try
         {
-            tradeItAccountEntity = this.getEntity( tradeItAccountId );
+            tradeItAccountEntity = this.getEntity( tradeItAccountUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
-            throw new TradeItAccountNotFoundException( tradeItAccountId );
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid );
         }
         this.synchronizeTradeItAccount( tradeItAccountEntity, authenticateDTO );
         logMethodEnd( methodName );
@@ -219,8 +215,7 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
          * Gather up all of the linked accounts and add them to the authenticate DTO.
          */
         List<LinkedAccountDTO> linkedAccountDTOs = this.linkedAccountEntityService
-                                                       .getLinkedAccounts( tradeItAccountEntity.getCustomerId(),
-                                                                           tradeItAccountEntity.getId() );
+                                                       .getLinkedAccounts( tradeItAccountEntity.getUuid() );
         authenticateDTO.setLinkedAccounts( linkedAccountDTOs );
         /*
          * Need to send back the updated account DTO
@@ -250,8 +245,7 @@ public class TradeItAccountEntityService extends VersionedEntityService<Integer,
         this.saveEntity( tradeItAccountEntity );
         final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
         final List<LinkedAccountDTO> linkedAccountDTOs = this.linkedAccountEntityService
-                                                             .getLinkedAccounts( tradeItAccountEntity.getCustomerId(),
-                                                                                 tradeItAccountEntity.getId() );
+                                                             .getLinkedAccounts( tradeItAccountEntity.getUuid() );
         keepSessionAliveDTO.setTradeItAccount( tradeItAccountDTO );
         keepSessionAliveDTO.setLinkedAccounts( linkedAccountDTOs );
         logMethodEnd( methodName, tradeItAccountDTO );

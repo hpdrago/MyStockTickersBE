@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.CustomerEntityService;
 import com.stocktracker.weblayer.dto.CustomerDTO;
@@ -58,11 +59,12 @@ public class CustomerController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/id/{id}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public CustomerDTO getCustomer( @PathVariable int id )
+    public CustomerDTO getCustomer( @PathVariable String id )
     {
         final String methodName = "getCustomer";
         logMethodBegin( methodName, id );
-        CustomerDTO customerDTO = customerService.getCustomerDTO( id );
+        CustomerDTO customerDTO = this.customerService
+                                      .getCustomerDTO( UUIDUtil.uuid( id ));
         logMethodEnd( methodName, customerDTO );
         return customerDTO;
     }
@@ -76,9 +78,9 @@ public class CustomerController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/email/{email:.+}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public CustomerDTO getCustomer( @PathVariable String email )
+    public CustomerDTO getCustomerByEmail( @PathVariable String email )
     {
-        final String methodName = "getCustomer";
+        final String methodName = "getCustomerByEmail";
         logMethodBegin( methodName, email );
         CustomerDTO customerDTO = customerService.getCustomerByEmail( email );
         logMethodEnd( methodName, customerDTO );

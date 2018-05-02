@@ -17,13 +17,14 @@ import java.sql.Timestamp;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockAnalystConsensusDTO extends StockPriceQuoteDTO implements StockPriceContainer,
                                                                             StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                            VersionedDTO<Integer>
+                                                                            UuidDTO,
+                                                                            CustomerIdContainer
 {
     /*
      * Entity (DB columns)
      */
-    private Integer id;
-    private Integer customerId;
+    private String id;
+    private String customerId;
     private String comments;
     private Integer analystStrongBuyCount;
     private Integer analystBuyCount;
@@ -38,7 +39,7 @@ public class StockAnalystConsensusDTO extends StockPriceQuoteDTO implements Stoc
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal highAnalystPriceTarget;
     private String analystPriceDate;
-    private Integer notesSourceId;
+    private String notesSourceId;
     private String notesSourceName;
     private Integer version;
 
@@ -47,22 +48,22 @@ public class StockAnalystConsensusDTO extends StockPriceQuoteDTO implements Stoc
         return new StockAnalystConsensusDTO();
     }
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( Integer id )
+    public void setId( String uuid )
     {
-        this.id = id;
+        this.id = uuid;
     }
 
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( Integer customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
     }
@@ -201,12 +202,12 @@ public class StockAnalystConsensusDTO extends StockPriceQuoteDTO implements Stoc
         }
     }
 
-    public Integer getNotesSourceId()
+    public String getNotesSourceId()
     {
         return notesSourceId;
     }
 
-    public void setNotesSourceId( final Integer notesSourceId )
+    public void setNotesSourceId( final String notesSourceId )
     {
         this.notesSourceId = notesSourceId;
     }

@@ -7,10 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockCatalystEventDTO extends BaseStockCompanyDTO
-                                   implements VersionedDTO<Integer>
+                                   implements UuidDTO,
+                                              CustomerIdContainer
 {
-    private Integer id;
-    private Integer customerId;
+    private String id;
+    private String customerId;
     private String catalystDate;
     private String catalystDesc;
     private Byte dateOrTimePeriod;
@@ -19,22 +20,22 @@ public class StockCatalystEventDTO extends BaseStockCompanyDTO
     private Integer version;
     private String companyName;
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
     }
 
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( Integer customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
     }

@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -59,7 +60,7 @@ public class PortfolioCalculator implements MyLogger
                EntityVersionMismatchException
     {
         List<PortfolioStockDTO> portfolioStocks = this.portfolioStockService
-                                                      .getPortfolioStocks( portfolioDTO.getId() );
+                                                      .getPortfolioStocks( UUIDUtil.uuid( portfolioDTO.getId() ));
         int portfolioRealizedGL = 0;
         int portfolioUnRealizedGL = 0;
         int marketValue = 0;

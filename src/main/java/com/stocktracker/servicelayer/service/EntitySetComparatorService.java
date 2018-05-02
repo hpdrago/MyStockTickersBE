@@ -4,7 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.entity.VersionedEntity;
+import com.stocktracker.repositorylayer.VersionedEntity;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -32,7 +32,7 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param collection2 Current entity values from the database.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
      */
-    public void compareAndUpdateDatabase( final VersionedEntityService<K,E,?,?> entityService,
+    public void compareAndUpdateDatabase( final VersionedEntityService<K,E,?,?,?> entityService,
                                           final Collection<E> collection1,
                                           final Collection<E> collection2 )
         throws EntityVersionMismatchException,
@@ -53,7 +53,7 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param updateEntities List of entities to update.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
      */
-    private void updateEntities( final VersionedEntityService<K,E,?,?> service,
+    private void updateEntities( final VersionedEntityService<K,E,?,?,?> service,
                                  final Set<E> updateEntities )
         throws EntityVersionMismatchException
     {
@@ -73,7 +73,7 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param deletedEntities The list of entities to delete.
      * @throws VersionedEntityNotFoundException
      */
-    private void deleteEntities( final VersionedEntityService<K,E,?,?> service,
+    private void deleteEntities( final VersionedEntityService<K,E,?,?,?> service,
                                  final Set<E> deletedEntities )
         throws VersionedEntityNotFoundException
     {
@@ -88,7 +88,7 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param service
      * @param newEntities
      */
-    private void addEntities( final VersionedEntityService<K,E,?,?> service,
+    private void addEntities( final VersionedEntityService<K,E,?,?,?> service,
                               final Set<E> newEntities )
         throws EntityVersionMismatchException
     {

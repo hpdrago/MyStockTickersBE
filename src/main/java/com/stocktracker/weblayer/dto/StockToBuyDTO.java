@@ -15,15 +15,16 @@ import java.util.List;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceContainer,
                                                                  StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                 VersionedDTO<Integer>
+                                                                 UuidDTO,
+                                                                 CustomerIdContainer
 {
     /*
      * Entity (DB columns)
      */
-    private Integer id;
-    private Integer customerId;
+    private String id;
+    private String customerId;
     private String comments;
-    private Integer notesSourceId;
+    private String notesSourceId;
     private String notesSourceName;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
@@ -34,22 +35,24 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
     private BigDecimal avgAnalystPriceTarget;
     private Integer version;
 
-    public Integer getId()
+    @Override
+    public String getId()
     {
-        return id;
+        return this.id;
     }
 
-    public void setId( Integer id )
+    @Override
+    public void setId( final String id )
     {
         this.id = id;
     }
 
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( Integer customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
     }
@@ -129,12 +132,12 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
         this.buyAfterDate = buyAfterDate;
     }
 
-    public Integer getNotesSourceId()
+    public String getNotesSourceId()
     {
         return notesSourceId;
     }
 
-    public void setNotesSourceId( final Integer notesSourceId )
+    public void setNotesSourceId( final String notesSourceId )
     {
         this.notesSourceId = notesSourceId;
     }

@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -48,14 +49,15 @@ public class PortfolioController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<PortfolioDTO> getPortfoliosByCustomerId( @PathVariable int customerId )
+    public List<PortfolioDTO> getPortfoliosByCustomerUuid( @PathVariable String customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                EntityVersionMismatchException
     {
-        final String methodName = "getPortfoliosByCustomerId";
+        final String methodName = "getPortfoliosByCustomerUuid";
         logMethodBegin( methodName, customerId );
-        List<PortfolioDTO> portfolioDTOs = portfolioService.getPortfoliosByCustomerId( customerId );
+        List<PortfolioDTO> portfolioDTOs = this.portfolioService
+                                               .getPortfoliosByCustomerUuid( UUIDUtil.uuid( customerId ));
         logMethodEnd( methodName, portfolioDTOs );
         return portfolioDTOs;
     }
@@ -73,8 +75,8 @@ public class PortfolioController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}",
         method = RequestMethod.GET,
         produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable Integer customerId,
-                                                       @PathVariable Integer portfolioId )
+    public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable String customerId,
+                                                       @PathVariable String portfolioId )
         throws StockNotFoundException,
                StockQuoteUnavailableException
     {
@@ -82,7 +84,8 @@ public class PortfolioController extends AbstractController implements MyLogger
         logMethodBegin( methodName, customerId, portfolioId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
-        List<PortfolioStockDTO> portfolioStockDTOs = portfolioStockService.getPortfolioStocks( portfolioId );
+        List<PortfolioStockDTO> portfolioStockDTOs = this.portfolioStockService
+                                                         .getPortfolioStocks( UUIDUtil.uuid( portfolioId ));
         logMethodEnd( methodName, portfolioStockDTOs );
         return portfolioStockDTOs;
     }
@@ -95,13 +98,14 @@ public class PortfolioController extends AbstractController implements MyLogger
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
         method = RequestMethod.POST )
-    public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable Integer customerId,
+    public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable String customerId,
                                                       @RequestBody PortfolioDTO portfolioDto )
         throws EntityVersionMismatchException
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDto );
-        PortfolioDTO portfolioDTO = portfolioService.addPortfolio( customerId, portfolioDto );
+        final PortfolioDTO portfolioDTO = portfolioService.addPortfolio( UUIDUtil.uuid( customerId ),
+                                                                         portfolioDto );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                     .fromCurrentRequest()
@@ -123,15 +127,15 @@ public class PortfolioController extends AbstractController implements MyLogger
      */
     @CrossOrigin
     @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Void> deletePortfolio( @PathVariable( "portfolioId" ) Integer portfolioId,
-                                                 @PathVariable( "customerId" ) Integer customerId )
+    public ResponseEntity<Void> deletePortfolio( @PathVariable( "portfolioId" ) String portfolioId,
+                                                 @PathVariable( "customerId" ) String customerId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, customerId, portfolioId );
         Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
-        portfolioService.deleteEntity( portfolioId );
+        portfolioService.deleteEntity( UUIDUtil.uuid( portfolioId ) );
         logMethodBegin( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -146,9 +150,10 @@ public class PortfolioController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
-    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}", method = RequestMethod.GET)
-    public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable int portfolioId,
-                                                      @PathVariable int customerId )
+    @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}",
+                    method = RequestMethod.GET)
+    public ResponseEntity<PortfolioDTO> getPortfolio( @PathVariable String portfolioId,
+                                                      @PathVariable String customerId )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                EntityVersionMismatchException
@@ -157,7 +162,8 @@ public class PortfolioController extends AbstractController implements MyLogger
         logMethodBegin( methodName, customerId, portfolioId );
         Objects.requireNonNull( customerId, "customerId cannot be null" );
         Objects.requireNonNull( portfolioId, "portfolioId cannot be null" );
-        PortfolioDTO portfolioDTO = portfolioService.getPortfolioById( portfolioId );
+        final PortfolioDTO portfolioDTO = this.portfolioService
+                                              .getPortfolioByUuid( UUIDUtil.uuid( portfolioId ));
         logDebug( methodName, "portfolio: {0}", portfolioDTO.toString() );
         logMethodBegin( methodName, portfolioDTO );
         return new ResponseEntity<>( portfolioDTO, HttpStatus.OK );

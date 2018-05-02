@@ -1,5 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.NotesSourceUuidContainer;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -9,63 +11,45 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
-public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteSourceEntityContainer,
-                                         VersionedEntity<Integer>
+public class StockToBuyEntity extends UUIDEntity
+                              implements StockNoteSourceEntityService.StockNoteSourceEntityContainer,
+                                         CustomerUuidContainer,
+                                         NotesSourceUuidContainer
 {
     private static final int COMMENTS_LEN = 4096;
-    private Integer id;
-    private Integer customerId;
+    private UUID customerUuid;
     private String tickerSymbol;
     private String comments;
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
     private String completed;
-    private Integer notesSourceId;
-    private Integer version;
-    private StockNoteSourceEntity stockNoteSourceByNotesSourceId;
+    private UUID notesSourceUuid;
+    private StockNoteSourceEntity stockNoteSourceByNotesSourceUuid;
     private Timestamp buyAfterDate;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-
-    @Id
-    @Column( name = "id", nullable = false )
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
-    }
 
     @Basic
-    @Column( name = "customer_id" )
-    public Integer getCustomerId()
+    @Column( name = "customer_uuid" )
+    public UUID getCustomerUuid()
     {
-        return customerId;
+        return customerUuid;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerUuid( final UUID customerId )
     {
-        this.customerId = customerId;
+        this.customerUuid = customerId;
     }
 
     @Basic
@@ -117,30 +101,6 @@ public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteS
     }
 
     @Basic
-    @Column( name = "create_date", nullable = false )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Basic
     @Column( name = "completed", nullable = false, length = 1 )
     public String getCompleted()
     {
@@ -165,104 +125,68 @@ public class StockToBuyEntity implements StockNoteSourceEntityService.StockNoteS
     }
 
     @Basic
-    @Column( name = "notes_source_id", nullable = true, insertable = false, updatable = false )
-    public Integer getNotesSourceId()
+    @Column( name = "notes_source_uuid", nullable = true, insertable = false, updatable = false )
+    public UUID getNotesSourceUuid()
     {
-        return notesSourceId;
+        return notesSourceUuid;
     }
 
-    public void setNotesSourceId( final Integer notesSourceId )
+    public void setNotesSourceUuid( final UUID notesSourceUuid )
     {
-        this.notesSourceId = notesSourceId;
+        this.notesSourceUuid = notesSourceUuid;
     }
 
     @ManyToOne
-    @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
-    public StockNoteSourceEntity getStockNoteSourceByNotesSourceId()
+    @JoinColumn( name = "notes_source_uuid", referencedColumnName = "uuid" )
+    public StockNoteSourceEntity getStockNoteSourceByNotesSourceUuid()
     {
-        return stockNoteSourceByNotesSourceId;
+        return stockNoteSourceByNotesSourceUuid;
     }
 
-    public void setStockNoteSourceByNotesSourceId( final StockNoteSourceEntity stockNoteSourceByNotesSourceId )
+    public void setStockNoteSourceByNotesSourceUuid( final StockNoteSourceEntity stockNoteSourceByNotesSourceUuid )
     {
-        this.stockNoteSourceByNotesSourceId = stockNoteSourceByNotesSourceId;
+        this.stockNoteSourceByNotesSourceUuid = stockNoteSourceByNotesSourceUuid;
     }
 
     @Transient
     @Override
     public Optional<StockNoteSourceEntity> getNotesSourceEntity()
     {
-        return Optional.ofNullable( this.stockNoteSourceByNotesSourceId );
+        return Optional.ofNullable( this.stockNoteSourceByNotesSourceUuid );
     }
 
     @Transient
     @Override
     public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
     {
-        this.stockNoteSourceByNotesSourceId = stockNoteSourceEntity;
+        this.stockNoteSourceByNotesSourceUuid = stockNoteSourceEntity;
     }
 
     @Transient
     @Override
-    public Optional<Integer> getStockNoteSourceId()
+    public Optional<UUID> getStockNoteSourceUuid()
     {
-        return Optional.ofNullable( this.stockNoteSourceByNotesSourceId == null
+        return Optional.ofNullable( this.stockNoteSourceByNotesSourceUuid == null
                                     ? null
-                                    : this.stockNoteSourceByNotesSourceId.getId() );
-    }
-
-    @Basic
-    @Column( name = "version" )
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !(o instanceof StockToBuyEntity) )
-        {
-            return false;
-        }
-        final StockToBuyEntity that = (StockToBuyEntity) o;
-        return Objects.equals( id, that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( id );
+                                    : this.stockNoteSourceByNotesSourceUuid.getUuid() );
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockToBuyEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
+        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
-        sb.append( ", notesSourceId=" ).append( notesSourceId );
+        sb.append( ", notesSourceId=" ).append( notesSourceUuid );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
-        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceId );
-        sb.append( ", version=" ).append( version );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
+        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceUuid );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

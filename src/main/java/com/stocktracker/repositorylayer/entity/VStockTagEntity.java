@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,45 +11,46 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "v_stock_tag", schema = "stocktracker", catalog = "" )
-public class VStockTagEntity
+public class VStockTagEntity implements CustomerUuidContainer
 {
-    private Integer id;
-    private Integer customerId;
+    private UUID uuid;
+    private UUID customerUuid;
     private Integer referenceType;
-    private Integer referenceId;
-    private Integer customerTagId;
+    private UUID referenceUuid;
+    private UUID customerTagUuid;
     private String tagName;
     private String tickerSymbol;
     private Timestamp createDate;
     private Timestamp updateDate;
 
     @Id
-    @Column( name = "id" )
-    public Integer getId()
+    @Column( name = "uuid" )
+    public UUID getUuid()
     {
-        return id;
+        return uuid;
     }
 
-    public void setId( final Integer id )
+    public void setUuid( final UUID uuid )
     {
-        this.id = id;
+        this.uuid = uuid;
     }
 
     @Basic
-    @Column( name = "customer_id" )
-    public Integer getCustomerId()
+    @Column( name = "customer_uuid" )
+    public UUID getCustomerUuid()
     {
-        return customerId;
+        return customerUuid;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerUuid( final UUID customerId )
     {
-        this.customerId = customerId;
+        this.customerUuid = customerId;
     }
 
     @Basic
@@ -64,27 +66,27 @@ public class VStockTagEntity
     }
 
     @Basic
-    @Column( name = "reference_id" )
-    public Integer getReferenceId()
+    @Column( name = "reference_uuid" )
+    public UUID getReferenceUuid()
     {
-        return referenceId;
+        return referenceUuid;
     }
 
-    public void setReferenceId( final Integer referenceId )
+    public void setReferenceUuid( final UUID referenceId )
     {
-        this.referenceId = referenceId;
+        this.referenceUuid = referenceId;
     }
 
     @Basic
-    @Column( name = "customer_tag_id" )
-    public Integer getCustomerTagId()
+    @Column( name = "customer_tag_uuid" )
+    public UUID getCustomerTagUuid()
     {
-        return customerTagId;
+        return customerTagUuid;
     }
 
-    public void setCustomerTagId( final Integer tagId )
+    public void setCustomerTagUuid( final UUID tagId )
     {
-        this.customerTagId = tagId;
+        this.customerTagUuid = tagId;
     }
 
     @Basic
@@ -149,15 +151,15 @@ public class VStockTagEntity
 
         final VStockTagEntity that = (VStockTagEntity) o;
 
-        if ( id != null
-             ? !id.equals( that.id )
-             : that.id != null )
+        if ( uuid != null
+             ? !uuid.equals( that.uuid )
+             : that.uuid != null )
         {
             return false;
         }
-        if ( customerId != null
-             ? !customerId.equals( that.customerId )
-             : that.customerId != null )
+        if ( customerUuid != null
+             ? !customerUuid.equals( that.customerUuid )
+             : that.customerUuid != null )
         {
             return false;
         }
@@ -167,15 +169,15 @@ public class VStockTagEntity
         {
             return false;
         }
-        if ( referenceId != null
-             ? !referenceId.equals( that.referenceId )
-             : that.referenceId != null )
+        if ( referenceUuid != null
+             ? !referenceUuid.equals( that.referenceUuid )
+             : that.referenceUuid != null )
         {
             return false;
         }
-        if ( customerTagId != null
-             ? !customerTagId.equals( that.customerTagId )
-             : that.customerTagId != null )
+        if ( customerTagUuid != null
+             ? !customerTagUuid.equals( that.customerTagUuid )
+             : that.customerTagUuid != null )
         {
             return false;
         }
@@ -210,20 +212,20 @@ public class VStockTagEntity
     @Override
     public int hashCode()
     {
-        int result = id != null
-                     ? id.hashCode()
+        int result = uuid != null
+                     ? uuid.hashCode()
                      : 0;
-        result = 31 * result + (customerId != null
-                                ? customerId.hashCode()
+        result = 31 * result + (customerUuid != null
+                                ? customerUuid.hashCode()
                                 : 0);
         result = 31 * result + (referenceType != null
                                 ? referenceType.hashCode()
                                 : 0);
-        result = 31 * result + (referenceId != null
-                                ? referenceId.hashCode()
+        result = 31 * result + (referenceUuid != null
+                                ? referenceUuid.hashCode()
                                 : 0);
-        result = 31 * result + (customerTagId != null
-                                ? customerTagId.hashCode()
+        result = 31 * result + (customerTagUuid != null
+                                ? customerTagUuid.hashCode()
                                 : 0);
         result = 31 * result + (tagName != null
                                 ? tagName.hashCode()
@@ -244,11 +246,11 @@ public class VStockTagEntity
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "VStockTagEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
+        sb.append( "id=" ).append( uuid );
+        sb.append( ", customerId=" ).append( customerUuid );
         sb.append( ", referenceType=" ).append( referenceType );
-        sb.append( ", referenceId=" ).append( referenceId );
-        sb.append( ", customerTagId=" ).append( customerTagId );
+        sb.append( ", referenceId=" ).append( referenceUuid );
+        sb.append( ", customerTagId=" ).append( customerTagUuid );
         sb.append( ", tagName='" ).append( tagName ).append( '\'' );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", createDate=" ).append( createDate );

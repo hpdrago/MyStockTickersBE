@@ -9,31 +9,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.UUID;
+
 /**
  * Created by mike on 5/7/2017.
  */
 @Transactional( readOnly = true )
-public interface StockNoteRepository extends JpaRepository<StockNoteEntity, Integer>
+public interface StockNoteRepository extends JpaRepository<StockNoteEntity,UUID>
 {
     /**
      * Get all of the stock notes for the customer and order by descending notes date
-     *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    Page<StockNoteEntity> findByCustomerId( final Pageable pageRequest,
-                                            final int customerId );
+    Page<StockNoteEntity> findByCustomerUuid( final Pageable pageRequest,
+                                              final UUID customerUuid );
 
     /**
      * Get all of the notes for a customer and ticker symbol.
-     *
-     * @param customerId
+     * @param customerUuid
      * @param tickerSymbol
      * @return
      */
-    Page<StockNoteEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest,
-                                                           final int customerId,
-                                                           final String tickerSymbol );
+    Page<StockNoteEntity> findByCustomerUuidAndTickerSymbol( final Pageable pageRequest,
+                                                             final UUID customerUuid,
+                                                             final String tickerSymbol );
 
     @Override
     @Transactional

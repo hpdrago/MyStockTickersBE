@@ -19,15 +19,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * This service class handles requests for StockPosition actions.
  */
 @Service
-public class StockPositionService extends StockInformationEntityService<Integer,
-                                                                           StockPositionEntity,
-                                                                           StockPositionDTO,
-                                                                           StockPositionRepository>
+public class StockPositionService extends StockInformationEntityService<StockPositionEntity,
+                                                                        StockPositionDTO,
+                                                                        StockPositionRepository>
 {
     private StockPositionRepository stockPositionRepository;
     private TradeItService tradeItService;
@@ -36,9 +36,9 @@ public class StockPositionService extends StockInformationEntityService<Integer,
 
     /**
      * Get the positions for the linked account.
-     * @param customerId
-     * @param tradeItAccountId
-     * @param linkedAccountId
+     * @param customerUuid
+     * @param tradeItAccountUuid
+     * @param linkedAccountUuid
      * @return List of positions.
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
@@ -46,9 +46,9 @@ public class StockPositionService extends StockInformationEntityService<Integer,
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
      */
-    public List<StockPositionDTO> getPositions( final int customerId,
-                                                final int tradeItAccountId,
-                                                final int linkedAccountId )
+    public List<StockPositionDTO> getPositions( final UUID customerUuid,
+                                                final UUID tradeItAccountUuid,
+                                                final UUID linkedAccountUuid )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
                TradeItAPIException,
@@ -56,16 +56,16 @@ public class StockPositionService extends StockInformationEntityService<Integer,
                VersionedEntityNotFoundException
     {
         final String methodName = "getPositions";
-        logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
-        this.synchronizePositions( customerId, tradeItAccountId, linkedAccountId ) ;
+        logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
+        this.synchronizePositions( customerUuid, tradeItAccountUuid, linkedAccountUuid ) ;
         final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
-                                                                    .findByLinkedAccountId( linkedAccountId );
+                                                                    .findByLinkedAccountUuid( linkedAccountUuid );
         final List<StockPositionDTO> stockPositionDTOs = this.entitiesToDTOs( stockPositionEntities );
         stockPositionDTOs.forEach( stockPositionDTO ->
                                    {
-                                       stockPositionDTO.setCustomerId( customerId );
-                                       stockPositionDTO.setLinkedAccountId( linkedAccountId );
-                                       stockPositionDTO.setTradeItAccountId( tradeItAccountId );
+                                       stockPositionDTO.setCustomerUuid( customerUuid );
+                                       stockPositionDTO.setLinkedAccountId( linkedAccountUuid );
+                                       stockPositionDTO.setTradeItAccountId( tradeItAccountUuid );
                                    });
         logMethodEnd( methodName, "Returning " + stockPositionDTOs.size() + " positions" );
         return stockPositionDTOs;
@@ -74,9 +74,9 @@ public class StockPositionService extends StockInformationEntityService<Integer,
     /**
      * Calls TradeIt to retrieve the positions for the linked account and synchronized the TradeIt position with the
      * positions in the database.
-     * @param customerId
-     * @param tradeItAccountId
-     * @param linkedAccountId
+     * @param customerUuid
+     * @param tradeItAccountUuid
+     * @param linkedAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws LinkedAccountNotFoundException
@@ -85,9 +85,9 @@ public class StockPositionService extends StockInformationEntityService<Integer,
      * @throws VersionedEntityNotFoundException
      * @throws TradeItAPIException
      */
-    private List<StockPositionDTO> synchronizePositions( final int customerId,
-                                                         final int tradeItAccountId,
-                                                         final int linkedAccountId )
+    private List<StockPositionDTO> synchronizePositions( final UUID customerUuid,
+                                                         final UUID tradeItAccountUuid,
+                                                         final UUID linkedAccountUuid )
         throws TradeItAccountNotFoundException,
                LinkedAccountNotFoundException,
                TradeItAPIException,
@@ -95,11 +95,11 @@ public class StockPositionService extends StockInformationEntityService<Integer,
                VersionedEntityNotFoundException
     {
         final String methodName = "synchronizePositions";
-        logMethodBegin( methodName, customerId, tradeItAccountId, linkedAccountId );
+        logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
+                                                              .getTradeItAccountEntity( tradeItAccountUuid );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
-                                                            .getLinkedAccountEntity( customerId, linkedAccountId );
+                                                            .getLinkedAccountEntity( linkedAccountUuid );
         /*
          * Call to TradeIt to get the positions.
          */
@@ -113,7 +113,7 @@ public class StockPositionService extends StockInformationEntityService<Integer,
              * Get the positions stored in the database.
              */
             final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
-                .findAllByLinkedAccountId( linkedAccountId );
+                .findAllByLinkedAccountUuid( linkedAccountUuid );
 
             /*
              * Compare the positions returned from TradeIt with the contents of the database and make database updated
@@ -127,7 +127,7 @@ public class StockPositionService extends StockInformationEntityService<Integer,
             /*
              * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
              */
-            this.createPositionDTOList( customerId, tradeItAccountId, linkedAccountId, getPositionsAPIResult );
+            this.createPositionDTOList( customerUuid, tradeItAccountUuid, linkedAccountUuid, getPositionsAPIResult );
             this.getStockPrices( stockPositionList );
         }
         else
@@ -142,9 +142,9 @@ public class StockPositionService extends StockInformationEntityService<Integer,
      * Extracts the position results from {@code getPositionsAPIResult}
      * @param getPositionsAPIResult
      */
-    private List<StockPositionDTO> createPositionDTOList( final int customerId,
-                                                          final int tradeItAccountId,
-                                                          final int linkedAccountId,
+    private List<StockPositionDTO> createPositionDTOList( final UUID customerUuid,
+                                                          final UUID tradeItAccountUuid,
+                                                          final UUID linkedAccountUuid,
                                                           final GetPositionsAPIResult getPositionsAPIResult )
     {
         final List<StockPositionDTO> stockPositionDTOList = new ArrayList<>();
@@ -154,9 +154,9 @@ public class StockPositionService extends StockInformationEntityService<Integer,
             {
                 final StockPositionDTO stockPositionDTO = this.context.getBean( StockPositionDTO.class );
                 stockPositionDTO.setResults( tradeItPosition );
-                stockPositionDTO.setCustomerId( customerId );
-                stockPositionDTO.setTradeItAccountId( tradeItAccountId );
-                stockPositionDTO.setLinkedAccountId( linkedAccountId );
+                stockPositionDTO.setCustomerUuid( customerUuid );
+                stockPositionDTO.setTradeItAccountId( tradeItAccountUuid);
+                stockPositionDTO.setLinkedAccountId( linkedAccountUuid );
                 stockPositionDTOList.add( stockPositionDTO );
             }
         }

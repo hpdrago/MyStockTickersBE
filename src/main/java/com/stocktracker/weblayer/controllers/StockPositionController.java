@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
@@ -48,9 +49,9 @@ public class StockPositionController extends AbstractController
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public List<StockPositionDTO> getPositions( final @PathVariable int linkedAccountId,
-                                                final @PathVariable int tradeItAccountId,
-                                                final @PathVariable int customerId )
+    public List<StockPositionDTO> getPositions( final @PathVariable String linkedAccountId,
+                                                final @PathVariable String tradeItAccountId,
+                                                final @PathVariable String customerId )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
                TradeItAPIException,
@@ -60,7 +61,9 @@ public class StockPositionController extends AbstractController
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
         final List<StockPositionDTO> positions = this.stockPositionService
-                                                     .getPositions( customerId, tradeItAccountId, linkedAccountId );
+                                                     .getPositions( UUIDUtil.uuid( customerId ),
+                                                                    UUIDUtil.uuid( tradeItAccountId ),
+                                                                    UUIDUtil.uuid( linkedAccountId ));
         logDebug( methodName, "positions: {0}", positions );
         logMethodEnd( methodName, "positions size: " + positions.size() );
         return positions;

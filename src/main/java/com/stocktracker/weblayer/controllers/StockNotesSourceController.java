@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
@@ -8,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,12 +38,12 @@ public class StockNotesSourceController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public List<StockNoteSourceDTO> getStockNotesSources( final @PathVariable int customerId )
+    public List<StockNoteSourceDTO> getStockNotesSources( final @PathVariable String customerId )
     {
         final String methodName = "getStockNotesSources";
         logMethodBegin( methodName, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
-        List<StockNoteSourceDTO> stockNoteSourceDTOs = stockNoteSourceService.getStockNoteSources( customerId );
+        List<StockNoteSourceDTO> stockNoteSourceDTOs = this.stockNoteSourceService
+                                                           .getStockNoteSources( UUIDUtil.uuid( customerId ));
         logMethodEnd( methodName, stockNoteSourceDTOs.size() );
         return stockNoteSourceDTOs;
     }
@@ -77,8 +77,6 @@ public class StockNotesSourceController extends AbstractController
         Objects.requireNonNull( stockNoteSourceDTO.getId(), "stockNoteSourceDTO.id cannot be null" );
         Objects.requireNonNull( stockNoteSourceDTO.getName(), "stockNoteSourceDTO.name cannot be null" );
         Objects.requireNonNull( stockNoteSourceDTO.getCustomerId(), "stockNoteSourceDTO.customerId cannot be null" );
-        Assert.isTrue( stockNoteSourceDTO.getId() > 0, "stockNoteSourceDTO.id must be > 0" );
-        Assert.isTrue( stockNoteSourceDTO.getCustomerId() > 0, "stockNoteSourceDTO.customerId must be > 0" );
     }
 
     @Autowired

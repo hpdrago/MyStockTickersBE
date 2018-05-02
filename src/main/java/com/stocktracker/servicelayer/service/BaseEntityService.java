@@ -21,16 +21,18 @@ import java.util.Objects;
  * This is the base class for all services that interface with the database to store and retrieve entities from a single
  * table in the database.
  *
- * <ID> The Primary Key
+ * <EK> The Entity Key
  *  <E> The Entity
+ * <DK> The DTO Key
  *  <D> The DTO
  *  <R> The JpaRepository
  * Created by mike on 11/1/2016.
  */
-public abstract class BaseEntityService<ID extends Serializable,
+public abstract class BaseEntityService<EK extends Serializable,
                                         E,
+                                        DK extends Serializable,
                                         D,
-                                        R extends JpaRepository<E, ID>>
+                                        R extends JpaRepository<E, EK>>
                                         implements MyLogger
 {
     @Autowired
@@ -48,7 +50,7 @@ public abstract class BaseEntityService<ID extends Serializable,
         final D dto = this.createDTO();
         BeanUtils.copyProperties( entity, dto );
         /*
-         * I think this is a good use of instanceof...
+         * I think this is a good use of instanceof...although I am not convinced, I'll have to think about this...
          * If any stock DTO is a stock company container, it will be populated automatically with the stock company
          * information.  No need for any sub cvl
          */
@@ -124,8 +126,8 @@ public abstract class BaseEntityService<ID extends Serializable,
      */
     protected List<D> entitiesToDTOs( final List<E> entities )
     {
-        List<D> dtos = new ArrayList<>();
-        for ( E entity : entities )
+        final List<D> dtos = new ArrayList<>();
+        for ( final E entity : entities )
         {
             D dto = this.entityToDTO( entity );
             dtos.add( dto );
@@ -140,8 +142,8 @@ public abstract class BaseEntityService<ID extends Serializable,
      */
     protected List<E> dtosToEntities( final List<D> dtos )
     {
-        List<E> entities = new ArrayList<>();
-        for ( D dto : dtos )
+        final List<E> entities = new ArrayList<>();
+        for ( final D dto : dtos )
         {
             E entity = this.dtoToEntity( dto );
             entities.add( entity );

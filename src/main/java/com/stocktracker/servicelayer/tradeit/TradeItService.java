@@ -113,21 +113,21 @@ public class TradeItService implements MyLogger
     /**
      * Given the {@code oAuthVerifier} value returned from the user linking their broker account, this method
      * will obtain the user id and user token to authenticate the user to gain access to their broker account.
-     * @param customerId
+     * @param customerUuid
      * @param broker
      * @param oAuthVerifier
      * @return instance of GetOAuthAccessTokenAPIResult which contains the TradeItAccountDTO that was created if the TradeIt
      * getOAuthAccessToken was successful.
      * @throws EntityVersionMismatchException
      */
-    public GetOAuthAccessTokenDTO getOAuthAccessToken( final int customerId,
+    public GetOAuthAccessTokenDTO getOAuthAccessToken( final UUID customerUuid,
                                                        @NotNull final String broker,
                                                        @NotNull final String accountName,
                                                        @NotNull final String oAuthVerifier )
         throws EntityVersionMismatchException
     {
         final String methodName = "getOAuthAccessToken";
-        logMethodBegin( methodName, customerId, broker, accountName, oAuthVerifier );
+        logMethodBegin( methodName, customerUuid, broker, accountName, oAuthVerifier );
         Objects.requireNonNull( broker, "broker cannot be null" );
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( oAuthVerifier, "oAuthVerifier cannot be null" );
@@ -149,9 +149,12 @@ public class TradeItService implements MyLogger
          */
         if ( getOAuthAccessTokenAPIResult.isSuccessful() )
         {
-            tradeItAccountDTO = this.tradeItAccountEntityService.createAccount( customerId, broker, accountName,
-                                                                                getOAuthAccessTokenAPIResult.getUserId(),
-                                                                                getOAuthAccessTokenAPIResult.getUserToken() );
+            tradeItAccountDTO = this.tradeItAccountEntityService
+                                    .createAccount( customerUuid,
+                                                    broker,
+                                                    accountName,
+                                                    getOAuthAccessTokenAPIResult.getUserId(),
+                                                    getOAuthAccessTokenAPIResult.getUserToken() );
         }
         /*
          * Create the return DTO
@@ -164,22 +167,21 @@ public class TradeItService implements MyLogger
 
     /**
      * Get the URL to update the user's OAuth access token.
-     * @param customerId
-     * @param accountId
+     * @param accountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
-    public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final int customerId, final int accountId )
+    public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final UUID accountUuid )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "getOAuthTokenUpdateURL";
-        logMethodBegin( methodName, customerId, accountId );
+        logMethodBegin( methodName, accountUuid );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( customerId, accountId );
+                                                              .getTradeItAccountEntity( accountUuid );
         final GetOAuthAccessTokenUpdateURLAPICall getOAuthAccessTokenUpdateURLAPICall = this.context
                                                                                             .getBean( GetOAuthAccessTokenUpdateURLAPICall.class );
         /*
@@ -208,22 +210,21 @@ public class TradeItService implements MyLogger
      * Using the {@code userId} and {@code userToken} from {@code getOAuthAccessToken}, these values will be authenticated
      * with TradeIt and if success, a 15 minute session token.  The account table auth_timestamp is set so that
      * we know when the authentication will expire which is after 15 minutes.
-     * @param customerId
-     * @param tradeItAccountId
+     * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
-    public AuthenticateDTO authenticate( final int customerId, final int tradeItAccountId )
+    public AuthenticateDTO authenticate( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "authenticate";
-        logMethodBegin( methodName, customerId, tradeItAccountId );
+        logMethodBegin( methodName, tradeItAccountUuid );
         TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                        .getTradeItAccountEntity( customerId, tradeItAccountId );
+                                                        .getTradeItAccountEntity( tradeItAccountUuid );
         logDebug( methodName, "Evaluating account entity: {0}", tradeItAccountEntity );
         /*
          * Need to generate a UUID for the authentication process
@@ -306,8 +307,7 @@ public class TradeItService implements MyLogger
 
     /**
      * This method is called to send back the user's answer to the security question.
-     * @param customerId
-     * @param accountId
+     * @param accountUuid
      * @param questionResponse The user's text response
      * @return
      * @throws TradeItAccountNotFoundException
@@ -315,7 +315,7 @@ public class TradeItService implements MyLogger
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
      */
-    public AnswerSecurityQuestionDTO answerSecurityQuestion( final int customerId, final int accountId,
+    public AnswerSecurityQuestionDTO answerSecurityQuestion( final UUID accountUuid,
                                                              final String questionResponse )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
@@ -323,9 +323,11 @@ public class TradeItService implements MyLogger
                EntityVersionMismatchException
     {
         final String methodName = "answerSecurityQuestion";
-        logMethodBegin( methodName, customerId, accountId, questionResponse );
+        logMethodBegin( methodName, accountUuid, questionResponse );
+        Objects.requireNonNull( accountUuid, "accountUid cannot be null" );
+        Objects.requireNonNull( questionResponse, "questionResponse cannot be null" );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( customerId, accountId );
+                                                              .getTradeItAccountEntity( accountUuid );
         final AnswerSecurityQuestionAPICall answerSecurityQuestionAPICall = this.context.getBean( AnswerSecurityQuestionAPICall.class );
         /*
          * Create the execute parameter map
@@ -365,21 +367,19 @@ public class TradeItService implements MyLogger
 
     /**
      * Calls TradeIt to keep the session alive for the customer account.
-     * @param customerId
-     * @param tradeItAccountId
+     * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    public KeepSessionAliveDTO keepSessionAlive( final int customerId,
-                                                 final int tradeItAccountId )
+    public KeepSessionAliveDTO keepSessionAlive( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "keepSessionAlive";
-        logMethodBegin( methodName, customerId, tradeItAccountId );
+        logMethodBegin( methodName, tradeItAccountUuid );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( customerId, tradeItAccountId );
+                                                              .getTradeItAccountEntity( tradeItAccountUuid );
         final KeepSessionAliveAPICall keepSessionAliveAPICall = this.context.getBean( KeepSessionAliveAPICall.class );
         /*
          * Create the parameter map
@@ -407,7 +407,7 @@ public class TradeItService implements MyLogger
         else if ( keepSessionAliveAPIResult.isAuthenticationRequired() )
         {
             logDebug( methodName, "Authentication required, calling authenticate" );
-            final AuthenticateDTO authenticateDTO = this.authenticate( customerId, tradeItAccountId );
+            final AuthenticateDTO authenticateDTO = this.authenticate( tradeItAccountUuid );
             keepSessionAliveDTO = new KeepSessionAliveDTO( authenticateDTO );
         }
         logMethodEnd( methodName, keepSessionAliveDTO );
@@ -416,18 +416,17 @@ public class TradeItService implements MyLogger
 
     /**
      * Calls TradeIt to close the sesssion for the customer account.
-     * @param customerId
-     * @param accountId
+     * @param accountUuid
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    public CloseSessionDTO closeSession( final int customerId, final int accountId )
+    public CloseSessionDTO closeSession( final UUID accountUuid )
         throws TradeItAccountNotFoundException
     {
         final String methodName = "closeSessionDTO";
-        logMethodBegin( methodName, customerId, accountId  );
+        logMethodBegin( methodName, accountUuid  );
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( customerId, accountId );
+                                                              .getTradeItAccountEntity( accountUuid );
         /*
          * Create the api call and the return DTO.
          */
@@ -488,7 +487,7 @@ public class TradeItService implements MyLogger
                EntityVersionMismatchException
     {
         final String methodName = "getPositions";
-        logMethodBegin( methodName, tradeItAccountEntity.getId(), linkedAccountEntity.getId() );
+        logMethodBegin( methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getId() );
         final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
         /*
          * Create the get positions parameters.
@@ -523,7 +522,7 @@ public class TradeItService implements MyLogger
                EntityVersionMismatchException
     {
         final String methodName = "getAccountOverview";
-        logMethodBegin( methodName, tradeItAccountEntity.getId(), accountNumber  );
+        logMethodBegin( methodName, tradeItAccountEntity.getUuid(), accountNumber  );
         Objects.requireNonNull( accountNumber, "accountNumber cannot be null" );
         final GetAccountOverviewAPICall getAccountOverviewAPICall = this.context.getBean( GetAccountOverviewAPICall.class );
         /*
@@ -565,7 +564,7 @@ public class TradeItService implements MyLogger
                EntityVersionMismatchException
     {
         final String methodName = "callTradeIt";
-        logMethodBegin( methodName, tradeItAccountEntity.getId(),
+        logMethodBegin( methodName, tradeItAccountEntity.getUuid(),
                                     tradeItAPIRestCall.getClass().getName(),
                                     tradeItAPICallParameterMap );
         T tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );

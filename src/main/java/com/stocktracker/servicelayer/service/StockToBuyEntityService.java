@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
@@ -13,7 +14,6 @@ import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,13 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 //@Transactional
-public class StockToBuyEntityService extends StockInformationEntityService<Integer,
-                                                                              StockToBuyEntity,
-    StockToBuyDTO,
-                                                                              StockToBuyRepository>
+public class StockToBuyEntityService extends StockInformationEntityService<StockToBuyEntity,
+                                                                           StockToBuyDTO,
+                                                                           StockToBuyRepository>
     implements MyLogger
 {
     private StockToBuyRepository stockToBuyRepository;
@@ -39,17 +39,17 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
 
     /**
      * Get the list of all stock to buy for the customer
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    public Page<StockToBuyDTO> getStockToBuyListForCustomerId( final Pageable pageRequest,
-                                                               @NotNull final Integer customerId )
+    public Page<StockToBuyDTO> getStockToBuyListForCustomerUuid( final Pageable pageRequest,
+                                                                 @NotNull final UUID customerUuid )
     {
-        final String methodName = "getStockToBuyListForCustomerId";
-        logMethodBegin( methodName, pageRequest, customerId );
-        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        final String methodName = "getStockToBuyListForCustomerUuid";
+        logMethodBegin( methodName, pageRequest, customerUuid );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
-                                                        .findByCustomerId( pageRequest, customerId );
+                                                        .findByCustomerUuid( pageRequest, customerUuid );
         Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         getStockQuotes( stockToBuyDTOs );
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
@@ -59,20 +59,20 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
 
     /**
      * Get the list of all stock to buy for the customer and the ticker symbol
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    public Page<StockToBuyDTO> getStockToBuyListForCustomerIdAndTickerSymbol( @NotNull final Pageable pageRequest,
-                                                                              @NotNull final Integer customerId,
+    public Page<StockToBuyDTO> getStockToBuyListForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                              @NotNull final UUID customerUuid,
                                                                               @NotNull final String tickerSymbol )
     {
-        final String methodName = "getStockToBuyListForCustomerIdAndTickerSymbol";
-        logMethodBegin( methodName, customerId, tickerSymbol );
-        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        final String methodName = "getStockToBuyListForCustomerUuidAndTickerSymbol";
+        logMethodBegin( methodName, customerUuid, tickerSymbol );
+        Objects.requireNonNull( customerUuid, "customerId cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
-                                                              .findByCustomerIdAndTickerSymbol( pageRequest, customerId,
-                                                                                                tickerSymbol );
+                                                              .findByCustomerUuidAndTickerSymbol( pageRequest, customerUuid,
+                                                                                                  tickerSymbol );
         final Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         this.getStockQuotes( stockToBuyDTOs );
         logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
@@ -81,24 +81,24 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
     }
 
     /**
-     * Get a single stock toBuy by stockToBuyId
-     * @param stockToBuyId
+     * Get a single stock toBuy by stockToBuyUuid
+     * @param stockToBuyUuid
      * @return StockToBuyQuoteDTO instance
      */
-    public StockToBuyDTO getStockToBuy( final int stockToBuyId )
+    public StockToBuyDTO getStockToBuy( final UUID stockToBuyUuid )
         throws StockToBuyNotFoundException
     {
         final String methodName = "getStockToBuy";
-        logMethodBegin( methodName, stockToBuyId );
-        Objects.requireNonNull( stockToBuyId, "stockToBuyId cannot be null" );
+        logMethodBegin( methodName, stockToBuyUuid );
+        Objects.requireNonNull( stockToBuyUuid, "stockToBuyId cannot be null" );
         final StockToBuyEntity stockToBuyEntity;
         try
         {
-            stockToBuyEntity = this.getEntity( stockToBuyId );
+            stockToBuyEntity = this.getEntity( stockToBuyUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
-            throw new StockToBuyNotFoundException( stockToBuyId );
+            throw new StockToBuyNotFoundException( stockToBuyUuid );
         }
         final StockToBuyDTO stockToBuyDTO = this.entityToDTO( stockToBuyEntity );
         this.getStockInformationService()
@@ -144,10 +144,10 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
         }
         stockToBuyEntity.setVersion( 1 );
         stockToBuyEntity = this.saveEntity( stockToBuyEntity );
-        this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerId(),
+        this.stockTagService.saveStockTags( stockToBuyEntity.getCustomerUuid(),
                                             stockToBuyEntity.getTickerSymbol(),
                                             StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                                            stockToBuyEntity.getId(),
+                                            stockToBuyEntity.getUuid(),
                                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyEntity );
         final StockToBuyDTO returnStockToBuyDTO = this.entityToDTO( stockToBuyEntity );
@@ -171,10 +171,10 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
         this.stockNoteSourceService.checkForNewSource( stockToBuyDTO );
         this.stockCompanyEntityService.checkStockTableEntry( stockToBuyDTO.getTickerSymbol() );
         final StockToBuyDTO returnStockToBuyDTO = this.saveDTO( stockToBuyDTO );
-        this.stockTagService.saveStockTags( stockToBuyDTO.getCustomerId(),
+        this.stockTagService.saveStockTags( UUIDUtil.uuid( stockToBuyDTO.getCustomerId() ),
                                             stockToBuyDTO.getTickerSymbol(),
                                             StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                                            stockToBuyDTO.getId(),
+                                            UUIDUtil.uuid( stockToBuyDTO.getId() ),
                                             stockToBuyDTO.getTags() );
         logDebug( methodName, "saved {0}", stockToBuyDTO );
         this.getStockInformationService()
@@ -192,19 +192,18 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
     protected StockToBuyDTO entityToDTO( final StockToBuyEntity stockToBuyEntity )
     {
         Objects.requireNonNull( stockToBuyEntity );
-        final StockToBuyDTO stockToBuyDTO = this.createDTO();
-        BeanUtils.copyProperties( stockToBuyEntity, stockToBuyDTO );
+        final StockToBuyDTO stockToBuyDTO = super.entityToDTO( stockToBuyEntity );
         stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
         this.getStockPrice( stockToBuyDTO );
-        stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( stockToBuyDTO.getCustomerId(),
+        stockToBuyDTO.setTagsArray( this.stockTagService.findStockTags( UUIDUtil.uuid( stockToBuyDTO.getCustomerId() ),
                                                                         StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
-                                                                        stockToBuyDTO.getId() ) );
+                                                                        UUIDUtil.uuid( stockToBuyDTO.getId() )));
         stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
         stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getBuyAfterDate() ) );
-        if ( stockToBuyEntity.getStockNoteSourceByNotesSourceId() != null )
+        if ( stockToBuyEntity.getStockNoteSourceByNotesSourceUuid() != null )
         {
-            stockToBuyDTO.setNotesSourceName( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getName() );
-            stockToBuyDTO.setNotesSourceId( stockToBuyEntity.getStockNoteSourceByNotesSourceId().getId() );
+            stockToBuyDTO.setNotesSourceName( stockToBuyEntity.getStockNoteSourceByNotesSourceUuid().getName() );
+            stockToBuyDTO.setNotesSourceId( stockToBuyEntity.getStockNoteSourceByNotesSourceUuid().getUuid().toString() );
         }
         return stockToBuyDTO;
     }
@@ -244,19 +243,18 @@ public class StockToBuyEntityService extends StockInformationEntityService<Integ
     protected StockToBuyEntity dtoToEntity( final StockToBuyDTO stockToBuyDTO )
     {
         Objects.requireNonNull( stockToBuyDTO );
-        StockToBuyEntity stockToBuyEntity = this.createEntity();
-        BeanUtils.copyProperties( stockToBuyDTO, stockToBuyEntity );
+        StockToBuyEntity stockToBuyEntity = super.dtoToEntity( stockToBuyDTO );
         if ( stockToBuyDTO.getBuyAfterDate() != null )
         {
             stockToBuyEntity.setBuyAfterDate( JSONDateConverter.toTimestamp( stockToBuyDTO.getBuyAfterDate() ));
         }
         stockToBuyEntity.setCompleted( stockToBuyDTO.isCompleted() ? "Y" : "N" );
         if ( stockToBuyDTO.getNotesSourceId() != null &&
-             stockToBuyDTO.getNotesSourceId() > 0 )
+             !stockToBuyDTO.getNotesSourceId().isEmpty() )
         {
             StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
-                .getStockNoteSource( stockToBuyDTO.getNotesSourceId() );
-            stockToBuyEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
+                                                              .getStockNoteSource( stockToBuyDTO.getNotesSourceId() );
+            stockToBuyEntity.setStockNoteSourceByNotesSourceUuid( stockNoteSourceEntity );
         }
         return stockToBuyEntity;
     }

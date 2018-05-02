@@ -15,10 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This is the service class for the StockNotesEntity
@@ -27,10 +27,9 @@ import java.util.Objects;
  */
 @Service
 //@Transactional
-public class StockNoteEntityService extends StockInformationEntityService<Integer,
-                                                                             StockNoteEntity,
-    StockNoteDTO,
-                                                                             StockNoteRepository>
+public class StockNoteEntityService extends StockInformationEntityService<StockNoteEntity,
+                                                                          StockNoteDTO,
+                                                                          StockNoteRepository>
 {
     /**
      * Autowired service classes
@@ -43,54 +42,53 @@ public class StockNoteEntityService extends StockInformationEntityService<Intege
     /**
      * Get all of the notes for a customer.
      * @param pageRequest
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    public Page<StockNoteDTO> getStockNotesForCustomerId( @NotNull final Pageable pageRequest,
-                                                          @NotNull final int customerId )
+    public Page<StockNoteDTO> getStockNotesForCustomerUuid( @NotNull final Pageable pageRequest,
+                                                          @NotNull final UUID customerUuid )
     {
-        final String methodName = "getStockNotesForCustomerId";
-        logMethodBegin( methodName, pageRequest, customerId );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        final String methodName = "getStockNotesForCustomerUuid";
+        logMethodBegin( methodName, pageRequest, customerUuid );
         Page<StockNoteEntity> stockNoteEntities =
-            this.stockNoteRepository.findByCustomerId( pageRequest, customerId );
-        Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
+            this.stockNoteRepository.findByCustomerUuid( pageRequest, customerUuid );
+        Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerUuid, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }
 
     /**
      * Get all of the notes for a customer and ticker symbol.
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    public Page<StockNoteDTO> getStockNotesForCustomerIdAndTickerSymbol( @NotNull final Pageable pageRequest,
-                                                                         @NotNull final int customerId,
+    public Page<StockNoteDTO> getStockNotesForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                         @NotNull final UUID customerUuid,
                                                                          @NotNull final String tickerSymbol )
     {
         final String methodName = "getStockNotes";
-        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol );
-        Assert.isTrue( customerId > 0, "customerId must be > 0" );
+        logMethodBegin( methodName, pageRequest, customerUuid, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         final Page<StockNoteEntity> stockNoteEntities =
-            this.stockNoteRepository.findByCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
-        final Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerId, stockNoteEntities );
+            this.stockNoteRepository.findByCustomerUuidAndTickerSymbol( pageRequest, customerUuid, tickerSymbol );
+        final Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, customerUuid, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
     }
 
     /**
      * Converts the list of entities to DTOs and also populates the notes source values.
-     * @param customerId
+     * @param customerUuid
      * @param entities
      * @return
      */
     private Page<StockNoteDTO> entitiesToDTOs( final @NotNull Pageable pageRequest,
-                                               final int customerId,
+                                               final UUID customerUuid,
                                                final @NotNull Page<StockNoteEntity> entities )
     {
         Page<StockNoteDTO> stockNoteDTOs = super.entitiesToDTOs( pageRequest, entities );
-        this.stockNoteSourceService.setNotesSourceName( customerId, stockNoteDTOs.getContent() );
+        this.stockNoteSourceService.setNotesSourceName( customerUuid, stockNoteDTOs.getContent() );
         return stockNoteDTOs;
     }
 
@@ -163,10 +161,10 @@ public class StockNoteEntityService extends StockInformationEntityService<Intege
         stockNoteDTO.setNotesDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getNotesDate() ));
         stockNoteDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getCreateDate() ));
         stockNoteDTO.setUpdateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getUpdateDate() ));
-        if ( stockNoteEntity.getStockNoteSourceByNotesSourceId() != null )
+        if ( stockNoteEntity.getStockNoteSourceByNotesSourceUuid() != null )
         {
-            stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceId().getName() );
-            stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceId().getId() );
+            stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceUuid().getName() );
+            stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceUuid().getUuid().toString() );
         }
         this.getStockInformationService().setStockPrice( stockNoteDTO, StockPriceFetchMode.ASYNCHRONOUS );
         return stockNoteDTO;
@@ -175,14 +173,13 @@ public class StockNoteEntityService extends StockInformationEntityService<Intege
     @Override
     protected StockNoteEntity dtoToEntity( final StockNoteDTO stockNoteDTO )
     {
-        StockNoteEntity stockNoteEntity = this.createEntity();
-        BeanUtils.copyProperties( stockNoteDTO, stockNoteEntity );
+        final StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
         if ( stockNoteDTO.getNotesSourceId() != null &&
-             stockNoteDTO.getNotesSourceId() > 0 )
+             !stockNoteDTO.getNotesSourceId().isEmpty() )
         {
             StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
                                                               .getStockNoteSource( stockNoteDTO.getNotesSourceId() );
-            stockNoteEntity.setStockNoteSourceByNotesSourceId( stockNoteSourceEntity );
+            stockNoteEntity.setStockNoteSourceByNotesSourceUuid( stockNoteSourceEntity );
         }
         stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;

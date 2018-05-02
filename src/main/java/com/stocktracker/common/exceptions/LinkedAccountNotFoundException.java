@@ -4,6 +4,8 @@ import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.UUID;
+
 /**
  * This exception is thrown when a linked account cannot be found.
  */
@@ -18,15 +20,15 @@ public class LinkedAccountNotFoundException extends Exception
     public LinkedAccountNotFoundException( final String accountNumber, final TradeItAccountEntity tradeItAccountEntity )
     {
         super( "Linked account number " + accountNumber + " was not found for account " +
-               tradeItAccountEntity.getName() + " customer " + tradeItAccountEntity.getCustomerId() );
+               tradeItAccountEntity.getName() + " customer " + tradeItAccountEntity.getCustomerUuid() );
     }
 
     /**
      * Exception for the primary key not found.
-     * @param linkedAccountId
+     * @param linkedAccountUuid
      */
-    public LinkedAccountNotFoundException( final int linkedAccountId )
+    public LinkedAccountNotFoundException( final UUID linkedAccountUuid )
     {
-        super( "Linked account not found by primary key id " + linkedAccountId );
+        super( "Linked account not found by primary key id " + linkedAccountUuid );
     }
 }

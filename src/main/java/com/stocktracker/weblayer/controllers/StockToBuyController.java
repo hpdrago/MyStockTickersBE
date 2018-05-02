@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -43,12 +44,13 @@ public class StockToBuyController extends AbstractController
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockToBuyDTO> getStockStockToBuy( final Pageable pageRequest,
-                                                   final @NotNull @PathVariable int customerId )
+                                                   final @NotNull @PathVariable String customerId )
     {
         final String methodName = "getStockStockToBuy";
         logMethodBegin( methodName, pageRequest, customerId );
         Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
-                                                 .getStockToBuyListForCustomerId( pageRequest, customerId );
+                                                 .getStockToBuyListForCustomerUuid( pageRequest,
+                                                                                    UUIDUtil.uuid( customerId ));
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
     }
@@ -61,13 +63,15 @@ public class StockToBuyController extends AbstractController
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockToBuyDTO> getStockStockToBuy( @NotNull final Pageable pageRequest,
-                                                   @NotNull @PathVariable int customerId,
+                                                   @NotNull @PathVariable String customerId,
                                                    @NotNull @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockStockToBuyForTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
-                                                 .getStockToBuyListForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+                                                 .getStockToBuyListForCustomerUuidAndTickerSymbol( pageRequest,
+                                                                                                 UUIDUtil.uuid( customerId ),
+                                                                                                 tickerSymbol );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
     }
@@ -79,15 +83,14 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockToBuyDTO getStockToBuy( @PathVariable int stockToBuyId,
-                                        @PathVariable int customerId )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               StockToBuyNotFoundException
+    public StockToBuyDTO getStockToBuy( @PathVariable String stockToBuyId,
+                                        @PathVariable String customerId )
+        throws StockToBuyNotFoundException
     {
         final String methodName = "getStockToBuy";
         logMethodBegin( methodName, stockToBuyId, customerId );
-        StockToBuyDTO stockToBuyDTO = this.stockToBuyService.getStockToBuy( stockToBuyId );
+        StockToBuyDTO stockToBuyDTO = this.stockToBuyService
+                                          .getStockToBuy( UUIDUtil.uuid( stockToBuyId ));
         logMethodEnd( methodName, stockToBuyDTO );
         return stockToBuyDTO;
     }
@@ -100,8 +103,8 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deleteStockToBuy( @PathVariable int stockToBuyId,
-                                                  @PathVariable int customerId )
+    public ResponseEntity<Void> deleteStockToBuy( @PathVariable String stockToBuyId,
+                                                  @PathVariable String customerId )
         throws StockToBuyNotFoundException
     {
         final String methodName = "deleteStockToBuy";

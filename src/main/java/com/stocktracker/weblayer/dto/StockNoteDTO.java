@@ -19,14 +19,15 @@ import java.util.Objects;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
                                                                 StockNoteSourceEntityService.StockNoteSourceDTOContainer,
-                                                                VersionedDTO<Integer>
+                                                                UuidDTO,
+                                                                CustomerIdContainer
 {
-    private Integer id;
-    private Integer customerId;
+    private String id;
+    private String customerId;
     private String notes;
     private String notesDate;
     private String notesSourceName;
-    private Integer notesSourceId;
+    private String notesSourceId;
     private Byte notesRating;
     private Boolean publicInd;
     private Byte bullOrBear;
@@ -40,12 +41,12 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
     private String updateDate;
     private Integer version;
 
-    public Integer getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
     }
@@ -80,12 +81,12 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
         this.notesSourceName = notesSourceName;
     }
 
-    public Integer getNotesSourceId()
+    public String getNotesSourceId()
     {
         return notesSourceId;
     }
 
-    public void setNotesSourceId( Integer notesSourceId )
+    public void setNotesSourceId( String notesSourceId )
     {
         this.notesSourceId = notesSourceId;
     }
@@ -130,14 +131,14 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
         this.publicInd = publicInd;
     }
 
-    public Integer getCustomerId()
-    {
-        return customerId;
-    }
-
-    public void setCustomerId( Integer customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
+    }
+
+    public String getCustomerId()
+    {
+        return this.customerId;
     }
 
     public Byte getBullOrBear()

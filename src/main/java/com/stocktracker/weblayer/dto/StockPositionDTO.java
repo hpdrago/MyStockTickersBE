@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * This DTO contains a combination of information.  The positions are obtained from TradeIt and stored in the linked account
@@ -20,11 +21,12 @@ import java.sql.Timestamp;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPositionDTO implements StockPriceContainer,
-                                         VersionedDTO<Integer>
+                                         UuidDTO,
+                                         CustomerIdContainer
 {
-    private Integer tradeItAccountId;
-    private Integer linkedAccountId;
-    private Integer id;
+    private String id;
+    private String tradeItAccountId;
+    private String linkedAccountId;
     private String tickerSymbol;
     private String symbolClass;
     @JsonSerialize( using = JSONMoneySerializer.class )
@@ -44,7 +46,7 @@ public class StockPositionDTO implements StockPriceContainer,
     private BigDecimal totalGainLossPercentage;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
-    private Integer customerId;
+    private String customerId;
     private StockPriceCacheState stockPriceCacheState;
     private Integer version;
 
@@ -67,12 +69,12 @@ public class StockPositionDTO implements StockPriceContainer,
     }
 
     @Override
-    public Integer getId()
+    public String getId()
     {
         return null;
     }
 
-    public void setId( final Integer id )
+    public void setId( final String id )
     {
         this.id = id;
     }
@@ -123,12 +125,17 @@ public class StockPositionDTO implements StockPriceContainer,
         return this.stockPriceCacheState;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerId( final String customerId )
     {
         this.customerId = customerId;
     }
 
-    public Integer getCustomerId()
+    public void setCustomerUuid( final UUID customerUuid )
+    {
+        this.customerId = customerUuid.toString();
+    }
+
+    public String getCustomerId()
     {
         return this.customerId;
     }
@@ -224,22 +231,32 @@ public class StockPositionDTO implements StockPriceContainer,
         this.version = version;
     }
 
-    public Integer getTradeItAccountId()
+    public String getTradeItAccountId()
     {
         return tradeItAccountId;
     }
 
-    public void setTradeItAccountId( Integer tradeItAccountId )
+    public void setTradeItAccountId( String tradeItAccountId )
     {
         this.tradeItAccountId = tradeItAccountId;
     }
 
-    public Integer getLinkedAccountId()
+    public void setTradeItAccountId( final UUID tradeItAccountUuid )
+    {
+        this.tradeItAccountId = tradeItAccountUuid.toString();
+    }
+
+    public void setLinkedAccountId( final UUID linkedAccountUuid )
+    {
+        this.tradeItAccountId = linkedAccountUuid.toString();
+    }
+
+    public String getLinkedAccountId()
     {
         return linkedAccountId;
     }
 
-    public void setLinkedAccountId( Integer linkedAccountId )
+    public void setLinkedAccountId( String linkedAccountId )
     {
         this.linkedAccountId = linkedAccountId;
     }

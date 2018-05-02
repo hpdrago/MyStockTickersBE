@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockNoteCountDTO
+public class StockNoteCountDTO implements CustomerIdContainer
 {
-    private int customerId;
+    private String customerId;
     private String tickerSymbol;
     private int noteCount;
 
@@ -32,12 +32,12 @@ public class StockNoteCountDTO
         this.noteCount = noteCount;
     }
 
-    public int getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( int customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
     }

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value= HttpStatus.CONFLICT)
 public class DuplicatePortfolioStockException extends RuntimeException
 {
-    public DuplicatePortfolioStockException( final int customerId, final int portfolioId, final String tickerSymbol )
+    public DuplicatePortfolioStockException( final String customerId, final String portfolioId, final String tickerSymbol )
     {
-        super( String.format( "A portfolio stock entry already exists for customer Id: %d portfolioId: %d tickerSymbol: %s",
+        super( String.format( "A portfolio stock entry already exists for customer Id: %s portfolioId: %s tickerSymbol: %s",
                               customerId, portfolioId, tickerSymbol ));
     }
 }

@@ -90,7 +90,7 @@ public class StockSectorsDTO
         /*
         public StockSector( final StockSectorDTO stockSectorDE )
         {
-            this.sectorId = stockSectorDE.getId();
+            this.sectorId = stockSectorDE.getUuid();
             this.sectorName = stockSectorDE.getSector();
         }
 

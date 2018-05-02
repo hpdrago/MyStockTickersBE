@@ -12,11 +12,11 @@ import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * This service communicates between the Web layer and Repositories using the Domain Model
@@ -26,7 +26,7 @@ import java.util.Objects;
  */
 @Service
 //@Transactional
-public class PortfolioEntityService extends VersionedEntityService<Integer,
+public class PortfolioEntityService extends UuidEntityService<Integer,
                                                                    PortfolioEntity,
                                                                    PortfolioDTO,
                                                                    PortfolioRepository>
@@ -39,28 +39,28 @@ public class PortfolioEntityService extends VersionedEntityService<Integer,
 
     /**
      * Get the portfolio by id request
-     * @param portfolioId
+     * @param portfolioUuid
      * @return
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
-    public PortfolioDTO getPortfolioById( final int portfolioId )
+    public PortfolioDTO getPortfolioByUuid( final UUID portfolioUuid )
         throws StockNotFoundException,
                StockQuoteUnavailableException,
                EntityVersionMismatchException
     {
-        final String methodName = "getPortfolioById";
-        logMethodBegin( methodName, portfolioId );
-        Assert.isTrue( portfolioId > 0, "Portfolio ID must be > 0" );
+        final String methodName = "getPortfolioByUuid";
+        logMethodBegin( methodName, portfolioUuid );
+        Objects.requireNonNull( portfolioUuid, "portfolioUuid cannot be null" );
         PortfolioEntity portfolioEntity = null;
         try
         {
-            portfolioEntity = this.getEntity( portfolioId );
+            portfolioEntity = this.getEntity( portfolioUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
-            throw new PortfolioNotFoundException( portfolioId );
+            throw new PortfolioNotFoundException( portfolioUuid );
         }
         PortfolioDTO portfolioDTO = this.entityToDTO( portfolioEntity );
         this.portfolioCalculator
@@ -71,23 +71,23 @@ public class PortfolioEntityService extends VersionedEntityService<Integer,
 
     /**
      * Get all of the portfolios for the customer
-     * @param customerId
+     * @param customerUuid
      * @return
      * @throws PortfolioNotFoundException
      * @throws StockNotFoundException
      * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
-    public List<PortfolioDTO> getPortfoliosByCustomerId( final int customerId )
+    public List<PortfolioDTO> getPortfoliosByCustomerUuid( final UUID customerUuid )
         throws PortfolioNotFoundException,
                StockNotFoundException,
                StockQuoteUnavailableException,
                EntityVersionMismatchException
     {
-        final String methodName = "getPortfoliosByCustomerId";
-        logMethodBegin( methodName, customerId );
-        Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
-        List<PortfolioEntity> portfolioEntities = this.portfolioRepository.findByCustomerId( customerId );
+        final String methodName = "getPortfoliosByCustomerUuid";
+        logMethodBegin( methodName, customerUuid );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
+        List<PortfolioEntity> portfolioEntities = this.portfolioRepository.findByCustomerUuid( customerUuid );
         List<PortfolioDTO> portfolioDTOs = new ArrayList<>();
         if ( portfolioEntities != null )
         {
@@ -100,18 +100,18 @@ public class PortfolioEntityService extends VersionedEntityService<Integer,
 
     /**
      * Add a new portfolio for the customer
-     * @param customerId
+     * @param customerUuid
      * @param portfolioDTO
      * @return PortfolioEntity that was inserted
      * @throws EntityVersionMismatchException
      */
-    public PortfolioDTO addPortfolio( final int customerId, final PortfolioDTO portfolioDTO )
+    public PortfolioDTO addPortfolio( final UUID customerUuid, final PortfolioDTO portfolioDTO )
         throws EntityVersionMismatchException
     {
         final String methodName = "addPortfolio";
-        logMethodBegin( methodName, customerId, portfolioDTO );
+        logMethodBegin( methodName, customerUuid, portfolioDTO );
         Objects.requireNonNull( portfolioDTO, "portfolioDTO cannot be null" );
-        Assert.isTrue( customerId > 0, "Customer ID must be > 0" );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         PortfolioEntity portfolioEntity = this.dtoToEntity( portfolioDTO );
         portfolioEntity = this.saveEntity( portfolioEntity );
         PortfolioDTO returnPortfolioDTO = this.entityToDTO( portfolioEntity );
@@ -160,5 +160,4 @@ public class PortfolioEntityService extends VersionedEntityService<Integer,
     {
         this.portfolioStockService = portfolioStockService;
     }
-
 }

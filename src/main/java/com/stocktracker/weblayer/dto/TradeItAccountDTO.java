@@ -15,10 +15,9 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class TradeItAccountDTO implements VersionedDTO<Integer>
+public class TradeItAccountDTO implements UuidDTO
 {
-    private Integer id;
-    private Integer customerId;
+    private String id;
     private String name;
     private String brokerage;
     private Timestamp authTimestamp;
@@ -38,24 +37,14 @@ public class TradeItAccountDTO implements VersionedDTO<Integer>
     {
     }
 
-    public Integer getId()
+    public String getId()
     {
-        return id;
+        return this.id;
     }
 
-    public void setId( Integer id )
+    public void setId( String id )
     {
         this.id = id;
-    }
-
-    public Integer getCustomerId()
-    {
-        return customerId;
-    }
-
-    public void setCustomerId( final Integer customerId )
-    {
-        this.customerId = customerId;
     }
 
     public String getName()
@@ -105,7 +94,6 @@ public class TradeItAccountDTO implements VersionedDTO<Integer>
     {
         final StringBuilder sb = new StringBuilder( "TradeItAccountDTO{" );
         sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );

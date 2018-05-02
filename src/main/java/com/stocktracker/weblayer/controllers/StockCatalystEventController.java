@@ -1,5 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
+import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -39,13 +40,15 @@ public class StockCatalystEventController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/page/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerId( final Pageable pageRequest,
-                                                                            @PathVariable int customerId )
+    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuid( final Pageable pageRequest,
+                                                                            @PathVariable String customerId )
     {
-        final String methodName = "getStockCatalystEventsForCustomerId";
+        final String methodName = "getStockCatalystEventsForCustomerUuid";
         logMethodBegin( methodName, customerId );
         Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
-                                                                 .getStockCatalystEventsForCustomerId( pageRequest, customerId );
+                                                                 .getStockCatalystEventsForCustomerUuid( pageRequest,
+                                                                                                       UUIDUtil
+                                                                                                           .uuid( customerId ));
         logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.getContent().size() );
         return stockCatalystEventDTOs;
     }
@@ -57,14 +60,16 @@ public class StockCatalystEventController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerIdAndTickerSymbol( final Pageable pageRequest,
-                                                                                           @PathVariable int customerId,
+    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuidAndTickerSymbol( final Pageable pageRequest,
+                                                                                           @PathVariable String customerId,
                                                                                            @PathVariable String tickerSymbol )
     {
-        final String methodName = "getStockCatalystEventsForCustomerIdAndTickerSymbol";
+        final String methodName = "getStockCatalystEventsForCustomerUuidAndTickerSymbol";
         logMethodBegin( methodName, customerId, tickerSymbol );
         Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
-            .getStockCatalystEventsForCustomerIdAndTickerSymbol( pageRequest, customerId, tickerSymbol );
+            .getStockCatalystEventsForCustomerUuidAndTickerSymbol( pageRequest,
+                                                                 UUIDUtil.uuid( customerId ),
+                                                                 tickerSymbol );
         logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.getContent().size() );
         return stockCatalystEventDTOs;
     }
@@ -76,12 +81,13 @@ public class StockCatalystEventController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockCatalystEventDTO getStockCatalystEvent( @PathVariable int stockCatalystEventId )
+    public StockCatalystEventDTO getStockCatalystEvent( @PathVariable String stockCatalystEventId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockCatalystEvent";
         logMethodBegin( methodName );
-        StockCatalystEventDTO stockCatalystEventDTO = this.stockCatalystEventService.getStockCatalystEvent( stockCatalystEventId );
+        final StockCatalystEventDTO stockCatalystEventDTO = this.stockCatalystEventService
+                                                                .getStockCatalystEvent( UUIDUtil.uuid( stockCatalystEventId ));
         logMethodEnd( methodName, stockCatalystEventDTO );
         return stockCatalystEventDTO;
     }
@@ -94,8 +100,8 @@ public class StockCatalystEventController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable int stockCatalystEventId,
-                                                          @PathVariable int customerId )
+    public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable String stockCatalystEventId,
+                                                          @PathVariable String customerId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteStockCatalystEvent";
@@ -139,19 +145,15 @@ public class StockCatalystEventController implements MyLogger
      * @param customerId
      * @param portfolioStockDTO
      * @return
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @PathVariable int stockCatalystEventId,
-                                                                         @PathVariable int customerId,
+    public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @PathVariable String stockCatalystEventId,
+                                                                         @PathVariable String customerId,
                                                                          @RequestBody StockCatalystEventDTO portfolioStockDTO )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventId, customerId, portfolioStockDTO );

@@ -7,11 +7,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.UUID;
+
 /**
  * This is the database repository for Stock Tags
  */
 @Transactional( readOnly = true )
-public interface StockTagRepository extends JpaRepository<StockTagEntity, Integer>
+public interface StockTagRepository extends JpaRepository<StockTagEntity, UUID>
 {
     @Override
     @Transactional

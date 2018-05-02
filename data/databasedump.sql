@@ -23,13 +23,13 @@ DROP TABLE IF EXISTS `customer`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `customer` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`uuid`),
   UNIQUE KEY `idx_customer_email` (`email`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
+  UNIQUE KEY `id_UNIQUE` (`uuid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -84,13 +84,13 @@ DROP TABLE IF EXISTS `exception`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `exception` (
-  `id` int(11) NOT NULL,
+  `uuid` int(11) NOT NULL,
   `class_name` varchar(45) NOT NULL,
   `method_name` varchar(45) NOT NULL,
   `arguments` varchar(255) NOT NULL,
   `stack_trace` varchar(4096) NOT NULL,
   `datetime` datetime NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -111,14 +111,14 @@ DROP TABLE IF EXISTS `portfolio`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `portfolio` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   `customer_id` int(11) NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`),
+  PRIMARY KEY (`uuid`),
+  UNIQUE KEY `id_UNIQUE` (`uuid`),
   KEY `idx_portfolio_customer_id` (`customer_id`),
-  CONSTRAINT `FK_PORTFOLIO_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `FK_PORTFOLIO_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -139,7 +139,7 @@ DROP TABLE IF EXISTS `portfolio_stock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `portfolio_stock` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` int(11) NOT NULL AUTO_INCREMENT,
   `customer_id` int(11) NOT NULL,
   `portfolio_id` int(11) DEFAULT NULL,
   `ticker_symbol` varchar(5) NOT NULL,
@@ -154,13 +154,13 @@ CREATE TABLE `portfolio_stock` (
   `sector_id` int(11) DEFAULT NULL,
   `sub_sector_id` int(11) DEFAULT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`),
+  PRIMARY KEY (`uuid`),
+  UNIQUE KEY `id_UNIQUE` (`uuid`),
   KEY `idx_portfolio_stock_customer_id` (`customer_id`),
   KEY `idx_portfolio_stock_portfolio_id` (`portfolio_id`),
   KEY `FK_PORTFOLIO_STOCK_STOCK_idx` (`ticker_symbol`),
-  CONSTRAINT `FK_PORTFOLIO_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION,
+  CONSTRAINT `FK_PORTFOLIO_STOCK_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`uuid`) ON DELETE SET NULL ON UPDATE NO ACTION,
   CONSTRAINT `FK_PORTFOLIO_STOCK_STOCK` FOREIGN KEY (`ticker_symbol`) REFERENCES `stock` (`ticker_symbol`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -198,7 +198,7 @@ CREATE TABLE `stock` (
   KEY `FK_CUSTOMER_STOCK_idx` (`created_by`),
   FULLTEXT KEY `idx_stock_ticker_symbol` (`ticker_symbol`),
   FULLTEXT KEY `idx_stock_company_name` (`company_name`),
-  CONSTRAINT `FK_CUSTOMER_STOCK` FOREIGN KEY (`created_by`) REFERENCES `customer` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `FK_CUSTOMER_STOCK` FOREIGN KEY (`created_by`) REFERENCES `customer` (`uuid`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -220,9 +220,9 @@ DROP TABLE IF EXISTS `stock_sector`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `stock_sector` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uuid` int(11) NOT NULL AUTO_INCREMENT,
   `sector` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -267,7 +267,7 @@ DROP TABLE IF EXISTS `v_portfolio_stock`;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE VIEW `v_portfolio_stock` AS SELECT 
- 1 AS `id`,
+ 1 AS `uuid`,
  1 AS `portfolio_id`,
  1 AS `cost_basis`,
  1 AS `number_of_shares`,
@@ -297,7 +297,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `v_portfolio_stock` AS select `ps`.`id` AS `id`,`ps`.`portfolio_id` AS `portfolio_id`,`ps`.`cost_basis` AS `cost_basis`,`ps`.`number_of_shares` AS `number_of_shares`,`ps`.`sector_id` AS `sector_id`,`ps`.`sub_sector_id` AS `sub_sector_id`,`ps`.`realized_gain` AS `realized_gain`,`ps`.`realized_loss` AS `realized_loss`,`ps`.`stop_loss_price` AS `stop_loss_price`,`ps`.`stop_loss_shares` AS `stop_loss_shares`,`ps`.`profit_taking_price` AS `profit_taking_price`,`ps`.`profit_taking_shares` AS `profit_taking_shares`,`s`.`ticker_symbol` AS `ticker_symbol`,`s`.`company_name` AS `company_name`,`s`.`last_price` AS `last_price` from (`portfolio_stock` `ps` join `stock` `s` on((`s`.`ticker_symbol` = `ps`.`ticker_symbol`))) */;
+/*!50001 VIEW `v_portfolio_stock` AS select `ps`.`uuid` AS `uuid`,`ps`.`portfolio_id` AS `portfolio_id`,`ps`.`cost_basis` AS `cost_basis`,`ps`.`number_of_shares` AS `number_of_shares`,`ps`.`sector_id` AS `sector_id`,`ps`.`sub_sector_id` AS `sub_sector_id`,`ps`.`realized_gain` AS `realized_gain`,`ps`.`realized_loss` AS `realized_loss`,`ps`.`stop_loss_price` AS `stop_loss_price`,`ps`.`stop_loss_shares` AS `stop_loss_shares`,`ps`.`profit_taking_price` AS `profit_taking_price`,`ps`.`profit_taking_shares` AS `profit_taking_shares`,`s`.`ticker_symbol` AS `ticker_symbol`,`s`.`company_name` AS `company_name`,`s`.`last_price` AS `last_price` from (`portfolio_stock` `ps` join `stock` `s` on((`s`.`ticker_symbol` = `ps`.`ticker_symbol`))) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

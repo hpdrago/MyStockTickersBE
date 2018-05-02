@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class StockQuoteEntityService extends VersionedEntityService<String,
                                                                     StockQuoteEntity,
+                                                                    String,
                                                                     StockQuoteDTO,
                                                                     StockQuoteRepository>
 {
@@ -38,24 +39,35 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     {
         final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
-        StockQuoteEntity stockQuoteEntity = null;
+        StockQuoteEntity returnStockQuoteEntity = null;
         try
         {
-            stockQuoteEntity = this.getEntity( tickerSymbol );
+            final StockQuoteEntity existingStockQuoteEntity = this.getEntity( tickerSymbol );
             /*
              * If the quote is more than 6 hours old.
+             * The information in the quote does not need to updated often due to contents and we cache
+             * the stock price in the cache.
              */
-            if ( TimeUnit.MILLISECONDS.toHours( stockQuoteEntity.getLastQuoteRequestDate().getTime() ) > 6 )
+            if ( TimeUnit.MILLISECONDS.toHours( existingStockQuoteEntity.getLastQuoteRequestDate().getTime() ) > 6 )
             {
-                stockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
+                final StockQuoteEntity newStockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
+                /*
+                 * Need to preserve the insert and update dates and version.
+                 */
+                newStockQuoteEntity.copyVitalEntityValues( existingStockQuoteEntity );
+                returnStockQuoteEntity = newStockQuoteEntity;
+            }
+            else
+            {
+                returnStockQuoteEntity = existingStockQuoteEntity;
             }
         }
         catch( VersionedEntityNotFoundException e )
         {
-            stockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
+            returnStockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
         }
-        logMethodEnd( methodName, stockQuoteEntity );
-        return stockQuoteEntity;
+        logMethodEnd( methodName, returnStockQuoteEntity );
+        return returnStockQuoteEntity;
     }
 
     /**
@@ -71,28 +83,45 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         logMethodBegin( methodName, tickerSymbol );
         final Quote quote = this.iexTradingStockService
                                 .getQuote( tickerSymbol );
-        StockQuoteEntity stockQuoteEntity = quoteToStockQuoteEntity( quote );
-        try
+        StockQuoteEntity returnStockQuoteEntity = null;
+        final StockQuoteEntity newStockQuoteEntity = quoteToStockQuoteEntity( quote );
+        boolean mismatch = false;
+        do
         {
-            this.mergeEntity( stockQuoteEntity );
-        }
-        catch( EntityVersionMismatchException e1 )
-        {
-            /*
-             * Ignore this exception, if it ever happens it means that two threads were trying to adding/updating the same
-             * entity thus we can simply select the entity from the db.
-             */
+            mismatch = false;
             try
             {
-                stockQuoteEntity = this.getEntity( tickerSymbol );
+                /*
+                 * We got a new stock quote entity above from the previous call, we need to get the vital database values
+                 * and merge the two entities' properties
+                 */
+                final StockQuoteEntity existingStockQuoteEntity = this.getEntity( tickerSymbol );
+                newStockQuoteEntity.copyVitalEntityValues( existingStockQuoteEntity );
+                this.saveEntity( newStockQuoteEntity );
+                returnStockQuoteEntity = newStockQuoteEntity;
+            }
+            catch( EntityVersionMismatchException e1 )
+            {
+                mismatch = true;
             }
             catch( VersionedEntityNotFoundException e )
             {
-                throw new StockNotFoundException( tickerSymbol, e );
+                /*
+                 * If it doesn't exist then add it.
+                 */
+                try
+                {
+                    this.addEntity( newStockQuoteEntity );
+                }
+                catch( EntityVersionMismatchException e1 )
+                {
+                    mismatch = true;
+                }
             }
         }
-        logMethodEnd( methodName, stockQuoteEntity );
-        return stockQuoteEntity;
+        while ( mismatch );
+        logMethodEnd( methodName, returnStockQuoteEntity );
+        return returnStockQuoteEntity;
     }
 
     /**

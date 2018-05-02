@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -7,24 +8,21 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
+import java.util.UUID;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_analyst_consensus", schema = "stocktracker", catalog = "" )
-public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
+public class StockAnalystConsensusEntity extends UUIDEntity
+                                         implements CustomerUuidContainer
 {
-    private Integer id;
-    private Integer customerId;
+    private UUID customerUuid;
     private String tickerSymbol;
     private String comments;
     private Integer analystStrongBuyCount;
@@ -37,41 +35,25 @@ public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
     private BigDecimal lowAnalystPriceTarget;
     private BigDecimal highAnalystPriceTarget;
     private Timestamp analystPriceDate;
-    private Timestamp createDate;
-    private Timestamp updateDate;
     private BigDecimal stockPriceWhenCreated;
-    private StockNoteSourceEntity stockNoteSourceByNoteSourceId;
-    private Integer noteSourceId;
-    private Integer version;
+    private StockNoteSourceEntity stockNoteSourceByNoteSourceUuid;
+    private Integer noteSourceUuid;
 
     public static StockAnalystConsensusEntity newInstance()
     {
         return new StockAnalystConsensusEntity();
     }
 
-    @Id
-    @Column( name = "id", nullable = false )
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    public Integer getId()
-    {
-        return id;
-    }
-
-    public void setId( final Integer id )
-    {
-        this.id = id;
-    }
-
     @Basic
-    @Column( name = "customer_id" )
-    public Integer getCustomerId()
+    @Column( name = "customer_uuid" )
+    public UUID getCustomerUuid()
     {
-        return customerId;
+        return customerUuid;
     }
 
-    public void setCustomerId( final Integer customerId )
+    public void setCustomerUuid( final UUID customerUuid )
     {
-        this.customerId = customerId;
+        this.customerUuid = customerUuid;
     }
 
     @Basic
@@ -195,30 +177,6 @@ public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
     }
 
     @Basic
-    @Column( name = "create_date", nullable = false )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date", nullable = true )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
-    @Basic
     @Column( name = "analyst_sentiment_date", nullable = true, insertable = false, updatable = false )
     public Timestamp getAnalystSentimentDate()
     {
@@ -255,70 +213,35 @@ public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
     }
 
     @ManyToOne
-    @JoinColumn( name = "notes_source_id", referencedColumnName = "id" )
-    public StockNoteSourceEntity getStockNoteSourceByNoteSourceId()
+    @JoinColumn( name = "notes_source_uuid", referencedColumnName = "uuid" )
+    public StockNoteSourceEntity getStockNoteSourceByNoteSourceUuid()
     {
-        return stockNoteSourceByNoteSourceId;
+        return stockNoteSourceByNoteSourceUuid;
     }
 
-    public void setStockNoteSourceByNoteSourceId( final StockNoteSourceEntity stockNoteSourceByNoteSourceId )
+    public void setStockNoteSourceByNoteSourceUuid( final StockNoteSourceEntity stockNoteSourceByNoteSourceUuid )
     {
-        this.stockNoteSourceByNoteSourceId = stockNoteSourceByNoteSourceId;
-    }
-
-    @Basic
-    @Column( name = "notes_source_id", insertable = false, updatable = false )
-    public Integer getNoteSourceId()
-    {
-        return noteSourceId;
-    }
-
-    public void setNoteSourceId( final Integer noteSourceId )
-    {
-        this.noteSourceId = noteSourceId;
+        this.stockNoteSourceByNoteSourceUuid = stockNoteSourceByNoteSourceUuid;
     }
 
     @Basic
-    @Column( name = "version", nullable = false, columnDefinition = "int default 1" )
-    @Override
-    public Integer getVersion()
+    @Column( name = "notes_source_uuid", insertable = false, updatable = false )
+    public Integer getNoteSourceUuid()
     {
-        return this.version;
+        return noteSourceUuid;
     }
 
-    @Override
-    public void setVersion( final Integer version )
+    public void setNoteSourceUuid( final Integer noteSourceUuid )
     {
-        this.version = version;
-    }
-
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !(o instanceof StockAnalystConsensusEntity) )
-        {
-            return false;
-        }
-        final StockAnalystConsensusEntity that = (StockAnalystConsensusEntity) o;
-        return Objects.equals( id, that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( id );
+        this.noteSourceUuid = noteSourceUuid;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
+        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );
@@ -331,12 +254,10 @@ public class StockAnalystConsensusEntity implements VersionedEntity<Integer>
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", analystPriceDate=" ).append( analystPriceDate );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
-        sb.append( ", noteSourceId=" ).append( noteSourceId );
-        sb.append( ", stockNoteSourceByNoteSourceId=" ).append( stockNoteSourceByNoteSourceId );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", noteSourceUuid=" ).append( noteSourceUuid );
+        sb.append( ", stockNoteSourceByNoteSourceId=" ).append( stockNoteSourceByNoteSourceUuid );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

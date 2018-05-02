@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * TradeItAccount entity repository
@@ -19,11 +20,10 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
      * Get all of the linked accounts by customer id and parent account id.  It is not really necessary to include the
      * customer id, but to be safe, let's make sure we only look at the customer's accounts.
      *
-     * @param customerId
-     * @param tradeItAccountId
+     * @param tradeItAccountUuid
      * @return
      */
-    List<LinkedAccountEntity> findAllByCustomerIdAndTradeItAccountId( final int customerId, final int tradeItAccountId );
+    List<LinkedAccountEntity> findAllByTradeItAccountId( final int tradeItAccountId );
 
     @Override
     @Transactional

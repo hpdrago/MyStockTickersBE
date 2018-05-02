@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.repositorylayer.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -8,9 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -20,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * This entity contains the information for the account that is registered with TradeIt for a brokerage.  The actual
@@ -31,10 +30,10 @@ import java.util.Optional;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "tradeit_account", schema = "stocktracker", catalog = "" )
-public class TradeItAccountEntity implements VersionedEntity<Integer>
+public class TradeItAccountEntity extends UUIDEntity
+                                  implements CustomerUuidContainer
 {
-    private Integer id;
-    private Integer customerId;
+    private UUID customerUuid;
     private String name;
     private String userId;
     private String userToken;
@@ -42,11 +41,8 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
     private String authToken;
     private String authUuid;
     private Timestamp authTimestamp;
-    private Timestamp createDate;
-    private Timestamp updateDate;
-    private Integer version;
-    private CustomerEntity customerByCustomerId;
-    private Collection<LinkedAccountEntity> linkedAccountsById;
+    private CustomerEntity customerByCustomerUuid;
+    private Collection<LinkedAccountEntity> linkedAccountsByUuid;
 
     public TradeItAccountEntity()
     {
@@ -57,28 +53,15 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
         return new TradeItAccountEntity();
     }
 
-    @Id
-    @GeneratedValue( strategy = GenerationType.IDENTITY)
-    @Column( name = "id" )
-    public Integer getId()
+    @Column( name = "customer_uuid", insertable = false, updatable = false )
+    public UUID getCustomerUuid()
     {
-        return id;
+        return customerUuid;
     }
 
-    public void setId( final Integer id )
+    public void setCustomerUuid( final UUID customerUuid )
     {
-        this.id = id;
-    }
-
-    @Column( name = "customer_id", insertable = false, updatable = false )
-    public Integer getCustomerId()
-    {
-        return customerId;
-    }
-
-    public void setCustomerId( final Integer customerId )
-    {
-        this.customerId = customerId;
+        this.customerUuid = customerUuid;
     }
 
     @Basic
@@ -117,40 +100,16 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
         this.brokerage = brokerage;
     }
 
-    @Basic
-    @Column( name = "create_date" )
-    public Timestamp getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final Timestamp createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    @Basic
-    @Column( name = "update_date" )
-    public Timestamp getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( final Timestamp updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
     @ManyToOne
-    @JoinColumn( name = "customer_id", referencedColumnName = "id", nullable = false )
-    public CustomerEntity getCustomerByCustomerId()
+    @JoinColumn( name = "customer_uuid", referencedColumnName = "uuid", nullable = false )
+    public CustomerEntity getCustomerByCustomerUuid()
     {
-        return customerByCustomerId;
+        return customerByCustomerUuid;
     }
 
-    public void setCustomerByCustomerId( final CustomerEntity customerByCustomerId )
+    public void setCustomerByCustomerUuid( final CustomerEntity customerEntity )
     {
-        this.customerByCustomerId = customerByCustomerId;
+        this.customerByCustomerUuid = customerEntity;
     }
 
     @Basic
@@ -177,41 +136,27 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
         this.authUuid = authUuid;
     }
 
-
-    @Override
-    @Basic
-    @Column( name = "version" )
-    public Integer getVersion()
+    @OneToMany( mappedBy = "accountByTradeItAccountUuid" )
+    public Collection<LinkedAccountEntity> getLinkedAccountsByUuid()
     {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @OneToMany( mappedBy = "accountByTradeItAccountId" )
-    public Collection<LinkedAccountEntity> getLinkedAccountsById()
-    {
-        return linkedAccountsById;
+        return linkedAccountsByUuid;
     }
 
     @Transient
-    public void setLinkedAccountsById( final Collection<LinkedAccountEntity> linkedAccountsById )
+    public void setLinkedAccountsByUuid( final Collection<LinkedAccountEntity> linkedAccountsByUuid )
     {
-        this.linkedAccountsById = linkedAccountsById;
+        this.linkedAccountsByUuid = linkedAccountsByUuid;
     }
 
     @Transient
     public void addLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
     {
-        if ( this.linkedAccountsById == null )
+        if ( this.linkedAccountsByUuid == null )
         {
-            this.linkedAccountsById = new ArrayList<>();
+            this.linkedAccountsByUuid = new ArrayList<>();
         }
-        linkedAccountEntity.setCustomerId( this.getCustomerId() );
-        this.linkedAccountsById.add( linkedAccountEntity );
+        linkedAccountEntity.setCustomerUuid( this.getCustomerUuid() );
+        this.linkedAccountsByUuid.add( linkedAccountEntity );
     }
 
     /**
@@ -243,13 +188,14 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
     @Transient
     public Optional<LinkedAccountEntity> getLinkedAccount( final String accountNumber )
     {
-        if ( this.linkedAccountsById == null )
+        if ( this.linkedAccountsByUuid == null )
         {
             return Optional.empty();
         }
-        return this.linkedAccountsById.stream()
-                                      .filter( linkedAccountEntity -> linkedAccountEntity.getAccountNumber().equals( accountNumber ) )
-                                      .findFirst();
+        return this.linkedAccountsByUuid.stream()
+                                        .filter( linkedAccountEntity -> linkedAccountEntity.getAccountNumber()
+                                                                                           .equals( accountNumber ) )
+                                        .findFirst();
     }
 
     @Basic
@@ -277,34 +223,11 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
     }
 
     @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !(o instanceof TradeItAccountEntity) )
-        {
-            return false;
-        }
-
-        final TradeItAccountEntity that = (TradeItAccountEntity) o;
-
-        return getId().equals( that.getId() );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return getId().hashCode();
-    }
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "TradeItAccountEntity{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
+        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userId ).append( '\'' );
         sb.append( ", userToken='" ).append( userToken ).append( '\'' );
@@ -312,10 +235,9 @@ public class TradeItAccountEntity implements VersionedEntity<Integer>
         sb.append( ", authToken='" ).append( authToken ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
-        sb.append( ", createDate=" ).append( createDate );
-        sb.append( ", updateDate=" ).append( updateDate );
-        sb.append( ", customerByCustomerId=" ).append( customerByCustomerId );
-        sb.append( ", linkedAccountsById=" ).append( linkedAccountsById );
+        sb.append( ", customerByCustomerUuid=" ).append( customerByCustomerUuid );
+        sb.append( ", linkedAccountsByUuid=" ).append( linkedAccountsByUuid );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

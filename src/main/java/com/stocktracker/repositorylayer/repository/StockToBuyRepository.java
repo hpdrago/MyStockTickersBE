@@ -9,31 +9,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import java.util.UUID;
+
 /**
  * Created by mike on 10/24/2017.
  */
-@Transactional( readOnly = true )
-public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity, Integer>
+public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity,UUID>
 {
     /**
      * Get all of the stocks to buy records for a customer
-     *
-     * @param customerId
+     * @param customerUuid
      * @return
      */
-    Page<StockToBuyEntity> findByCustomerId( final Pageable pageRequest, final int customerId );
+    Page<StockToBuyEntity> findByCustomerUuid( final Pageable pageRequest, final UUID customerUuid );
 
     /**
      * Get all of the stocks to buy for the customer and the ticker symbol
      *
      * @param pageRequest
-     * @param customerId
+     * @param customerUuid
      * @param tickerSymbol
      * @return
      */
-    Page<StockToBuyEntity> findByCustomerIdAndTickerSymbol( final Pageable pageRequest,
-                                                            final int customerId,
-                                                            final String tickerSymbol );
+    Page<StockToBuyEntity> findByCustomerUuidAndTickerSymbol( final Pageable pageRequest,
+                                                              final UUID customerUuid,
+                                                              final String tickerSymbol );
 
     @Override
     @Transactional

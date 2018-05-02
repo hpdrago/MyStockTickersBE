@@ -6,20 +6,21 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mike on 5/7/2017.
  */
 @Transactional( readOnly = true )
-public interface VStockNoteCountRepository extends JpaRepository<VStockNoteCountEntity, Integer>
+public interface VStockNoteCountRepository extends JpaRepository<VStockNoteCountEntity, UUID>
 {
     /**
      * Get the list of ticker symbols and the number of notes for a single customer.
      *
-     * @param customerId The customer's id
+     * @param customerUuid The customer's id
      * @return List of entities
      */
-    List<VStockNoteCountEntity> findByCustomerId( final int customerId );
+    List<VStockNoteCountEntity> findByCustomerUuid( final UUID customerUuid );
 
     @Override
     @Transactional

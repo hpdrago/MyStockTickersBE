@@ -16,12 +16,13 @@ import java.math.BigDecimal;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class PortfolioStockDTO extends StockPriceQuoteDTO
-    implements StockPriceContainer,
-               VersionedDTO<Integer>
+                               implements StockPriceContainer,
+                                          UuidDTO,
+                                          CustomerIdContainer
 {
-    private Integer id;
-    private Integer customerId;
-    private Integer portfolioId;
+    private String id;
+    private String customerId;
+    private String portfolioId;
     private String tickerSymbol;
     private Integer numberOfShares;
     private BigDecimal averageUnitCost;
@@ -51,9 +52,14 @@ public class PortfolioStockDTO extends StockPriceQuoteDTO
         return portfolioStockDTO;
     }
 
-    public Integer getId()
+    public String getId()
     {
         return id;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
     }
 
     @Override
@@ -68,17 +74,12 @@ public class PortfolioStockDTO extends StockPriceQuoteDTO
         this.version = version;
     }
 
-    public void setId( Integer id )
-    {
-        this.id = id;
-    }
-
-    public Integer getCustomerId()
+    public String getCustomerId()
     {
         return customerId;
     }
 
-    public void setCustomerId( Integer customerId )
+    public void setCustomerId( String customerId )
     {
         this.customerId = customerId;
     }
@@ -176,12 +177,12 @@ public class PortfolioStockDTO extends StockPriceQuoteDTO
         this.sectorId = sectorId;
     }
 
-    public Integer getPortfolioId()
+    public String getPortfolioId()
     {
         return portfolioId;
     }
 
-    public void setPortfolioId( Integer portfolioId )
+    public void setPortfolioId( String portfolioId )
     {
         this.portfolioId = portfolioId;
     }

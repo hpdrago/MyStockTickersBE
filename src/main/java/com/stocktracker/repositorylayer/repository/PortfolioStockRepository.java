@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by mike on 10/30/2016.
@@ -15,26 +16,25 @@ public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEn
 {
     /**
      * Find one by the primary key
-     *
-     * @param portfolioId
+     * @param customerUuid
+     * @param portfolioUuid
      * @return
      */
-    List<PortfolioStockEntity> findByCustomerIdAndPortfolioIdOrderByTickerSymbol( final int customerId,
-                                                                                  final int portfolioId );
+    List<PortfolioStockEntity> findByCustomerUuidAndPortfolioUuidOrderByTickerSymbol( final UUID customerUuid,
+                                                                                      final UUID portfolioUuid );
 
     /**
      * Find one by the secondary key
-     *
-     * @param customerId
-     * @param portfolioId
+     * @param customerUuid
+     * @param portfolioUuid
      * @param tickerSymbol
      * @return
      */
-    PortfolioStockEntity findFirstByCustomerIdAndPortfolioIdAndTickerSymbol( final int customerId,
-                                                                             final int portfolioId,
-                                                                             final String tickerSymbol );
+    PortfolioStockEntity findFirstByCustomerUuidAndPortfolioUuidAndTickerSymbol( final UUID customerUuid,
+                                                                                 final UUID portfolioUuid,
+                                                                                 final String tickerSymbol );
 
-    List<PortfolioStockEntity> findByPortfolioIdOrderByTickerSymbol( int portfolioId );
+    List<PortfolioStockEntity> findByPortfolioUuidOrderByTickerSymbol( int portfolioId );
 
     @Override
     @Transactional
