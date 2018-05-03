@@ -2,7 +2,9 @@ package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -46,16 +49,22 @@ public class TradeItAccountController extends AbstractController implements MyLo
      *
      * @param accountId
      * @return
+     * @throws TradeItAccountNotFoundException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public TradeItAccountDTO getAccount( @PathVariable String accountId,
                                          @PathVariable String customerId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getAccount";
-        logMethodBegin( methodName, accountId );
+        logMethodBegin( methodName, accountId, customerId );
+        this.validateCustomerId( customerId );
         TradeItAccountDTO tradeItAccountDTO = this.tradeItAccountService
                                                   .getAccountDTO( UUIDUtil.uuid( accountId ));
         logMethodEnd( methodName, tradeItAccountDTO );
@@ -66,18 +75,24 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * Add the account to the database
      *
      * @return The account that was added
+     * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<TradeItAccountDTO> createAccount( @RequestBody final TradeItAccountDTO tradeItAccountDTO,
                                                             @PathVariable final String customerId )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
+        final UUID customerUuid = this.validateCustomerId( customerId );
         TradeItAccountDTO returnStockDTO = this.tradeItAccountService
-                                               .createAccount( UUIDUtil.uuid( customerId ),
+                                               .createAccount( customerUuid,
                                                                tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
@@ -93,16 +108,21 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @param accountId
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/id/{accountId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteAccount( @PathVariable String accountId,
                                                @PathVariable String customerId )
-        throws TradeItAccountNotFoundException
+        throws TradeItAccountNotFoundException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "deleteAccount";
         logMethodBegin( methodName, accountId, customerId );
+        this.validateCustomerId( customerId );
         try
         {
             this.tradeItAccountService.deleteEntity( UUIDUtil.uuid( accountId ));
@@ -121,17 +141,21 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @param tradeItAccountDTO
      * @return
      * @throws EntityVersionMismatchException
-     * @throws TradeItAccountNotFoundException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable int customerId,
+    public ResponseEntity<TradeItAccountDTO> saveAccount( @PathVariable String customerId,
                                                           @RequestBody TradeItAccountDTO tradeItAccountDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
+        this.validateCustomerId( customerId );
         TradeItAccountDTO returnTradeItAccountDTO = this.tradeItAccountService
                                                         .saveDTO( tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -145,16 +169,21 @@ public class TradeItAccountController extends AbstractController implements MyLo
     /**
      * Get all of the customer accounts that are registered with TradeIt.
      * @return
+     * @throws NotAuthorizedException
+     * @throws CustomerNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<TradeItAccountDTO> getAccounts( final @PathVariable String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getAccounts";
         logMethodBegin( methodName, customerId );
+        final UUID customerUuid = this.validateCustomerId( customerId );
         List<TradeItAccountDTO> accounts = this.tradeItAccountService
-                                               .getAccounts( UUIDUtil.uuid( customerId ));
+                                               .getAccounts( customerUuid );
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }

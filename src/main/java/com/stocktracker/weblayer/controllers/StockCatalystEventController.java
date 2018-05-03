@@ -2,9 +2,9 @@ package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
@@ -23,12 +23,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.UUID;
+
 /**
  * This is the REST Controller for all Stock Catalyst Event methods.
  */
 @RestController
 @CrossOrigin
-public class StockCatalystEventController implements MyLogger
+public class StockCatalystEventController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/stockCatalystEvent";
     private StockCatalystEventEntityService stockCatalystEventService;
@@ -41,14 +43,15 @@ public class StockCatalystEventController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuid( final Pageable pageRequest,
-                                                                            @PathVariable String customerId )
+                                                                              @PathVariable String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockCatalystEventsForCustomerUuid";
         logMethodBegin( methodName, customerId );
+        final UUID customerUuid = this.validateCustomerId( customerId );
         Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
-                                                                 .getStockCatalystEventsForCustomerUuid( pageRequest,
-                                                                                                       UUIDUtil
-                                                                                                           .uuid( customerId ));
+                                                                 .getStockCatalystEventsForCustomerUuid( pageRequest, customerUuid );
         logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.getContent().size() );
         return stockCatalystEventDTOs;
     }
@@ -63,13 +66,16 @@ public class StockCatalystEventController implements MyLogger
     public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuidAndTickerSymbol( final Pageable pageRequest,
                                                                                            @PathVariable String customerId,
                                                                                            @PathVariable String tickerSymbol )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockCatalystEventsForCustomerUuidAndTickerSymbol";
         logMethodBegin( methodName, customerId, tickerSymbol );
+        final UUID customerUuid = this.validateCustomerId( customerId );
         Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
             .getStockCatalystEventsForCustomerUuidAndTickerSymbol( pageRequest,
-                                                                 UUIDUtil.uuid( customerId ),
-                                                                 tickerSymbol );
+                                                                   customerUuid,
+                                                                   tickerSymbol );
         logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.getContent().size() );
         return stockCatalystEventDTOs;
     }
@@ -95,6 +101,9 @@ public class StockCatalystEventController implements MyLogger
     /**
      * Deletes a stock summary entity
      * @param stockCatalystEventId
+     * @throws VersionedEntityNotFoundException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      * @return
      */
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customerId/{customerId}",
@@ -102,10 +111,13 @@ public class StockCatalystEventController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable String stockCatalystEventId,
                                                           @PathVariable String customerId )
-        throws VersionedEntityNotFoundException
+        throws VersionedEntityNotFoundException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "deleteStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventId );
+        this.validateCustomerId( customerId );
         this.stockCatalystEventService.deleteEntity( stockCatalystEventId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -116,20 +128,21 @@ public class StockCatalystEventController implements MyLogger
      * @param customerId
      * @param stockCatalystEventDTO
      * @return
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      * @throws EntityVersionMismatchException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockCatalystEventDTO> addStockCatalystEvent( @PathVariable Integer customerId,
+    public ResponseEntity<StockCatalystEventDTO> addStockCatalystEvent( @PathVariable String customerId,
                                                                         @RequestBody StockCatalystEventDTO stockCatalystEventDTO )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "addStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventDTO );
+        this.validateCustomerId( customerId );
         StockCatalystEventDTO newStockCatalystEventDTO = this.stockCatalystEventService
                                                              .saveStockCatalystEvent( stockCatalystEventDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -146,6 +159,8 @@ public class StockCatalystEventController implements MyLogger
      * @param portfolioStockDTO
      * @return
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customerId/{customerId}",
@@ -153,10 +168,13 @@ public class StockCatalystEventController implements MyLogger
     public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @PathVariable String stockCatalystEventId,
                                                                          @PathVariable String customerId,
                                                                          @RequestBody StockCatalystEventDTO portfolioStockDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventId, customerId, portfolioStockDTO );
+        this.validateCustomerId( customerId );
         if ( portfolioStockDTO.getId() != stockCatalystEventId )
         {
             throw new IllegalArgumentException( String.format( "id argument %d does not match DTO content.id %d",

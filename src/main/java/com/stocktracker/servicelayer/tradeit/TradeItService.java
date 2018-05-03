@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -119,12 +120,14 @@ public class TradeItService implements MyLogger
      * @return instance of GetOAuthAccessTokenAPIResult which contains the TradeItAccountDTO that was created if the TradeIt
      * getOAuthAccessToken was successful.
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
      */
     public GetOAuthAccessTokenDTO getOAuthAccessToken( final UUID customerUuid,
                                                        @NotNull final String broker,
                                                        @NotNull final String accountName,
                                                        @NotNull final String oAuthVerifier )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerUuid, broker, accountName, oAuthVerifier );

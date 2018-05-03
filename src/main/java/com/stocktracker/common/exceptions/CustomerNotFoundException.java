@@ -9,23 +9,23 @@ import java.util.UUID;
  * Created by mike on 5/15/2016.
  */
 @ResponseStatus(value= HttpStatus.NOT_FOUND)  // 404
-public class CustomerNotFoundException extends RuntimeException
+public class CustomerNotFoundException extends Exception
 {
     /**
-     * CustomerDE id not found
+     * Customer id not found
      * @param id
      */
     public CustomerNotFoundException( final UUID id )
     {
-        super( "CustomerDE id: " + id + " was not found" );
+        super( "Customer id: " + id + " was not found" );
     }
 
     /**
-     * CustomerDE email not found
+     * Customer email not found
      * @param email
      */
     public CustomerNotFoundException( final String email )
     {
-        super( "CustomerDE email: " + email + " was not found" );
+        super( "Customer email: " + email + " was not found" );
     }
 }

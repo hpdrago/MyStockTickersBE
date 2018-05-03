@@ -2,7 +2,9 @@ package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
@@ -48,18 +50,23 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @throws StockNotFoundException
      * @throws StockCompanyNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
-                                                      @PathVariable( "customerId") final int customerId )
+                                                      @PathVariable( "customerId") final String customerId )
         throws StockNotFoundException,
                StockCompanyNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, customerId, stockNotesDTO );
+        this.validateCustomerId( customerId );
         validateStockNoteDTOPostArgument( stockNotesDTO );
         StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNotesDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -79,12 +86,15 @@ public class StockNotesController extends AbstractController implements MyLogger
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
-                                                         @PathVariable( "customerId" ) final int customerId,
+                                                         @PathVariable( "customerId" ) final String customerId,
                                                          @PathVariable( "stockNotesId" ) final int stockNotesId )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, customerId, stockNotesId, stockNotesDTO );
+        this.validateCustomerId( customerId );
         validateStockNoteDTOPostArgument( stockNotesDTO );
         StockNoteDTO returnStockDTO = null;
         returnStockDTO = this.stockNoteService.updateStockNote( stockNotesDTO );
@@ -108,10 +118,13 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.DELETE )
     public ResponseEntity<Void> deleteStockNote( @PathVariable( "customerId" ) final String customerId,
                                                  @PathVariable( "stockNotesId" ) final String stockNotesId )
-        throws VersionedEntityNotFoundException
+        throws VersionedEntityNotFoundException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "deleteStockNote";
         logMethodBegin( methodName, customerId, stockNotesId );
+        this.validateCustomerId( customerId );
         this.stockNoteService.deleteEntity( stockNotesId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -127,9 +140,12 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.GET )
     public ResponseEntity<StockNoteDTO> getStockNote( @PathVariable( "customerId" ) final String customerId,
                                                       @PathVariable( "stockNotesId" ) final String stockNotesId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockNote";
         logMethodBegin( methodName, customerId, stockNotesId );
+        this.validateCustomerId( customerId );
         StockNoteDTO stockNotesDTO = null;
         try
         {
@@ -166,9 +182,12 @@ public class StockNotesController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
                                              @PathVariable final String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockNotes";
         logMethodBegin( methodName, pageRequest, customerId );
+        this.validateCustomerId( customerId );
         Page<StockNoteDTO> stockNoteDTOs = this.stockNoteService
                                                .getStockNotesForCustomerUuid( pageRequest,
                                                                             UUIDUtil.uuid( customerId ));
@@ -189,11 +208,13 @@ public class StockNotesController extends AbstractController implements MyLogger
     public Page<StockNoteDTO> getStockNotes( final Pageable pageRequest,
                                              @PathVariable final String customerId,
                                              @PathVariable final String tickerSymbol )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStocks";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        Objects.requireNonNull( customerId, "customerId cannot be null" );
+        this.validateCustomerId( customerId );
         Page<StockNoteDTO> stockNoteDTOs = this.stockNoteService
                                                .getStockNotesForCustomerUuidAndTickerSymbol( pageRequest,
                                                                                            UUIDUtil.uuid( customerId ),
@@ -213,9 +234,12 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public List<StockNoteCountDTO> getStockNotesTickerSymbolCounts( @PathVariable final String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockNotesTickerSymbols";
         logMethodBegin( methodName, customerId );
+        this.validateCustomerId( customerId );
         List<StockNoteCountDTO> stockNoteCountDTOs = stockNoteCountService.getStockNotesCount( UUIDUtil.uuid( customerId ) );
         logMethodEnd( methodName, stockNoteCountDTOs.size() );
         return stockNoteCountDTOs;

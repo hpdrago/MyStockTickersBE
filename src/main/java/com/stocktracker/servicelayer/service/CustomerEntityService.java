@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
@@ -11,7 +10,6 @@ import com.stocktracker.weblayer.dto.CustomerDTO;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,11 +23,9 @@ import java.util.UUID;
  */
 @Service
 //@Transactional
-public class CustomerEntityService extends VersionedEntityService<UUID,
-                                                                  CustomerEntity,
-                                                                  String,
-                                                                  CustomerDTO,
-                                                                  CustomerRepository>
+public class CustomerEntityService extends UuidEntityService<CustomerEntity,
+                                                             CustomerDTO,
+                                                             CustomerRepository>
 {
     private PortfolioEntityService portfolioService;
     private CustomerRepository customerRepository;
@@ -41,13 +37,14 @@ public class CustomerEntityService extends VersionedEntityService<UUID,
      * @return
      */
     public CustomerDTO getCustomerDTO( final UUID id )
+        throws CustomerNotFoundException
     {
         final String methodName = "getCustomerDTO";
         logMethodBegin( methodName, id );
         CustomerEntity customerEntity = getCustomerEntity( id );
-        CustomerDTO customerDE = loadCustomerDTO( customerEntity );
-        logMethodEnd( methodName, customerDE );
-        return customerDE;
+        CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
+        logMethodEnd( methodName, customerDTO );
+        return customerDTO;
     }
 
     /**
@@ -57,7 +54,10 @@ public class CustomerEntityService extends VersionedEntityService<UUID,
      * @throws CustomerNotFoundException
      */
     public CustomerEntity getCustomerEntity( final UUID customerUuid )
+        throws CustomerNotFoundException
     {
+        final String methodName = "getCustomerEntity";
+        logMethodBegin( methodName, customerUuid );
         CustomerEntity customerEntity = null;
         try
         {
@@ -67,6 +67,7 @@ public class CustomerEntityService extends VersionedEntityService<UUID,
         {
             throw new CustomerNotFoundException( customerUuid );
         }
+        logMethodEnd( methodName, customerEntity );
         return customerEntity;
     }
 
@@ -118,6 +119,7 @@ public class CustomerEntityService extends VersionedEntityService<UUID,
      * @return
      */
     public List<CustomerDTO> getAllCustomers()
+        throws CustomerNotFoundException
     {
         final String methodName = "getAllCustomers";
         logMethodBegin( methodName );

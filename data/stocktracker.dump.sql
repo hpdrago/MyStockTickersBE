@@ -42,7 +42,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` (`uuid`, `email`, `password`, `create_date`, `update_date`, `version`) VALUES ('ï¿½oï¿½ï¿½<ï¿½\è','michael.earl.65@gmail.com','usarmy84','2017-03-17 19:52:58','2018-04-10 19:04:14',NULL);
+INSERT INTO `customer` (`uuid`, `email`, `password`, `create_date`, `update_date`, `version`) VALUES ('ï¿½oï¿½ï¿½<ï¿½\ï','michael.earl.65@gmail.com','usarmy84','2017-03-17 19:52:58','2018-04-10 19:04:14',NULL);
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -61,9 +61,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -109,7 +109,7 @@ CREATE TABLE `customer_tag` (
 
 LOCK TABLES `customer_tag` WRITE;
 /*!40000 ALTER TABLE `customer_tag` DISABLE KEYS */;
-INSERT INTO `customer_tag` (`uuid`, `customer_uuid`, `tag_name`, `create_date`, `update_date`, `version`) VALUES ('ï¿½Ã„@ï¿½ï¿½\ï','ï¿½oï¿½ï¿½<ï¿½\è','tag1','2017-10-26 23:10:48','2018-04-14 20:03:32',3);
+INSERT INTO `customer_tag` (`uuid`, `customer_uuid`, `tag_name`, `create_date`, `update_date`, `version`) VALUES ('ï¿½Ã„@ï¿½ï¿½\ï','ï¿½oï¿½ï¿½<ï¿½\ï','tag1','2017-10-26 23:10:48','2018-04-14 20:03:32',3);
 /*!40000 ALTER TABLE `customer_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -128,9 +128,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -237,9 +237,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -305,9 +305,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -385,9 +385,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -487,7 +487,7 @@ CREATE TABLE `stock_analyst_consensus` (
 
 LOCK TABLES `stock_analyst_consensus` WRITE;
 /*!40000 ALTER TABLE `stock_analyst_consensus` DISABLE KEYS */;
-INSERT INTO `stock_analyst_consensus` (`uuid`, `customer_uuid`, `ticker_symbol`, `comments`, `analyst_strong_buy_count`, `analyst_buy_count`, `analyst_hold_count`, `analyst_under_perform_count`, `analyst_sell_count`, `analyst_sentiment_date`, `avg_analyst_price_target`, `low_analyst_price_target`, `high_analyst_price_target`, `analyst_price_date`, `notes_source_uuid`, `stock_price_when_created`, `version`, `create_date`, `update_date`) VALUES ('ï¿½ï¿½[@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','ADMA','<p>There is very sparse analyst coverage on this small cap name.&nbsp;In mid-November the stock&nbsp;<a href=\"https://www.benzinga.com/news/17/11/10778171/raymond-james-upgrades-adma-biologics-to-outperform\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">was upgraded to Outperform at Raymond James</a>&nbsp;with a $5 price target, as the analyst cited increased confidence that RI-002 would be eventually approved and lowered risk after the recent equity raise.&nbsp;Maxim Group issued a Buy rating and a $13 price target some five months ago.</p><p>Insiders have been purchasing shares recently, including beneficial owner Biotest AG scooping up 5,813,954 shares in the latest secondary. CMO James Mond&nbsp;<a href=\"https://www.chaffeybreeze.com/2017/11/14/adma-biologics-inc-adma-cmo-james-mond-purchases-10000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">picked up</a>&nbsp;10,000 shares and director Eric Richman&nbsp;<a href=\"https://www.tickerreport.com/banking-finance/3031799/adma-biologics-inc-adma-director-eric-i-richman-acquires-25000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">bought</a>&nbsp;25,000 shares. All transactions occurred on November 9th.</p><p><br></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,NULL,5.00,0.00,13.00,NULL,NULL,3.19,5,'2017-11-24 22:02:10','2018-05-02 02:20:15'),('ï¿½ï¿½\"ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','ADMS','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075911-behind-adamas-big-month-long-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,6,0,0,0,'2017-11-25 00:40:39',35.00,0.00,48.00,'2017-11-25 00:40:39',NULL,33.68,5,'2017-11-25 00:40:39','2018-05-02 02:20:15'),('ï¿½ï¿½$ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">The median analyst price target on EPZM is just over $22.00 a share by the ten or so analysts that cover the company. A slew of analyst commentary came out earlier this month. HC Wainwright reiterated their buy rating and price target of $25 a share. Also, on Nov. 2, 2017, Leerink also came out and reiterated their outperform rating, but lowered their price target from $28 to $22 a share. The analyst over at&nbsp;</span><a href=\"https://thefly.com/landingPageNews.php?id=2634655&amp;headline=EPZM-Epizyme-price-target-lowered-to--from--at-Leerink\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">Leerink stated</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;that \"the most significant disclosure concerned regulatory timelines for its lead asset, tazemetostat, which is now likely to be approved for its first indication in 2019, rather than 2018, and for its most important indication, NHL, in 2020, rather than 2018.\" RBC Capital seems to be the only analyst firm with a negative view on the stock, recently reissuing their Hold rating and $16 price target.</span></p><p>https://seekingalpha.com/article/4127139-initiating-epizyme-watch-item-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',1,1,1,0,0,'2017-11-25 16:12:06',22.00,16.00,0.00,'2017-11-25 16:12:06',NULL,11.90,5,'2017-11-25 16:12:06','2018-05-02 02:20:15'),('ï¿½ï¿½&S@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','ACAD','<p><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Acadia Pharmaceuticals (</strong><a href=\"https://seekingalpha.com/symbol/ACAD\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>ACAD</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;got several positive mentions after earnings results last week. JP Morgan ($50 price target) and H.C. Wainwright ($60 price target) reiterated their Buy ratings last Wednesday. Friday, Cowen &amp; Co. ($50 price target). I have to agree with these analyst firms. The stock\'s over 10% pullback last week seem more than overdone given the company easily&nbsp;</span><a href=\"https://seekingalpha.com/news/3309283-acadia-pharma-beats-0_09-beats-revenue\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">beat</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;top and bottom line expectations.</span></p><p><br></p><p><span class=\"ql-cursor\">ï»¿</span>https://seekingalpha.com/article/4124394-biotech-forum-daily-digest-behind-omeros-blowout-results?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,52.00,47.00,61.00,'2017-11-27 19:22:18','2ï¿½ï¿½@ï¿½\ï¿',NULL,7,'2017-11-27 19:22:18','2018-05-02 02:20:15'),('ï¿½ï¿½(@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','TGTX','<p>TGTX............H.C. Wainwright analyst Edward White assigned a Buy rating to TG Therapeutics (NASDAQ: TGTX) today and set a price target of $33. The companyâ€™s shares opened today at $7.70.</p><p><br></p><p>White said:</p><p><br></p><p>â€œTG Announces New Phase 2 Trial in Follicular Lymphoma for Umbralisib New trial in FL. TG Therapeutics announced this morning that it, along with SWOG, the global cancer clinical trials group funded by the National Cancer Institute, has initiated a three arm Phase 2 trial evaluating the combination of umbralisib (TGR-1202), TGâ€™s oral PI3K delta inhibitor, plus obinutuzumab (Gazyva), compared to the combination of obinutuzumab plus lenalidomide, and obinituzumab plus CHOP, in patients with early relapsing or refractory Grade I, II, or IIIa follicular lymphoma (FL). The study, which will be run independently by SWOG, expects to enroll 50 patients per arm. The study is now open at over 100 sites in the US. The goal of the study is to assess CR following six cycles of treatment. Secondary endpoints include ORR, DOR and PFS. Safety will also be evaluated.â€</p>',5,0,0,0,0,'2017-12-01 16:00:29',24.88,21.50,33.00,'2017-12-01 16:00:29','2ï¿½p@ï¿½ï¿½',NULL,6,'2017-12-01 16:00:29','2018-05-02 02:20:15'),('ï¿½ï¿½*ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','BNFT','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074021-portfolio-change-alert-adding-benefitfocus-portfolio#comments</p>',4,1,3,0,0,'2017-11-27 17:52:57',35.50,33.00,43.00,'2017-11-27 17:52:57','2ï¿½\r@ï¿½ï¿½',26.65,5,'2017-11-27 17:52:57','2018-05-02 02:20:15'),('ï¿½ï¿½,K@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','SGYP','<p>https://www.tipranks.com/stocks/sgyp/price-target</p>',0,0,0,0,0,NULL,7.75,2.50,13.00,'2017-11-27 19:10:43','2ï¿½p@ï¿½ï¿½',1.89,5,'2017-11-27 19:10:43','2018-05-02 02:20:15'),('ï¿½ï¿½;ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','FLXN','<p>https://www.tipranks.com/stocks/flxn/price-target</p>',0,6,0,0,0,'2017-11-27 19:40:35',36.40,34.00,44.00,'2017-11-27 19:41:00','2ï¿½p@ï¿½ï¿½',NULL,6,'2017-11-27 19:41:00','2018-05-02 02:20:15'),('ï¿½ï¿½=ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','ZYNE','',0,4,2,0,0,'2017-11-27 20:16:25',14.00,7.00,20.00,'2017-11-27 20:16:25','2ï¿½p@ï¿½ï¿½',13.74,5,'2017-11-27 20:16:25','2018-05-02 02:20:15'),('ï¿½ï¿½?8@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','NEOS','',6,0,0,0,0,'2017-12-01 14:15:28',18.00,12.00,30.00,'2017-12-01 14:15:28','2ï¿½p@ï¿½ï¿½',10.30,5,'2017-12-01 14:15:28','2018-05-02 02:20:15'),('ï¿½ï¿½@ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','OMER','',4,0,0,0,0,'2017-12-01 14:18:38',30.00,19.00,47.00,'2017-12-01 14:18:38','2ï¿½p@ï¿½ï¿½',20.75,5,'2017-12-01 14:18:38','2018-05-02 02:20:15'),('ï¿½ï¿½Bp@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','PGNX','',2,0,0,0,0,'2017-12-01 14:21:20',13.50,12.00,15.00,'2017-12-01 14:21:20','2ï¿½p@ï¿½ï¿½',5.78,5,'2017-12-01 14:21:20','2018-05-02 02:20:15'),('ï¿½ï¿½D@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','REPH','',2,0,0,0,0,'2017-12-01 14:49:14',14.50,11.00,18.00,'2017-12-01 14:49:14','2ï¿½p@ï¿½ï¿½',9.68,5,'2017-12-01 14:49:14','2018-05-02 02:20:15'),('ï¿½ï¿½Eï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','AXON','',0,4,3,0,1,'2017-12-12 20:48:38',16.00,3.00,40.00,'2017-12-12 20:48:38','2ï¿½\r@ï¿½ï¿½',5.43,5,'2017-12-12 20:48:38','2018-05-02 02:20:15'),('ï¿½ï¿½G8@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','FOLD','',0,3,0,0,0,'2017-12-13 18:07:30',20.00,18.00,22.00,'2017-12-13 18:07:30',NULL,12.93,5,'2017-12-13 18:07:30','2018-05-02 02:20:15'),('ï¿½ï¿½Hï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','KPTI','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5085973-revisiting-karyopharm-therapeutics-ash?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2017-12-18 17:17:35',18.00,0.00,23.00,'2017-12-18 17:17:35','2ï¿½\r@ï¿½ï¿½',9.19,5,'2017-12-18 17:17:35','2018-05-02 02:20:15'),('ï¿½ï¿½Jï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','VSTM','<p>https://seekingalpha.com/article/4131590-verastem-revisiting-small-biotech-name-ash?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,15.00,10.00,17.00,'2018-03-15 15:13:45','2ï¿½\n\r@ï¿½ï¿½',NULL,6,'2018-03-15 15:13:45','2018-05-02 02:20:15'),('ï¿½ï¿½LJ@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','MLNT','<p>https://seekingalpha.com/article/4131098-can-cempra-rise-like-phoenix?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,21.00,0.00,0.00,'2017-12-18 17:26:54',NULL,16.70,5,'2017-12-18 17:26:54','2018-05-02 02:20:15'),('ï¿½ï¿½Mï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','OCUL','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">OCUL: Since 11/16 Insider Buys by 4 officers totaling &gt; $300k; owned before, re-established position, 4 analysts targets from $10 to $21, with average $14.33</span></p>',0,0,0,0,0,NULL,14.33,10.00,21.00,'2017-12-18 18:06:26','2ï¿½ï¿½@ï¿½\ï¿',4.75,5,'2017-12-18 18:06:26','2018-05-02 02:20:15'),('ï¿½ï¿½Oï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','SRNE','',0,1,0,0,0,'2017-12-18 19:19:23',6.00,6.00,6.00,'2017-12-18 19:19:23','2ï¿½p@ï¿½ï¿½',3.23,5,'2017-12-18 19:19:23','2018-05-02 02:20:15'),('ï¿½ï¿½Q4@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','GEMP','<p>https://seekingalpha.com/article/4104409-gemphire-therapeutics-take-10-biotech-concern</p>',0,2,0,0,0,'2017-12-26 16:17:34',22.00,0.00,31.00,'2017-12-26 16:17:34','2ï¿½\n\r@ï¿½ï¿½',NULL,7,'2017-12-26 16:18:11','2018-05-02 02:20:15'),('ï¿½ï¿½Si@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','AGRX','<p>https://seekingalpha.com/article/4133904-biotech-forum-daily-digest-behind-fates-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2017-12-26 16:30:42',14.00,0.00,0.00,'2017-12-26 16:30:42','2ï¿½\n\r@ï¿½ï¿½',2.79,5,'2017-12-26 16:30:42','2018-05-02 02:20:15'),('ï¿½ï¿½Uï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','IOVA','<p>https://seekingalpha.com/article/4085415-lies-ahead-lion-biotechnogolies</p>',0,4,0,0,0,'2017-12-26 16:40:10',15.50,11.00,20.00,'2017-12-26 16:40:10','2ï¿½\n\r@ï¿½ï¿½',8.22,5,'2017-12-26 16:40:10','2018-05-02 02:20:15'),('ï¿½ï¿½Xm@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','RNN','<p>Lots of chatter on BTF</p><p>http://www.4-traders.com/REXAHN-PHARMACEUTICALS-I-3064379/consensus/</p>',0,3,0,0,0,'2017-12-28 17:02:26',17.50,0.00,0.00,'2017-12-28 17:02:26','2ï¿½ï¿½@ï¿½\ï¿',2.08,5,'2017-12-28 17:02:26','2018-05-02 02:20:15'),('ï¿½ï¿½Z@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','HRTX','',0,6,0,0,0,'2018-01-19 17:27:52',29.60,22.00,40.00,'2018-01-19 17:27:52','2ï¿½p@ï¿½ï¿½',23.18,5,'2018-01-19 17:27:52','2018-05-02 02:20:15'),('ï¿½ï¿½[ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','QTNT','',0,1,0,0,0,'2018-01-26 15:06:54',12.00,0.00,0.00,'2018-01-26 15:06:54','2ï¿½p@ï¿½ï¿½',3.32,5,'2018-01-26 15:06:54','2018-05-02 02:20:15'),('ï¿½ï¿½]F@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','CRBP','<p>https://seekingalpha.com/research/498952-bret-jensen/5105414-deep-dive-corbus-pharmaceuticals#comments</p>',0,3,0,0,0,'2018-01-29 16:58:33',26.00,24.00,28.00,'2018-01-29 16:58:33',NULL,8.82,5,'2018-01-29 16:58:33','2018-05-02 02:20:15'),('ï¿½ï¿½^ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','AKAO','<p>MY NOTES</p>',0,7,0,0,0,'2018-02-07 15:24:01',26.00,14.00,31.00,'2018-02-07 15:24:01','2ï¿½p@ï¿½ï¿½',NULL,7,'2018-02-07 18:40:58','2018-05-02 02:20:15'),('ï¿½ï¿½`ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','AGEN','<p>https://seekingalpha.com/article/4148191-agenus-positioned-rapidly-enhance-shareholder-value</p>',0,0,0,0,0,NULL,9.00,7.00,15.00,'2018-02-20 18:21:36',NULL,4.78,5,'2018-02-20 18:21:36','2018-05-02 02:20:15'),('ï¿½ï¿½b5@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','ITCI','<p>https://seekingalpha.com/article/4150658-biotech-forum-daily-digest-february-26th?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2018-02-27 15:55:33',25.00,0.00,33.00,'2018-02-27 15:55:33','2ï¿½\n\r@ï¿½ï¿½',NULL,6,'2018-02-27 15:56:22','2018-05-02 02:20:15'),('ï¿½ï¿½cï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\è','KMPH','<p>https://seekingalpha.com/article/4150658-biotech-forum-daily-digest-february-26th?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2018-02-27 15:56:02',11.00,0.00,13.00,'2018-02-27 15:56:02','2ï¿½\n\r@ï¿½ï¿½',NULL,6,'2018-02-27 15:56:13','2018-05-02 02:20:15'),('ï¿½ï¿½eg@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','SNDX','<p>https://seekingalpha.com/article/4157059-syndax-revisiting-surging-busted-ipo?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,0.00,0.00,0.00,NULL,'2ï¿½\r@ï¿½ï¿½',14.01,5,'2018-03-16 15:35:03','2018-05-02 02:20:15'),('ï¿½ï¿½g@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','AAPL','<p>apple is great</p>',2,3,2,0,0,'2018-03-25 18:27:10',175.00,150.00,200.00,'2018-03-25 18:35:04',NULL,NULL,6,'2018-03-25 18:35:04','2018-05-02 02:20:15');
+INSERT INTO `stock_analyst_consensus` (`uuid`, `customer_uuid`, `ticker_symbol`, `comments`, `analyst_strong_buy_count`, `analyst_buy_count`, `analyst_hold_count`, `analyst_under_perform_count`, `analyst_sell_count`, `analyst_sentiment_date`, `avg_analyst_price_target`, `low_analyst_price_target`, `high_analyst_price_target`, `analyst_price_date`, `notes_source_uuid`, `stock_price_when_created`, `version`, `create_date`, `update_date`) VALUES ('ï¿½ï¿½[@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','ADMA','<p>There is very sparse analyst coverage on this small cap name.&nbsp;In mid-November the stock&nbsp;<a href=\"https://www.benzinga.com/news/17/11/10778171/raymond-james-upgrades-adma-biologics-to-outperform\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">was upgraded to Outperform at Raymond James</a>&nbsp;with a $5 price target, as the analyst cited increased confidence that RI-002 would be eventually approved and lowered risk after the recent equity raise.&nbsp;Maxim Group issued a Buy rating and a $13 price target some five months ago.</p><p>Insiders have been purchasing shares recently, including beneficial owner Biotest AG scooping up 5,813,954 shares in the latest secondary. CMO James Mond&nbsp;<a href=\"https://www.chaffeybreeze.com/2017/11/14/adma-biologics-inc-adma-cmo-james-mond-purchases-10000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">picked up</a>&nbsp;10,000 shares and director Eric Richman&nbsp;<a href=\"https://www.tickerreport.com/banking-finance/3031799/adma-biologics-inc-adma-director-eric-i-richman-acquires-25000-shares-of-stock.html\" target=\"_blank\" style=\"color: rgb(2, 73, 153);\">bought</a>&nbsp;25,000 shares. All transactions occurred on November 9th.</p><p><br></p><p>https://seekingalpha.com/instablog/498952-bret-jensen/5075939-hope-3-biotech-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,NULL,5.00,0.00,13.00,NULL,NULL,3.19,5,'2017-11-24 22:02:10','2018-05-02 02:20:15'),('ï¿½ï¿½\"ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','ADMS','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5075911-behind-adamas-big-month-long-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,6,0,0,0,'2017-11-25 00:40:39',35.00,0.00,48.00,'2017-11-25 00:40:39',NULL,33.68,5,'2017-11-25 00:40:39','2018-05-02 02:20:15'),('ï¿½ï¿½$ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','EPZM','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">The median analyst price target on EPZM is just over $22.00 a share by the ten or so analysts that cover the company. A slew of analyst commentary came out earlier this month. HC Wainwright reiterated their buy rating and price target of $25 a share. Also, on Nov. 2, 2017, Leerink also came out and reiterated their outperform rating, but lowered their price target from $28 to $22 a share. The analyst over at&nbsp;</span><a href=\"https://thefly.com/landingPageNews.php?id=2634655&amp;headline=EPZM-Epizyme-price-target-lowered-to--from--at-Leerink\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">Leerink stated</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;that \"the most significant disclosure concerned regulatory timelines for its lead asset, tazemetostat, which is now likely to be approved for its first indication in 2019, rather than 2018, and for its most important indication, NHL, in 2020, rather than 2018.\" RBC Capital seems to be the only analyst firm with a negative view on the stock, recently reissuing their Hold rating and $16 price target.</span></p><p>https://seekingalpha.com/article/4127139-initiating-epizyme-watch-item-stock?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',1,1,1,0,0,'2017-11-25 16:12:06',22.00,16.00,0.00,'2017-11-25 16:12:06',NULL,11.90,5,'2017-11-25 16:12:06','2018-05-02 02:20:15'),('ï¿½ï¿½&S@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','ACAD','<p><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">Acadia Pharmaceuticals (</strong><a href=\"https://seekingalpha.com/symbol/ACAD\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\"><strong>ACAD</strong></a><strong style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">)</strong><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;got several positive mentions after earnings results last week. JP Morgan ($50 price target) and H.C. Wainwright ($60 price target) reiterated their Buy ratings last Wednesday. Friday, Cowen &amp; Co. ($50 price target). I have to agree with these analyst firms. The stock\'s over 10% pullback last week seem more than overdone given the company easily&nbsp;</span><a href=\"https://seekingalpha.com/news/3309283-acadia-pharma-beats-0_09-beats-revenue\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">beat</a><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">&nbsp;top and bottom line expectations.</span></p><p><br></p><p><span class=\"ql-cursor\">ï»¿</span>https://seekingalpha.com/article/4124394-biotech-forum-daily-digest-behind-omeros-blowout-results?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,52.00,47.00,61.00,'2017-11-27 19:22:18','2ï¿½ï¿½@ï¿½\ï¿',NULL,7,'2017-11-27 19:22:18','2018-05-02 02:20:15'),('ï¿½ï¿½(@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','TGTX','<p>TGTX............H.C. Wainwright analyst Edward White assigned a Buy rating to TG Therapeutics (NASDAQ: TGTX) today and set a price target of $33. The companyâ€™s shares opened today at $7.70.</p><p><br></p><p>White said:</p><p><br></p><p>â€œTG Announces New Phase 2 Trial in Follicular Lymphoma for Umbralisib New trial in FL. TG Therapeutics announced this morning that it, along with SWOG, the global cancer clinical trials group funded by the National Cancer Institute, has initiated a three arm Phase 2 trial evaluating the combination of umbralisib (TGR-1202), TGâ€™s oral PI3K delta inhibitor, plus obinutuzumab (Gazyva), compared to the combination of obinutuzumab plus lenalidomide, and obinituzumab plus CHOP, in patients with early relapsing or refractory Grade I, II, or IIIa follicular lymphoma (FL). The study, which will be run independently by SWOG, expects to enroll 50 patients per arm. The study is now open at over 100 sites in the US. The goal of the study is to assess CR following six cycles of treatment. Secondary endpoints include ORR, DOR and PFS. Safety will also be evaluated.â€</p>',5,0,0,0,0,'2017-12-01 16:00:29',24.88,21.50,33.00,'2017-12-01 16:00:29','2ï¿½p@ï¿½ï¿½',NULL,6,'2017-12-01 16:00:29','2018-05-02 02:20:15'),('ï¿½ï¿½*ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','BNFT','<p>https://seekingalpha.com/research/48630172-busted-ipo-forum/5074021-portfolio-change-alert-adding-benefitfocus-portfolio#comments</p>',4,1,3,0,0,'2017-11-27 17:52:57',35.50,33.00,43.00,'2017-11-27 17:52:57','2ï¿½\r@ï¿½ï¿½',26.65,5,'2017-11-27 17:52:57','2018-05-02 02:20:15'),('ï¿½ï¿½,K@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','SGYP','<p>https://www.tipranks.com/stocks/sgyp/price-target</p>',0,0,0,0,0,NULL,7.75,2.50,13.00,'2017-11-27 19:10:43','2ï¿½p@ï¿½ï¿½',1.89,5,'2017-11-27 19:10:43','2018-05-02 02:20:15'),('ï¿½ï¿½;ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','FLXN','<p>https://www.tipranks.com/stocks/flxn/price-target</p>',0,6,0,0,0,'2017-11-27 19:40:35',36.40,34.00,44.00,'2017-11-27 19:41:00','2ï¿½p@ï¿½ï¿½',NULL,6,'2017-11-27 19:41:00','2018-05-02 02:20:15'),('ï¿½ï¿½=ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','ZYNE','',0,4,2,0,0,'2017-11-27 20:16:25',14.00,7.00,20.00,'2017-11-27 20:16:25','2ï¿½p@ï¿½ï¿½',13.74,5,'2017-11-27 20:16:25','2018-05-02 02:20:15'),('ï¿½ï¿½?8@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','NEOS','',6,0,0,0,0,'2017-12-01 14:15:28',18.00,12.00,30.00,'2017-12-01 14:15:28','2ï¿½p@ï¿½ï¿½',10.30,5,'2017-12-01 14:15:28','2018-05-02 02:20:15'),('ï¿½ï¿½@ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','OMER','',4,0,0,0,0,'2017-12-01 14:18:38',30.00,19.00,47.00,'2017-12-01 14:18:38','2ï¿½p@ï¿½ï¿½',20.75,5,'2017-12-01 14:18:38','2018-05-02 02:20:15'),('ï¿½ï¿½Bp@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','PGNX','',2,0,0,0,0,'2017-12-01 14:21:20',13.50,12.00,15.00,'2017-12-01 14:21:20','2ï¿½p@ï¿½ï¿½',5.78,5,'2017-12-01 14:21:20','2018-05-02 02:20:15'),('ï¿½ï¿½D@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','REPH','',2,0,0,0,0,'2017-12-01 14:49:14',14.50,11.00,18.00,'2017-12-01 14:49:14','2ï¿½p@ï¿½ï¿½',9.68,5,'2017-12-01 14:49:14','2018-05-02 02:20:15'),('ï¿½ï¿½Eï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','AXON','',0,4,3,0,1,'2017-12-12 20:48:38',16.00,3.00,40.00,'2017-12-12 20:48:38','2ï¿½\r@ï¿½ï¿½',5.43,5,'2017-12-12 20:48:38','2018-05-02 02:20:15'),('ï¿½ï¿½G8@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','FOLD','',0,3,0,0,0,'2017-12-13 18:07:30',20.00,18.00,22.00,'2017-12-13 18:07:30',NULL,12.93,5,'2017-12-13 18:07:30','2018-05-02 02:20:15'),('ï¿½ï¿½Hï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','KPTI','<p>https://seekingalpha.com/instablog/498952-bret-jensen/5085973-revisiting-karyopharm-therapeutics-ash?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2017-12-18 17:17:35',18.00,0.00,23.00,'2017-12-18 17:17:35','2ï¿½\r@ï¿½ï¿½',9.19,5,'2017-12-18 17:17:35','2018-05-02 02:20:15'),('ï¿½ï¿½Jï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','VSTM','<p>https://seekingalpha.com/article/4131590-verastem-revisiting-small-biotech-name-ash?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,15.00,10.00,17.00,'2018-03-15 15:13:45','2ï¿½\n\r@ï¿½ï¿½',NULL,6,'2018-03-15 15:13:45','2018-05-02 02:20:15'),('ï¿½ï¿½LJ@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','MLNT','<p>https://seekingalpha.com/article/4131098-can-cempra-rise-like-phoenix?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,21.00,0.00,0.00,'2017-12-18 17:26:54',NULL,16.70,5,'2017-12-18 17:26:54','2018-05-02 02:20:15'),('ï¿½ï¿½Mï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','OCUL','<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);\">OCUL: Since 11/16 Insider Buys by 4 officers totaling &gt; $300k; owned before, re-established position, 4 analysts targets from $10 to $21, with average $14.33</span></p>',0,0,0,0,0,NULL,14.33,10.00,21.00,'2017-12-18 18:06:26','2ï¿½ï¿½@ï¿½\ï¿',4.75,5,'2017-12-18 18:06:26','2018-05-02 02:20:15'),('ï¿½ï¿½Oï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','SRNE','',0,1,0,0,0,'2017-12-18 19:19:23',6.00,6.00,6.00,'2017-12-18 19:19:23','2ï¿½p@ï¿½ï¿½',3.23,5,'2017-12-18 19:19:23','2018-05-02 02:20:15'),('ï¿½ï¿½Q4@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','GEMP','<p>https://seekingalpha.com/article/4104409-gemphire-therapeutics-take-10-biotech-concern</p>',0,2,0,0,0,'2017-12-26 16:17:34',22.00,0.00,31.00,'2017-12-26 16:17:34','2ï¿½\n\r@ï¿½ï¿½',NULL,7,'2017-12-26 16:18:11','2018-05-02 02:20:15'),('ï¿½ï¿½Si@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','AGRX','<p>https://seekingalpha.com/article/4133904-biotech-forum-daily-digest-behind-fates-rally?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2017-12-26 16:30:42',14.00,0.00,0.00,'2017-12-26 16:30:42','2ï¿½\n\r@ï¿½ï¿½',2.79,5,'2017-12-26 16:30:42','2018-05-02 02:20:15'),('ï¿½ï¿½Uï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','IOVA','<p>https://seekingalpha.com/article/4085415-lies-ahead-lion-biotechnogolies</p>',0,4,0,0,0,'2017-12-26 16:40:10',15.50,11.00,20.00,'2017-12-26 16:40:10','2ï¿½\n\r@ï¿½ï¿½',8.22,5,'2017-12-26 16:40:10','2018-05-02 02:20:15'),('ï¿½ï¿½Xm@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','RNN','<p>Lots of chatter on BTF</p><p>http://www.4-traders.com/REXAHN-PHARMACEUTICALS-I-3064379/consensus/</p>',0,3,0,0,0,'2017-12-28 17:02:26',17.50,0.00,0.00,'2017-12-28 17:02:26','2ï¿½ï¿½@ï¿½\ï¿',2.08,5,'2017-12-28 17:02:26','2018-05-02 02:20:15'),('ï¿½ï¿½Z@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','HRTX','',0,6,0,0,0,'2018-01-19 17:27:52',29.60,22.00,40.00,'2018-01-19 17:27:52','2ï¿½p@ï¿½ï¿½',23.18,5,'2018-01-19 17:27:52','2018-05-02 02:20:15'),('ï¿½ï¿½[ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','QTNT','',0,1,0,0,0,'2018-01-26 15:06:54',12.00,0.00,0.00,'2018-01-26 15:06:54','2ï¿½p@ï¿½ï¿½',3.32,5,'2018-01-26 15:06:54','2018-05-02 02:20:15'),('ï¿½ï¿½]F@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','CRBP','<p>https://seekingalpha.com/research/498952-bret-jensen/5105414-deep-dive-corbus-pharmaceuticals#comments</p>',0,3,0,0,0,'2018-01-29 16:58:33',26.00,24.00,28.00,'2018-01-29 16:58:33',NULL,8.82,5,'2018-01-29 16:58:33','2018-05-02 02:20:15'),('ï¿½ï¿½^ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','AKAO','<p>MY NOTES</p>',0,7,0,0,0,'2018-02-07 15:24:01',26.00,14.00,31.00,'2018-02-07 15:24:01','2ï¿½p@ï¿½ï¿½',NULL,7,'2018-02-07 18:40:58','2018-05-02 02:20:15'),('ï¿½ï¿½`ï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','AGEN','<p>https://seekingalpha.com/article/4148191-agenus-positioned-rapidly-enhance-shareholder-value</p>',0,0,0,0,0,NULL,9.00,7.00,15.00,'2018-02-20 18:21:36',NULL,4.78,5,'2018-02-20 18:21:36','2018-05-02 02:20:15'),('ï¿½ï¿½b5@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','ITCI','<p>https://seekingalpha.com/article/4150658-biotech-forum-daily-digest-february-26th?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2018-02-27 15:55:33',25.00,0.00,33.00,'2018-02-27 15:55:33','2ï¿½\n\r@ï¿½ï¿½',NULL,6,'2018-02-27 15:56:22','2018-05-02 02:20:15'),('ï¿½ï¿½cï¿½@ï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','KMPH','<p>https://seekingalpha.com/article/4150658-biotech-forum-daily-digest-february-26th?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,2,0,0,0,'2018-02-27 15:56:02',11.00,0.00,13.00,'2018-02-27 15:56:02','2ï¿½\n\r@ï¿½ï¿½',NULL,6,'2018-02-27 15:56:13','2018-05-02 02:20:15'),('ï¿½ï¿½eg@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','SNDX','<p>https://seekingalpha.com/article/4157059-syndax-revisiting-surging-busted-ipo?app=1&amp;uprof=45&amp;isDirectRoadblock=true</p>',0,0,0,0,0,NULL,0.00,0.00,0.00,NULL,'2ï¿½\r@ï¿½ï¿½',14.01,5,'2018-03-16 15:35:03','2018-05-02 02:20:15'),('ï¿½ï¿½g@ï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','AAPL','<p>apple is great</p>',2,3,2,0,0,'2018-03-25 18:27:10',175.00,150.00,200.00,'2018-03-25 18:35:04',NULL,NULL,6,'2018-03-25 18:35:04','2018-05-02 02:20:15');
 /*!40000 ALTER TABLE `stock_analyst_consensus` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -563,9 +563,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -653,7 +653,7 @@ CREATE TABLE `stock_catalyst_event` (
 
 LOCK TABLES `stock_catalyst_event` WRITE;
 /*!40000 ALTER TABLE `stock_catalyst_event` DISABLE KEYS */;
-INSERT INTO `stock_catalyst_event` (`uuid`, `customer_uuid`, `ticker_symbol`, `catalyst_date`, `catalyst_desc`, `create_date`, `update_date`, `date_or_time_period`, `time_period`, `time_period_year`, `version`) VALUES ('ï¿½ï¿½@o@\Zï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','NVAX',NULL,'<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">The Phase 3 trial will report interim results in H2 2018</span></p><p>https://seekingalpha.com/article/4127148-novavaxs-november-jump-start-something-bigger?app=1&amp;auth_param=1ba2vi:1d1bagc:81c92a0ad257cd58b07f0dd7b92d7530&amp;uprof=45&amp;dr=1#alt1</p>','2017-11-22 22:15:45','2018-04-14 19:35:24',1,1,2018,3),('ï¿½ï¿½Eï¿½@\Zï¿½','ï¿½oï¿½ï¿½<ï¿½\è','RVNC',NULL,'<p><span style=\"color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);\">&nbsp;Phase 3 readouts for glabellar lines in 4Q17</span></p><p><span style=\"color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);\"><span class=\"ql-cursor\">ï»¿</span>In addition, a Phase 2 readout is expected for the plantar fasciitis indication at the end of the year.</span></p>','2017-11-25 01:24:22','2018-04-14 19:35:24',1,5,2017,3),('ï¿½ï¿½Gw@\Zï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','NVAx',NULL,'<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">NVAX stated its intention to share topline data from the trial&nbsp;</span><a href=\"https://seekingalpha.com/article/4121969-novavaxs-nvax-ceo-stanley-erck-q3-2017-results-earnings-call-transcript?part=single\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">before the end of the year</a></p><p><span class=\"ql-cursor\">ï»¿</span>https://seekingalpha.com/article/4127148-novavaxs-november-jump-start-something-bigger?app=1&amp;auth_param=1ba2vi:1d1bagc:81c92a0ad257cd58b07f0dd7b92d7530&amp;uprof=45&amp;dr=1#alt1</p>','2017-11-25 01:29:09','2018-04-14 19:35:24',1,5,2017,3),('ï¿½ï¿½I@\Zï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\è','SGYP',NULL,'<p>cancelled</p>','2018-02-08 22:13:25','2018-04-14 19:35:24',0,0,2017,3);
+INSERT INTO `stock_catalyst_event` (`uuid`, `customer_uuid`, `ticker_symbol`, `catalyst_date`, `catalyst_desc`, `create_date`, `update_date`, `date_or_time_period`, `time_period`, `time_period_year`, `version`) VALUES ('ï¿½ï¿½@o@\Zï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','NVAX',NULL,'<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">The Phase 3 trial will report interim results in H2 2018</span></p><p>https://seekingalpha.com/article/4127148-novavaxs-november-jump-start-something-bigger?app=1&amp;auth_param=1ba2vi:1d1bagc:81c92a0ad257cd58b07f0dd7b92d7530&amp;uprof=45&amp;dr=1#alt1</p>','2017-11-22 22:15:45','2018-04-14 19:35:24',1,1,2018,3),('ï¿½ï¿½Eï¿½@\Zï¿½','ï¿½oï¿½ï¿½<ï¿½\ï','RVNC',NULL,'<p><span style=\"color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);\">&nbsp;Phase 3 readouts for glabellar lines in 4Q17</span></p><p><span style=\"color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);\"><span class=\"ql-cursor\">ï»¿</span>In addition, a Phase 2 readout is expected for the plantar fasciitis indication at the end of the year.</span></p>','2017-11-25 01:24:22','2018-04-14 19:35:24',1,5,2017,3),('ï¿½ï¿½Gw@\Zï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','NVAx',NULL,'<p><span style=\"background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);\">NVAX stated its intention to share topline data from the trial&nbsp;</span><a href=\"https://seekingalpha.com/article/4121969-novavaxs-nvax-ceo-stanley-erck-q3-2017-results-earnings-call-transcript?part=single\" target=\"_blank\" style=\"background-color: rgb(255, 255, 255); color: rgb(2, 73, 153);\">before the end of the year</a></p><p><span class=\"ql-cursor\">ï»¿</span>https://seekingalpha.com/article/4127148-novavaxs-november-jump-start-something-bigger?app=1&amp;auth_param=1ba2vi:1d1bagc:81c92a0ad257cd58b07f0dd7b92d7530&amp;uprof=45&amp;dr=1#alt1</p>','2017-11-25 01:29:09','2018-04-14 19:35:24',1,5,2017,3),('ï¿½ï¿½I@\Zï¿½\ï¿','ï¿½oï¿½ï¿½<ï¿½\ï','SGYP',NULL,'<p>cancelled</p>','2018-02-08 22:13:25','2018-04-14 19:35:24',0,0,2017,3);
 /*!40000 ALTER TABLE `stock_catalyst_event` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -672,9 +672,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -742,9 +742,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -826,9 +826,9 @@ DELIMITER ;;
      */
 	IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -936,9 +936,9 @@ DELIMITER ;;
     
 	IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -988,7 +988,7 @@ CREATE TABLE `stock_note_source` (
 
 LOCK TABLES `stock_note_source` WRITE;
 /*!40000 ALTER TABLE `stock_note_source` DISABLE KEYS */;
-INSERT INTO `stock_note_source` (`uuid`, `name`, `customer_uuid`, `times_used`, `create_date`, `update_date`, `version`) VALUES ('2ï¿½ï¿½@ï¿½\ï¿','NEW SOURCE','ï¿½oï¿½ï¿½<ï¿½\è',1,'2017-09-17 14:59:05','2018-04-14 12:08:19',3),('2ï¿½}@ï¿½ï¿½','GOLD WRITER','ï¿½oï¿½ï¿½<ï¿½\è',1,'2017-09-17 15:02:14','2018-04-14 12:08:19',3),('2ï¿½\n\r@ï¿½ï¿½','BIOTECH FORUM EMAIL','ï¿½oï¿½ï¿½<ï¿½\è',91,'2017-09-17 15:10:37','2018-04-28 18:40:18',60),('2ï¿½ï¿½@ï¿½\ï¿','BIOTECH FORUM','ï¿½oï¿½ï¿½<ï¿½\è',49,'2017-10-25 07:49:55','2018-04-28 18:40:18',32),('2ï¿½\r@ï¿½ï¿½','BUSTED IPO EMAIL','ï¿½oï¿½ï¿½<ï¿½\è',29,'2017-11-21 13:45:56','2018-04-28 18:40:18',22),('2ï¿½i@ï¿½ï¿½','SEEKING ALPHA','ï¿½oï¿½ï¿½<ï¿½\è',40,'2017-11-22 09:53:56','2018-04-28 18:40:18',28),('2ï¿½ï¿½@ï¿½\ï¿','INSIDERS FORUM EMAIL','ï¿½oï¿½ï¿½<ï¿½\è',3,'2017-11-25 08:02:49','2018-04-28 18:40:18',4),('2ï¿½@ï¿½ï¿½','TIM\'S CORNER','ï¿½oï¿½ï¿½<ï¿½\è',2,'2017-11-25 08:16:28','2018-04-28 18:40:18',4),('2ï¿½p@ï¿½ï¿½','TIPRANKS','ï¿½oï¿½ï¿½<ï¿½\è',13,'2017-11-27 11:10:43','2018-04-14 12:08:19',3),('2ï¿½ï¿½@ï¿½\ï¿','null','ï¿½oï¿½ï¿½<ï¿½\è',0,'2017-11-27 11:22:18','2018-04-14 12:08:19',3),('2ï¿½@ï¿½ï¿½','undefined','ï¿½oï¿½ï¿½<ï¿½\è',0,'2017-12-06 07:30:15','2018-04-14 12:08:19',3),('2ï¿½l@ï¿½ï¿½','SMARTER ANALYST.COM','ï¿½oï¿½ï¿½<ï¿½\è',1,'2017-12-18 10:27:51','2018-04-14 12:08:19',3),('2ï¿½ï¿½@ï¿½\ï¿','XYZ','ï¿½oï¿½ï¿½<ï¿½\è',0,'2017-12-18 10:31:55','2018-04-14 12:08:19',3),('2ï¿½E@ï¿½ï¿½','FRED','ï¿½oï¿½ï¿½<ï¿½\è',1,'2018-03-17 08:14:34','2018-04-14 12:08:19',4);
+INSERT INTO `stock_note_source` (`uuid`, `name`, `customer_uuid`, `times_used`, `create_date`, `update_date`, `version`) VALUES ('2ï¿½ï¿½@ï¿½\ï¿','NEW SOURCE','ï¿½oï¿½ï¿½<ï¿½\ï',1,'2017-09-17 14:59:05','2018-04-14 12:08:19',3),('2ï¿½}@ï¿½ï¿½','GOLD WRITER','ï¿½oï¿½ï¿½<ï¿½\ï',1,'2017-09-17 15:02:14','2018-04-14 12:08:19',3),('2ï¿½\n\r@ï¿½ï¿½','BIOTECH FORUM EMAIL','ï¿½oï¿½ï¿½<ï¿½\ï',91,'2017-09-17 15:10:37','2018-04-28 18:40:18',60),('2ï¿½ï¿½@ï¿½\ï¿','BIOTECH FORUM','ï¿½oï¿½ï¿½<ï¿½\ï',49,'2017-10-25 07:49:55','2018-04-28 18:40:18',32),('2ï¿½\r@ï¿½ï¿½','BUSTED IPO EMAIL','ï¿½oï¿½ï¿½<ï¿½\ï',29,'2017-11-21 13:45:56','2018-04-28 18:40:18',22),('2ï¿½i@ï¿½ï¿½','SEEKING ALPHA','ï¿½oï¿½ï¿½<ï¿½\ï',40,'2017-11-22 09:53:56','2018-04-28 18:40:18',28),('2ï¿½ï¿½@ï¿½\ï¿','INSIDERS FORUM EMAIL','ï¿½oï¿½ï¿½<ï¿½\ï',3,'2017-11-25 08:02:49','2018-04-28 18:40:18',4),('2ï¿½@ï¿½ï¿½','TIM\'S CORNER','ï¿½oï¿½ï¿½<ï¿½\ï',2,'2017-11-25 08:16:28','2018-04-28 18:40:18',4),('2ï¿½p@ï¿½ï¿½','TIPRANKS','ï¿½oï¿½ï¿½<ï¿½\ï',13,'2017-11-27 11:10:43','2018-04-14 12:08:19',3),('2ï¿½ï¿½@ï¿½\ï¿','null','ï¿½oï¿½ï¿½<ï¿½\ï',0,'2017-11-27 11:22:18','2018-04-14 12:08:19',3),('2ï¿½@ï¿½ï¿½','undefined','ï¿½oï¿½ï¿½<ï¿½\ï',0,'2017-12-06 07:30:15','2018-04-14 12:08:19',3),('2ï¿½l@ï¿½ï¿½','SMARTER ANALYST.COM','ï¿½oï¿½ï¿½<ï¿½\ï',1,'2017-12-18 10:27:51','2018-04-14 12:08:19',3),('2ï¿½ï¿½@ï¿½\ï¿','XYZ','ï¿½oï¿½ï¿½<ï¿½\ï',0,'2017-12-18 10:31:55','2018-04-14 12:08:19',3),('2ï¿½E@ï¿½ï¿½','FRED','ï¿½oï¿½ï¿½<ï¿½\ï',1,'2018-03-17 08:14:34','2018-04-14 12:08:19',4);
 /*!40000 ALTER TABLE `stock_note_source` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1007,9 +1007,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -1102,9 +1102,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -1188,9 +1188,9 @@ DECLARE ErrorMessage VARCHAR(200);
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -1259,9 +1259,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -1353,9 +1353,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -1423,7 +1423,7 @@ CREATE TABLE `tradeit_account` (
 
 LOCK TABLES `tradeit_account` WRITE;
 /*!40000 ALTER TABLE `tradeit_account` DISABLE KEYS */;
-INSERT INTO `tradeit_account` (`uuid`, `name`, `customer_uuid`, `user_id`, `user_token`, `brokerage`, `auth_token`, `auth_uuid`, `auth_timestamp`, `create_date`, `update_date`, `version`) VALUES ('À¨2c¦cÁy\î\0\0','Dummy Broker','ï¿½oï¿½ï¿½<ï¿½\è','df81525229385797fee0','8InCxKSC99F3FcGbrI9MtGHBoq9GwGOw%2BwjeiVo5NIeSXES2RSWwhmdoQ1Iwwnbugp9z8BwcH4c1Uq7iZ8tqq%2FFfivjTUaMjbKTe38V5VriTDd6zqfCv5GvieQJJNYVASImdmi5paM78WUx26wS4sQ%3D%3D','Dummy',NULL,NULL,NULL,'2018-05-02 02:49:46',NULL,1);
+INSERT INTO `tradeit_account` (`uuid`, `name`, `customer_uuid`, `user_id`, `user_token`, `brokerage`, `auth_token`, `auth_uuid`, `auth_timestamp`, `create_date`, `update_date`, `version`) VALUES ('ï¿½ï¿½2cï¿½\ï¿','Dummy Broker','ï¿½oï¿½ï¿½<ï¿½\ï','df81525229385797fee0','8InCxKSC99F3FcGbrI9MtGHBoq9GwGOw%2BwjeiVo5NIeSXES2RSWwhmdoQ1Iwwnbugp9z8BwcH4c1Uq7iZ8tqq%2FFfivjTUaMjbKTe38V5VriTDd6zqfCv5GvieQJJNYVASImdmi5paM78WUx26wS4sQ%3D%3D','Dummy',NULL,NULL,NULL,'2018-05-02 02:49:46',NULL,1);
 /*!40000 ALTER TABLE `tradeit_account` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1442,9 +1442,9 @@ DELIMITER ;;
      */
     IF NEW.VERSION <> OLD.VERSION
     THEN
-		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
+		SET ErrorMessage = 'VERSION MISMATCH current version: ';
         SET ErrorMessage = CONCAT( ErrorMessage, OLD.VERSION );
-        SET ErrorMessage = CONCAT( ErrorMessage, ' version 2: ' );
+        SET ErrorMessage = CONCAT( ErrorMessage, ' new version: ' );
         SET ErrorMessage = CONCAT( ErrorMessage, NEW.VERSION );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
@@ -1510,4 +1510,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-01 20:43:47
+-- Dump completed on 2018-05-02 19:52:47

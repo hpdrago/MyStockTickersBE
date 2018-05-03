@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -88,9 +88,11 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param tradeItAccountDTO
      * @return TradeItAccountDTO
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
      */
     public TradeItAccountDTO createAccount( final UUID customerUuid, final TradeItAccountDTO tradeItAccountDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerUuid, tradeItAccountDTO );
@@ -119,10 +121,12 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param userToken
      * @return
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
      */
     public TradeItAccountDTO createAccount( final UUID customerUuid, final String broker, final String accountName,
                                             final String userId, final String userToken )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerUuid, broker, accountName, userId, userToken );
@@ -136,7 +140,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
         tradeItAccountEntity.setCustomerByCustomerUuid( this.customerService
-                                                          .getCustomerEntity( customerUuid ) );
+                                                            .getCustomerEntity( customerUuid ) );
         tradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
