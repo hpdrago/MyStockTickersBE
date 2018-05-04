@@ -59,14 +59,35 @@ public class StockInformationService implements MyLogger
      * Updates the quote cache with the last price.
      * @param tickerSymbol
      * @param lastPrice
+     * @throws StockNotFoundException
      */
     public void updateStockPrice( final String tickerSymbol, final BigDecimal lastPrice )
+        throws StockNotFoundException
     {
         final String methodName = "updateStockPrice";
         logMethodBegin( methodName, tickerSymbol, lastPrice );
         this.stockPriceCache
             .updateStockPrice( tickerSymbol, lastPrice );
         logMethodEnd( methodName );
+    }
+
+    /**
+     * Get the last price for the stock synchronously.
+     * @param tickerSymbol
+     * @return The last stock price for the {@code tickerSymbol}
+     * @throws StockNotFoundException
+     */
+    public BigDecimal getLastPrice( final String tickerSymbol )
+        throws StockNotFoundException
+    {
+        final String methodName = "getStockQuote";
+        logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
+                                                              .getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
+        BigDecimal stockPrice = stockPriceCacheEntry.getStockPrice();
+        logMethodBegin( methodName, stockPrice );
+        return stockPrice;
     }
 
     /**
@@ -81,14 +102,15 @@ public class StockInformationService implements MyLogger
      * @throws StockNotFoundException
      * @throws StockCompanyNotFoundException
      */
-    public StockPriceQuoteDTO getStockPriceQuote( final String tickerSymbol,
-                                                  final StockPriceFetchMode stockPriceFetchMode )
+    public StockPriceQuoteDTO getStockQuote( final String tickerSymbol,
+                                             final StockPriceFetchMode stockPriceFetchMode )
         throws StockNotFoundException,
                StockCompanyNotFoundException
     {
-        final String methodName = "getStockPriceQuote";
-        logMethodBegin( methodName, tickerSymbol );
+        final String methodName = "getStockQuote";
+        logMethodBegin( methodName, tickerSymbol, stockPriceFetchMode );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Objects.requireNonNull( stockPriceFetchMode, "stockPriceFetchMode cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
                                                               .getStockPrice( tickerSymbol, stockPriceFetchMode );
@@ -130,31 +152,39 @@ public class StockInformationService implements MyLogger
         logMethodBegin( methodName, container.getTickerSymbol(), stockPriceFetchMode );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
-                                                        .getStockPrice( container.getTickerSymbol(),
-                                                                        stockPriceFetchMode );
-        container.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
-        switch ( stockPriceCacheEntry.getCacheState() )
+        StockPriceCacheEntry stockPriceCacheEntry = null;
+        try
         {
-            case CURRENT:
-                container.setLastPrice( stockPriceCacheEntry.getStockPrice() );
-                break;
+            stockPriceCacheEntry = this.stockPriceCache
+                                       .getStockPrice( container.getTickerSymbol(), stockPriceFetchMode );
+            container.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
+            switch ( stockPriceCacheEntry.getCacheState() )
+            {
+                case CURRENT:
+                    container.setLastPrice( stockPriceCacheEntry.getStockPrice() );
+                    break;
 
-            case NOT_FOUND:
-                // the container is marked as not found.
-                break;
+                case NOT_FOUND:
+                    // the container is marked as not found.
+                    break;
 
-            case STALE:
-                if ( stockPriceFetchMode.isSynchronous() )
-                {
-                    container.setLastPrice( stockPriceCacheEntry.getFetchSubject()
-                                                                .asObservable()
-                                                                .doOnError( throwable ->
-                                                                                container.setStockPriceCacheState( StockPriceCacheState.FAILURE ))
-                                                                .toBlocking()
-                                                                .first() );
-                }
-                break;
+                case STALE:
+                    if ( stockPriceFetchMode.isSynchronous() )
+                    {
+                        container.setLastPrice( stockPriceCacheEntry.getFetchSubject()
+                                                                    .asObservable()
+                                                                    .doOnError( throwable ->
+                                                                                    container
+                                                                                        .setStockPriceCacheState( StockPriceCacheState.FAILURE ) )
+                                                                    .toBlocking()
+                                                                    .first() );
+                    }
+                    break;
+            }
+        }
+        catch( StockNotFoundException e )
+        {
+            // ignore, just don't update the stock price.
         }
         logMethodEnd( methodName, container );
     }
@@ -174,30 +204,6 @@ public class StockInformationService implements MyLogger
         stockPriceQuoteDTO.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
         stockPriceQuoteDTO.setExpirationTime( stockPriceCacheEntry.getExpiration() );
         return stockPriceQuoteDTO;
-    }
-
-    /**
-     * Get the last price for the stock
-     * @param tickerSymbol
-     * @return
-     * @throws StockNotFoundException
-     * @throws StockCompanyNotFoundException
-     */
-    public BigDecimal getStockPriceQuote( final String tickerSymbol )
-        throws StockNotFoundException,
-               StockCompanyNotFoundException
-    {
-        final String methodName = "getStockPriceQuote";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        BigDecimal stockPrice = null;
-        StockPriceQuoteDTO stockPriceQuoteDTO = this.getStockPriceQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
-        if ( !stockPriceQuoteDTO.getStockPriceCacheState().isNotFound() )
-        {
-            stockPrice = this.getStockPriceQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS ).getLastPrice();
-        }
-        logMethodBegin( methodName, stockPrice );
-        return stockPrice;
     }
 
     /**

@@ -95,7 +95,13 @@ public abstract class UuidEntityService<E extends UUIDEntity,
     protected E dtoToEntity( final D dto )
     {
         final E entity = super.dtoToEntity( dto );
-        entity.setUuid( UUIDUtil.uuid( dto.getId() ));
+        /*
+         * For new entities, the dto.id will not be populated.
+         */
+        if ( dto.getId() != null && dto.getId().length() > 0 )
+        {
+            entity.setUuid( UUIDUtil.uuid( dto.getId() ) );
+        }
         /*
          * Convert the customer id (string) to a customer uuid (binary)
          */

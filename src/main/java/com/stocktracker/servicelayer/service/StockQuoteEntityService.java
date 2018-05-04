@@ -37,7 +37,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     public StockQuoteEntity getStockQuote( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockPriceQuote";
+        final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
         StockQuoteEntity returnStockQuoteEntity = null;
         try
@@ -50,6 +50,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
              */
             if ( TimeUnit.MILLISECONDS.toHours( existingStockQuoteEntity.getLastQuoteRequestDate().getTime() ) > 6 )
             {
+                logDebug( methodName, "{0} stock quote is stale, refetching..." );
                 final StockQuoteEntity newStockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
                 /*
                  * Need to preserve the insert and update dates and version.
@@ -97,11 +98,11 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                  */
                 final StockQuoteEntity existingStockQuoteEntity = this.getEntity( tickerSymbol );
                 newStockQuoteEntity.copyVitalEntityValues( existingStockQuoteEntity );
-                this.saveEntity( newStockQuoteEntity );
-                returnStockQuoteEntity = newStockQuoteEntity;
+                returnStockQuoteEntity = this.saveEntity( newStockQuoteEntity );
             }
             catch( EntityVersionMismatchException e1 )
             {
+                logDebug( methodName, "Entity version mismatch, trying again.  {0}", returnStockQuoteEntity );
                 mismatch = true;
             }
             catch( VersionedEntityNotFoundException e )
@@ -111,11 +112,12 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                  */
                 try
                 {
-                    this.addEntity( newStockQuoteEntity );
+                    returnStockQuoteEntity = this.addEntity( newStockQuoteEntity );
                 }
                 catch( EntityVersionMismatchException e1 )
                 {
                     mismatch = true;
+                    logDebug( methodName, "Entity version mismatch, trying again.  {0}", returnStockQuoteEntity );
                 }
             }
         }

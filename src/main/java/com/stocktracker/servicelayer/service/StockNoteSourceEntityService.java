@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
-import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
@@ -9,7 +9,6 @@ import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,8 +70,8 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
         List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository
             .findByCustomerUuidOrderByTimesUsedDesc( customerUuid );
         Map<UUID, String> sourceEntityMap = customerSources.stream()
-                                                              .collect( Collectors.toMap( StockNoteSourceEntity::getUuid,
-                                                                                          StockNoteSourceEntity::getName ) );
+                                                           .collect( Collectors.toMap( StockNoteSourceEntity::getUuid,
+                                                                                       StockNoteSourceEntity::getName ) );
         for ( StockNoteSourceDTOContainer stockNoteSourceDTOContainer : stockNoteSourceDTOContainers )
         {
             if ( stockNoteSourceDTOContainer.getNotesSourceId() != null )
@@ -95,11 +94,10 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
         final String methodName = "checkForNewSource";
         logDebug( methodName, "{0}", stockNoteSourceDTOContainer );
         /*
-         * If the source id is null and there is a name, this means the user assigned a source
+         * If the source id <> null and it's not a UUID, then it's a new value.
          */
         if ( stockNoteSourceDTOContainer.getNotesSourceId() != null &&
-             stockNoteSourceDTOContainer.getNotesSourceName() != null &&
-             !stockNoteSourceDTOContainer.getNotesSourceName().isEmpty() )
+             !UUIDUtil.isUUID( stockNoteSourceDTOContainer.getNotesSourceId() ))
         {
             /*
              * Make sure it doesn't already exist
@@ -117,7 +115,7 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
                 logDebug( methodName, "Saving stock note source entity" );
                 stockNoteSourceEntity = new StockNoteSourceEntity();
                 stockNoteSourceEntity.setCustomerUuid( UUIDUtil.uuid( stockNoteSourceDTOContainer.getCustomerId() ));
-                stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceName() );
+                stockNoteSourceEntity.setName( stockNoteSourceDTOContainer.getNotesSourceId() );
                 try
                 {
                     stockNoteSourceEntity = this.saveEntity( stockNoteSourceEntity );
@@ -126,6 +124,7 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
                      * update the reference in the stock note id container
                      */
                     stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getUuid().toString() );
+                    stockNoteSourceDTOContainer.setNotesSourceName( stockNoteSourceEntity.getName() );
                 }
                 catch( org.springframework.dao.DataIntegrityViolationException e )
                 {

@@ -109,8 +109,8 @@ public class TradeItAccountComparisonService implements MyLogger
                  tradeItAccount.get().getAccountNumber() ))
             {
                 linkedAccountEntity.setAccountName( tradeItAccount.get().getName() );
-                this.linkedAccountEntityService
-                    .saveEntity( linkedAccountEntity );
+                linkedAccountEntity = this.linkedAccountEntityService
+                                          .saveEntity( linkedAccountEntity );
             }
         }
         else

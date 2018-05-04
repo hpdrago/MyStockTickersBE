@@ -131,7 +131,7 @@ public class StockToBuyController extends AbstractController
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable int customerId,
+    public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable String customerId,
                                                         @RequestBody StockToBuyDTO stockToBuyDTO )
         throws StockNotFoundException,
                StockCompanyNotFoundException,
@@ -152,19 +152,15 @@ public class StockToBuyController extends AbstractController
      * Save the stock to buy.
      * @param stockToBuyDTO
      * @return
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
      * @throws EntityVersionMismatchException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable int stockToBuyId,
-                                                         @PathVariable int customerId,
+    public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable String stockToBuyId,
+                                                         @PathVariable String customerId,
                                                          @RequestBody StockToBuyDTO stockToBuyDTO )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException,
-               EntityVersionMismatchException
+        throws EntityVersionMismatchException
     {
         final String methodName = "saveStockToBuy";
         logMethodBegin( methodName, customerId, stockToBuyId, stockToBuyDTO );

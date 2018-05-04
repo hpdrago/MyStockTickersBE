@@ -45,6 +45,8 @@
     <orderEntry type="library" name="Jersey-2.2" level="project" />
     <orderEntry type="library" name="Jersey-2.2" level="project" />
     <orderEntry type="library" name="Jersey-2.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: mysql:mysql-connector-java:5.1.44" level="project" />
+    <orderEntry type="library" name="Maven: com.yahoofinance-api:YahooFinanceAPI:3.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-jpa:1.5.3.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter:1.5.3.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:1.5.3.RELEASE" level="project" />

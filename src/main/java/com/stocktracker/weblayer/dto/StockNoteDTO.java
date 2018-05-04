@@ -226,7 +226,7 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockNoteQuoteDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockQuoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", super=" ).append( super.toString() );

@@ -129,7 +129,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         if ( stockToBuyEntity.getStockPriceWhenCreated() == null )
         {
             stockToBuyEntity.setStockPriceWhenCreated( this.getStockInformationService()
-                                                           .getStockPriceQuote( stockToBuyEntity.getTickerSymbol() ) );
+                                                           .getLastPrice( stockToBuyEntity.getTickerSymbol() ) );
         }
         /*
          * The create date is set by a trigger, but since this record might not be immediately inserted, set a date
