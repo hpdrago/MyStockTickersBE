@@ -25,17 +25,17 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.stocks.StockInformationService" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.stocks.StockInformationService" level="trace" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.stocktracker.servicelayer.stockinformationprovider" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
 
     <logger name="com.stocktracker.servicelayer.service.StockEntityService" level="info" additivity="false">
-        <appender-ref ref="CONSOLE"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-
-    <logger name="com.stocktracker.servicelayer.stockinformationprovider" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>

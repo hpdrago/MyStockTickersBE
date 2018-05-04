@@ -3,6 +3,8 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -169,8 +171,16 @@ public abstract class BaseEntityService<EK extends Serializable,
         return stockInformationService;
     }
 
+    /**
+     * Local logger class needed because of Spring Proxy
+     */
     private class ServiceLogger implements MyLogger
     {
+        @Override
+        public Logger getLogger()
+        {
+            return LoggerFactory.getLogger( BaseEntityService.this.getClass() );
+        }
     }
 
     protected void logMethodBegin( final String methodName, final Object ... args )
