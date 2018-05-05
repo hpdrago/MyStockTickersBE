@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -33,13 +34,14 @@ import java.util.UUID;
 public class TradeItAccountEntity extends UUIDEntity
                                   implements CustomerUuidContainer
 {
-    private UUID customerUuid;
+    private UUID uuid;
     private String name;
     private String userId;
     private String userToken;
     private String brokerage;
     private String authToken;
     private String authUuid;
+    private UUID customerUuid;
     private Timestamp authTimestamp;
     private CustomerEntity customerByCustomerUuid;
     private Collection<LinkedAccountEntity> linkedAccountsByUuid;
@@ -53,15 +55,16 @@ public class TradeItAccountEntity extends UUIDEntity
         return new TradeItAccountEntity();
     }
 
-    @Column( name = "customer_uuid", insertable = false, updatable = false )
-    public UUID getCustomerUuid()
+    @Id
+    @Column( name = "uuid")
+    public UUID getUuid()
     {
-        return customerUuid;
+        return uuid;
     }
 
-    public void setCustomerUuid( final UUID customerUuid )
+    public void setUuid( final UUID uuid )
     {
-        this.customerUuid = customerUuid;
+        this.uuid = uuid;
     }
 
     @Basic
@@ -100,6 +103,20 @@ public class TradeItAccountEntity extends UUIDEntity
         this.brokerage = brokerage;
     }
 
+    @Override
+    @Basic
+    @Column( name = "customer_uuid", insertable = false, updatable = false)
+    public UUID getCustomerUuid()
+    {
+        return this.customerUuid;
+    }
+
+    @Override
+    public void setCustomerUuid( final UUID customerUuid )
+    {
+        this.customerUuid = customerUuid;
+    }
+
     @ManyToOne
     @JoinColumn( name = "customer_uuid", referencedColumnName = "uuid", nullable = false )
     public CustomerEntity getCustomerByCustomerUuid()
@@ -109,6 +126,10 @@ public class TradeItAccountEntity extends UUIDEntity
 
     public void setCustomerByCustomerUuid( final CustomerEntity customerEntity )
     {
+        if ( customerEntity != null )
+        {
+            this.customerUuid = customerEntity.getUuid();
+        }
         this.customerByCustomerUuid = customerEntity;
     }
 
@@ -226,7 +247,7 @@ public class TradeItAccountEntity extends UUIDEntity
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "TradeItAccountEntity{" );
-        sb.append( "uuid=" ).append( getUuidString() );
+        sb.append( "uuid=" ).append( uuid );
         sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userId ).append( '\'' );

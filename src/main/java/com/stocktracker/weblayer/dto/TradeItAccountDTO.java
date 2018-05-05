@@ -15,27 +15,14 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class TradeItAccountDTO implements UuidDTO
+public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
 {
     private String id;
     private String name;
+    private String customerId;
     private String brokerage;
     private Timestamp authTimestamp;
     private Integer version;
-
-    /**
-     * Creates a new instance from (@code accountEntity)
-     * @return
-     */
-    public static final TradeItAccountDTO newInstance()
-    {
-        TradeItAccountDTO tradeItAccountDTO = new TradeItAccountDTO();
-        return tradeItAccountDTO;
-    }
-
-    private TradeItAccountDTO()
-    {
-    }
 
     public String getId()
     {
@@ -67,6 +54,18 @@ public class TradeItAccountDTO implements UuidDTO
         this.brokerage = brokerage;
     }
 
+    @Override
+    public void setCustomerId( final String customerId )
+    {
+        this.customerId = customerId;
+    }
+
+    @Override
+    public String getCustomerId()
+    {
+        return this.customerId;
+    }
+
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     public Timestamp getAuthTimestamp()
     {
@@ -96,6 +95,7 @@ public class TradeItAccountDTO implements UuidDTO
         sb.append( "id=" ).append( id );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
+        sb.append( ", customerId='" ).append( customerId ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", version=" ).append( version );
         sb.append( '}' );

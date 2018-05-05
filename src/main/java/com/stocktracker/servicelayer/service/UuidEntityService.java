@@ -82,7 +82,10 @@ public abstract class UuidEntityService<E extends UUIDEntity,
         if ( dto instanceof CustomerIdContainer &&
              entity instanceof CustomerUuidContainer )
         {
-            ((CustomerIdContainer)dto).setCustomerId( ((CustomerUuidContainer) entity).getCustomerUuid().toString() );
+            if ( ((CustomerUuidContainer) entity).getCustomerUuid() != null )
+            {
+                ((CustomerIdContainer)dto).setCustomerId( ((CustomerUuidContainer) entity).getCustomerUuid().toString() );
+            }
         }
         return dto;
     }

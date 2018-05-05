@@ -7,7 +7,9 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -46,8 +48,8 @@ public abstract class BaseEntity<K extends Serializable> implements VersionedEnt
         this.updateDate = updateDate;
     }
 
+    @Version
     @Override
-    @Basic
     @Column( name = "version", nullable = true )
     public Integer getVersion()
     {
@@ -68,6 +70,13 @@ public abstract class BaseEntity<K extends Serializable> implements VersionedEnt
             this.createDate = new Timestamp( System.currentTimeMillis() );
         }
         this.version = 1;
+    }
+
+    @PreUpdate
+    void preUpdate()
+    {
+        logDebug( "preUpdate", "id: {0}", this.getId() );
+        this.updateDate = new Timestamp( System.currentTimeMillis() );
     }
 
     /**

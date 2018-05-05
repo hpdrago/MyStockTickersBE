@@ -25,8 +25,18 @@ public class GetOAuthAccessTokenDTO extends TradeItAPIResult
         return tradeItAccount;
     }
 
-    public void setTradeItAccount( final TradeItAccountDTO customerTradeItAccountDTO )
+    public void setTradeItAccount( final TradeItAccountDTO tradeItAccountDTO )
     {
-        this.tradeItAccount = customerTradeItAccountDTO;
+        this.tradeItAccount = tradeItAccountDTO;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "GetOAuthAccessTokenDTO{" );
+        sb.append( "tradeItAccount=" ).append( tradeItAccount );
+        sb.append( ", super=" ).append( super.toString() );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

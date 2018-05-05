@@ -1,11 +1,14 @@
 package com.stocktracker.servicelayer.tradeit.types;
 
+import com.stocktracker.weblayer.dto.CustomerIdContainer;
+
 /**
  * This class defines the account fields that are returned in TradeIt authenticate call.
  */
-public class TradeItAccount
+public class TradeItAccount implements CustomerIdContainer
 {
     private String accountNumber;
+    private String customerId;
     private String name;
     private String accountBaseCurrency;
     private String accountIndex;
@@ -73,11 +76,24 @@ public class TradeItAccount
     }
 
     @Override
+    public void setCustomerId( final String customerId )
+    {
+        this.customerId = customerId;
+    }
+
+    @Override
+    public String getCustomerId()
+    {
+        return this.customerId;
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "TradeItAccountDTO{" );
         sb.append( "accountNumber='" ).append( accountNumber ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", customerId='" ).append( customerId ).append( '\'' );
         sb.append( ", accountBaseCurrency='" ).append( accountBaseCurrency ).append( '\'' );
         sb.append( ", accountIndex='" ).append( accountIndex ).append( '\'' );
         sb.append( ", userCanDisableMargin=" ).append( userCanDisableMargin );

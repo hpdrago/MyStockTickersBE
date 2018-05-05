@@ -162,7 +162,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
             throw new EntityVersionMismatchException( currentEntity.getVersion(),
                                                       "Attempting to create a new entity that already exists: " + entity );
         }
-        entity.setVersion( 1 );
+        //entity.setVersion( 1 );
         entity.setCreateDate( new Timestamp( System.currentTimeMillis() ));
         final E returnEntity = this.getRepository()
                                    .save( entity );
@@ -200,9 +200,11 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final String methodName = "saveEntity";
         logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
-        this.checkEntityVersion( entity );
+        //this.checkEntityVersion( entity );
+        //int previousVersion = entity.getVersion();
         final E savedEntity = this.getRepository()
                                   .save( entity );
+        //savedEntity.setVersion( previousVersion + 1 );
         logMethodEnd( methodName, savedEntity );
         return savedEntity;
     }
@@ -240,54 +242,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto cannot be null" );
         final E entity = this.dtoToEntity( dto );
-        this.checkEntityVersion( entity );
+        //this.checkEntityVersion( entity );
         final E savedEntity = this.saveEntity( entity );
         final D returnDTO = this.entityToDTO( savedEntity );
         logMethodEnd( methodName, returnDTO );
         return returnDTO;
-    }
-
-    /**
-     * Compares the entity.version to the version in the database and if the version are not the same, then
-     * {@code EntityVersionMismatchException} is thrown. If the entity doesn't exist, its version is set to 1.
-     * @param entity
-     * @return
-     * @throws EntityVersionMismatchException if the database entity (if found) doesn't match the {@code entity}
-     *         argument's version.
-     */
-    public void checkEntityVersion( final VersionedEntity<EK> entity )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "checkEntityVersion";
-        logMethodBegin( methodName, entity );
-        Objects.requireNonNull( entity, "entity cannot be null" );
-        E dbEntity = null;
-        /*
-         * If there is an EK then there is a database version of this entity.
-         */
-        if ( entity.getId() != null )
-        {
-            dbEntity = this.getRepository()
-                           .findOne( entity.getId() );
-            logDebug( methodName, "dbEntity:{0}", dbEntity );
-        }
-        if ( dbEntity == null )
-        {
-            entity.setVersion( 1 );
-        }
-        else
-        {
-            if ( entity.getVersion() == null )
-            {
-                entity.setVersion( 1 );
-            }
-            if ( entity.getVersion() != dbEntity.getVersion() )
-            {
-                throw new EntityVersionMismatchException( dbEntity.getVersion(),
-                                                          String.format( "Entity version mismatch(%d <> %d)",
-                                                                         dbEntity.getVersion(), entity.getVersion() ) );
-            }
-        }
-        logMethodEnd( methodName );
     }
 }
