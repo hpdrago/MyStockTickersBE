@@ -44,15 +44,15 @@ public class TradeItAsyncUpdateService
     {
         final String methodName = "prepareToUpdateLinkedAccount";
         Objects.requireNonNull( linkedAccountEntity, "linkedAccountEntity cannot be null" );
-        log.debug( methodName + " linkedAccountId: " + linkedAccountEntity.getId() );
+        log.debug( methodName + " linkedAccountId: " + linkedAccountEntity.getUuid() );
         /*
         if ( this.getAccountOverviewSubjectMap.containsKey( linkedAccountEntity.getUuid() ) )
         {
-            throw new IllegalArgumentException( String.format( "A request for linkedAccount: %d already exists",
+            throw new IllegalArgumentException( String.format( "A request for linkedAccount: %s already exists",
                                                                linkedAccountEntity.getUuid() ));
         }
         */
-        this.getAccountOverviewSubjectMap.put( linkedAccountEntity.getId(), AsyncSubject.create() );
+        this.getAccountOverviewSubjectMap.put( linkedAccountEntity.getUuid(), AsyncSubject.create() );
     }
 
     /**
@@ -108,7 +108,7 @@ public class TradeItAsyncUpdateService
                                      final LinkedAccountEntity linkedAccountEntity )
     {
         final String methodName = "updateLinkedAccount";
-        log.debug( String.format( "%s.begin %d %d", methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getId() ));
+        log.debug( String.format( "%s.begin %s %s", methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getUuid() ));
         try
         {
             final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
@@ -134,13 +134,13 @@ public class TradeItAsyncUpdateService
             else
             {
                 TradeItAPIException tradeItAPIException = new TradeItAPIException( getAccountOverviewDTO );
-                this.onGetAccountOverviewException( linkedAccountEntity.getId(), tradeItAPIException );
+                this.onGetAccountOverviewException( linkedAccountEntity.getUuid(), tradeItAPIException );
             }
         }
         catch( Exception e )
         {
             log.error( methodName, e );
-            this.onGetAccountOverviewException( linkedAccountEntity.getId(), e );
+            this.onGetAccountOverviewException( linkedAccountEntity.getUuid(), e );
         }
         log.debug( methodName + ".end " + tradeItAccountEntity.getUuid() );
     }
@@ -157,27 +157,27 @@ public class TradeItAsyncUpdateService
         throws LinkedAccountNotFoundException
     {
         final String methodName = "handleEntityMismatchException";
-        log.warn( String.format( "%s.begin Entity version mismatch for linked account %d",
-                                 methodName, linkedAccountEntity.getId() ) );
+        log.warn( String.format( "%s.begin Entity version mismatch for linked account %s",
+                                 methodName, linkedAccountEntity.getUuid() ) );
         /*
          * Refresh the entity and try again.
          */
         final LinkedAccountEntity currentLinkedAccountEntity = this.linkedAccountEntityService
-                                                                   .getLinkedAccountEntity( linkedAccountEntity.getId() );
+                                                                   .getLinkedAccountEntity( linkedAccountEntity.getUuid() );
         try
         {
             currentLinkedAccountEntity.setGetAccountOverviewValues( getAccountOverviewDTO );
             this.linkedAccountEntityService
                 .saveEntity( currentLinkedAccountEntity );
-            log.info( String.format( "%s Resolved entity mismatch for linked account %d",
-                                     methodName, linkedAccountEntity.getId() ) );
+            log.info( String.format( "%s Resolved entity mismatch for linked account %s",
+                                     methodName, linkedAccountEntity.getUuid() ) );
         }
         catch( EntityVersionMismatchException e1 )
         {
             // * this shouldn't happen...
-            log.error( String.format( "%s Entity version mismatch %d",
-                                      methodName, linkedAccountEntity.getId() ), e1 );
-            this.onGetAccountOverviewException( linkedAccountEntity.getId(), e1 );
+            log.error( String.format( "%s Entity version mismatch %s",
+                                      methodName, linkedAccountEntity.getUuid() ), e1 );
+            this.onGetAccountOverviewException( linkedAccountEntity.getUuid(), e1 );
         }
         log.warn( methodName + ".end" );
     }
@@ -191,13 +191,13 @@ public class TradeItAsyncUpdateService
                                                 final Exception exception )
     {
         final String methodName = "onGetAccountOverviewException";
-        log.debug( String.format( "%s.begin linkedAccountId: %d", methodName, linkedAccountUuid ));
+        log.debug( String.format( "%s.begin linkedAccountId: %s", methodName, linkedAccountUuid ));
         this.checkGetAccountOverviewExists( linkedAccountUuid );
         final AsyncSubject<LinkedAccountEntity> getAccountOverviewSubject = this.getAccountOverviewSubjectMap
                                                                                 .get( linkedAccountUuid );
         getAccountOverviewSubject.onError( exception );
         getAccountOverviewSubject.onCompleted();
-        log.debug( String.format( "%s.end linkedAccountId: %d", methodName, linkedAccountUuid ));
+        log.debug( String.format( "%s.end linkedAccountId: %s", methodName, linkedAccountUuid ));
     }
 
     /**
@@ -208,13 +208,13 @@ public class TradeItAsyncUpdateService
     private void onGetAccountOverviewSuccess( final LinkedAccountEntity linkedAccountEntity )
     {
         final String methodName = "onGetAccountOverviewSuccess";
-        log.debug( String.format( "%s.begin linkedAccountId: %d", methodName, linkedAccountEntity.getId() ) );
-        this.checkGetAccountOverviewExists( linkedAccountEntity.getId() );
+        log.debug( String.format( "%s.begin linkedAccountId: %s", methodName, linkedAccountEntity.getUuid() ) );
+        this.checkGetAccountOverviewExists( linkedAccountEntity.getUuid() );
         final AsyncSubject<LinkedAccountEntity> getAccountOverviewSubject = this.getAccountOverviewSubjectMap
-                                                                                .get( linkedAccountEntity.getId() );
+                                                                                .get( linkedAccountEntity.getUuid() );
         getAccountOverviewSubject.onNext( linkedAccountEntity );
         getAccountOverviewSubject.onCompleted();
-        log.debug( String.format( "%s.end linkedAccountId: %d", methodName, linkedAccountEntity.getId() ) );
+        log.debug( String.format( "%s.end linkedAccountId: %s", methodName, linkedAccountEntity.getUuid() ) );
     }
 
     @Autowired
