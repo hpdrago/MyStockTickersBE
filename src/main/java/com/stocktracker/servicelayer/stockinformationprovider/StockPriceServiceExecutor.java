@@ -86,12 +86,22 @@ public class StockPriceServiceExecutor
      * @throws StockNotFoundException
      */
     public GetStockPriceResult synchronousGetStockPrice( final String tickerSymbol )
+        throws StockNotFoundException
     {
         final String methodName = "synchronousGetStockPrice";
         logger.debug( methodName + ".begin " + tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         final GetStockPriceResult getStockPriceResult = this.getStockPrice( tickerSymbol );
+        switch ( getStockPriceResult.getStockPriceFetchResult() )
+        {
+            case NOT_FOUND:
+                throw new StockNotFoundException( tickerSymbol );
+            case DISCONTINUED:
+                throw new StockNotFoundException( tickerSymbol, true );
+            case EXCEPTION:
+                throw new StockNotFoundException( tickerSymbol, getStockPriceResult.getException() );
+        }
         logger.debug( methodName + ".end " + tickerSymbol + " " + getStockPriceResult );
         return getStockPriceResult;
     }
@@ -103,7 +113,7 @@ public class StockPriceServiceExecutor
      */
     private GetStockPriceResult getStockPrice( final String tickerSymbol )
     {
-        final String methodName = "getStockPriceQuote";
+        final String methodName = "getStockQuote";
         logger.debug( methodName + " " + tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");

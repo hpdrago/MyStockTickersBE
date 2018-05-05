@@ -245,10 +245,10 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );
         tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-        this.saveEntity( tradeItAccountEntity );
-        final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
+        final TradeItAccountEntity updatedTradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
+        final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( updatedTradeItAccountEntity );
         final List<LinkedAccountDTO> linkedAccountDTOs = this.linkedAccountEntityService
-                                                             .getLinkedAccounts( tradeItAccountEntity.getUuid() );
+                                                             .getLinkedAccounts( updatedTradeItAccountEntity.getUuid() );
         keepSessionAliveDTO.setTradeItAccount( tradeItAccountDTO );
         keepSessionAliveDTO.setLinkedAccounts( linkedAccountDTOs );
         logMethodEnd( methodName, tradeItAccountDTO );
@@ -260,8 +260,8 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param tradeItAccount The account information from TradeIt.
      * @throws EntityVersionMismatchException
      */
-    public void addLinkedAccount( final TradeItAccountEntity tradeItAccountEntity,
-                                  final TradeItAccount tradeItAccount )
+    public LinkedAccountEntity addLinkedAccount( final TradeItAccountEntity tradeItAccountEntity,
+                                                 final TradeItAccount tradeItAccount )
         throws EntityVersionMismatchException
     {
         final String methodName = "addLinkedAccount";
@@ -269,7 +269,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         /*
          * Convert the account information return from TradeIt to a LinkedEntityAccount instance.
          */
-        final LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
+        LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
         /*
          * Set the bidirectional relationship
          */
@@ -278,9 +278,10 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         /*
          * Save the linked account
          */
-        this.linkedAccountEntityService
-            .saveEntity( linkedAccountEntity );
-        logMethodEnd( methodName );
+        linkedAccountEntity = this.linkedAccountEntityService
+                                  .saveEntity( linkedAccountEntity );
+        logMethodEnd( methodName, linkedAccountEntity );
+        return linkedAccountEntity;
     }
 
     @Override

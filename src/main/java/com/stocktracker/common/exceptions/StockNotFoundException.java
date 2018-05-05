@@ -10,13 +10,46 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value= HttpStatus.NOT_FOUND)  // 404
 public class StockNotFoundException extends Exception
 {
+    private String tickerSymbol;
+    private boolean discontinued;
+
     public StockNotFoundException( final String tickerSymbol )
     {
         super( "Unable to get a quote for " + tickerSymbol );
+        this.tickerSymbol = tickerSymbol;
+        this.discontinued = false;
     }
 
     public StockNotFoundException( final String tickerSymbol, final Exception e )
     {
         super( "Unable to get a quote for " + tickerSymbol, e ) ;
+        this.tickerSymbol = tickerSymbol;
+        this.discontinued = false;
+    }
+
+    public StockNotFoundException( final String tickerSymbol, final boolean discontinued )
+    {
+        this.tickerSymbol = tickerSymbol;
+        this.discontinued = true;
+    }
+
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
+    public boolean isDiscontinued()
+    {
+        return discontinued;
+    }
+
+    public void setDiscontinued( final boolean discontinued )
+    {
+        this.discontinued = discontinued;
     }
 }

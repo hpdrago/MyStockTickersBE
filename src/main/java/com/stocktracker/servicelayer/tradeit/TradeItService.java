@@ -271,16 +271,18 @@ public class TradeItService implements MyLogger
      * This method evaluates the authenticate API result and takes appropriate action based on TradeIt API status value.
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
+     * @return Updated account entity.
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      */
-    private void handleAuthenticationResults( final TradeItAccountEntity tradeItAccountEntity,
-                                              final AuthenticateAPIResult authenticateAPIResult )
+    private TradeItAccountEntity handleAuthenticationResults( final TradeItAccountEntity tradeItAccountEntity,
+                                                              final AuthenticateAPIResult authenticateAPIResult )
         throws TradeItAuthenticationException,
                EntityVersionMismatchException
     {
         final String methodName = "handleAuthenticationResults";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
+        TradeItAccountEntity returnTradeItAccountEntity = null;
         switch ( authenticateAPIResult.getAPIResultStatus() )
         {
             case SUCCESS:
@@ -290,8 +292,8 @@ public class TradeItService implements MyLogger
                  */
                 tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
                 tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-                this.tradeItAccountEntityService
-                    .saveEntity( tradeItAccountEntity );
+                returnTradeItAccountEntity = this.tradeItAccountEntityService
+                                                 .saveEntity( tradeItAccountEntity );
                 break;
 
             case ERROR:
@@ -301,11 +303,12 @@ public class TradeItService implements MyLogger
                 logDebug( methodName, "INFORMATION_NEEDED - Need to prompt security question." );
                 tradeItAccountEntity.setAuthToken( authenticateAPIResult.getToken() );
                 tradeItAccountEntity.setAuthTimestamp( new Timestamp( System.currentTimeMillis() ) );
-                this.tradeItAccountEntityService
-                    .saveEntity( tradeItAccountEntity );
+                returnTradeItAccountEntity = this.tradeItAccountEntityService
+                                                 .saveEntity( tradeItAccountEntity );
                 break;
         }
-        logMethodEnd( methodName );
+        logMethodEnd( methodName, returnTradeItAccountEntity );
+        return returnTradeItAccountEntity;
     }
 
     /**

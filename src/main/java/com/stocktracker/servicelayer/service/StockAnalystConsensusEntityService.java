@@ -137,14 +137,12 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @param stockAnalystConsensusDTO
      * @return
      * @throws StockNotFoundException
-     * @throws StockCompanyNotFoundException
      * @throws EntityVersionMismatchException
      */
     public StockAnalystConsensusDTO createStockAnalystConsensus( final UUID customerUuid,
                                                                  final StockAnalystConsensusDTO stockAnalystConsensusDTO )
-        throws StockNotFoundException,
-               StockCompanyNotFoundException,
-               EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               StockNotFoundException
     {
         final String methodName = "createStockAnalystConsensus";
         logMethodBegin( methodName, customerUuid, stockAnalystConsensusDTO );
@@ -158,7 +156,7 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         StockAnalystConsensusEntity stockAnalystConsensusEntity = this.dtoToEntity( stockAnalystConsensusDTO );
         stockAnalystConsensusEntity.setVersion( 1 );
         stockAnalystConsensusEntity.setStockPriceWhenCreated( this.getStockInformationService()
-                                                                  .getStockPriceQuote( stockAnalystConsensusDTO.getTickerSymbol() ));
+                                                                  .getLastPrice( stockAnalystConsensusDTO.getTickerSymbol() ));
         /*
          * use saveAndFlush so that we can get the updated values from the row which might be changed with insert
          * or update triggers.

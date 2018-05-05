@@ -33,7 +33,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
     public BigDecimal getStockPrice( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockPriceQuote";
+        final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         BigDecimal stockPrice = null;
@@ -68,9 +68,9 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
      * @return
      */
     /*
-    public StockPriceQuote getStockPriceQuote( final Stock stock )
+    public StockPriceQuote getStockQuote( final Stock stock )
     {
-        final String methodName = "getStockPriceQuote";
+        final String methodName = "getStockQuote";
         logMethodBegin( methodName, stock );
         Objects.requireNonNull( stock, "stock cannot be null" );
         Objects.requireNonNull( stock.getSymbol(), "stock cannot be null" );
@@ -117,10 +117,10 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         logMethodBegin( methodName, container.getTickerSymbol() );
         Stock stock = getStock( container.getTickerSymbol() ) ;
         container.setCompanyName( stock.getName() );
-        StockPriceQuote stockTickerQuote = this.getStockPriceQuote( stock );
+        StockPriceQuote stockTickerQuote = this.getStockQuote( stock );
         container.setLastPriceChangeTimestamp( stockTickerQuote.getLastPriceChange() );
-        container.setStockPrice( stockTickerQuote.getStockPriceQuote() );
-        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getStockPriceQuote() );
+        container.setStockPrice( stockTickerQuote.getStockQuote() );
+        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getStockQuote() );
     }
     */
 

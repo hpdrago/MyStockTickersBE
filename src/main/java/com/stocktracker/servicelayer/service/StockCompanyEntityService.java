@@ -144,7 +144,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             stockEntity.setDiscontinuedInd( true );
             try
             {
-                this.addEntity( stockEntity );
+                stockEntity = this.addEntity( stockEntity );
             }
             catch( EntityVersionMismatchException e1 )
             {
@@ -197,7 +197,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                         setCompanyProperties( company, stockEntity );
                         try
                         {
-                            this.saveEntity( stockEntity );
+                            stockEntity = this.saveEntity( stockEntity );
                         }
                         catch( EntityVersionMismatchException e )
                         {
@@ -248,7 +248,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
             stockCompanyEntity.setDiscontinuedInd( false );
             setCompanyProperties( company, stockCompanyEntity );
-            this.addEntity( stockCompanyEntity );
+            stockCompanyEntity = this.addEntity( stockCompanyEntity );
         }
         catch( EntityVersionMismatchException e )
         {
@@ -280,14 +280,14 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         final String methodName = "markStockAsDiscontinued";
         logMethodBegin( methodName, tickerSymbol );
-        final StockCompanyEntity stockCompanyEntity;
+        StockCompanyEntity stockCompanyEntity;
         try
         {
             stockCompanyEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockCompanyEntity.TICKER_SYMBOL_LEN ) );
             stockCompanyEntity.setDiscontinuedInd( true );
             try
             {
-                this.saveEntity( stockCompanyEntity );
+                stockCompanyEntity = this.saveEntity( stockCompanyEntity );
             }
             catch( EntityVersionMismatchException e )
             {

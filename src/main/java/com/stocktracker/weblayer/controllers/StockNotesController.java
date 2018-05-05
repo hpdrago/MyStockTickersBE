@@ -87,7 +87,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.PUT )
     public ResponseEntity<StockNoteDTO> updateStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                          @PathVariable( "customerId" ) final String customerId,
-                                                         @PathVariable( "stockNotesId" ) final int stockNotesId )
+                                                         @PathVariable( "stockNotesId" ) final String stockNotesId )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException
@@ -190,8 +190,8 @@ public class StockNotesController extends AbstractController implements MyLogger
         this.validateCustomerId( customerId );
         Page<StockNoteDTO> stockNoteDTOs = this.stockNoteService
                                                .getStockNotesForCustomerUuid( pageRequest,
-                                                                            UUIDUtil.uuid( customerId ));
-        //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
+                                                                              UUIDUtil.uuid( customerId ));
+        logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
         logMethodEnd( methodName, stockNoteDTOs.getTotalElements() );
         return stockNoteDTOs;
     }

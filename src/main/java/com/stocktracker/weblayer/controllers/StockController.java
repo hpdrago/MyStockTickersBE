@@ -91,7 +91,7 @@ public class StockController extends AbstractController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<StockPriceQuoteDTO> getStockPrice( @PathVariable final String tickerSymbol )
     {
-        final String methodName = "getStockPriceQuote";
+        final String methodName = "getStockQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be nulls");
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
@@ -100,7 +100,7 @@ public class StockController extends AbstractController implements MyLogger
         try
         {
             stockPriceQuoteDTO = this.stockInformationService
-                                     .getStockPriceQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
+                                     .getStockQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
         }
         catch( StockNotFoundException |
                StockCompanyNotFoundException |

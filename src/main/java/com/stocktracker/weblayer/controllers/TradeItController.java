@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.controllers;
 
-import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.UUIDUtil;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
@@ -244,8 +244,8 @@ public class TradeItController extends AbstractController
      * @return
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
-     * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/keepSessionAlive/"
@@ -263,9 +263,9 @@ public class TradeItController extends AbstractController
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, customerId, tradeItAccountId );
-        final UUID customerUuid = this.validateCustomerId( customerId );
+        this.validateCustomerId( customerId );
         final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService
-                                                            .keepSessionAlive( customerUuid );
+                                                            .keepSessionAlive( UUIDUtil.uuid( tradeItAccountId ));
         /*
          * Synchronize the linked accounts identified by TradeIt with the linked account table.
          */

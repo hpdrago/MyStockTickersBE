@@ -155,7 +155,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final String methodName = "addEntity";
         logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
-        if ( isExists( entity ) )
+        if ( entity.getId() != null && isExists( entity ) )
         {
             final E currentEntity = this.getRepository()
                                         .findOne( entity.getId() );
@@ -175,16 +175,16 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param entity
      * @throws EntityVersionMismatchException
      */
-    public void mergeEntity( final E entity )
+    public E mergeEntity( final E entity )
         throws EntityVersionMismatchException
     {
         if ( entity.getId() == null || !this.isExists( entity ) )
         {
-            this.addEntity( entity );
+            return this.addEntity( entity );
         }
         else
         {
-            this.saveEntity( entity );
+            return this.saveEntity( entity );
         }
     }
 
@@ -203,7 +203,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         this.checkEntityVersion( entity );
         final E savedEntity = this.getRepository()
                                   .save( entity );
-        logMethodEnd( methodName, entity );
+        logMethodEnd( methodName, savedEntity );
         return savedEntity;
     }
 

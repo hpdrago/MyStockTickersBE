@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.stockinformationprovider;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,10 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
      * Updates the stock price cache for the ticker symbol.
      * @param tickerSymbol
      * @param stockPrice
+     * @throws StockNotFoundException
      */
     public void updateStockPrice( @NotNull final String tickerSymbol, @NotNull final BigDecimal stockPrice )
+        throws StockNotFoundException
     {
         final String methodName = "updateStockPrice";
         logMethodBegin( methodName, tickerSymbol, stockPrice );
@@ -59,9 +62,11 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
      * @param tickerSymbol
      * @param fetchMode
      * @return
+     * @throws StockNotFoundException only when using fetchMode == SYCHRONOUS
      */
     public StockPriceCacheEntry getStockPrice( @NotNull String tickerSymbol,
                                                @NotNull final StockPriceFetchMode fetchMode )
+        throws StockNotFoundException
     {
         final String methodName = "getStockPrice";
         logMethodBegin( methodName, tickerSymbol, fetchMode );
@@ -80,7 +85,26 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
                 .put( stockPriceCacheEntry.getTickerSymbol(), stockPriceCacheEntry );
             if ( fetchMode == StockPriceFetchMode.SYNCHRONOUS )
             {
-                this.synchronousPriceFetch( stockPriceCacheEntry );
+                try
+                {
+                    this.synchronousPriceFetch( stockPriceCacheEntry );
+                }
+                catch( StockNotFoundException stockNoteFoundException )
+                {
+                    if ( stockNoteFoundException.isDiscontinued() )
+                    {
+                        logDebug( methodName, "{0} has been discontinued", tickerSymbol );
+                        this.stockCompanyEntityService
+                            .markStockAsDiscontinued( tickerSymbol );
+                        stockPriceCacheEntry.setDiscontinued( true );
+                        stockPriceCacheEntry.setFetchState( StockPriceFetchState.NOT_FETCHING );
+                        stockPriceCacheEntry.setCacheState( StockPriceCacheState.NOT_FOUND );
+                    }
+                    else
+                    {
+                        throw stockNoteFoundException;
+                    }
+                }
             }
             else
             {
@@ -139,6 +163,7 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
      * @param stockPriceCacheEntry
      */
     private void synchronousPriceFetch( final StockPriceCacheEntry stockPriceCacheEntry )
+        throws StockNotFoundException
     {
         Objects.requireNonNull( stockPriceCacheEntry, "stockPriceCacheEntry cannot be null" );
         final String methodName = "synchronousPrice";
