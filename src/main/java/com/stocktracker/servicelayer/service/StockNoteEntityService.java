@@ -19,7 +19,6 @@ import java.util.UUID;
  * Created by mike on 5/7/2017.
  */
 @Service
-//@Transactional
 public class StockNoteEntityService extends StockInformationEntityService<StockNoteEntity,
                                                                           StockNoteDTO,
                                                                           StockNoteRepository>
@@ -27,10 +26,7 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     /**
      * Autowired service classes
      */
-    private StockCompanyEntityService stockCompanyEntityService;
     private StockNoteRepository stockNoteRepository;
-    private StockTagService stockTagService;
-    private StockNoteSourceEntityService stockNoteSourceService;
 
     /**
      * Get all of the notes for a customer.

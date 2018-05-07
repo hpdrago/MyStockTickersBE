@@ -7,6 +7,7 @@ import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.TradeItAccountRepository;
+import com.stocktracker.servicelayer.service.common.TradeItAccountComparisonService;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;

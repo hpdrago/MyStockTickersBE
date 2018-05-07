@@ -20,7 +20,7 @@ public class StockNoteCountEntityService extends BaseEntityService<UUID,
     private VStockNoteCountRepository vStockNoteCountRepository;
 
     @Autowired
-    public void setvStockNoteCountRepository( final VStockNoteCountRepository vStockNoteCountRepository )
+    public void setStockNoteCountRepository( final VStockNoteCountRepository vStockNoteCountRepository )
     {
         this.vStockNoteCountRepository = vStockNoteCountRepository;
     }

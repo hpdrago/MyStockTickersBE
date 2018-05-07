@@ -62,7 +62,7 @@ public class StockPriceCache implements MyLogger, HandleStockQuoteResult
      * @param tickerSymbol
      * @param fetchMode
      * @return
-     * @throws StockNotFoundException only when using fetchMode == SYCHRONOUS
+     * @throws StockNotFoundException only when using fetchMode == SYNCHRONOUS
      */
     public StockPriceCacheEntry getStockPrice( @NotNull String tickerSymbol,
                                                @NotNull final StockPriceFetchMode fetchMode )

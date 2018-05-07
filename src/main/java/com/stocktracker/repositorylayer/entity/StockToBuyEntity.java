@@ -39,7 +39,8 @@ public class StockToBuyEntity extends UUIDEntity
     private BigDecimal buySharesUpToPrice;
     private BigDecimal stockPriceWhenCreated;
     private String completed;
-    private UUID notesSourceUuid;
+    //private UUID notesSourceUuid;
+    private StockNoteSourceEntity stockNoteSourceByNotesSourceUuid;
     private Timestamp buyAfterDate;
 
     @Basic
@@ -126,6 +127,7 @@ public class StockToBuyEntity extends UUIDEntity
         this.buyAfterDate = buyAfterDate;
     }
 
+    /*
     @Basic
     @Column( name = "notes_source_uuid" )
     public UUID getNotesSourceUuid()
@@ -137,8 +139,8 @@ public class StockToBuyEntity extends UUIDEntity
     {
         this.notesSourceUuid = notesSourceUuid;
     }
+    */
 
-    /*
     @ManyToOne
     @JoinColumn( name = "notes_source_uuid", referencedColumnName = "uuid" )
     public StockNoteSourceEntity getStockNoteSourceByNotesSourceUuid()
@@ -157,25 +159,13 @@ public class StockToBuyEntity extends UUIDEntity
     {
         return Optional.ofNullable( this.stockNoteSourceByNotesSourceUuid );
     }
-    */
 
-    /*
     @Transient
     @Override
     public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
     {
         this.stockNoteSourceByNotesSourceUuid = stockNoteSourceEntity;
     }
-
-    @Transient
-    @Override
-    public Optional<UUID> getStockNoteSourceUuid()
-    {
-        return Optional.ofNullable( this.stockNoteSourceByNotesSourceUuid == null
-                                    ? null
-                                    : this.stockNoteSourceByNotesSourceUuid.getUuid() );
-    }
-    */
 
     @Override
     public String toString()
@@ -185,12 +175,12 @@ public class StockToBuyEntity extends UUIDEntity
         sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
-        sb.append( ", notesSourceId=" ).append( notesSourceUuid );
+        //sb.append( ", notesSourceId=" ).append( notesSourceUuid );
         sb.append( ", buySharesUpToPrice=" ).append( buySharesUpToPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
-        sb.append( ", notesSourceUuid=" ).append( notesSourceUuid );
+        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceUuid );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

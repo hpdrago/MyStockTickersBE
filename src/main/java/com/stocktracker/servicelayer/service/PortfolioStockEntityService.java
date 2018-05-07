@@ -23,7 +23,6 @@ import java.util.UUID;
  * Created by mike on 11/26/2016.
  */
 @Service
-//@Transactional
 public class PortfolioStockEntityService extends StockInformationEntityService<PortfolioStockEntity,
                                                                                PortfolioStockDTO,
                                                                                PortfolioStockRepository>

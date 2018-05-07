@@ -7,6 +7,7 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
+import com.stocktracker.servicelayer.service.common.PortfolioCalculator;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,14 +24,11 @@ import java.util.UUID;
  * Created by mike on 10/23/2016.
  */
 @Service
-//@Transactional
 public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
                                                               PortfolioDTO,
                                                               PortfolioRepository>
 {
     private PortfolioRepository portfolioRepository;
-    private StockCompanyEntityService stockCompanyEntityService;
-    private PortfolioStockEntityService portfolioStockService;
     private PortfolioCalculator portfolioCalculator;
 
     /**
@@ -122,17 +120,5 @@ public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
     public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
     {
         this.portfolioRepository = portfolioRepository;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
-    }
-
-    @Autowired
-    public void setPortfolioStockService( PortfolioStockEntityService portfolioStockService )
-    {
-        this.portfolioStockService = portfolioStockService;
     }
 }

@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.common;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
@@ -6,6 +6,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
+import com.stocktracker.servicelayer.service.StockPositionService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.scheduling.annotation.Async;

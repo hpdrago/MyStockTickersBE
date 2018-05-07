@@ -74,6 +74,8 @@ public abstract class UuidEntityService<E extends UUIDEntity,
      */
     protected D entityToDTO( final E entity )
     {
+        //final String methodName = "entityToDTO";
+        //logMethodBegin( methodName, entity );
         final D dto = super.entityToDTO( entity );
         dto.setId( entity.getUuid().toString() );
         /*
@@ -87,6 +89,7 @@ public abstract class UuidEntityService<E extends UUIDEntity,
                 ((CustomerIdContainer)dto).setCustomerId( ((CustomerUuidContainer) entity).getCustomerUuid().toString() );
             }
         }
+        //logMethodEnd( methodName, entity );
         return dto;
     }
 

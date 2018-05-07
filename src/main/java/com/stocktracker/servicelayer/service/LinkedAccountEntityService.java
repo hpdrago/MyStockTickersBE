@@ -23,7 +23,6 @@ import java.util.UUID;
  * Created by mike on 1/18/2018.
  */
 @Service
-//@Transactional
 public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountEntity,
                                                                   LinkedAccountDTO,
                                                                   LinkedAccountRepository>

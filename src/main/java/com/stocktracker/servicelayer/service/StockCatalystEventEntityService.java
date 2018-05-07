@@ -17,13 +17,11 @@ import java.util.UUID;
  * This is the service class for the Stock Catalyst Event table/entity
  */
 @Service
-//@Transactional
 public class StockCatalystEventEntityService extends UuidEntityService<StockCatalystEventEntity,
                                                                        StockCatalystEventDTO,
                                                                        StockCatalystEventRepository>
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
-    private StockCompanyEntityService stockCompanyEntityService;
 
     /**
      * Get the list of all stock catalyst event for the customer
@@ -115,11 +113,4 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
     {
         this.stockCatalystEventRepository = stockCatalystEventRepository;
     }
-
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
-    }
-
 }

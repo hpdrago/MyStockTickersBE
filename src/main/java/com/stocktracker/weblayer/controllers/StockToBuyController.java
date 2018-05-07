@@ -49,6 +49,7 @@ public class StockToBuyController extends AbstractController
         Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerUuid( pageRequest,
                                                                                     UUIDUtil.uuid( customerId ));
+        logDebug( methodName, "StocksToBuy: {0}", stockToBuyDTOs.getContent() );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;
     }

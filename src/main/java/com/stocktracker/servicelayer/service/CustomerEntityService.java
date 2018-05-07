@@ -22,7 +22,6 @@ import java.util.UUID;
  * Created by mike on 5/15/2016.
  */
 @Service
-//@Transactional
 public class CustomerEntityService extends UuidEntityService<CustomerEntity,
                                                              CustomerDTO,
                                                              CustomerRepository>
@@ -41,8 +40,8 @@ public class CustomerEntityService extends UuidEntityService<CustomerEntity,
     {
         final String methodName = "getCustomerDTO";
         logMethodBegin( methodName, id );
-        CustomerEntity customerEntity = getCustomerEntity( id );
-        CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
+        final CustomerEntity customerEntity = getCustomerEntity( id );
+        final CustomerDTO customerDTO = loadCustomerDTO( customerEntity );
         logMethodEnd( methodName, customerDTO );
         return customerDTO;
     }
@@ -58,7 +57,7 @@ public class CustomerEntityService extends UuidEntityService<CustomerEntity,
     {
         final String methodName = "getCustomerEntity";
         logMethodBegin( methodName, customerUuid );
-        CustomerEntity customerEntity = null;
+        CustomerEntity customerEntity;
         try
         {
             customerEntity = this.getEntity( customerUuid );
@@ -94,7 +93,7 @@ public class CustomerEntityService extends UuidEntityService<CustomerEntity,
     }
 
     /**
-     * This method loads the CustomerDTO
+     * This method loads the CustomerDTO including the portfolio information.
      * @param customerEntity
      * @return
      */
@@ -103,12 +102,12 @@ public class CustomerEntityService extends UuidEntityService<CustomerEntity,
         final String methodName = "loadCustomerDTO";
         logMethodBegin( methodName, customerEntity );
         Objects.requireNonNull( customerEntity );
-        CustomerDTO customerDTO = this.entityToDTO( customerEntity );
+        final CustomerDTO customerDTO = this.entityToDTO( customerEntity );
         /*
          * Get the portfolios for the customer from the database
          */
-        List<PortfolioEntity> customerPortfolios = portfolioRepository.findByCustomerUuid( customerEntity.getId() );
-        List<PortfolioDTO> customerDTOPortfolios = this.portfolioService.entitiesToDTOs( customerPortfolios );
+        final List<PortfolioEntity> customerPortfolios = this.portfolioRepository.findByCustomerUuid( customerEntity.getId() );
+        final List<PortfolioDTO> customerDTOPortfolios = this.portfolioService.entitiesToDTOs( customerPortfolios );
         customerDTO.setPortfolios( customerDTOPortfolios );
         logMethodEnd( methodName, customerEntity );
         return customerDTO;

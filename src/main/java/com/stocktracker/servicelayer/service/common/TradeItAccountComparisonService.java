@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.common;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
@@ -6,6 +6,8 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
+import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import org.springframework.beans.factory.annotation.Autowired;

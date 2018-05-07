@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.common;
 
 public enum StockNoteActionTaken
 {

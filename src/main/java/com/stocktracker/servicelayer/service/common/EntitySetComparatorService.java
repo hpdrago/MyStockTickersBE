@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.common;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
@@ -6,6 +6,7 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.common.VersionedEntity;
+import com.stocktracker.servicelayer.service.VersionedEntityService;
 
 import java.io.Serializable;
 import java.util.Collection;

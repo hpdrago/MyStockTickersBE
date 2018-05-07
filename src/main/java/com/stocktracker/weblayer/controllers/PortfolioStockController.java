@@ -6,8 +6,6 @@ import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
-import com.stocktracker.weblayer.controllers.portfoliostock.AddPortfolioStockHandler;
-import com.stocktracker.weblayer.controllers.portfoliostock.SavePortfolioStockHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -35,8 +33,6 @@ public class PortfolioStockController extends AbstractController
 {
     private static final String CONTEXT_URL = "/portfolioStock";
     private PortfolioStockEntityService portfolioStockService;
-    private AddPortfolioStockHandler addPortfolioStockHandler;
-    private SavePortfolioStockHandler savePortfolioStockHandler;
 
     /**
      * Get a single customer stock entry
@@ -200,18 +196,6 @@ public class PortfolioStockController extends AbstractController
         {
             throw new PortfolioStockMissingDataException( e );
         }
-    }
-
-    @Autowired
-    public void setAddPortfolioStockHandler( final AddPortfolioStockHandler addPortfolioStockHandler )
-    {
-        this.addPortfolioStockHandler = addPortfolioStockHandler;
-    }
-
-    @Autowired
-    public void setSavePortfolioStockHandler( final SavePortfolioStockHandler savePortfolioStockHandler )
-    {
-        this.savePortfolioStockHandler = savePortfolioStockHandler;
     }
 
     @Autowired

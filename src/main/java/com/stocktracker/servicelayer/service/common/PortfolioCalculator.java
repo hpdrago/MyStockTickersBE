@@ -1,10 +1,11 @@
-package com.stocktracker.servicelayer.service;
+package com.stocktracker.servicelayer.service.common;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
+import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;

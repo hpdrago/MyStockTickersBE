@@ -8,6 +8,7 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
 import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
+import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
@@ -41,6 +42,8 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
 {
     protected StockCompanyEntityService stockCompanyEntityService;
 
+    protected StockInformationService stockInformationService;
+
     protected enum StockPriceFetchAction
     {
         NONE,
@@ -63,7 +66,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto cannot be null" );
         final D returnDTO = super.saveDTO( dto );
-        this.checkChildDataEntities( dto, returnDTO );
+        this.saveChildEntities( dto, returnDTO );
         logMethodEnd( methodName, returnDTO );
         return returnDTO;
     }
@@ -84,7 +87,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto cannot be null" );
         final D returnDTO = super.addDTO( dto );
-        this.checkChildDataEntities( dto, returnDTO );
+        this.saveChildEntities( dto, returnDTO );
         logMethodEnd( methodName, returnDTO );
         return returnDTO;
     }
@@ -94,7 +97,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * @param dto
      * @param returnDTO
      */
-    private void checkChildDataEntities( final D dto, final D returnDTO )
+    private void saveChildEntities( final D dto, final D returnDTO )
     {
         /*
          * Save any tags contained in the dto
@@ -128,6 +131,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
                                             container.getStockTagReferenceType(),
                                             UUIDUtil.uuid( newDTO.getId() ),
                                             container.getTags() );
+        logMethodEnd( methodName );
     }
 
 
@@ -202,6 +206,9 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     protected D entityToDTO( final E entity )
     {
+        //final String methodName = "entityToDTO";
+        //logMethodBegin( methodName, entity );
+        Objects.requireNonNull( entity, "entity argument cannot be null" );
         D dto = super.entityToDTO( entity );
         /*
          * I think this is a good use of instanceof...although I am not convinced, I'll have to think about this...
@@ -220,14 +227,17 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
              dto instanceof NotesSourceIdContainer )
         {
             final NotesSourceUuidContainer notesSourceUuidContainer = (NotesSourceUuidContainer)entity;
-            if ( notesSourceUuidContainer.getNotesSourceUuid() != null )
+            if ( notesSourceUuidContainer.getNotesSourceEntity().isPresent() )
             {
                 final NotesSourceIdContainer notesSourceIdContainer = (NotesSourceIdContainer)dto;
+                /*
                 final StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
                                                                         .getStockNoteSource( notesSourceUuidContainer
                                                                                              .getNotesSourceUuid() );
+                                                                                             */
+                final StockNoteSourceEntity stockNoteSourceEntity = notesSourceUuidContainer.getNotesSourceEntity().get();
                 notesSourceIdContainer.setNotesSourceName( stockNoteSourceEntity.getName() );
-                notesSourceIdContainer.setNotesSourceId( notesSourceUuidContainer.getNotesSourceUuid().toString() );
+                notesSourceIdContainer.setNotesSourceId( stockNoteSourceEntity.getUuid().toString() );
             }
         }
 
@@ -238,12 +248,16 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
                                                                        StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
                                                                        UUIDUtil.uuid( tagsContainer.getEntityId() ) ) );
         }
+        //logMethodEnd( methodName, dto );
         return dto;
     }
 
     @Override
     protected E dtoToEntity( final D dto )
     {
+        //final String methodName = "dtoToEntity";
+        //logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto argument cannot be null" );
         final E entity = super.dtoToEntity( dto );
         /*
          * Convert the notes source ID to UUID
@@ -263,9 +277,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
             if ( notesSourceIdContainer.getNotesSourceId() != null &&
                  !notesSourceIdContainer.getNotesSourceId().isEmpty() )
             {
-                notesSourceUuidContainer.setNotesSourceUuid( UUIDUtil.uuid( notesSourceIdContainer.getNotesSourceId() ));
+                final StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
+                                                                        .getStockNoteSource( notesSourceIdContainer.getNotesSourceId() );
+                notesSourceUuidContainer.setNotesSourceEntity( stockNoteSourceEntity );
             }
         }
+        //logMethodEnd( methodName, entity );
         return entity;
     }
 
@@ -276,8 +293,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     protected void postAddDTO( final D dto )
     {
+        final String methodName = "postAddDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto argument cannot be null" );
         super.postAddDTO( dto );
         this.updateStockPrice( dto );
+        logMethodEnd( methodName );
     }
 
     /**
@@ -287,8 +308,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     protected void postSaveDTO( final D dto )
     {
+        final String methodName = "postSaveDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto argument cannot be null" );
         super.postSaveDTO( dto );
         this.updateStockPrice( dto );
+        logMethodEnd( methodName );
     }
 
     /**
@@ -297,8 +322,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      */
     protected void updateStockPrice( final D dto )
     {
+        final String methodName = "updateStockPrice";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto argument cannot be null" );
         this.stockInformationService
             .setStockPrice( dto, StockPriceFetchMode.ASYNCHRONOUS );
+        logMethodEnd( methodName );
     }
 
     /**
@@ -308,8 +337,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     protected void preAddDTO( final D dto )
     {
+        final String methodName = "preAddDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto argument cannot be null" );
         checkTickerSymbol( dto );
         super.preAddDTO( dto );
+        logMethodEnd( methodName );
     }
 
     /**
@@ -319,11 +352,15 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     protected void preAddEntity( final E entity )
     {
+        final String methodName = "preAddEntity";
+        logMethodBegin( methodName, entity );
+        Objects.requireNonNull( entity, "entity argument cannot be null" );
         super.preAddEntity( entity );
         if ( entity instanceof StockPriceWhenCreatedContainer )
         {
             setStockPriceWhenCreated( entity.getTickerSymbol(), (StockPriceWhenCreatedContainer)entity );
         }
+        logMethodEnd( methodName );
     }
 
     /**
@@ -334,10 +371,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      */
     protected void setStockPriceWhenCreated( final String tickerSymbol, final StockPriceWhenCreatedContainer entity )
     {
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol argument cannot be null" );
+        Objects.requireNonNull( entity, "entity argument cannot be null" );
         /*
          * The stock price needs to be set the first time as it records the stock price when the record was created.
          */
-        entity.setStockPriceWhenCreated( this.getStockInformationService()
+        entity.setStockPriceWhenCreated( this.stockInformationService
                                              .getLastPrice( tickerSymbol ));
     }
 
@@ -348,8 +387,11 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     protected void preSaveDTO( final D dto )
     {
+        final String methodName = "preSaveDTO";
+        logMethodBegin( methodName, dto );
         checkTickerSymbol( dto );
         super.preSaveDTO( dto );
+        logMethodEnd( methodName );
     }
 
     /**
@@ -358,14 +400,29 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      */
     protected void checkTickerSymbol( final D dto )
     {
+        final String methodName = "checkTickerSymbol";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto argument cannot be null" );
         this.stockCompanyEntityService
             .checkStockTableEntry( dto.getTickerSymbol() );
+        logMethodEnd( methodName );
     }
 
     @Autowired
     public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
     {
         this.stockCompanyEntityService = stockCompanyEntityService;
+    }
+
+    @Autowired
+    public void setStockInformationService( final StockInformationService stockInformationService )
+    {
+        this.stockInformationService = stockInformationService;
+    }
+
+    protected StockInformationService getStockInformationService()
+    {
+        return stockInformationService;
     }
 
 }

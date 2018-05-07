@@ -18,7 +18,6 @@ import java.util.UUID;
  * Service class for the StockNoteSource entity interface to the database.
  */
 @Service
-//@Transactional
 public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSourceEntity,
                                                                     StockNoteSourceDTO,
                                                                     StockNoteSourceRepository>
@@ -30,62 +29,6 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
     {
         this.stockNoteSourceRepository = stockNoteSourceRepository;
     }
-
-    /*
-    public interface StockNoteSourceEntityContainer
-    {
-        Optional<StockNoteSourceEntity> getNotesSourceEntity();
-        Optional<UUID> getStockNoteSourceUuid();
-        void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity );
-    }
-    */
-
-    /*
-     * DTO's that contain stock notes source information must implement this interface in order for common
-     * methods can be used to extract the necessary information to create the stock note source.
-     */
-    /*
-    public interface StockNoteSourceDTOContainer
-    {
-        String getCustomerId();
-        void setNotesSourceName( final String noteSourceName );
-        void setNotesSourceId( final String notesSourceId );
-        String getNotesSourceName();
-        String getNotesSourceId();
-    }
-    */
-
-    /**
-     * Sets the source name for all {@Code StockNoteSourceContainer} entries
-     * @param customerUuid The customer id is used to retrieve the sources for the customer.
-     * @param stockNoteSourceDTOContainers The list of {@code StockNoteSourceDTOContainer} instances.
-     */
-    /*
-    public void setNotesSourceName( final UUID customerUuid,
-                                    final List<? extends StockNoteSourceDTOContainer> stockNoteSourceDTOContainers )
-    {
-        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
-        Objects.requireNonNull( stockNoteSourceDTOContainers, "stockNoteSourceDTOContainers cannot be null" );
-        /*
-         * For now, maybe until we create a view -- if that makes sense, load the sources and populate the source
-         * values in the DTOs
-         */
-    /*
-        List<StockNoteSourceEntity> customerSources = this.stockNoteSourceRepository
-            .findByCustomerUuidOrderByTimesUsedDesc( customerUuid );
-        Map<UUID, String> sourceEntityMap = customerSources.stream()
-                                                           .collect( Collectors.toMap( StockNoteSourceEntity::getUuid,
-                                                                                       StockNoteSourceEntity::getName ) );
-        for ( NotesSourceIdContainer notesSourceIdContainer : stockNoteSourceDTOContainers )
-        {
-            if ( stockNoteSourceDTOContainer.getNotesSourceId() != null )
-            {
-                stockNoteSourceDTOContainer.setNotesSourceName(
-                    sourceEntityMap.get( stockNoteSourceDTOContainer.getNotesSourceId() ) );
-            }
-        }
-    }
-    */
 
     /**
      * Check {@code stockNoteSourceDTOContainer} to see if the user entered a new note source.

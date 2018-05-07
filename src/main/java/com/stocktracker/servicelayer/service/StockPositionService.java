@@ -10,6 +10,7 @@ import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.StockPositionRepository;
+import com.stocktracker.servicelayer.service.common.StockPositionComparator;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;

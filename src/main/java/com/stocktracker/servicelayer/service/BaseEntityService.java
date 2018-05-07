@@ -37,7 +37,6 @@ public abstract class BaseEntityService<EK extends Serializable,
 {
     @Autowired
     protected ApplicationContext context;
-    protected StockInformationService stockInformationService;
     private ServiceLogger serviceLogger = new ServiceLogger();
 
     /**
@@ -147,18 +146,6 @@ public abstract class BaseEntityService<EK extends Serializable,
      * @return
      */
     protected abstract R getRepository();
-
-    @Autowired
-    public void setStockInformationService( final StockInformationService stockInformationService )
-    {
-        logDebug( "setStockInformationService, ", "dependency injection of " + stockInformationService );
-        this.stockInformationService = stockInformationService;
-    }
-
-    public StockInformationService getStockInformationService()
-    {
-        return stockInformationService;
-    }
 
     /**
      * Local logger class needed because of Spring Proxy
