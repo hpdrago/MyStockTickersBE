@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +50,6 @@ public abstract class BaseEntityService<EK extends Serializable,
     {
         final D dto = this.createDTO();
         BeanUtils.copyProperties( entity, dto );
-        /*
-         * I think this is a good use of instanceof...although I am not convinced, I'll have to think about this...
-         * If any stock DTO is a stock company container, it will be populated automatically with the stock company
-         * information.  No need for any sub cvl
-         */
-        if ( dto instanceof StockCompanyContainer )
-        {
-            this.stockInformationService
-                .setCompanyInformation( (StockCompanyContainer)dto );
-        }
         return dto;
     }
 
