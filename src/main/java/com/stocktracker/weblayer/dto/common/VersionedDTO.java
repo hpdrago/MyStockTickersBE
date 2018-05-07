@@ -1,4 +1,4 @@
-package com.stocktracker.weblayer.dto;
+package com.stocktracker.weblayer.dto.common;
 
 
 import java.io.Serializable;
