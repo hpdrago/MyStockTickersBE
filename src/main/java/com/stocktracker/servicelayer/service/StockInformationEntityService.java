@@ -41,10 +41,9 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     extends UuidEntityService<E,D,R>
 {
     protected StockCompanyEntityService stockCompanyEntityService;
-
     protected StockInformationService stockInformationService;
 
-    protected enum StockPriceFetchAction
+    private enum StockPriceFetchAction
     {
         NONE,
         FETCH;

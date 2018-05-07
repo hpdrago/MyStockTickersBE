@@ -117,26 +117,4 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
         this.stockNoteRepository = stockNoteRepository;
     }
 
-    /**
-     * Allow DI to set the StockContainerService
-     *
-     * @param stockCompanyEntityService
-     */
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
-    }
-
-    @Autowired
-    public void setStockTagService( final StockTagService stockTagService )
-    {
-        this.stockTagService = stockTagService;
-    }
-
-    @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
-    {
-        this.stockNoteSourceService = stockNoteSourceService;
-    }
 }

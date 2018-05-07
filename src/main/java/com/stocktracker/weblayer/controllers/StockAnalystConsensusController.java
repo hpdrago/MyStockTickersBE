@@ -2,7 +2,10 @@ package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
@@ -30,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @CrossOrigin
-public class StockAnalystConsensusController implements MyLogger
+public class StockAnalystConsensusController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "stockAnalystConsensus";
     private StockAnalystConsensusEntityService stockAnalystConsensusService;
@@ -38,17 +41,22 @@ public class StockAnalystConsensusController implements MyLogger
     /**
      * Get all of the stock analyst consensus for a customer
      * @return
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<StockAnalystConsensusDTO> getStockAnalystConsensusList( @PathVariable String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockAnalystConsensusList";
         logMethodBegin( methodName, customerId );
-        List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
-                                                                       .getAllStockAnalystConsensus(
-                                                                           UUIDUtil.uuid( customerId ));
+        this.validateCustomerId( customerId );
+        final List<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+                                                                             .getAllStockAnalystConsensus(
+                                                                                 UUIDUtil.uuid( customerId ));
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.size() );
         return stockAnalystConsensusDTOs;
     }
@@ -56,17 +64,23 @@ public class StockAnalystConsensusController implements MyLogger
     /**
      * Get all of the stock analyst consensus for a customer
      * @return
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/page/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockAnalystConsensusDTO> getStockAnalystConsensusPage( final Pageable pageRequest,
                                                                         @PathVariable String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockAnalystConsensusPage";
         logMethodBegin( methodName, customerId );
-        Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
-            .getStockAnalystConsensusPage( pageRequest, UUIDUtil.uuid( customerId ));
+        this.validateCustomerId( customerId );
+        final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+                                                                             .getStockAnalystConsensusPage( pageRequest,
+                                                                                                            UUIDUtil.uuid( customerId ));
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }
@@ -74,6 +88,8 @@ public class StockAnalystConsensusController implements MyLogger
     /**
      * Get all of the stock analyst consensus for a customer id and ticker symbol
      * @return
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
@@ -81,13 +97,16 @@ public class StockAnalystConsensusController implements MyLogger
     public Page<StockAnalystConsensusDTO> getStockAnalystConsensusList( final Pageable pageRequest,
                                                                         @PathVariable String customerId,
                                                                         @PathVariable String tickerSymbol )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockAnalystConsensusList";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
+        this.validateCustomerId( customerId );
         Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
             .getStockAnalystConsensusListForCustomerUuidAndTickerSymbol( pageRequest,
-                                                                       UUIDUtil.uuid( customerId ),
-                                                                       tickerSymbol );
+                                                                         UUIDUtil.uuid( customerId ),
+                                                                         tickerSymbol );
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }
@@ -95,19 +114,24 @@ public class StockAnalystConsensusController implements MyLogger
     /**
      * Get a single stock analyst consensus
      * @return
+     * @throws VersionedEntityNotFoundException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockAnalystConsensusDTO getStockAnalystConsensus( @PathVariable String stockAnalystConsensusId,
                                                               @PathVariable String customerId )
-        throws VersionedEntityNotFoundException
+        throws VersionedEntityNotFoundException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId, customerId );
+        this.validateCustomerId( customerId );
         final StockAnalystConsensusDTO stockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                      .getStockAnalystConsensus(
-                                                                          UUIDUtil.uuid( stockAnalystConsensusId ));
+                                                                      .getDTO( UUIDUtil.uuid( stockAnalystConsensusId ));
         logMethodEnd( methodName, stockAnalystConsensusDTO );
         return stockAnalystConsensusDTO;
     }
@@ -116,16 +140,22 @@ public class StockAnalystConsensusController implements MyLogger
      * Deletes a stock summary entity
      * @param stockAnalystConsensusId
      * @return
+     * @throws CustomerNotFoundException
+     * @throws VersionedEntityNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customerId/{customerId}",
                      method = RequestMethod.DELETE,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockAnalystConsensus( @PathVariable String stockAnalystConsensusId,
                                                              @PathVariable String customerId )
-        throws VersionedEntityNotFoundException
+        throws VersionedEntityNotFoundException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "deleteStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusId );
+        this.validateCustomerId( customerId );
         this.stockAnalystConsensusService.deleteEntity( stockAnalystConsensusId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
@@ -138,20 +168,25 @@ public class StockAnalystConsensusController implements MyLogger
      * @return
      * @throws StockNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockAnalystConsensusDTO> addStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
                                                                               @PathVariable String customerId )
         throws StockNotFoundException,
-               EntityVersionMismatchException, StockCompanyNotFoundException
+               EntityVersionMismatchException,
+               DuplicateEntityException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "addStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );
-        StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                        .createStockAnalystConsensus(
-                                                                            UUIDUtil.uuid( customerId ),
-                                                                               stockAnalystConsensusDTO );
+        this.validateCustomerId( customerId );
+        final StockAnalystConsensusDTO newStockAnalystConsensusDTO = this.stockAnalystConsensusService
+                                                                         .addDTO( stockAnalystConsensusDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -167,6 +202,8 @@ public class StockAnalystConsensusController implements MyLogger
      * @param customerId
      * @return
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customerId/{customerId}",
@@ -174,15 +211,18 @@ public class StockAnalystConsensusController implements MyLogger
     public ResponseEntity<StockAnalystConsensusDTO> updateStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
                                                                                  @PathVariable Integer stockAnalystConsensusId,
                                                                                  @PathVariable String customerId )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId, customerId, stockAnalystConsensusDTO );
+        this.validateCustomerId( customerId );
         /*
          * Save the stock
          */
-        StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.stockAnalystConsensusService
-                                                                      .saveStockAnalystConsensus( stockAnalystConsensusDTO );
+        final StockAnalystConsensusDTO returnStockAnalystConsensusDTO = this.stockAnalystConsensusService
+                                                                            .saveDTO( stockAnalystConsensusDTO );
         /*
          * send the response
          */
