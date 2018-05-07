@@ -29,7 +29,6 @@ public abstract class VersionedEntityService<EK extends Serializable,
     extends BaseEntityService<EK,E,DK,D,R>
 {
     protected StockTagService stockTagService;
-    protected StockNoteSourceEntityService stockNoteSourceService;
 
     /**
      * Converts the DTO to and Entity and saves it to the database.
@@ -395,9 +394,4 @@ public abstract class VersionedEntityService<EK extends Serializable,
         this.stockTagService = stockTagService;
     }
 
-    @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
-    {
-        this.stockNoteSourceService = stockNoteSourceService;
-    }
 }

@@ -42,6 +42,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
 {
     protected StockCompanyEntityService stockCompanyEntityService;
     protected StockInformationService stockInformationService;
+    protected StockNoteSourceEntityService stockNoteSourceService;
 
     private enum StockPriceFetchAction
     {
@@ -424,4 +425,9 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         return stockInformationService;
     }
 
+    @Autowired
+    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
+    {
+        this.stockNoteSourceService = stockNoteSourceService;
+    }
 }

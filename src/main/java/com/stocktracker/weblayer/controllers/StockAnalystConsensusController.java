@@ -91,7 +91,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
      */
-    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<StockAnalystConsensusDTO> getStockAnalystConsensusList( final Pageable pageRequest,
