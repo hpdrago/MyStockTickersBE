@@ -4,7 +4,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioRepository;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -54,7 +54,7 @@ public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
         {
             portfolioEntity = this.getEntity( portfolioUuid );
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new PortfolioNotFoundException( portfolioUuid );
         }
@@ -92,27 +92,6 @@ public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
         this.portfolioCalculator.calculate( portfolioDTOs );
         logMethodEnd( methodName, portfolioDTOs );
         return portfolioDTOs;
-    }
-
-    /**
-     * Add a new portfolio for the customer
-     * @param customerUuid
-     * @param portfolioDTO
-     * @return PortfolioEntity that was inserted
-     * @throws EntityVersionMismatchException
-     */
-    public PortfolioDTO addPortfolio( final UUID customerUuid, final PortfolioDTO portfolioDTO )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "addPortfolio";
-        logMethodBegin( methodName, customerUuid, portfolioDTO );
-        Objects.requireNonNull( portfolioDTO, "portfolioDTO cannot be null" );
-        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
-        PortfolioEntity portfolioEntity = this.dtoToEntity( portfolioDTO );
-        portfolioEntity = this.saveEntity( portfolioEntity );
-        PortfolioDTO returnPortfolioDTO = this.entityToDTO( portfolioEntity );
-        logMethodEnd( methodName, returnPortfolioDTO );
-        return returnPortfolioDTO;
     }
 
     @Override

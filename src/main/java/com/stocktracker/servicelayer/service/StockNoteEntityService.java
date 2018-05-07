@@ -1,15 +1,9 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
-import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockNoteRepository;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
 import com.stocktracker.weblayer.dto.StockNoteDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -80,59 +74,6 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     }
 
     /**
-     * Converts the DTO into DB Entities and stores the stock note information in the database.
-     * The DTO contains information for one or more {@code StockNoteEntity}.
-     * The user can specify multiple stocks for a note and that results in multiple stock note entries created one
-     * for each stock.
-     * @param stockNoteDTO
-     * @throws StockNotFoundException
-     * @throws EntityVersionMismatchException
-     */
-    public StockNoteDTO createStockNote( final StockNoteDTO stockNoteDTO )
-        throws EntityVersionMismatchException,
-               StockNotFoundException
-    {
-        final String methodName = "createStockNote";
-        logMethodBegin( methodName, stockNoteDTO );
-        Objects.requireNonNull( stockNoteDTO );
-        this.stockNoteSourceService.checkForNewSource( stockNoteDTO );
-        /*
-         * Check to see if the stock exists
-         */
-        this.stockCompanyEntityService.checkStockTableEntry( stockNoteDTO.getTickerSymbol() );
-        StockNoteEntity stockNoteEntity = this.dtoToEntity( stockNoteDTO );
-        /*
-         * Set the stock price when created for one stock note entity
-         */
-        stockNoteEntity.setStockPriceWhenCreated( this.getStockInformationService()
-                                                      .getLastPrice( stockNoteEntity.getTickerSymbol() ));
-        stockNoteEntity = this.addEntity( stockNoteEntity );
-        StockNoteDTO returnStockNoteDTO = this.entityToDTO( stockNoteEntity );
-        logMethodEnd( methodName, returnStockNoteDTO );
-        return returnStockNoteDTO;
-    }
-
-    /**
-     * Updates the STOCK_NOTE and STOCK_NOTE_STOCK tables with the information contained with {@code stockNoteDTO}
-     * @param stockNoteDTO
-     * @return
-     */
-    public StockNoteDTO updateStockNote( final StockNoteDTO stockNoteDTO )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "updateStockNote";
-        logMethodBegin( methodName, stockNoteDTO );
-        Objects.requireNonNull( stockNoteDTO );
-        /*
-         * Check for any changes to the sources
-         */
-        this.stockNoteSourceService.checkForNewSource( stockNoteDTO );
-        final StockNoteDTO returnStockNoteDTO = super.saveDTO( stockNoteDTO );
-        logMethodEnd( methodName, returnStockNoteDTO );
-        return returnStockNoteDTO;
-    }
-
-    /**
      * Converts the {@code stockNoteEntity} to a DTO
      * @param stockNoteEntity
      * @return
@@ -145,12 +86,6 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
         stockNoteDTO.setNotesDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getNotesDate() ));
         stockNoteDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getCreateDate() ));
         stockNoteDTO.setUpdateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getUpdateDate() ));
-        if ( stockNoteEntity.getStockNoteSourceByNotesSourceUuid() != null )
-        {
-            stockNoteDTO.setNotesSourceName( stockNoteEntity.getStockNoteSourceByNotesSourceUuid().getName() );
-            stockNoteDTO.setNotesSourceId( stockNoteEntity.getStockNoteSourceByNotesSourceUuid().getUuid().toString() );
-        }
-        this.getStockInformationService().setStockPrice( stockNoteDTO, StockPriceFetchMode.ASYNCHRONOUS );
         return stockNoteDTO;
     }
 
@@ -158,13 +93,6 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     protected StockNoteEntity dtoToEntity( final StockNoteDTO stockNoteDTO )
     {
         final StockNoteEntity stockNoteEntity = super.dtoToEntity( stockNoteDTO );
-        if ( stockNoteDTO.getNotesSourceId() != null &&
-             !stockNoteDTO.getNotesSourceId().isEmpty() )
-        {
-            StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
-                                                              .getStockNoteSource( stockNoteDTO.getNotesSourceId() );
-            stockNoteEntity.setStockNoteSourceByNotesSourceUuid( stockNoteSourceEntity );
-        }
         stockNoteEntity.setNotesDate( JSONDateConverter.toTimestamp( stockNoteDTO.getNotesDate() ));
         return stockNoteEntity;
     }

@@ -2,9 +2,9 @@ package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.EntityLoadingStatus;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
@@ -43,8 +43,16 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountUuid );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( tradeItAccountUuid );
+        final TradeItAccountEntity tradeItAccountEntity;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                                                                  .getEntity( tradeItAccountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
+        }
         List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
                                                               .findAllByTradeItAccountUuid( tradeItAccountUuid );
         /*
@@ -88,7 +96,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         {
             linkedAccountEntity = this.getEntity( linkedAccountUuid );
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new LinkedAccountNotFoundException( linkedAccountUuid );
         }

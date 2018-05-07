@@ -1,14 +1,13 @@
-package com.stocktracker.weblayer.controllers.portfoliostock;
+package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
-import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
-import com.stocktracker.weblayer.controllers.AbstractController;
+import com.stocktracker.weblayer.controllers.portfoliostock.AddPortfolioStockHandler;
+import com.stocktracker.weblayer.controllers.portfoliostock.SavePortfolioStockHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -87,7 +86,7 @@ public class PortfolioStockController extends AbstractController
             this.portfolioStockService
                 .deleteEntity( portfolioStockId );
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new PortfolioStockNotFound( portfolioStockId );
         }
@@ -108,9 +107,7 @@ public class PortfolioStockController extends AbstractController
         produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<PortfolioStockDTO> getPortfolioStocks( @PathVariable String customerId,
                                                        @PathVariable String portfolioId )
-        throws PortfolioStockNotFound,
-               StockNotFoundException,
-               StockQuoteUnavailableException
+        throws PortfolioStockNotFound
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, customerId, portfolioId );
@@ -129,7 +126,7 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<PortfolioStockDTO> addPortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
-                                                                @PathVariable Integer customerId )
+                                                                @PathVariable String customerId )
         throws Exception
     {
         final String methodName = "addPortfolioStock";
@@ -138,7 +135,8 @@ public class PortfolioStockController extends AbstractController
         /*
          * Do the work
          */
-        PortfolioStockDTO newPortfolioStockDTO = this.addPortfolioStockHandler.handleRequest( portfolioStockDTO );
+        final PortfolioStockDTO newPortfolioStockDTO = this.portfolioStockService
+                                                           .addDTO( portfolioStockDTO );
         /*
          * send the response
          */
@@ -159,7 +157,7 @@ public class PortfolioStockController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
         method = RequestMethod.PUT )
     public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
-                                                                 @PathVariable Integer customerId )
+                                                                 @PathVariable String customerId )
         throws EntityVersionMismatchException
     {
         final String methodName = "savePortfolioStock";
@@ -168,7 +166,8 @@ public class PortfolioStockController extends AbstractController
         /*
          * Save the stock
          */
-        PortfolioStockDTO returnPortfolioStockDTO = this.savePortfolioStockHandler.handleRequest( portfolioStockDTO );
+        PortfolioStockDTO returnPortfolioStockDTO = this.portfolioStockService
+                                                        .saveDTO( portfolioStockDTO );
         /*
          * send the response
          */

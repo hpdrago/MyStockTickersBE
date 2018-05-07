@@ -17,7 +17,7 @@ public class TradeItAccountNotFoundException extends Exception
      */
     public TradeItAccountNotFoundException( final UUID tradeItAccountUuid )
     {
-        super( "TradeItAccountDTO uuid: " + tradeItAccountUuid + " was not found" );
+        super( getMessage( tradeItAccountUuid ) );
     }
 
     /**
@@ -26,6 +26,16 @@ public class TradeItAccountNotFoundException extends Exception
      */
     public TradeItAccountNotFoundException( final String tradeItAccountUuid )
     {
-        super( "TradeItAccountDTO uuid: " + tradeItAccountUuid + " was not found" );
+        super( getMessage( tradeItAccountUuid ) );
+    }
+
+    public TradeItAccountNotFoundException( final UUID tradeItAccountUuid, final EntityNotFoundException e )
+    {
+        super( getMessage( tradeItAccountUuid ), e);
+    }
+
+    private static String getMessage( final Object tradeItAccountUuid )
+    {
+        return "TradeItAccountDTO uuid: " + tradeItAccountUuid + " was not found";
     }
 }

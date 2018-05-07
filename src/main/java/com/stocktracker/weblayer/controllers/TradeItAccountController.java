@@ -3,10 +3,11 @@ package com.stocktracker.weblayer.controllers;
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,15 +59,15 @@ public class TradeItAccountController extends AbstractController implements MyLo
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public TradeItAccountDTO getAccount( @PathVariable String accountId,
                                          @PathVariable String customerId )
-        throws TradeItAccountNotFoundException,
-               CustomerNotFoundException,
-               NotAuthorizedException
+        throws CustomerNotFoundException,
+               NotAuthorizedException,
+               EntityNotFoundException
     {
         final String methodName = "getAccount";
         logMethodBegin( methodName, accountId, customerId );
         this.validateCustomerId( customerId );
-        TradeItAccountDTO tradeItAccountDTO = this.tradeItAccountService
-                                                  .getAccountDTO( UUIDUtil.uuid( accountId ));
+        final TradeItAccountDTO tradeItAccountDTO = this.tradeItAccountService
+                                                        .getDTO( UUIDUtil.uuid( accountId ));
         logMethodEnd( methodName, tradeItAccountDTO );
         return tradeItAccountDTO;
     }
@@ -86,14 +87,13 @@ public class TradeItAccountController extends AbstractController implements MyLo
                                                             @PathVariable final String customerId )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException, DuplicateEntityException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );
-        final UUID customerUuid = this.validateCustomerId( customerId );
+        this.validateCustomerId( customerId );
         TradeItAccountDTO returnStockDTO = this.tradeItAccountService
-                                               .createAccount( customerUuid,
-                                                               tradeItAccountDTO );
+                                               .addDTO( tradeItAccountDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -127,7 +127,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
         {
             this.tradeItAccountService.deleteEntity( UUIDUtil.uuid( accountId ));
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( accountId );
         }

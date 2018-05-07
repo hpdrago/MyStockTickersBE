@@ -1,7 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,6 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -43,7 +41,7 @@ public class TradeItAccountEntity extends UUIDEntity
     private String authUuid;
     private UUID customerUuid;
     private Timestamp authTimestamp;
-    private CustomerEntity customerByCustomerUuid;
+    //private CustomerEntity customerByCustomerUuid;
     private Collection<LinkedAccountEntity> linkedAccountsByUuid;
 
     public TradeItAccountEntity()
@@ -117,6 +115,7 @@ public class TradeItAccountEntity extends UUIDEntity
         this.customerUuid = customerUuid;
     }
 
+    /*
     @ManyToOne
     @JoinColumn( name = "customer_uuid", referencedColumnName = "uuid", nullable = false )
     public CustomerEntity getCustomerByCustomerUuid()
@@ -132,6 +131,7 @@ public class TradeItAccountEntity extends UUIDEntity
         }
         this.customerByCustomerUuid = customerEntity;
     }
+    */
 
     @Basic
     @Column( name = "user_id" )
@@ -256,7 +256,6 @@ public class TradeItAccountEntity extends UUIDEntity
         sb.append( ", authToken='" ).append( authToken ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
-        sb.append( ", customerByCustomerUuid=" ).append( customerByCustomerUuid );
         sb.append( ", linkedAccountsByUuid=" ).append( linkedAccountsByUuid );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

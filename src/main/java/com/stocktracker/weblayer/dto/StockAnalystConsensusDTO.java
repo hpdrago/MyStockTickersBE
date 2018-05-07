@@ -3,9 +3,11 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
+import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,7 +18,7 @@ import java.sql.Timestamp;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockAnalystConsensusDTO extends StockPriceQuoteDTO implements StockPriceContainer,
-                                                                            StockNoteSourceEntityService.StockNoteSourceDTOContainer,
+                                                                            NotesSourceIdContainer,
                                                                             UuidDTO,
                                                                             CustomerIdContainer
 {

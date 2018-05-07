@@ -3,10 +3,8 @@ package com.stocktracker.servicelayer.service.stocks;
 /**
  * DTOs that implement this information will have the company properties set.
  */
-public interface StockCompanyContainer
+public interface StockCompanyContainer extends TickerSymbolContainer
 {
-    String getTickerSymbol();
-    void setTickerSymbol( final String tickerSymbol );
     String getCompanyName();
     void setCompanyName( final String companyName );
     //String getCompanyURL();

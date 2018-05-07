@@ -39,7 +39,7 @@ public class StockTagService implements MyLogger
                                final String tickerSymbol,
                                final StockTagEntity.StockTagReferenceType referenceType,
                                final UUID entityUuid,
-                               final String[] tags )
+                               final List<String> tags )
     {
         final String methodName = "saveStockTags";
         /*
@@ -50,16 +50,15 @@ public class StockTagService implements MyLogger
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( referenceType, "referenceType cannot be null" );
         Objects.requireNonNull( entityUuid, "entityUuid cannot be null" );
-        Objects.requireNonNull( tags, "tags cannot be null" );
         if ( tags != null )
         {
             Set<String> uniqueTags = new TreeSet<>();
-            for ( String tag : tags )
+            for ( final String tag : tags )
             {
                 uniqueTags.add( tag );
             }
 
-            for ( String tag : uniqueTags )
+            for ( final String tag : uniqueTags )
             {
                 /*
                  * Set the unique key values to see if the tag exists

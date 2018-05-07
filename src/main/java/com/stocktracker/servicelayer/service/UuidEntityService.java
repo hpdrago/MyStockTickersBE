@@ -1,11 +1,11 @@
 package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
-import com.stocktracker.weblayer.dto.CustomerIdContainer;
-import com.stocktracker.weblayer.dto.UuidDTO;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
@@ -26,10 +26,10 @@ public abstract class UuidEntityService<E extends UUIDEntity,
      * Retrieves the entity and converts it into a DTO.
      * @param uuid Converted to UUID UUID type.
      * @return
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public D getDTO( final String uuid )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         return super.getDTO( UUIDUtil.uuid( uuid ) );
     }
@@ -38,10 +38,10 @@ public abstract class UuidEntityService<E extends UUIDEntity,
      * Get the entity by the primary key (uuid).
      * @param uuid Will be converted to UUID UUID.
      * @return
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public E getEntity( final String uuid )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         return super.getEntity( UUIDUtil.uuid( uuid ));
     }
@@ -49,10 +49,10 @@ public abstract class UuidEntityService<E extends UUIDEntity,
     /**
      * Delete the entity by the primary key (uuid).
      * @param uuid Will be converted to UUID UUID.
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public void deleteEntity( final String uuid )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         super.deleteEntity( UUIDUtil.uuid( uuid ));
     }
@@ -109,7 +109,7 @@ public abstract class UuidEntityService<E extends UUIDEntity,
          * Convert the customer id (string) to a customer uuid (binary)
          */
         if ( entity instanceof CustomerUuidContainer &&
-             dto instanceof CustomerIdContainer )
+                dto instanceof CustomerIdContainer )
         {
             ((CustomerUuidContainer)entity).setCustomerUuid(
                 UUIDUtil.uuid( ((CustomerIdContainer)dto).getCustomerId() ));

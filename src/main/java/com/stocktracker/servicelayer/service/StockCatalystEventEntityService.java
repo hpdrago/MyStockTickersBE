@@ -1,8 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.JSONDateConverter;
-import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
@@ -21,8 +19,8 @@ import java.util.UUID;
 @Service
 //@Transactional
 public class StockCatalystEventEntityService extends UuidEntityService<StockCatalystEventEntity,
-                                                                            StockCatalystEventDTO,
-                                                                            StockCatalystEventRepository>
+                                                                       StockCatalystEventDTO,
+                                                                       StockCatalystEventRepository>
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
     private StockCompanyEntityService stockCompanyEntityService;
@@ -56,8 +54,8 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
      * @return
      */
     public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
-                                                                                           @NotNull final UUID customerUuid,
-                                                                                           @NotNull final String tickerSymbol )
+                                                                                             @NotNull final UUID customerUuid,
+                                                                                             @NotNull final String tickerSymbol )
     {
         final String methodName = "getStockCatalystEventsForCustomerUuidAndTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerUuid, tickerSymbol );
@@ -69,41 +67,6 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
         logMethodEnd( methodName, "Found " + stockCatalystEventEntities.getContent().size() + " catalyst events" );
         return stockCatalystEventDTOs;
-    }
-
-    /**
-     * Get a single stock analytics by stockCatalystEventId
-     * @param stockCatalystEventUuid
-     * @return StockCatalystEventDTO instance
-     * @throws VersionedEntityNotFoundException
-     */
-    public StockCatalystEventDTO getStockCatalystEvent( @NotNull final UUID stockCatalystEventUuid )
-        throws VersionedEntityNotFoundException
-    {
-        final String methodName = "getStockCatalystEvent";
-        logMethodBegin( methodName, stockCatalystEventUuid );
-        Objects.requireNonNull( stockCatalystEventUuid, "stockCatalystEventId cannot be null" );
-        StockCatalystEventEntity stockCatalystEventEntity = this.getEntity( stockCatalystEventUuid );
-        StockCatalystEventDTO stockCatalystEventDTO = this.entityToDTO( stockCatalystEventEntity );
-        logMethodEnd( methodName, stockCatalystEventDTO );
-        return stockCatalystEventDTO;
-    }
-
-    /**
-     * Add a new stock analytics to the database
-     * @param stockCatalystEventDTO
-     * @return
-     */
-    public StockCatalystEventDTO saveStockCatalystEvent( @NotNull final StockCatalystEventDTO stockCatalystEventDTO )
-        throws EntityVersionMismatchException
-    {
-        final String methodName = "saveStockCatalystEvent";
-        logMethodBegin( methodName, stockCatalystEventDTO );
-        Objects.requireNonNull( stockCatalystEventDTO, "stockCatalystEventDTO cannot be null" );
-        this.stockCompanyEntityService.checkStockTableEntry( stockCatalystEventDTO.getTickerSymbol() );
-        final StockCatalystEventDTO returnStockCatalystEventDTO = this.saveDTO( stockCatalystEventDTO );
-        logMethodEnd( methodName, returnStockCatalystEventDTO );
-        return returnStockCatalystEventDTO;
     }
 
     @Override

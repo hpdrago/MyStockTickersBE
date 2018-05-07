@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
@@ -39,14 +39,14 @@ public class StockPositionComparator implements MyLogger
      * @param stockPositionEntities
      * @param getPositionsAPIResult
      * @throws EntityVersionMismatchException
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     @Async( "stockPositionEvaluatorThreadPool" )
     public void comparePositions( final LinkedAccountEntity linkedAccountEntity,
                                   final List<StockPositionEntity> stockPositionEntities,
                                   final GetPositionsAPIResult getPositionsAPIResult )
         throws EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               EntityNotFoundException
     {
         final String methodName = "comparePositions";
         logMethodBegin( methodName, linkedAccountEntity );
@@ -104,10 +104,10 @@ public class StockPositionComparator implements MyLogger
     /**
      * Delete the stock positions entities.
      * @param stockPositionEntities
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     private void deleteEntities( final Set<MyStockPositionEntity> stockPositionEntities )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         for ( MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
         {

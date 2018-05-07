@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Generic exception used when an entity cannot be found.
  */
 @ResponseStatus( value= HttpStatus.NOT_FOUND )  // 404
-public class VersionedEntityNotFoundException extends Exception
+public class EntityNotFoundException extends Exception
 {
     private Serializable key;
 
@@ -19,7 +19,7 @@ public class VersionedEntityNotFoundException extends Exception
      * @param key
      * @param <K>
      */
-    public <K extends Serializable> VersionedEntityNotFoundException( final K key )
+    public <K extends Serializable> EntityNotFoundException( final K key )
     {
         this.key = key;
     }

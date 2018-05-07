@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,8 @@ import java.util.UUID;
 @Entity
 @Table( name = "portfolio_stock", schema = "stocktracker", catalog = "" )
 public class PortfolioStockEntity extends UUIDEntity
-                                  implements CustomerUuidContainer
+                                  implements CustomerUuidContainer,
+                                             TickerSymbolContainer
 {
     private UUID customerUuid;
     private UUID portfolioUuid;
@@ -38,11 +40,6 @@ public class PortfolioStockEntity extends UUIDEntity
      */
     public PortfolioStockEntity()
     {
-    }
-
-    public static PortfolioStockEntity newInstance()
-    {
-        return new PortfolioStockEntity();
     }
 
     @Basic

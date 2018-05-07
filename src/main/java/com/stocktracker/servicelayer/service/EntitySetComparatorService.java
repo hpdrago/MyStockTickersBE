@@ -2,9 +2,10 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.VersionedEntity;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.repositorylayer.common.VersionedEntity;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,12 +32,15 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param collection1 Collection of entities from non-database source.
      * @param collection2 Current entity values from the database.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
+     * @throws EntityNotFoundException
+     * @throws DuplicateEntityException
      */
     public void compareAndUpdateDatabase( final VersionedEntityService<K,E,?,?,?> entityService,
                                           final Collection<E> collection1,
                                           final Collection<E> collection2 )
         throws EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               EntityNotFoundException,
+               DuplicateEntityException
     {
         final String methodName = "compareAndUpdateDatabase";
         logMethodBegin( methodName );
@@ -71,11 +75,11 @@ public class EntitySetComparatorService<K extends Serializable,
      * Delete the entities in {@code deletedEntities}
      * @param service
      * @param deletedEntities The list of entities to delete.
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     private void deleteEntities( final VersionedEntityService<K,E,?,?,?> service,
                                  final Set<E> deletedEntities )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "deleteEntities";
         logMethodBegin( methodName );
@@ -87,10 +91,13 @@ public class EntitySetComparatorService<K extends Serializable,
      * Adds all of the entities to the database.
      * @param service
      * @param newEntities
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private void addEntities( final VersionedEntityService<K,E,?,?,?> service,
                               final Set<E> newEntities )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "addEntities";
         logMethodBegin( methodName );

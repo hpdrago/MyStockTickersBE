@@ -17,4 +17,9 @@ public class StockToBuyNotFoundException extends Throwable
     {
         this( stockToBuyUuid.toString() );
     }
+
+    public StockToBuyNotFoundException( final String stockToBuyId, final EntityNotFoundException e )
+    {
+        super( "Stock to buy was not found for id: " + stockToBuyId, e );
+    }
 }

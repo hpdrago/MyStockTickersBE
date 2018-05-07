@@ -1,8 +1,10 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
-import com.stocktracker.repositorylayer.NotesSourceUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
+import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -25,9 +27,10 @@ import java.util.UUID;
 @Entity
 @Table( name = "stock_to_buy", schema = "stocktracker", catalog = "" )
 public class StockToBuyEntity extends UUIDEntity
-                              implements StockNoteSourceEntityService.StockNoteSourceEntityContainer,
-                                         CustomerUuidContainer,
-                                         NotesSourceUuidContainer
+                              implements CustomerUuidContainer,
+                                         NotesSourceUuidContainer,
+                                         TickerSymbolContainer,
+                                         StockPriceWhenCreatedContainer
 {
     private static final int COMMENTS_LEN = 4096;
     private UUID customerUuid;
@@ -37,7 +40,6 @@ public class StockToBuyEntity extends UUIDEntity
     private BigDecimal stockPriceWhenCreated;
     private String completed;
     private UUID notesSourceUuid;
-    private StockNoteSourceEntity stockNoteSourceByNotesSourceUuid;
     private Timestamp buyAfterDate;
 
     @Basic
@@ -113,7 +115,7 @@ public class StockToBuyEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "buy_after_date", nullable = true )
+    @Column( name = "buy_after_date" )
     public Timestamp getBuyAfterDate()
     {
         return buyAfterDate;
@@ -125,7 +127,7 @@ public class StockToBuyEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "notes_source_uuid", nullable = true, insertable = false, updatable = false )
+    @Column( name = "notes_source_uuid" )
     public UUID getNotesSourceUuid()
     {
         return notesSourceUuid;
@@ -136,6 +138,7 @@ public class StockToBuyEntity extends UUIDEntity
         this.notesSourceUuid = notesSourceUuid;
     }
 
+    /*
     @ManyToOne
     @JoinColumn( name = "notes_source_uuid", referencedColumnName = "uuid" )
     public StockNoteSourceEntity getStockNoteSourceByNotesSourceUuid()
@@ -154,7 +157,9 @@ public class StockToBuyEntity extends UUIDEntity
     {
         return Optional.ofNullable( this.stockNoteSourceByNotesSourceUuid );
     }
+    */
 
+    /*
     @Transient
     @Override
     public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
@@ -170,6 +175,7 @@ public class StockToBuyEntity extends UUIDEntity
                                     ? null
                                     : this.stockNoteSourceByNotesSourceUuid.getUuid() );
     }
+    */
 
     @Override
     public String toString()
@@ -184,7 +190,7 @@ public class StockToBuyEntity extends UUIDEntity
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate=" ).append( buyAfterDate );
-        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceUuid );
+        sb.append( ", notesSourceUuid=" ).append( notesSourceUuid );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

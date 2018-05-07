@@ -1,7 +1,10 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
+import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,8 +29,10 @@ import java.util.UUID;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockNoteEntity extends UUIDEntity
-                             implements StockNoteSourceEntityService.StockNoteSourceEntityContainer,
-                                        CustomerUuidContainer
+                             implements NotesSourceUuidContainer,
+                                        CustomerUuidContainer,
+                                        TickerSymbolContainer,
+                                        StockPriceWhenCreatedContainer
 {
     private String tickerSymbol;
     private String notes;
@@ -39,8 +44,21 @@ public class StockNoteEntity extends UUIDEntity
     private Byte actionTaken;
     private Integer actionTakenShares;
     private BigDecimal actionTakenPrice;
-    private StockNoteSourceEntity stockNoteSourceByNotesSourceUuid;
+    private UUID notesSourceUuid;
+    //private StockNoteSourceEntity stockNoteSourceByNotesSourceUuid;
     private BigDecimal stockPriceWhenCreated;
+
+    @Basic
+    @Column( name = "notes_source_uuid", nullable = false )
+    public UUID getNotesSourceUuid()
+    {
+        return notesSourceUuid;
+    }
+
+    public void setNotesSourceUuid( final UUID notesSourceUuid )
+    {
+        this.notesSourceUuid = notesSourceUuid;
+    }
 
     @Basic
     @Column( name = "customer_uuid", nullable = false )
@@ -114,6 +132,7 @@ public class StockNoteEntity extends UUIDEntity
         this.bullOrBear = bullOrBear;
     }
 
+    /*
     @ManyToOne
     @JoinColumn( name = "notes_source_uuid", referencedColumnName = "uuid" )
     public StockNoteSourceEntity getStockNoteSourceByNotesSourceUuid()
@@ -148,6 +167,7 @@ public class StockNoteEntity extends UUIDEntity
                                     ? null
                                     : this.stockNoteSourceByNotesSourceUuid.getUuid() );
     }
+    */
 
     @Basic
     @Column( name = "action_taken", nullable = false )
@@ -224,7 +244,7 @@ public class StockNoteEntity extends UUIDEntity
         sb.append( ", actionTaken=" ).append( actionTaken );
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
-        sb.append( ", stockNoteSourceByNotesSourceId=" ).append( stockNoteSourceByNotesSourceUuid );
+        sb.append( ", notesSourceUuid=" ).append( notesSourceUuid );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

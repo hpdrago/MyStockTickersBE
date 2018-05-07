@@ -1,5 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -7,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockCatalystEventDTO extends BaseStockCompanyDTO
-                                   implements UuidDTO,
-                                              CustomerIdContainer
+    implements UuidDTO,
+               CustomerIdContainer
 {
     private String id;
     private String customerId;

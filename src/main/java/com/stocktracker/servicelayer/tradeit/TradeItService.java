@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -183,8 +184,16 @@ public class TradeItService implements MyLogger
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, accountUuid );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( accountUuid );
+        final TradeItAccountEntity tradeItAccountEntity;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                                       .getEntity( accountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( accountUuid, e );
+        }
         final GetOAuthAccessTokenUpdateURLAPICall getOAuthAccessTokenUpdateURLAPICall = this.context
                                                                                             .getBean( GetOAuthAccessTokenUpdateURLAPICall.class );
         /*
@@ -226,8 +235,16 @@ public class TradeItService implements MyLogger
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, tradeItAccountUuid );
-        TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                        .getTradeItAccountEntity( tradeItAccountUuid );
+        TradeItAccountEntity tradeItAccountEntity = null;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                                                            .getEntity( tradeItAccountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
+        }
         logDebug( methodName, "Evaluating account entity: {0}", tradeItAccountEntity );
         /*
          * Need to generate a UUID for the authentication process
@@ -332,8 +349,16 @@ public class TradeItService implements MyLogger
         logMethodBegin( methodName, accountUuid, questionResponse );
         Objects.requireNonNull( accountUuid, "accountUid cannot be null" );
         Objects.requireNonNull( questionResponse, "questionResponse cannot be null" );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( accountUuid );
+        final TradeItAccountEntity tradeItAccountEntity;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                                                                  .getEntity( accountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( accountUuid, e );
+        }
         final AnswerSecurityQuestionAPICall answerSecurityQuestionAPICall = this.context.getBean( AnswerSecurityQuestionAPICall.class );
         /*
          * Create the execute parameter map
@@ -384,8 +409,16 @@ public class TradeItService implements MyLogger
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, tradeItAccountUuid );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( tradeItAccountUuid );
+        final TradeItAccountEntity tradeItAccountEntity;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                                                                  .getEntity( tradeItAccountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
+        }
         final KeepSessionAliveAPICall keepSessionAliveAPICall = this.context.getBean( KeepSessionAliveAPICall.class );
         /*
          * Create the parameter map
@@ -431,8 +464,16 @@ public class TradeItService implements MyLogger
     {
         final String methodName = "closeSessionDTO";
         logMethodBegin( methodName, accountUuid  );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( accountUuid );
+        final TradeItAccountEntity tradeItAccountEntity;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                                                                  .getEntity( accountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( accountUuid, e );
+        }
         /*
          * Create the api call and the return DTO.
          */

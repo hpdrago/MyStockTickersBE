@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Entity
 @Table( name = "stock_position", schema = "stocktracker", catalog = "" )
 public class StockPositionEntity extends UUIDEntity
+                                 implements TickerSymbolContainer
 {
     private UUID linkedAccountUuid;
     private BigDecimal costBasis;

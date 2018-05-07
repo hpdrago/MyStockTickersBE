@@ -34,7 +34,7 @@ public class AddPortfolioStockHandler extends AbstractHandler<PortfolioStockDTO,
          * Add to the database
          */
         PortfolioStockDTO newPortfolioStockDTO = null;
-        newPortfolioStockDTO = this.portfolioStockService.addPortfolioStock( portfolioStockDTO );
+        newPortfolioStockDTO = this.portfolioStockService.addDTO( portfolioStockDTO );
         logDebug( methodName, "return addPortfolioStockDTO: {0}", portfolioStockDTO );
         /*
          * Gather the rest of the return data

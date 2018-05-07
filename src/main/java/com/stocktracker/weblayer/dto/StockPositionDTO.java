@@ -6,6 +6,8 @@ import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheState;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

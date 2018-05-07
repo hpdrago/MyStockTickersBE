@@ -8,14 +8,11 @@ import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -27,11 +24,10 @@ import java.util.UUID;
  */
 @Service
 //@Transactional
-public class PortfolioStockEntityService extends UuidEntityService<PortfolioStockEntity,
-                                                                   PortfolioStockDTO,
-                                                                   PortfolioStockRepository>
+public class PortfolioStockEntityService extends StockInformationEntityService<PortfolioStockEntity,
+                                                                               PortfolioStockDTO,
+                                                                               PortfolioStockRepository>
 {
-    private StockInformationService stockInformationService;
     private PortfolioStockRepository portfolioStockRepository;
 
     /**
@@ -53,15 +49,13 @@ public class PortfolioStockEntityService extends UuidEntityService<PortfolioStoc
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         Objects.requireNonNull( portfolioUuid, "portfolioUuid cannot be null" );
-        PortfolioStockEntity portfolioStockEntity = portfolioStockRepository.
+        final PortfolioStockEntity portfolioStockEntity = portfolioStockRepository.
             findFirstByCustomerUuidAndPortfolioUuidAndTickerSymbol( customerUuid, portfolioUuid, tickerSymbol );
         if ( portfolioStockEntity == null )
         {
             throw new PortfolioStockNotFound( customerUuid, portfolioUuid, tickerSymbol );
         }
-        PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
-        this.stockInformationService
-            .setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
+        final PortfolioStockDTO portfolioStockDTO = this.entityToDTO( portfolioStockEntity );
         logMethodEnd( methodName, portfolioStockDTO );
         return portfolioStockDTO;
     }
@@ -74,20 +68,13 @@ public class PortfolioStockEntityService extends UuidEntityService<PortfolioStoc
      * @throws StockQuoteUnavailableException
      */
     public List<PortfolioStockDTO> getPortfolioStocks( final UUID portfolioUuid )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
     {
         final String methodName = "getPortfolioStocks";
         logMethodBegin( methodName, portfolioUuid );
-        List<PortfolioStockEntity> stocks = this.portfolioStockRepository
-                                                .findByPortfolioUuidOrderByTickerSymbol( portfolioUuid );
-        List<PortfolioStockDTO> portfolioStockDTOs = new ArrayList<>();
-        if ( stocks != null )
-        {
-            portfolioStockDTOs = entitiesToDTOs( stocks );
-            this.setStockInformation( portfolioStockDTOs );
-        }
-        logMethodEnd( methodName, portfolioStockDTOs );
+        final List<PortfolioStockEntity> stocks = this.portfolioStockRepository
+                                                      .findByPortfolioUuidOrderByTickerSymbol( portfolioUuid );
+        final List<PortfolioStockDTO> portfolioStockDTOs = entitiesToDTOs( stocks );
+        logMethodEnd( methodName, portfolioStockDTOs.size() );
         return portfolioStockDTOs;
     }
 
@@ -123,7 +110,7 @@ public class PortfolioStockEntityService extends UuidEntityService<PortfolioStoc
         Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         Objects.requireNonNull( portfolioUuid, "portfolioUuid cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance();
+        final PortfolioStockEntity portfolioStockEntity = this.context.getBean( PortfolioStockEntity.class );
         portfolioStockEntity.setCustomerUuid( customerUuid );
         portfolioStockEntity.setPortfolioUuid( portfolioUuid );
         portfolioStockEntity.setTickerSymbol( tickerSymbol );
@@ -131,66 +118,6 @@ public class PortfolioStockEntityService extends UuidEntityService<PortfolioStoc
         boolean exists = portfolioStockRepository.exists( example );
         logMethodEnd( methodName, exists );
         return exists;
-    }
-
-    /**
-     * Add a new customer stock to the database
-     * @param portfolioStockDE
-     * @return
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
-     * @throws EntityVersionMismatchException
-     */
-    public PortfolioStockDTO addPortfolioStock( final PortfolioStockDTO portfolioStockDE )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException, EntityVersionMismatchException
-    {
-        final String methodName = "addPortfolioStock";
-        logMethodBegin( methodName, portfolioStockDE );
-        Objects.requireNonNull( portfolioStockDE, "portfolioStockDE cannot be null" );
-        final PortfolioStockEntity portfolioStockEntity = this.createPortfolioStockEntity( portfolioStockDE );
-        logDebug( methodName, "inserting: {0}", portfolioStockEntity );
-        final PortfolioStockEntity returnCustomerStockEntity = this.addEntity( portfolioStockEntity );
-        final PortfolioStockDTO returnPortfolioStockDTO = this.entityToDTO( returnCustomerStockEntity );
-        this.stockInformationService.setStockPrice( returnPortfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
-        logMethodEnd( methodName, returnPortfolioStockDTO );
-        return returnPortfolioStockDTO;
-    }
-
-    /**
-     * Creates a new {@code CustomerStockEntity} instance from {@code PortfolioLastStockDTO} instance
-     * @param portfolioStockDTO
-     * @return
-     */
-    public PortfolioStockEntity createPortfolioStockEntity( final PortfolioStockDTO portfolioStockDTO )
-    {
-        final String methodName = "createPortfolioStockEntity";
-        logMethodBegin( methodName, portfolioStockDTO );
-        Objects.requireNonNull( portfolioStockDTO );
-        PortfolioStockEntity portfolioStockEntity = PortfolioStockEntity.newInstance();
-        portfolioStockEntity.setPortfolioUuid( UUIDUtil.uuid( portfolioStockDTO.getPortfolioId() ));
-        BeanUtils.copyProperties( portfolioStockDTO, portfolioStockEntity );
-        this.stockInformationService.setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
-        logMethodEnd( methodName, portfolioStockEntity );
-        return portfolioStockEntity;
-    }
-
-    /**
-     * Sets the company name, last price, and last price change
-     * @param portfolioStockDTOList
-     * @throws StockNotFoundException
-     * @throws StockQuoteUnavailableException
-     * @throws EntityVersionMismatchException
-     */
-    private void setStockInformation( final List<PortfolioStockDTO> portfolioStockDTOList )
-        throws StockNotFoundException,
-               StockQuoteUnavailableException
-    {
-        final String methodName = "setStockInformation";
-        for ( PortfolioStockDTO portfolioStockDTO : portfolioStockDTOList )
-        {
-            this.stockInformationService.setStockPrice( portfolioStockDTO, StockPriceFetchMode.ASYNCHRONOUS );
-        }
     }
 
     @Override

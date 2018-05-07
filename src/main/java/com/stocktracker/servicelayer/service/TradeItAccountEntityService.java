@@ -1,11 +1,9 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.TradeItAccountRepository;
@@ -41,75 +39,14 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     private CustomerEntityService customerService;
     private TradeItAccountComparisonService tradeItAccountComparisonService;
 
-    /**
-     * Get the account by id request
-     * @param accountUuid
-     * @return
-     * @throws TradeItAccountNotFoundException
-     */
-    public TradeItAccountDTO getAccountDTO( final UUID accountUuid )
-        throws TradeItAccountNotFoundException
+    @Override
+    protected void preAddEntity( final TradeItAccountEntity entity )
     {
-        final String methodName = "getAccountDTO";
-        logMethodBegin( methodName, accountUuid );
-        TradeItAccountEntity tradeItAccountEntity = this.getTradeItAccountEntity( accountUuid );
-        TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
-        logMethodEnd( methodName, tradeItAccountDTO );
-        return tradeItAccountDTO;
-    }
-
-    /**
-     * Get the account for the customer and account id.
-     * @param tradeItAccountUuid
-     * @return
-     * @throws TradeItAccountNotFoundException
-     */
-    public TradeItAccountEntity getTradeItAccountEntity( final UUID tradeItAccountUuid )
-        throws TradeItAccountNotFoundException
-    {
-        final String methodName = "getAccountDTO";
-        logMethodBegin( methodName, tradeItAccountUuid );
-        TradeItAccountEntity tradeItAccountEntity = null;
-        try
-        {
-            tradeItAccountEntity = this.getEntity( tradeItAccountUuid );
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            throw new TradeItAccountNotFoundException( tradeItAccountUuid );
-        }
-        logMethodEnd( methodName, tradeItAccountEntity );
-        return tradeItAccountEntity;
-    }
-
-    /**
-     * Create the account for the customer.
-     * @param customerUuid
-     * @param tradeItAccountDTO
-     * @return TradeItAccountDTO
-     * @throws EntityVersionMismatchException
-     * @throws CustomerNotFoundException
-     */
-    public TradeItAccountDTO createAccount( final UUID customerUuid, final TradeItAccountDTO tradeItAccountDTO )
-        throws EntityVersionMismatchException,
-               CustomerNotFoundException
-    {
-        final String methodName = "createAccount";
-        logMethodBegin( methodName, customerUuid, tradeItAccountDTO );
-        TradeItAccountEntity tradeItAccountEntity = this.dtoToEntity( tradeItAccountDTO );
-        tradeItAccountEntity.setVersion( 1 );
-        CustomerEntity customerEntity = this.customerService.getCustomerEntity( customerUuid );
-        logDebug( methodName, "customerEntity: {0}", customerEntity );
-        tradeItAccountEntity.setCustomerByCustomerUuid( customerEntity );
+        super.preAddEntity( entity );
         /*
          * Set it to null on create, there were JSON conversion issues on create.
          */
-        tradeItAccountEntity.setAuthTimestamp( null );
-        tradeItAccountEntity = this.addEntity( tradeItAccountEntity );
-        logDebug( methodName, "tradeItAccountEntity: {0}", tradeItAccountEntity );
-        TradeItAccountDTO returnTradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
-        logMethodEnd( methodName, returnTradeItAccountDTO );
-        return returnTradeItAccountDTO;
+        entity.setAuthTimestamp( null );
     }
 
     /**
@@ -121,12 +58,10 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param userToken
      * @return
      * @throws EntityVersionMismatchException
-     * @throws CustomerNotFoundException
      */
     public TradeItAccountDTO createAccount( final UUID customerUuid, final String broker, final String accountName,
                                             final String userId, final String userToken )
-        throws EntityVersionMismatchException,
-               CustomerNotFoundException
+        throws EntityVersionMismatchException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerUuid, broker, accountName, userId, userToken );
@@ -139,8 +74,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         tradeItAccountEntity.setName( accountName );
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
-        tradeItAccountEntity.setCustomerByCustomerUuid( this.customerService
-                                                            .getCustomerEntity( customerUuid ) );
+        tradeItAccountEntity.setCustomerUuid( customerUuid );
         tradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
@@ -185,7 +119,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         {
             tradeItAccountEntity = this.getEntity( tradeItAccountUuid );
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( tradeItAccountUuid );
         }

@@ -1,11 +1,11 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
@@ -44,7 +44,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAPIException
      * @throws EntityVersionMismatchException
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public List<StockPositionDTO> getPositions( final UUID customerUuid,
                                                 final UUID tradeItAccountUuid,
@@ -53,7 +53,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
                TradeItAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               EntityNotFoundException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
@@ -82,7 +82,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      * @throws TradeItAPIException
      */
     private List<StockPositionDTO> synchronizePositions( final UUID customerUuid,
@@ -92,12 +92,20 @@ public class StockPositionService extends StockInformationEntityService<StockPos
                LinkedAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               EntityNotFoundException
     {
         final String methodName = "synchronizePositions";
         logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
-        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
-                                                              .getTradeItAccountEntity( tradeItAccountUuid );
+        TradeItAccountEntity tradeItAccountEntity = null;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                .getEntity( tradeItAccountUuid );
+        }
+        catch( EntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
+        }
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
                                                             .getLinkedAccountEntity( linkedAccountUuid );
         /*

@@ -8,9 +8,8 @@ import java.sql.Timestamp;
 /**
  * Defines the necessary methods to contain a stock quote and work with the StockQuoteCache
  */
-public interface StockPriceContainer
+public interface StockPriceContainer extends TickerSymbolContainer
 {
-    String getTickerSymbol();
     void setLastPrice( final BigDecimal stockPrice );
     BigDecimal getLastPrice();
     void setStockPriceCacheState( final StockPriceCacheState stockPriceCacheState );

@@ -3,9 +3,10 @@ package com.stocktracker.weblayer.controllers;
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,12 +89,12 @@ public class StockCatalystEventController extends AbstractController implements 
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockCatalystEventDTO getStockCatalystEvent( @PathVariable String stockCatalystEventId )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "getStockCatalystEvent";
         logMethodBegin( methodName );
         final StockCatalystEventDTO stockCatalystEventDTO = this.stockCatalystEventService
-                                                                .getStockCatalystEvent( UUIDUtil.uuid( stockCatalystEventId ));
+                                                                .getDTO( UUIDUtil.uuid( stockCatalystEventId ));
         logMethodEnd( methodName, stockCatalystEventDTO );
         return stockCatalystEventDTO;
     }
@@ -101,7 +102,7 @@ public class StockCatalystEventController extends AbstractController implements 
     /**
      * Deletes a stock summary entity
      * @param stockCatalystEventId
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
      * @return
@@ -111,14 +112,15 @@ public class StockCatalystEventController extends AbstractController implements 
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable String stockCatalystEventId,
                                                           @PathVariable String customerId )
-        throws VersionedEntityNotFoundException,
+        throws EntityNotFoundException,
                CustomerNotFoundException,
                NotAuthorizedException
     {
         final String methodName = "deleteStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventId );
         this.validateCustomerId( customerId );
-        this.stockCatalystEventService.deleteEntity( stockCatalystEventId );
+        this.stockCatalystEventService
+            .deleteEntity( stockCatalystEventId );
         logMethodEnd( methodName );
         return new ResponseEntity<>( HttpStatus.OK );
     }
@@ -131,6 +133,7 @@ public class StockCatalystEventController extends AbstractController implements 
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
@@ -138,13 +141,14 @@ public class StockCatalystEventController extends AbstractController implements 
                                                                         @RequestBody StockCatalystEventDTO stockCatalystEventDTO )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "addStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventDTO );
         this.validateCustomerId( customerId );
         StockCatalystEventDTO newStockCatalystEventDTO = this.stockCatalystEventService
-                                                             .saveStockCatalystEvent( stockCatalystEventDTO );
+                                                             .addDTO( stockCatalystEventDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -184,7 +188,7 @@ public class StockCatalystEventController extends AbstractController implements 
          * Save the stock
          */
         StockCatalystEventDTO returnStockCatalystEventDTO = this.stockCatalystEventService
-                                                                .saveStockCatalystEvent( portfolioStockDTO );
+                                                                .saveDTO( portfolioStockDTO );
         /*
          * send the response
          */

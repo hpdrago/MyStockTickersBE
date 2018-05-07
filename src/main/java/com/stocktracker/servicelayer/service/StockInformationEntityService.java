@@ -1,8 +1,21 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.UUIDUtil;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
+import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
+import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
+import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
+import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.weblayer.dto.UuidDTO;
+import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
+import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
+import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
+import com.stocktracker.weblayer.dto.common.TagsContainer;
+import com.stocktracker.weblayer.dto.common.UuidDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,18 +32,104 @@ import java.util.UUID;
  * @param <D> DTO type.
  * @param <R> Repository type.
  */
-public abstract class StockInformationEntityService<E extends UUIDEntity,
+public abstract class StockInformationEntityService<E extends UUIDEntity &
+                                                              TickerSymbolContainer,
                                                     D extends StockPriceContainer &
                                                               UuidDTO,
                                                     R extends JpaRepository<E,UUID>>
     extends UuidEntityService<E,D,R>
 {
+    protected StockCompanyEntityService stockCompanyEntityService;
+
     protected enum StockPriceFetchAction
     {
         NONE,
         FETCH;
         protected boolean isFetch() { return this == FETCH; }
     }
+
+    /**
+     * Saves the DTO to the database and checks for child entity data including notes sources and tags to determine
+     * if there are any changes there to be updated/inserted.
+     * @param dto
+     * @return DTO after saved to the database.
+     * @throws EntityVersionMismatchException
+     */
+    @Override
+    public D saveDTO( final D dto )
+        throws EntityVersionMismatchException
+    {
+        final String methodName = "saveDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto cannot be null" );
+        final D returnDTO = super.saveDTO( dto );
+        this.checkChildDataEntities( dto, returnDTO );
+        logMethodEnd( methodName, returnDTO );
+        return returnDTO;
+    }
+
+    /**
+     * Adds the DTO to the database and checks for child entity data including notes sources and tags to determine
+     * if there are any changes there to be updated/inserted.
+     * @param dto
+     * @return
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
+     */
+    @Override
+    public D addDTO( final D dto )
+        throws EntityVersionMismatchException, DuplicateEntityException
+    {
+        final String methodName = "addDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto cannot be null" );
+        final D returnDTO = super.addDTO( dto );
+        this.checkChildDataEntities( dto, returnDTO );
+        logMethodEnd( methodName, returnDTO );
+        return returnDTO;
+    }
+
+    /**
+     * Checks tags and notes sources to see if there are any changes to be made.
+     * @param dto
+     * @param returnDTO
+     */
+    private void checkChildDataEntities( final D dto, final D returnDTO )
+    {
+        /*
+         * Save any tags contained in the dto
+         */
+        if ( dto instanceof TagsContainer )
+        {
+            this.saveStockTags( dto, returnDTO );
+        }
+        /*
+         * Check for new sources
+         */
+        if ( dto instanceof NotesSourceIdContainer )
+        {
+            this.stockNoteSourceService
+                .checkForNewSource( (NotesSourceIdContainer)dto );
+        }
+    }
+
+    /**
+     * Checks for new stock tags and add them to the database.
+     * @param originalDTO Contains the original values received from the client.
+     * @param newDTO This DTO contains the values after being saved/inserted into the database.
+     */
+    protected void saveStockTags( final D originalDTO, final D newDTO )
+    {
+        final String methodName = "saveStockTags";
+        logMethodBegin( methodName, originalDTO, newDTO );
+        final TagsContainer container = (TagsContainer)originalDTO;
+        this.stockTagService.saveStockTags( UUIDUtil.uuid( container.getCustomerId() ),
+                                            container.getTickerSymbol(),
+                                            container.getStockTagReferenceType(),
+                                            UUIDUtil.uuid( newDTO.getId() ),
+                                            container.getTags() );
+    }
+
 
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
@@ -77,7 +176,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity,
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
-        List<D> dtos = this.entitiesToDTOs( entityPage.getContent(), stockPriceFetchAction );
+        final List<D> dtos = this.entitiesToDTOs( entityPage.getContent(), stockPriceFetchAction );
         logMethodEnd( methodName );
         return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
     }
@@ -90,24 +189,183 @@ public abstract class StockInformationEntityService<E extends UUIDEntity,
     {
         final String methodName = "getStockPrices";
         logMethodBegin( methodName );
-        this.stockInformationService.setStockPrice( dtos );
-        /*
-        for ( D dto : dtos )
-        {
-            try
-            {
-                this.stockPriceService.setStockPrice( dto, StockPriceFetchMode.ASYNCHRONOUS );
-            }
-            catch( StockQuoteUnavailableException e )
-            {
-                logError( methodName, e );
-            }
-            catch( StockNotFoundException e )
-            {
-                logError( methodName, e );
-            }
-        }
-        */
+        this.stockInformationService
+            .setStockPrice( dtos );
         logMethodEnd( methodName );
     }
+
+    /**
+     * Converts the entity to a DTO and sets the stock price on the return DTO.
+     * @param entity Contains the entity information.
+     * @return
+     */
+    @Override
+    protected D entityToDTO( final E entity )
+    {
+        D dto = super.entityToDTO( entity );
+        /*
+         * I think this is a good use of instanceof...although I am not convinced, I'll have to think about this...
+         * If any stock DTO is a stock company container, it will be populated automatically with the stock company
+         * information.  No need for any sub cvl
+         */
+        if ( dto instanceof StockCompanyContainer )
+        {
+            this.stockInformationService
+                .setCompanyInformation( (StockCompanyContainer)dto );
+        }
+        /*
+         * Convert the UUID to a string and get the notes source name for the UUID
+         */
+        if ( entity instanceof NotesSourceUuidContainer &&
+             dto instanceof NotesSourceIdContainer )
+        {
+            final NotesSourceUuidContainer notesSourceUuidContainer = (NotesSourceUuidContainer)entity;
+            if ( notesSourceUuidContainer.getNotesSourceUuid() != null )
+            {
+                final NotesSourceIdContainer notesSourceIdContainer = (NotesSourceIdContainer)dto;
+                final StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
+                                                                        .getStockNoteSource( notesSourceUuidContainer
+                                                                                             .getNotesSourceUuid() );
+                notesSourceIdContainer.setNotesSourceName( stockNoteSourceEntity.getName() );
+                notesSourceIdContainer.setNotesSourceId( notesSourceUuidContainer.getNotesSourceUuid().toString() );
+            }
+        }
+
+        if ( dto instanceof TagsContainer )
+        {
+            final TagsContainer tagsContainer = (TagsContainer)dto;
+            tagsContainer.setTags( this.stockTagService.findStockTags( UUIDUtil.uuid( tagsContainer.getCustomerId() ),
+                                                                       StockTagEntity.StockTagReferenceType.STOCK_TO_BUY,
+                                                                       UUIDUtil.uuid( tagsContainer.getEntityId() ) ) );
+        }
+        return dto;
+    }
+
+    @Override
+    protected E dtoToEntity( final D dto )
+    {
+        final E entity = super.dtoToEntity( dto );
+        /*
+         * Convert the notes source ID to UUID
+         */
+        if ( dto instanceof NotesSourceIdContainer &&
+             entity instanceof NotesSourceUuidContainer )
+        {
+            final NotesSourceIdContainer notesSourceIdContainer = (NotesSourceIdContainer) dto;
+            /*
+             * Check for new sources
+             */
+            this.stockNoteSourceService.checkForNewSource( notesSourceIdContainer );
+            final NotesSourceUuidContainer notesSourceUuidContainer = (NotesSourceUuidContainer)entity;
+            /*
+             * Convert the String UUID to a real uuid if present
+             */
+            if ( notesSourceIdContainer.getNotesSourceId() != null &&
+                 !notesSourceIdContainer.getNotesSourceId().isEmpty() )
+            {
+                notesSourceUuidContainer.setNotesSourceUuid( UUIDUtil.uuid( notesSourceIdContainer.getNotesSourceId() ));
+            }
+        }
+        return entity;
+    }
+
+    /**
+     * Updates the stock price after adding the DTO to the database.
+     * @param dto
+     */
+    @Override
+    protected void postAddDTO( final D dto )
+    {
+        super.postAddDTO( dto );
+        this.updateStockPrice( dto );
+    }
+
+    /**
+     * Updates the stock price after updating the DTO in the database.
+     * @param dto
+     */
+    @Override
+    protected void postSaveDTO( final D dto )
+    {
+        super.postSaveDTO( dto );
+        this.updateStockPrice( dto );
+    }
+
+    /**
+     * Ansynchronous update request of the stock price.
+     * @param dto
+     */
+    protected void updateStockPrice( final D dto )
+    {
+        this.stockInformationService
+            .setStockPrice( dto, StockPriceFetchMode.ASYNCHRONOUS );
+    }
+
+    /**
+     * Add the DTO and check the ticker symbol to ensure a company exists or create one if not.
+     * @param dto
+     */
+    @Override
+    protected void preAddDTO( final D dto )
+    {
+        checkTickerSymbol( dto );
+        super.preAddDTO( dto );
+    }
+
+    /**
+     * Before the entity is added, need to set the stock price when created field if the entity contains one.
+     * @param entity
+     */
+    @Override
+    protected void preAddEntity( final E entity )
+    {
+        super.preAddEntity( entity );
+        if ( entity instanceof StockPriceWhenCreatedContainer )
+        {
+            setStockPriceWhenCreated( entity.getTickerSymbol(), (StockPriceWhenCreatedContainer)entity );
+        }
+    }
+
+    /**
+     * Sets the stock price when created field with the current stock price value -- this is a synchronous call to
+     * get the stockprice.
+     * @param tickerSymbol
+     * @param entity
+     */
+    protected void setStockPriceWhenCreated( final String tickerSymbol, final StockPriceWhenCreatedContainer entity )
+    {
+        /*
+         * The stock price needs to be set the first time as it records the stock price when the record was created.
+         */
+        entity.setStockPriceWhenCreated( this.getStockInformationService()
+                                             .getLastPrice( tickerSymbol ));
+    }
+
+    /**
+     * Save the DTO and check the ticker symbol to ensure a company exists or create one if not.
+     * @param dto
+     */
+    @Override
+    protected void preSaveDTO( final D dto )
+    {
+        checkTickerSymbol( dto );
+        super.preSaveDTO( dto );
+    }
+
+    /**
+     * Validate the ticker symbol and add a new stock_company table entry if necessary.
+     * @param dto
+     */
+    protected void checkTickerSymbol( final D dto )
+    {
+        this.stockCompanyEntityService
+            .checkStockTableEntry( dto.getTickerSymbol() );
+    }
+
+    @Autowired
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
+    {
+        this.stockCompanyEntityService = stockCompanyEntityService;
+    }
+
 }

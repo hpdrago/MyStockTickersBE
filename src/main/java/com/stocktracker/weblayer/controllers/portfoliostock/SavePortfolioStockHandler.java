@@ -1,9 +1,8 @@
 package com.stocktracker.weblayer.controllers.portfoliostock;
 
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
-import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.controllers.AbstractHandler;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
@@ -26,7 +25,7 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
      */
     @Override
     public PortfolioStockDTO handleRequest( final PortfolioStockDTO portfolioStockDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException, DuplicateEntityException
     {
         final String methodName = "handleRequest";
         if ( !portfolioStockService.isStockExists( portfolioStockDTO.getCustomerId(),
@@ -40,18 +39,7 @@ public class SavePortfolioStockHandler extends AbstractHandler<PortfolioStockDTO
         }
         logDebug( methodName, "call addPorfolioStockDTO: {0}", portfolioStockDTO );
         PortfolioStockDTO newPortfolioStockDTO = null;
-        try
-        {
-            newPortfolioStockDTO = portfolioStockService.addPortfolioStock( portfolioStockDTO );
-        }
-        catch ( StockNotFoundException e )
-        {
-            logError( methodName, e );
-        }
-        catch ( StockQuoteUnavailableException e )
-        {
-            logError( methodName, e );
-        }
+        newPortfolioStockDTO = portfolioStockService.addDTO( portfolioStockDTO );
         logDebug( methodName, "return addPorfolioStockDTO: {0}", portfolioStockDTO );
         return newPortfolioStockDTO;
     }

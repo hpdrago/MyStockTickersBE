@@ -5,7 +5,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class LinkedAccountController extends AbstractController
                      method = RequestMethod.DELETE )
     public ResponseEntity<Void> deleteLinkedAccount( @PathVariable String linkedAccountId,
                                                      @PathVariable String customerId )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "deleteLinkedAccount";
         logMethodBegin( methodName, linkedAccountId, customerId );

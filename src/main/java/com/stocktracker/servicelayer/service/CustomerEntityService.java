@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.CustomerEntity;
 import com.stocktracker.repositorylayer.entity.PortfolioEntity;
 import com.stocktracker.repositorylayer.repository.CustomerRepository;
@@ -63,7 +63,7 @@ public class CustomerEntityService extends UuidEntityService<CustomerEntity,
         {
             customerEntity = this.getEntity( customerUuid );
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new CustomerNotFoundException( customerUuid );
         }

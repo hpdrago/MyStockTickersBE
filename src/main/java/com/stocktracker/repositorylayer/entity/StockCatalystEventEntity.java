@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_catalyst_event", schema = "stocktracker", catalog = "" )
-public class StockCatalystEventEntity extends UUIDEntity
+public class StockCatalystEventEntity extends UUIDEntity implements TickerSymbolContainer
 {
     private UUID customerUuid;
     private String tickerSymbol;

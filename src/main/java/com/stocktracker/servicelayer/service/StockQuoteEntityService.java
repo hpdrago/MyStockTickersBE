@@ -1,9 +1,10 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.repositorylayer.repository.StockQuoteRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
@@ -63,7 +64,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                 returnStockQuoteEntity = existingStockQuoteEntity;
             }
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             returnStockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
         }
@@ -105,7 +106,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                 logDebug( methodName, "Entity version mismatch, trying again.  {0}", returnStockQuoteEntity );
                 mismatch = true;
             }
-            catch( VersionedEntityNotFoundException e )
+            catch( EntityNotFoundException e )
             {
                 /*
                  * If it doesn't exist then add it.
@@ -118,6 +119,11 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                 {
                     mismatch = true;
                     logDebug( methodName, "Entity version mismatch, trying again.  {0}", returnStockQuoteEntity );
+                }
+                catch( DuplicateEntityException e1 )
+                {
+                    logError( methodName, "Should not get a duplicate after checking for existence: " +
+                                          newStockQuoteEntity, e );
                 }
             }
         }

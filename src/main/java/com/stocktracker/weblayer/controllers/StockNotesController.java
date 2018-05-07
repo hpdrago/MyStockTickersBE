@@ -3,12 +3,12 @@ package com.stocktracker.weblayer.controllers;
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
-import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockNoteNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockNoteCountEntityService;
 import com.stocktracker.servicelayer.service.StockNoteEntityService;
 import com.stocktracker.weblayer.dto.StockNoteCountDTO;
@@ -48,7 +48,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @param customerId
      * @return The stock note that was added
      * @throws StockNotFoundException
-     * @throws StockCompanyNotFoundException
+     * @throws DuplicateEntityException
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
@@ -59,16 +59,16 @@ public class StockNotesController extends AbstractController implements MyLogger
     public ResponseEntity<StockNoteDTO> addStockNote( @RequestBody final StockNoteDTO stockNotesDTO,
                                                       @PathVariable( "customerId") final String customerId )
         throws StockNotFoundException,
-               StockCompanyNotFoundException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, customerId, stockNotesDTO );
         this.validateCustomerId( customerId );
         validateStockNoteDTOPostArgument( stockNotesDTO );
-        StockNoteDTO returnStockDTO = this.stockNoteService.createStockNote( stockNotesDTO );
+        StockNoteDTO returnStockDTO = this.stockNoteService.addDTO( stockNotesDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )
@@ -97,7 +97,8 @@ public class StockNotesController extends AbstractController implements MyLogger
         this.validateCustomerId( customerId );
         validateStockNoteDTOPostArgument( stockNotesDTO );
         StockNoteDTO returnStockDTO = null;
-        returnStockDTO = this.stockNoteService.updateStockNote( stockNotesDTO );
+        returnStockDTO = this.stockNoteService
+                             .saveDTO( stockNotesDTO );
         logDebug( methodName, "returnStockDTO: ", returnStockDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder.fromCurrentRequest()
@@ -118,7 +119,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.DELETE )
     public ResponseEntity<Void> deleteStockNote( @PathVariable( "customerId" ) final String customerId,
                                                  @PathVariable( "stockNotesId" ) final String stockNotesId )
-        throws VersionedEntityNotFoundException,
+        throws EntityNotFoundException,
                CustomerNotFoundException,
                NotAuthorizedException
     {
@@ -152,7 +153,7 @@ public class StockNotesController extends AbstractController implements MyLogger
             stockNotesDTO = this.stockNoteService
                                 .getDTO( stockNotesId );
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( EntityNotFoundException e )
         {
             throw new StockNoteNotFoundException( stockNotesId );
         }

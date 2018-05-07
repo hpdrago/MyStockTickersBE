@@ -1,13 +1,15 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.DuplicateEntityException;
+import com.stocktracker.common.exceptions.EntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.VersionedEntity;
-import com.stocktracker.weblayer.dto.VersionedDTO;
+import com.stocktracker.repositorylayer.common.VersionedEntity;
+import com.stocktracker.weblayer.dto.common.VersionedDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -26,14 +28,107 @@ public abstract class VersionedEntityService<EK extends Serializable,
                                              R extends JpaRepository<E, EK>>
     extends BaseEntityService<EK,E,DK,D,R>
 {
+    protected StockTagService stockTagService;
+    protected StockNoteSourceEntityService stockNoteSourceService;
+
+    /**
+     * Converts the DTO to and Entity and saves it to the database.
+     * @param dto
+     * @return Entity that was saved to the database.
+     * @throws EntityVersionMismatchException
+     */
+    public D saveDTO( final D dto  )
+        throws EntityVersionMismatchException
+    {
+        final String methodName = "saveDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto cannot be null" );
+
+        this.preSaveDTO( dto );
+        final E entity = this.dtoToEntity( dto );
+        final E savedEntity = this.saveEntity( entity );
+        final D returnDTO = this.entityToDTO( savedEntity );
+        this.postSaveDTO( returnDTO );
+        logMethodEnd( methodName, returnDTO );
+        return returnDTO;
+    }
+
+    /**
+     * This method is called by {@code saveDTO} before converting the DTO to an entity.
+     * Subclasses can put custom logic in this method that need to be including in the DTO before being converted to
+     * and Entity.
+     * @param dto
+     */
+    protected void preSaveDTO( final D dto )
+    {
+    }
+
+    /**
+     * This method is called after a successful update of an Entity and after the entity been converted into a DTO.
+     * This method is called before returning the added DTO to the caller.  Subclasses can override this method to
+     * made any changes to the DTO before it is sent back to the client.
+     * @param dto
+     */
+    protected void postSaveDTO( final D dto )
+    {
+    }
+
+    /**
+     * Adds the DTO to the database.
+     * Performs the following:
+     * 1. Converts {@code dto} to an entity.
+     * 2. Adds the entity to the database.
+     * 3. Converts the entity added to the database back into a DTO
+     * 4. Returns the DTO.
+     * @param dto
+     * @return DTO
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
+     */
+    public D addDTO( final D dto )
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
+    {
+        final String methodName = "addDTO";
+        logMethodBegin( methodName, dto );
+        Objects.requireNonNull( dto, "dto cannot be null" );
+        this.preAddDTO( dto );
+        final E entity = this.dtoToEntity( dto );
+        final E returnEntity = this.addEntity( entity );
+        final D returnDTO = this.entityToDTO( returnEntity );
+        this.postAddDTO( returnDTO );
+        logMethodEnd( methodName, returnDTO );
+        return returnDTO;
+    }
+
+    /**
+     * This method is called by {@code addDTO} before converting the DTO to an entity.
+     * Subclasses can put custom logic in this method that need to be including in the DTO before being converted to
+     * and Entity.
+     * @param dto
+     */
+    protected void preAddDTO( final D dto )
+    {
+    }
+
+    /**
+     * This method is called after a successful update of an Entity and after the entity been converted into a DTO.
+     * This method is called before returning the added DTO to the caller.  Subclasses can override this method to
+     * made any changes to the DTO before it is sent back to the client.
+     * @param dto
+     */
+    protected void postAddDTO( final D dto )
+    {
+    }
+
     /**
      * Get the DTO for the entity matching key.
      * @param key
      * @return
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public D getDTO( final EK key )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "getDTO";
         logMethodBegin( methodName, key );
@@ -41,7 +136,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final E entity = getEntity( key );
         if ( entity == null )
         {
-            throw new VersionedEntityNotFoundException( key );
+            throw new EntityNotFoundException( key );
         }
         final D dto = this.entityToDTO( entity );
         logMethodEnd( methodName, dto );
@@ -52,10 +147,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * Get a single entity.
      * @param EK The primary key.
      * @return The entity.
-     * @throws VersionedEntityNotFoundException If the entity is not found by EK
+     * @throws EntityNotFoundException If the entity is not found by EK
      */
     public E getEntity( final EK EK )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "getEntity";
         logMethodBegin( methodName, EK );
@@ -64,7 +159,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
                              .findOne( EK );
         if ( entity == null )
         {
-            throw new VersionedEntityNotFoundException( EK );
+            throw new EntityNotFoundException( EK );
         }
         logMethodEnd( methodName, entity );
         return entity;
@@ -73,10 +168,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
     /**
      * Deletes a collection of entities.
      * @param deletedEntities
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public void deleteEntities( final Collection<E> deletedEntities )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "deleteEntities";
         Objects.requireNonNull( deletedEntities, "deletedEntities cannot be null" );
@@ -92,10 +187,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
     /**
      * Delete the entity.
      * @param entity
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public void deleteEntity( final E entity )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         Objects.requireNonNull( entity, "entity cannot be null" );
         this.deleteEntity( entity.getId() );
@@ -104,10 +199,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
     /**
      * Delete the entity.
      * @param EK
-     * @throws VersionedEntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public void deleteEntity( final EK EK )
-        throws VersionedEntityNotFoundException
+        throws EntityNotFoundException
     {
         final String methodName = "deleteEntity";
         logMethodBegin( methodName, EK );
@@ -119,18 +214,40 @@ public abstract class VersionedEntityService<EK extends Serializable,
         }
         else
         {
-            throw new VersionedEntityNotFoundException( EK );
+            throw new EntityNotFoundException( EK );
         }
         logMethodEnd( methodName );
+    }
+
+    /**
+     * Inserts or updates the {@code entity} depending on if it exists already or not.
+     * @param entity
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
+     */
+    public E mergeEntity( final E entity )
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
+    {
+        if ( entity.getId() == null || !this.isExists( entity ) )
+        {
+            return this.addEntity( entity );
+        }
+        else
+        {
+            return this.saveEntity( entity );
+        }
     }
 
     /**
      * Adds all of the entities in {@code entities}
      * @param entities
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public void addEntities( final Collection<E> entities )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "addEntities";
         Objects.requireNonNull( entities, "entities cannot be null" );
@@ -150,42 +267,48 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @throws EntityVersionMismatchException When the entity already exists.
      */
     public E addEntity( final E entity )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
-        final String methodName = "addEntity";
+        final String methodName = "addDTO";
         logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
         if ( entity.getId() != null && isExists( entity ) )
         {
             final E currentEntity = this.getRepository()
                                         .findOne( entity.getId() );
-            throw new EntityVersionMismatchException( currentEntity.getVersion(),
-                                                      "Attempting to create a new entity that already exists: " + entity );
+            throw new DuplicateEntityException( currentEntity );
         }
-        //entity.setVersion( 1 );
-        entity.setCreateDate( new Timestamp( System.currentTimeMillis() ));
-        final E returnEntity = this.getRepository()
-                                   .save( entity );
+        this.preAddEntity( entity );
+        final E returnEntity;
+        try
+        {
+            returnEntity = this.save( entity );
+        }
+        catch( DataIntegrityViolationException e )
+        {
+            throw new DuplicateEntityException( entity, e );
+        }
+        this.postAddEntity( entity );
         logMethodEnd( methodName, returnEntity );
         return returnEntity;
     }
 
     /**
-     * Inserts or updates the {@code entity} depending on if it exists already or not.
+     * This method is called just before calling the repository to add(insert) the entity.
+     * Subclasses can override this method to add custom logic before inserting into the database.
      * @param entity
-     * @throws EntityVersionMismatchException
      */
-    public E mergeEntity( final E entity )
-        throws EntityVersionMismatchException
+    protected void preAddEntity( final E entity )
     {
-        if ( entity.getId() == null || !this.isExists( entity ) )
-        {
-            return this.addEntity( entity );
-        }
-        else
-        {
-            return this.saveEntity( entity );
-        }
+    }
+
+    /**
+     * This method is called after a successful insert into the database of the entity.
+     * @param entity
+     */
+    protected void postAddEntity( final E entity )
+    {
     }
 
     /**
@@ -195,17 +318,53 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @throws EntityVersionMismatchException
      */
     public E saveEntity( final E entity )
-        throws EntityVersionMismatchException
     {
         final String methodName = "saveEntity";
         logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
-        //this.checkEntityVersion( entity );
-        //int previousVersion = entity.getVersion();
-        final E savedEntity = this.getRepository()
-                                  .save( entity );
-        //savedEntity.setVersion( previousVersion + 1 );
+        this.preSaveEntity( entity );
+        final E savedEntity = this.save( entity );
+        this.postSaveEntity( entity );
         logMethodEnd( methodName, savedEntity );
+        return savedEntity;
+    }
+
+    /**
+     * This method is called just before calling the repository to save(update) the entity.
+     * Subclasses can override this method to add custom logic before inserting into the database.
+     * @param entity
+     */
+    protected void preSaveEntity( final E entity )
+    {
+    }
+
+    /**
+     * This method is called after a successful update of the database of the entity.
+     * @param entity
+     */
+    protected void postSaveEntity( final E entity )
+    {
+    }
+
+    /**
+     * Private method used by add and update methods to update the database.
+     * @param entity
+     * @return
+     */
+    private E save( final E entity )
+    {
+        final E savedEntity;
+        try
+        {
+            savedEntity = this.getRepository()
+                              .save( entity );
+        }
+        catch( javax.persistence.OptimisticLockException e )
+        {
+            E currentEntity = this.getRepository()
+                                  .findOne( entity.getId() );
+            throw new EntityVersionMismatchException( currentEntity, e );
+        }
         return savedEntity;
     }
 
@@ -229,23 +388,16 @@ public abstract class VersionedEntityService<EK extends Serializable,
         return this.getRepository().exists( key );
     }
 
-    /**
-     * Converts the DTO to and Entity and saves it to the database.
-     * @param dto
-     * @return Entity that was saved to the database.
-     * @throws EntityVersionMismatchException
-     */
-    public D saveDTO( final D dto  )
-        throws EntityVersionMismatchException
+
+    @Autowired
+    public void setStockTagService( final StockTagService stockTagService )
     {
-        final String methodName = "saveDTO";
-        logMethodBegin( methodName, dto );
-        Objects.requireNonNull( dto, "dto cannot be null" );
-        final E entity = this.dtoToEntity( dto );
-        //this.checkEntityVersion( entity );
-        final E savedEntity = this.saveEntity( entity );
-        final D returnDTO = this.entityToDTO( savedEntity );
-        logMethodEnd( methodName, returnDTO );
-        return returnDTO;
+        this.stockTagService = stockTagService;
+    }
+
+    @Autowired
+    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
+    {
+        this.stockNoteSourceService = stockNoteSourceService;
     }
 }
