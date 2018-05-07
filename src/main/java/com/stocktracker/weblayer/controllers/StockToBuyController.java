@@ -2,7 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockToBuyNotFoundException;
 import com.stocktracker.servicelayer.service.StockToBuyEntityService;
@@ -92,7 +92,7 @@ public class StockToBuyController extends AbstractController
             stockToBuyDTO = this.stockToBuyService
                                 .getDTO( UUIDUtil.uuid( stockToBuyId ));
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new StockToBuyNotFoundException( stockToBuyId, e );
         }
@@ -118,7 +118,7 @@ public class StockToBuyController extends AbstractController
         {
             this.stockToBuyService.deleteEntity( stockToBuyId );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new StockToBuyNotFoundException( stockToBuyId );
         }

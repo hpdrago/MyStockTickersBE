@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -190,7 +190,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                        .getEntity( accountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( accountUuid, e );
         }
@@ -241,7 +241,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                                             .getEntity( tradeItAccountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
         }
@@ -355,7 +355,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                                                   .getEntity( accountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( accountUuid, e );
         }
@@ -415,7 +415,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                                                   .getEntity( tradeItAccountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
         }
@@ -470,7 +470,7 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                                                   .getEntity( accountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( accountUuid, e );
         }

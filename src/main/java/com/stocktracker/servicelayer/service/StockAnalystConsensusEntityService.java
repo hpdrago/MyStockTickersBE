@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.exceptions.DuplicateAnalystConsensusException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
@@ -118,7 +118,7 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @return StockAnalystConsensusQuoteDTO instance
      */
     public StockAnalystConsensusDTO getStockAnalystConsensus( @NotNull final UUID stockAnalystConsensusUuid )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusUuid );

@@ -4,7 +4,7 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
@@ -50,7 +50,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         {
             stockCompanyEntity = this.getEntity( tickerSymbol );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new StockCompanyNotFoundException( tickerSymbol, e );
         }
@@ -216,7 +216,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                 }
             }
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             logDebug( methodName, tickerSymbol + " does note exist in the database, getting quote..." );
             final Company company = this.iexTradingStockService
@@ -306,7 +306,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                     .save( stockCompanyEntity );
             }
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             logError( methodName, "Stock not found in stock {0} table to mark as discontinued.", tickerSymbol );
         }

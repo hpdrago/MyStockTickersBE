@@ -4,7 +4,6 @@ import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
-import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;

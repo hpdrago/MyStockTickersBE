@@ -5,7 +5,6 @@ import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
-import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;

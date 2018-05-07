@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.PortfolioEntityService;
 import com.stocktracker.servicelayer.service.PortfolioStockEntityService;
 import com.stocktracker.weblayer.dto.PortfolioDTO;
@@ -125,7 +125,7 @@ public class PortfolioController extends AbstractController implements MyLogger
     @RequestMapping(value = CONTEXT_URL + "/id/{portfolioId}/customerId/{customerId}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> deletePortfolio( @PathVariable( "portfolioId" ) String portfolioId,
                                                  @PathVariable( "customerId" ) String customerId )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deletePortfolio";
         logMethodBegin( methodName, customerId, portfolioId );

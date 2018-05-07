@@ -4,7 +4,7 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.repositorylayer.repository.StockQuoteRepository;
 import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
@@ -64,7 +64,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                 returnStockQuoteEntity = existingStockQuoteEntity;
             }
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             returnStockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
         }
@@ -106,7 +106,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                 logDebug( methodName, "Entity version mismatch, trying again.  {0}", returnStockQuoteEntity );
                 mismatch = true;
             }
-            catch( EntityNotFoundException e )
+            catch( VersionedEntityNotFoundException e )
             {
                 /*
                  * If it doesn't exist then add it.

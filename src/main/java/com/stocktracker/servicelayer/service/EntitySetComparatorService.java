@@ -4,7 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.common.VersionedEntity;
 
 import java.io.Serializable;
@@ -32,14 +32,14 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param collection1 Collection of entities from non-database source.
      * @param collection2 Current entity values from the database.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      * @throws DuplicateEntityException
      */
     public void compareAndUpdateDatabase( final VersionedEntityService<K,E,?,?,?> entityService,
                                           final Collection<E> collection1,
                                           final Collection<E> collection2 )
         throws EntityVersionMismatchException,
-               EntityNotFoundException,
+               VersionedEntityNotFoundException,
                DuplicateEntityException
     {
         final String methodName = "compareAndUpdateDatabase";
@@ -75,11 +75,11 @@ public class EntitySetComparatorService<K extends Serializable,
      * Delete the entities in {@code deletedEntities}
      * @param service
      * @param deletedEntities The list of entities to delete.
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      */
     private void deleteEntities( final VersionedEntityService<K,E,?,?,?> service,
                                  final Set<E> deletedEntities )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteEntities";
         logMethodBegin( methodName );

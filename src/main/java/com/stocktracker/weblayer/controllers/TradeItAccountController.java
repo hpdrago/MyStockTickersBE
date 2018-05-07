@@ -7,7 +7,7 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
                                          @PathVariable String customerId )
         throws CustomerNotFoundException,
                NotAuthorizedException,
-               EntityNotFoundException
+               VersionedEntityNotFoundException
     {
         final String methodName = "getAccount";
         logMethodBegin( methodName, accountId, customerId );
@@ -127,7 +127,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
         {
             this.tradeItAccountService.deleteEntity( UUIDUtil.uuid( accountId ));
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( accountId );
         }

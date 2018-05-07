@@ -4,7 +4,7 @@ import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -119,7 +119,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                      method = RequestMethod.DELETE )
     public ResponseEntity<Void> deleteStockNote( @PathVariable( "customerId" ) final String customerId,
                                                  @PathVariable( "stockNotesId" ) final String stockNotesId )
-        throws EntityNotFoundException,
+        throws VersionedEntityNotFoundException,
                CustomerNotFoundException,
                NotAuthorizedException
     {
@@ -153,7 +153,7 @@ public class StockNotesController extends AbstractController implements MyLogger
             stockNotesDTO = this.stockNoteService
                                 .getDTO( stockNotesId );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new StockNoteNotFoundException( stockNotesId );
         }

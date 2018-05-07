@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -119,7 +119,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         {
             tradeItAccountEntity = this.getEntity( tradeItAccountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( tradeItAccountUuid );
         }

@@ -1,4 +1,4 @@
-package com.stocktracker.weblayer.dto.common;
+package com.stocktracker.weblayer.dto;
 
 /**
  * DTO's that contain a customer id (String UUID) implement this interface to enable conversion of the customer

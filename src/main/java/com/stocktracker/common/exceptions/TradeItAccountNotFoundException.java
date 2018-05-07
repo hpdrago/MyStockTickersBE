@@ -29,7 +29,7 @@ public class TradeItAccountNotFoundException extends Exception
         super( getMessage( tradeItAccountUuid ) );
     }
 
-    public TradeItAccountNotFoundException( final UUID tradeItAccountUuid, final EntityNotFoundException e )
+    public TradeItAccountNotFoundException( final UUID tradeItAccountUuid, final VersionedEntityNotFoundException e )
     {
         super( getMessage( tradeItAccountUuid ), e);
     }

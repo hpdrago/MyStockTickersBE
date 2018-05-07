@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
 import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +89,7 @@ public class StockCatalystEventController extends AbstractController implements 
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockCatalystEventDTO getStockCatalystEvent( @PathVariable String stockCatalystEventId )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockCatalystEvent";
         logMethodBegin( methodName );
@@ -102,7 +102,7 @@ public class StockCatalystEventController extends AbstractController implements 
     /**
      * Deletes a stock summary entity
      * @param stockCatalystEventId
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
      * @return
@@ -112,7 +112,7 @@ public class StockCatalystEventController extends AbstractController implements 
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockCatalystEvent( @PathVariable String stockCatalystEventId,
                                                           @PathVariable String customerId )
-        throws EntityNotFoundException,
+        throws VersionedEntityNotFoundException,
                CustomerNotFoundException,
                NotAuthorizedException
     {

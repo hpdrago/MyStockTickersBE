@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.EntityLoadingStatus;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
@@ -49,7 +49,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
             tradeItAccountEntity = this.tradeItAccountEntityService
                                                                   .getEntity( tradeItAccountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
         }
@@ -96,7 +96,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         {
             linkedAccountEntity = this.getEntity( linkedAccountUuid );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new LinkedAccountNotFoundException( linkedAccountUuid );
         }

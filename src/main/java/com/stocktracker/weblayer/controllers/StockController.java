@@ -3,7 +3,7 @@ package com.stocktracker.weblayer.controllers;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
@@ -142,7 +142,7 @@ public class StockController extends AbstractController implements MyLogger
         {
             stockCompanyDTO = this.stockCompanyEntityService.getDTO( tickerSymbol );
         }
-        catch( EntityNotFoundException e )
+        catch( VersionedEntityNotFoundException e )
         {
             throw new StockNotFoundException( tickerSymbol );
         }

@@ -5,7 +5,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +101,7 @@ public class StockAnalystConsensusController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public StockAnalystConsensusDTO getStockAnalystConsensus( @PathVariable String stockAnalystConsensusId,
                                                               @PathVariable String customerId )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId, customerId );
@@ -122,7 +122,7 @@ public class StockAnalystConsensusController implements MyLogger
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public ResponseEntity<Void> deleteStockAnalystConsensus( @PathVariable String stockAnalystConsensusId,
                                                              @PathVariable String customerId )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusId );

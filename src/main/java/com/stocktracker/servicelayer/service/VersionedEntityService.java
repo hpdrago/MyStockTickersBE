@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.DuplicateEntityException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.repositorylayer.common.VersionedEntity;
 import com.stocktracker.weblayer.dto.common.VersionedDTO;
@@ -125,10 +125,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * Get the DTO for the entity matching key.
      * @param key
      * @return
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      */
     public D getDTO( final EK key )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getDTO";
         logMethodBegin( methodName, key );
@@ -136,7 +136,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final E entity = getEntity( key );
         if ( entity == null )
         {
-            throw new EntityNotFoundException( key );
+            throw new VersionedEntityNotFoundException( key );
         }
         final D dto = this.entityToDTO( entity );
         logMethodEnd( methodName, dto );
@@ -147,10 +147,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * Get a single entity.
      * @param EK The primary key.
      * @return The entity.
-     * @throws EntityNotFoundException If the entity is not found by EK
+     * @throws VersionedEntityNotFoundException If the entity is not found by EK
      */
     public E getEntity( final EK EK )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getEntity";
         logMethodBegin( methodName, EK );
@@ -159,7 +159,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
                              .findOne( EK );
         if ( entity == null )
         {
-            throw new EntityNotFoundException( EK );
+            throw new VersionedEntityNotFoundException( EK );
         }
         logMethodEnd( methodName, entity );
         return entity;
@@ -168,10 +168,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
     /**
      * Deletes a collection of entities.
      * @param deletedEntities
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      */
     public void deleteEntities( final Collection<E> deletedEntities )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteEntities";
         Objects.requireNonNull( deletedEntities, "deletedEntities cannot be null" );
@@ -187,10 +187,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
     /**
      * Delete the entity.
      * @param entity
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      */
     public void deleteEntity( final E entity )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         Objects.requireNonNull( entity, "entity cannot be null" );
         this.deleteEntity( entity.getId() );
@@ -199,10 +199,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
     /**
      * Delete the entity.
      * @param EK
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      */
     public void deleteEntity( final EK EK )
-        throws EntityNotFoundException
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "deleteEntity";
         logMethodBegin( methodName, EK );
@@ -214,7 +214,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         }
         else
         {
-            throw new EntityNotFoundException( EK );
+            throw new VersionedEntityNotFoundException( EK );
         }
         logMethodEnd( methodName );
     }

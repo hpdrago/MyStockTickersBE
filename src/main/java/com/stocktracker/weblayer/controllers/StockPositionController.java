@@ -6,7 +6,7 @@ import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
-import com.stocktracker.common.exceptions.EntityNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockPositionService;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class StockPositionController extends AbstractController
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
-     * @throws EntityNotFoundException
+     * @throws VersionedEntityNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL
                              + "/linkedAccountId/{linkedAccountId}"
@@ -56,7 +56,7 @@ public class StockPositionController extends AbstractController
                TradeItAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
-               EntityNotFoundException
+               VersionedEntityNotFoundException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
