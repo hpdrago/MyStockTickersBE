@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -27,9 +26,11 @@ public class StockNoteSourceEntity extends UUIDEntity
     private String name;
     private UUID customerUuid;
     private Integer timesUsed;
+    /*
     private Collection<StockAnalystConsensusEntity> stockAnalystConsensusesById;
     private Collection<StockNoteEntity> stockNotesById;
     private Collection<StockToBuyEntity> stockToBuysById;
+    */
 
     public static StockNoteSourceEntity newInstance()
     {
@@ -73,6 +74,7 @@ public class StockNoteSourceEntity extends UUIDEntity
         this.timesUsed = timesUsed;
     }
 
+    /*
     @OneToMany( mappedBy = "stockNoteSourceByNoteSourceUuid" )
     public Collection<StockAnalystConsensusEntity> getStockAnalystConsensusesById()
     {
@@ -105,6 +107,7 @@ public class StockNoteSourceEntity extends UUIDEntity
     {
         this.stockToBuysById = stockToBuysById;
     }
+    */
 
     @Override
     public String toString()

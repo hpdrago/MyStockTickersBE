@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import org.springframework.beans.factory.config.BeanDefinition;

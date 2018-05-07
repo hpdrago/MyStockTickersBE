@@ -1,7 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.repositorylayer.VersionedEntity;
+import com.stocktracker.repositorylayer.common.VersionedEntity;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

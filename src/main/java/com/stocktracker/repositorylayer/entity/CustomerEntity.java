@@ -22,7 +22,7 @@ public class CustomerEntity extends UUIDEntity
 {
     private String email;
     private String password;
-    private Collection<TradeItAccountEntity> accountsById;
+    //private Collection<TradeItAccountEntity> accountsById;
 
     @Basic
     @Column( name = "email", nullable = false, length = 45 )
@@ -48,6 +48,7 @@ public class CustomerEntity extends UUIDEntity
         this.password = password;
     }
 
+    /*
     @OneToMany( mappedBy = "customerByCustomerUuid" )
     public Collection<TradeItAccountEntity> getAccountsById()
     {
@@ -63,6 +64,7 @@ public class CustomerEntity extends UUIDEntity
     {
         this.accountsById.add( tradeItAccountEntity );
     }
+    */
 
     @Override
     public String toString()

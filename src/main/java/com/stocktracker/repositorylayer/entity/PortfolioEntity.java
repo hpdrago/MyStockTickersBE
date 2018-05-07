@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

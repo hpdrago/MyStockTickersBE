@@ -1,6 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.repositorylayer.VersionedEntity;
+import com.stocktracker.repositorylayer.common.VersionedEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Id;

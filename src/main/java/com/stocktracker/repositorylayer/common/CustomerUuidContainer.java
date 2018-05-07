@@ -1,4 +1,4 @@
-package com.stocktracker.repositorylayer;
+package com.stocktracker.repositorylayer.common;
 
 import java.util.UUID;
 
