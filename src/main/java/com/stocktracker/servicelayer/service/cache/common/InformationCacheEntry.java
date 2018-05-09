@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service.cache.common;
 import com.stocktracker.common.MyLogger;
 import io.reactivex.processors.BehaviorProcessor;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Optional;
@@ -11,11 +12,11 @@ import java.util.Optional;
  * <T> - The type of information to be retrieved from the third party source.
  * @param <T>
  */
-public abstract class InformationCacheEntry<T> implements MyLogger
+public abstract class InformationCacheEntry<T>
 {
     private InformationCacheEntryState cacheState = InformationCacheEntryState.STALE;
     private long lastRefreshTime;
-    private Date expirationTime;
+    private Timestamp expirationTime;
     private InformationCacheFetchState fetchState = InformationCacheFetchState.NOT_FETCHING;
     private BehaviorProcessor<Optional<T>> fetchSubject;
     private Throwable fetchThrowable;
@@ -29,7 +30,7 @@ public abstract class InformationCacheEntry<T> implements MyLogger
      */
     public InformationCacheEntry()
     {
-        this.expirationTime = new Date( System.currentTimeMillis() + this.getCurrentDurationTime() );
+        this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
         this.fetchSubject = BehaviorProcessor.create();
         this.fetchSubject.serialize();
     }
@@ -40,10 +41,7 @@ public abstract class InformationCacheEntry<T> implements MyLogger
      */
     public void setInformation( final T information )
     {
-        final String methodName = "setInformation";
-        logMethodBegin( methodName, information );
         this.information = information;
-        logMethodEnd( methodName );
     }
 
     /**
@@ -95,7 +93,7 @@ public abstract class InformationCacheEntry<T> implements MyLogger
     /**
      * Determines when the stock price is stale.  Stock prices are stale after 15 minutes during trading hours.
      */
-    public Date getExpirationTime()
+    public Timestamp  getExpirationTime()
     {
         return expirationTime;
     }

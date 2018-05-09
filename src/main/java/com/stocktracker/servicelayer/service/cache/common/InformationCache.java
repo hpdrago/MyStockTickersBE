@@ -48,7 +48,7 @@ public abstract class InformationCache<T,K,E extends InformationCacheEntry<T>,
      * @param key
      * @return
      */
-    protected E getCacheEntry( final K key )
+    public E getCacheEntry( final K key )
     {
         return this.cacheMap
                    .get( key );

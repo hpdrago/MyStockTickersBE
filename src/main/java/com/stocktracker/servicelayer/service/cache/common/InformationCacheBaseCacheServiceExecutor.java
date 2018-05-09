@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.BaseService;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import io.reactivex.processors.BehaviorProcessor;
 
@@ -13,8 +14,8 @@ import java.util.Optional;
  * @param <T> - The type of information to obtain from the third party.
  * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
  */
-public abstract class InformationCacheBaseCacheServiceExecutor<K,T> implements MyLogger,
-                                                                               InformationCacheServiceExecutor<K,T>
+public abstract class InformationCacheBaseCacheServiceExecutor<K,T> extends BaseService
+                                                                    implements InformationCacheServiceExecutor<K,T>
 {
     /**
      * Asynchronous fetching of the information for {@code searchKey}.

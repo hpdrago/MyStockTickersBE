@@ -24,7 +24,7 @@ import java.util.Optional;
 @EnableAsync(proxyTargetClass = true)
 public class StockQuoteEntityServiceExecutor extends InformationCacheBaseCacheServiceExecutor<String,StockQuoteEntity>
                                              implements InformationCacheServiceExecutor<String,StockQuoteEntity>
-
+{
     /**
      * Service for the stock quote entities.
      */

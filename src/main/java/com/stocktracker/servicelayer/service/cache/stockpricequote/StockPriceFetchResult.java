@@ -16,4 +16,14 @@ public enum StockPriceFetchResult
     }
 
     public boolean isNotFound() { return this == NOT_FOUND; }
+
+    public boolean isSuccess()
+    {
+        return this == SUCCESS;
+    }
+
+    public boolean isException()
+    {
+        return this == EXCEPTION;
+    }
 }

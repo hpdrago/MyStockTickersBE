@@ -36,6 +36,7 @@ public class StockPriceQuote implements StockPriceContainer,
     private InformationCacheEntryState stockQuoteCacheState;
     private Timestamp expirationTime;
     private BigDecimal openPrice;
+    private String error;
 
     @Override
     public InformationCacheEntryState getStockPriceCacheState()
@@ -190,6 +191,16 @@ public class StockPriceQuote implements StockPriceContainer,
             this.openPrice = stockQuoteEntity.getOpenPrice();
         }
         this.stockQuoteCacheState = stockQuoteEntityCacheState;
+    }
+
+    public String getError()
+    {
+        return error;
+    }
+
+    public void setError( final String error )
+    {
+        this.error = error;
     }
 
     @Override

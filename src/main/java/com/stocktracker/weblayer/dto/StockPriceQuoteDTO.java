@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.servicelayer.service.stocks.StockOpenPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
@@ -133,6 +134,12 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
     public void setExpirationTime( final Timestamp expirationTime )
     {
         this.expirationTime = expirationTime;
+    }
+
+    @Override
+    public void setStockPriceQuote( final InformationCacheEntryState cacheState, final StockPriceQuote information )
+    {
+
     }
 
     @Override

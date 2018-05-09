@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * This is the base class for all Service Classes.
  */
-public abstract class BaseService
+public abstract class BaseService implements MyLogger
 {
     @Autowired
     protected ApplicationContext context;

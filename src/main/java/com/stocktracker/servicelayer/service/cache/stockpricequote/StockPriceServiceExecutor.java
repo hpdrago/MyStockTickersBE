@@ -1,18 +1,14 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
-import com.stocktracker.AppConfig;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
@@ -28,51 +24,6 @@ public class StockPriceServiceExecutor
     private Logger logger = LoggerFactory.getLogger( StockPriceServiceExecutor.class );
     private TreeSet<String> discontinuedStocks = new TreeSet();
     private StockCompanyEntityService stockCompanyEntityService;
-
-    /**
-     * Gets a stock quote for {@code tickerSymbol} asynchronously by creating a new thread.
-     * @param tickerSymbol
-     */
-    @Async( AppConfig.STOCK_PRICE_QUOTE_THREAD_POOL )
-    public void asynchronousGetStockPrice( final String tickerSymbol )
-    {
-        final String methodName = "asynchronousGetStockPrice";
-        logger.debug( methodName + " " + tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        final String myTickerSymbol = checkTickerSymbol( tickerSymbol );
-        BigDecimal stockPrice = null;
-        try
-        {
-            GetStockPriceResult getStockPriceResult = getStockPrice( myTickerSymbol );
-            handleStockQuoteResult.handleGetStockPriceResult( getStockPriceResult );
-        }
-        catch( Exception e )
-        {
-            final GetStockPriceResult getStockPriceResult = new GetStockPriceResult();
-            getStockPriceResult.setTickerSymbol( tickerSymbol );
-            getStockPriceResult.setException( e );
-            getStockPriceResult.setStockPriceResult( StockPriceFetchResult.EXCEPTION );
-            handleStockQuoteResult.handleGetStockPriceResult( getStockPriceResult );
-        }
-    }
-
-    /**
-     * Get stock prices for a list of ticker symbols.
-     * @param tickerSymbols
-     * @param handleStockQuoteResult
-     */
-    @Async( AppConfig.STOCK_PRICE_QUOTE_THREAD_POOL )
-    public void asynchronousGetStockPrices( final List<String> tickerSymbols,
-                                            final HandleStockQuoteResult handleStockQuoteResult )
-    {
-        final String methodName = "asynchronousGetStockPrices";
-        logger.debug( methodName + ".begin " + tickerSymbols.size() + " ticker symbols" );
-        /*
-        final List<GetStockPriceResult> stockPriceResults = this.iexTradingStockService
-                                                                .getPrices( tickerSymbols );
-                                                                */
-        logger.debug( methodName + ".end" );
-    }
 
     /**
      * Fetch the stock quote synchronously.

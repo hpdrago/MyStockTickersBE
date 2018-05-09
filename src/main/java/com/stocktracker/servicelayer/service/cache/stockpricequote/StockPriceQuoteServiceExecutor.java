@@ -1,9 +1,9 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
+import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.InformationCacheBaseCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchState;
 import com.stocktracker.servicelayer.service.cache.common.InformationCacheServiceExecutor;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -26,6 +25,8 @@ public class StockPriceQuoteServiceExecutor extends InformationCacheBaseCacheSer
                                             implements InformationCacheServiceExecutor<String,StockPriceQuote>
 {
     private StockPriceServiceExecutor stockPriceServiceExecutor;
+    private StockPriceQuoteCache stockPriceQuoteCache;
+    private StockCompanyEntityService stockCompanyEntityService;
 
     /**
      * Fetches the StockQuote synchronously.
@@ -37,62 +38,35 @@ public class StockPriceQuoteServiceExecutor extends InformationCacheBaseCacheSer
     {
         final String methodName = "synchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
-        GetStockPriceResult getStockPriceResult = stockPriceServiceExecutor.synchronousGetStockPrice( tickerSymbol );
-        this.handleGetStockPriceResult( getStockPriceResult );
-        return Optional.ofNullable( stockQuoteEntity );
-    }
-
-    /**
-     * This method is called when a stock quote has been retrieved from the stock quote service.
-     * The stock quote is added to the cache and its state is set to CURRENT.
-     * @param getStockPriceResult
-     */
-    private void handleGetStockPriceResult( final GetStockPriceResult getStockPriceResult )
-    {
-        Objects.requireNonNull( getStockPriceResult, "getStockPriceResult cannot be null" );
-        final String methodName = "handleGetStockPriceResult";
-        final String tickerSymbol = getStockPriceResult.getTickerSymbol();
-        logMethodBegin( methodName, getStockPriceResult );
-        StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this..get( getStockPriceResult.getTickerSymbol() );
-        stockPriceQuoteCacheEntry.setFetchState( InformationCacheFetchState.NOT_FETCHING );
-        /*
-         * Set the results in the cache entry and notify any observers waiting for the stock price update.
-         */
+        final GetStockPriceResult getStockPriceResult = stockPriceServiceExecutor.synchronousGetStockPrice( tickerSymbol );
+        final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
+        final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
+                                                                        .getCacheEntry( tickerSymbol );
+        stockPriceQuote.setTickerSymbol( tickerSymbol );
         switch ( getStockPriceResult.getStockPriceFetchResult() )
         {
-            case SUCCESS:
-                /*
-                 * Create the stock_company table entry if needed and if we haven't already validated this stock.
-                 */
-                if ( !stockPriceQuoteCacheEntry.isStockTableEntryValidated() )
-                {
-                    this.stockCompanyEntityService.checkStockTableEntry( tickerSymbol );
-                    stockPriceQuoteCacheEntry.setStockTableEntryValidated( true );
-                }
-                stockPriceQuoteCacheEntry.setStockPrice( getStockPriceResult.getStockPrice() );
-                stockPriceQuoteCacheEntry.setCacheState( InformationCacheEntryState.CURRENT );
+            case DISCONTINUED:
+                //if ( stockPriceQuoteCacheEntry.isStockTableEntryValidated() )
+                this.stockCompanyEntityService
+                    .markStockAsDiscontinued( tickerSymbol );
+                stockPriceQuoteCacheEntry.setDiscontinued( true );
+                stockPriceQuote.setLastPrice( new BigDecimal( 0 ));
                 break;
 
             case NOT_FOUND:
-                stockPriceQuoteCacheEntry.setCacheState( InformationCacheEntryState.NOT_FOUND );
-                stockPriceQuoteCacheEntry.setStockPrice( new BigDecimal( 0 ));
+                stockPriceQuote.setLastPrice( new BigDecimal( 0 ));
+                break;
+
+            case SUCCESS:
+                stockPriceQuote.setLastPrice( getStockPriceResult.getStockPrice() );
                 break;
 
             case EXCEPTION:
-                stockPriceQuoteCacheEntry.setCacheState( InformationCacheEntryState.FAILURE );
-                stockPriceQuoteCacheEntry.setFetchException( getStockPriceResult.getException() );
-                logError( methodName, getStockPriceResult.getException() );
-
-                /*
-                 * Mark the stock_company table entry as discontinued if the stock was not found.
-                 */
-            case DISCONTINUED:
-                this.stockCompanyEntityService.markStockAsDiscontinued( tickerSymbol );
-                stockPriceQuoteCacheEntry.setDiscontinued( true );
+                stockPriceQuote.setStockPriceCacheState( InformationCacheEntryState.FAILURE );
+                stockPriceQuote.setError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
                 break;
         }
-        stockPriceQuoteCacheEntry.notifySubscribers();
-        logMethodEnd( methodName );
+        return Optional.of( stockPriceQuote );
     }
 
     /**
@@ -115,5 +89,17 @@ public class StockPriceQuoteServiceExecutor extends InformationCacheBaseCacheSer
     public void setStockPriceServiceExecutor( final StockPriceServiceExecutor stockPriceServiceExecutor )
     {
         this.stockPriceServiceExecutor = stockPriceServiceExecutor;
+    }
+
+    @Autowired
+    public void setStockPriceQuoteCache( final StockPriceQuoteCache stockPriceQuoteCache )
+    {
+        this.stockPriceQuoteCache = stockPriceQuoteCache;
+    }
+
+    @Autowired
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
+    {
+        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 }

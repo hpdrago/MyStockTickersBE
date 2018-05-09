@@ -2,8 +2,6 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntry;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * This class defines the Stock Price Quote cache's entry types.
  */
@@ -18,6 +16,26 @@ public class StockPriceQuoteCacheEntry extends InformationCacheEntry<StockPriceQ
      */
     private boolean discontinued;
 
+    public boolean isStockTableEntryValidated()
+    {
+        return stockTableEntryValidated;
+    }
+
+    public void setStockTableEntryValidated( final boolean stockTableEntryValidated )
+    {
+        this.stockTableEntryValidated = stockTableEntryValidated;
+    }
+
+    public boolean isDiscontinued()
+    {
+        return discontinued;
+    }
+
+    public void setDiscontinued( final boolean discontinued )
+    {
+        this.discontinued = discontinued;
+    }
+
     /**
      * Stock quotes are valid for 15 minutes.
      * @return
@@ -25,6 +43,6 @@ public class StockPriceQuoteCacheEntry extends InformationCacheEntry<StockPriceQ
     @Override
     protected long getCurrentDurationTime()
     {
-        return TimeUnit.MINUTES.convert( 15, TimeUnit.MILLISECONDS );
+        return StockPriceQuoteCache.EXPIRATION_TIME;
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode.ASYNCHRONOUS;
 
@@ -227,7 +228,7 @@ public class StockInformationService extends BaseService
             switch ( stockPriceQuoteCacheEntry.getCacheState() )
             {
                 case CURRENT:
-                    container.setLastPrice( stockPriceQuoteCacheEntry.getStockPrice() );
+                    container.setLastPrice( stockPriceQuoteCacheEntry.getInformation().getLastPrice() );
                     break;
 
                 case NOT_FOUND:
@@ -237,11 +238,15 @@ public class StockInformationService extends BaseService
                 case STALE:
                     if ( informationCacheFetchMode.isSynchronous() )
                     {
-                        container.setLastPrice( stockPriceQuoteCacheEntry.getFetchSubject()
-                                                                         .doOnError( throwable ->
-                                                                                    container
-                                                                                        .setStockPriceCacheState( InformationCacheEntryState.FAILURE ) )
-                                                                         .blockingFirst());
+                        Optional<StockPriceQuote> optionalStockPriceQuote = stockPriceQuoteCacheEntry.getFetchSubject()
+                                                                                                     .doOnError( throwable ->
+                                                                                                                container
+                                                                                                                    .setStockPriceCacheState( InformationCacheEntryState.FAILURE ) )
+                                                                                                     .blockingFirst();
+                        if ( optionalStockPriceQuote.isPresent() )
+                        {
+                            container.setLastPrice( optionalStockPriceQuote.get().getLastPrice() );
+                        }
                     }
                     break;
             }
@@ -264,7 +269,7 @@ public class StockInformationService extends BaseService
         Objects.requireNonNull( containers, "stockDomainEntities cannot be null" );
         for ( final StockPriceQuoteContainer container : containers )
         {
-            this.setStockPriceQuote( container, ASYNCHRONOUS );
+            this.setStockPriceQuote( container );
         }
         logMethodEnd( methodName );
     }
@@ -275,13 +280,12 @@ public class StockInformationService extends BaseService
      * reflect that the quote is being fetched.  If the {@code informationCacheFetchMode} == SYNCHRONOUS, the quote will be
      * fetched immediately and the container will be  updated.
      * @param container
-     * @param informationCacheFetchMode
      */
-    public void setStockPriceQuote( final StockPriceQuoteContainer container, final InformationCacheFetchMode informationCacheFetchMode )
+    public void setStockPriceQuote( final StockPriceQuoteContainer container )
     {
         final String methodName = "setStockPriceQuote";
         logMethodBegin( methodName );
-        final StockPriceQuoteDTO stockPriceQuoteDTO = this.getStockPriceQuote( container.getTickerSymbol(), informationCacheFetchMode ) ;
+        final StockPriceQuoteDTO stockPriceQuoteDTO = this.getAsynchronousStockPriceQuote( container.getTickerSymbol() );
         BeanUtils.copyProperties( stockPriceQuoteDTO, container );
         logMethodEnd( methodName );
     }
@@ -297,9 +301,9 @@ public class StockInformationService extends BaseService
     {
         final StockPriceQuote stockPriceQuoteDTO = new StockPriceQuote();
         stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
-        stockPriceQuoteDTO.setLastPrice( stockPriceQuoteCacheEntry.getStockPrice() );
+        stockPriceQuoteDTO.setLastPrice( stockPriceQuoteCacheEntry.getInformation().getLastPrice() );
         stockPriceQuoteDTO.setStockPriceCacheState( stockPriceQuoteCacheEntry.getCacheState() );
-        stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheEntry.getExpiration() );
+        stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheEntry.getExpirationTime() );
         return stockPriceQuoteDTO;
     }
 
@@ -316,7 +320,7 @@ public class StockInformationService extends BaseService
     }
 
     @Autowired
-    public void setStockPriceQuoteCache( final StockPriceCache stockPriceQuoteCache )
+    public void setStockPriceQuoteCache( final StockPriceQuoteCache stockPriceQuoteCache )
     {
         this.stockPriceQuoteCache = stockPriceQuoteCache;
     }
