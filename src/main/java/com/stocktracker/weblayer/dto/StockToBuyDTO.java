@@ -1,9 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
@@ -16,12 +14,13 @@ import java.util.List;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceContainer,
-                                                                 NotesSourceIdContainer,
-                                                                 UuidDTO,
-                                                                 CustomerIdContainer,
-                                                                 StockPriceWhenCreatedContainer,
-                                                                 TagsContainer
+public class StockToBuyDTO extends BaseDatabaseEntityStockQuoteDTO
+                           implements NotesSourceIdContainer,
+                                      UuidDTO,
+                                      CustomerIdContainer,
+                                      StockPriceWhenCreatedContainer,
+                                      TagsContainer
+
 {
     /*
      * Entity (DB columns)
@@ -35,10 +34,8 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
     private BigDecimal stockPriceWhenCreated;
     private Boolean completed;
     private String buyAfterDate;
-    private String createDate;
     private List<String> tags;
     private BigDecimal avgAnalystPriceTarget;
-    private Integer version;
 
     @Override
     public String getId()
@@ -102,16 +99,6 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
     public void setStockPriceWhenCreated( BigDecimal stockPriceWhenCreated )
     {
         this.stockPriceWhenCreated = stockPriceWhenCreated;
-    }
-
-    public String getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( final String createDate )
-    {
-        this.createDate = createDate;
     }
 
     public List<String> getTags()
@@ -181,17 +168,6 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
     }
 
     @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -221,7 +197,7 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
         final StringBuilder sb = new StringBuilder( "StockToBuyQuoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", super=" ).append( super.toString() );
+        sb.append( ", tickerSymbol='" ).append( getTickerSymbol() ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName=" ).append( notesSourceName );
@@ -230,9 +206,8 @@ public class StockToBuyDTO extends StockPriceQuoteDTO implements StockPriceConta
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
-        sb.append( ", createDate='" ).append( createDate ).append( '\'' );
         sb.append( ", tags=" ).append( tags );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

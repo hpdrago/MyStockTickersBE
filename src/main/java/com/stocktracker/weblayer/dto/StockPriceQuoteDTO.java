@@ -1,11 +1,13 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
 import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.servicelayer.service.stocks.StockOpenPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteContainer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -13,13 +15,14 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * This class is used to return stock update information from the stock quote service
+ * This class is used to return stock update information from the stock quote service.
  *
  * Created by mike on 12/10/2016.
  */
 public class StockPriceQuoteDTO implements StockPriceContainer,
                                            StockOpenPriceContainer,
-                                           StockCompanyContainer
+                                           StockCompanyContainer,
+                                           StockPriceQuoteContainer
 {
     private String tickerSymbol;
     private String companyName;
@@ -29,19 +32,19 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
-    private StockPriceCacheState stockPriceCacheState;
+    private InformationCacheEntryState informationCacheEntryState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
     private BigDecimal openPrice;
 
-    public StockPriceCacheState getStockPriceCacheState()
+    public InformationCacheEntryState getStockPriceCacheState()
     {
-        return stockPriceCacheState;
+        return informationCacheEntryState;
     }
 
-    public void setStockPriceCacheState( final StockPriceCacheState stockPriceCacheState )
+    public void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState )
     {
-        this.stockPriceCacheState = stockPriceCacheState;
+        this.informationCacheEntryState = informationCacheEntryState;
     }
 
     public String getTickerSymbol()
@@ -156,13 +159,13 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockPriceQuote{" );
+        final StringBuilder sb = new StringBuilder( "StockPriceQuoteEntity{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName'=" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", openPrice=" ).append( lastPrice );
-        sb.append( ", stockPriceCacheState=" ).append( stockPriceCacheState );
+        sb.append( ", informationCacheEntryState=" ).append( informationCacheEntryState );
         sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", industry'=" ).append( industry ).append( '\'' );
         sb.append( ", sector'=" ).append( sector ).append( '\'' );

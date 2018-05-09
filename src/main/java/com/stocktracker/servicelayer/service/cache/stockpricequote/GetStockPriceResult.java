@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;

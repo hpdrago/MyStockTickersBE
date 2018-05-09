@@ -4,15 +4,17 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
-import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
+import com.stocktracker.servicelayer.service.BaseService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.StockQuoteEntityService;
-import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCache;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheEntry;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheState;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
+import com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheEntry;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCache;
+import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteContainer;
+import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -21,19 +23,22 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+import static com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode.ASYNCHRONOUS;
+
 /**
  * This service manages all of the methods to obtain stock quote information.
  */
 @Service
-public class StockInformationService implements MyLogger
+public class StockInformationService extends BaseService
+                                     implements MyLogger
 {
-    private StockPriceCache stockPriceCache;
-    private StockQuoteEntityService stockQuoteEntityService;
+    private StockPriceQuoteCache stockPriceQuoteCache;
     private StockCompanyEntityService stockCompanyEntityService;
-    private IEXTradingStockService iexTradingStockService;
+    private StockQuoteEntityCache stockQuoteEntityCache;
 
     /**
      * Loads {@code container} with the company information.
+     *
      * @param container
      */
     public void setCompanyInformation( final StockCompanyContainer container )
@@ -44,7 +49,7 @@ public class StockInformationService implements MyLogger
         try
         {
             stockCompanyEntity = this.stockCompanyEntityService
-                                     .getStockCompanyEntity( container.getTickerSymbol() );
+                .getStockCompanyEntity( container.getTickerSymbol() );
             container.setCompanyName( stockCompanyEntity.getCompanyName() );
             container.setIndustry( stockCompanyEntity.getIndustry() );
             container.setSector( stockCompanyEntity.getSector() );
@@ -57,6 +62,7 @@ public class StockInformationService implements MyLogger
 
     /**
      * Updates the quote cache with the last price.
+     *
      * @param tickerSymbol
      * @param lastPrice
      * @throws StockNotFoundException
@@ -66,13 +72,14 @@ public class StockInformationService implements MyLogger
     {
         final String methodName = "updateStockPrice";
         logMethodBegin( methodName, tickerSymbol, lastPrice );
-        this.stockPriceCache
+        this.stockPriceQuoteCache
             .updateStockPrice( tickerSymbol, lastPrice );
         logMethodEnd( methodName );
     }
 
     /**
      * Get the last price for the stock synchronously.
+     *
      * @param tickerSymbol
      * @return The last stock price for the {@code tickerSymbol}
      * @throws StockNotFoundException
@@ -80,130 +87,96 @@ public class StockInformationService implements MyLogger
     public BigDecimal getLastPrice( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
-                                                              .getStockPrice( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
-        BigDecimal stockPrice = stockPriceCacheEntry.getStockPrice();
+        final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
+                                                                        .synchronousGet( tickerSymbol );
+        BigDecimal stockPrice = stockPriceQuoteCacheEntry.getInformation().getLastPrice();
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
     }
-
     /**
-     * Gets a stock quote from the {@code StockQuoteCache}.
-     * If the fetch mode is SYNCHRONOUS, this method will block and wait while the quote is retrieved.
-     * If the fetch mode is ASYNCHRONOUS and the stock quote is not found or is stale, this block will return without
-     * a complete quote.  The quote can be obtained by a subsequent request.  If the stock quote is found and is current,
-     * the behaviour is that of the SYNCHRONOUS mode and this method will return with a complete stock quote.
+     * Gets a stock quote from the {@code StockQuoteCache} asynchronously.  A valid result may be returned if the
+     * cache entry is not STALE. Otherwise, a {@code StockPriceQuoteDTO} will be returned with the stale information
+     * if there is any and appropriate cache states that can be sent back to the client so that it will make a
+     * subsequent request to get the updated stock quote.
+     *
      * @param tickerSymbol
-     * @param stockPriceFetchMode
      * @return
      * @throws StockNotFoundException
      * @throws StockCompanyNotFoundException
      */
-    public StockPriceQuoteDTO getStockQuote( final String tickerSymbol,
-                                             final StockPriceFetchMode stockPriceFetchMode )
-        throws StockNotFoundException,
-               StockCompanyNotFoundException
+    public StockPriceQuoteDTO getAsynchronousStockPriceQuote( final String tickerSymbol )
+        throws StockNotFoundException
     {
-        final String methodName = "getStockQuote";
-        logMethodBegin( methodName, tickerSymbol, stockPriceFetchMode );
+        final String methodName = "getAynchronousStockPriceQuote";
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        Objects.requireNonNull( stockPriceFetchMode, "stockPriceFetchMode cannot be null" );
-        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
-        final StockPriceCacheEntry stockPriceCacheEntry = this.stockPriceCache
-                                                              .getStockPrice( tickerSymbol, stockPriceFetchMode );
-        StockPriceQuoteDTO stockPriceQuoteDTO = null;
-        if ( stockPriceFetchMode.isSynchronous() )
-        {
-            switch ( stockPriceCacheEntry.getCacheState() )
-            {
-                case FAILURE:
-                    throw new StockNotFoundException( tickerSymbol, stockPriceCacheEntry.getFetchException() );
-                case NOT_FOUND:
-                    stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
-                    break;
-                case CURRENT:
-                case STALE:
-                    stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceCacheEntry );
-                    final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityService
-                                                                      .getStockCompany( tickerSymbol );
-                    final StockQuoteEntity stockQuoteEntity = this.stockQuoteEntityService
-                                                                  .getStockQuote( tickerSymbol );
-                    stockPriceQuoteDTO.setCompanyName( stockCompanyEntity.getCompanyName() );
-                    stockPriceQuoteDTO.setOpenPrice( stockQuoteEntity.getOpenPrice() );
-            }
-        }
+        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'" );
+        final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
+                                                                        .asynchronousGet( tickerSymbol );
+        final StockPriceQuoteDTO stockPriceQuoteDTO = handleStockPriceQuoteCacheEntry( tickerSymbol, stockPriceQuoteCacheEntry );
+        logMethodEnd( methodName, stockPriceQuoteDTO );
+        return stockPriceQuoteDTO;
+
+    }
+
+    /**
+     * Gets a stock quote from the {@code StockPriceQuoteCache}.
+     * This method will block and wait while the quote is retrieved.
+     *
+     * @param tickerSymbol
+     * @return
+     * @throws StockNotFoundException
+     */
+    public StockPriceQuoteDTO getSynchronousStockPriceQuote( final String tickerSymbol )
+        throws StockNotFoundException
+    {
+        final String methodName = "getSynchronousStockPriceQuote";
+        logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'" );
+        final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
+                                                                        .synchronousGet( tickerSymbol );
+        final StockPriceQuoteDTO stockPriceQuoteDTO = handleStockPriceQuoteCacheEntry( tickerSymbol, stockPriceQuoteCacheEntry );
         logMethodEnd( methodName, stockPriceQuoteDTO );
         return stockPriceQuoteDTO;
     }
-    /**
-     * Obtains the stock information from the stock cache with the current stock information including the price,
-     * last price change, and company name.
-     * This information that was retrieved from the cache, is also saved back to the database stock table.
-     * @param container
-     * @param stockPriceFetchMode
-     */
-    public void setStockPrice( final StockPriceContainer container,
-                               final StockPriceFetchMode stockPriceFetchMode )
+
+    private StockPriceQuoteDTO handleStockPriceQuoteCacheEntry( final String tickerSymbol, final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry )
     {
-        final String methodName = "setStockPrice";
-        logMethodBegin( methodName, container.getTickerSymbol(), stockPriceFetchMode );
-        Objects.requireNonNull( container, "container cannot be null" );
-        Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
-        StockPriceCacheEntry stockPriceCacheEntry = null;
-        try
+        StockPriceQuote stockPriceQuote = null;
+        switch ( stockPriceQuoteCacheEntry.getCacheState() )
         {
-            stockPriceCacheEntry = this.stockPriceCache
-                                       .getStockPrice( container.getTickerSymbol(), stockPriceFetchMode );
-            container.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
-            switch ( stockPriceCacheEntry.getCacheState() )
-            {
-                case CURRENT:
-                    container.setLastPrice( stockPriceCacheEntry.getStockPrice() );
-                    break;
+            case FAILURE:
+                throw new StockNotFoundException( tickerSymbol, stockPriceQuoteCacheEntry.getFetchThrowable() );
 
-                case NOT_FOUND:
-                    // the container is marked as not found.
-                    break;
+            case NOT_FOUND:
+                stockPriceQuote = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceQuoteCacheEntry );
+                break;
 
-                case STALE:
-                    if ( stockPriceFetchMode.isSynchronous() )
-                    {
-                        container.setLastPrice( stockPriceCacheEntry.getFetchSubject()
-                                                                    .asObservable()
-                                                                    .doOnError( throwable ->
-                                                                                    container
-                                                                                        .setStockPriceCacheState( StockPriceCacheState.FAILURE ) )
-                                                                    .toBlocking()
-                                                                    .first() );
-                    }
-                    break;
-            }
+            case CURRENT:
+            case STALE:
+                stockPriceQuote = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceQuoteCacheEntry );
+                setCompanyProperties( tickerSymbol, stockPriceQuote );
+                this.stockQuoteEntityCache
+                    .asynchronousGet( tickerSymbol, stockPriceQuote );
         }
-        catch( StockNotFoundException e )
-        {
-            // ignore, just don't update the stock price.
-        }
-        logMethodEnd( methodName, container );
+        return this.stockPriceQuoteToDTO( stockPriceQuote );
     }
 
     /**
-     * Create the StockDTO from the stock price cache entry.
+     * Gets the Stock Company information and updates the properaties in {@code stockPriceQuote}
+     *
      * @param tickerSymbol
-     * @param stockPriceCacheEntry
-     * @return
+     * @param stockPriceQuote
      */
-    private StockPriceQuoteDTO stockPriceCacheEntryToStockPriceDTO( final String tickerSymbol,
-                                                                    final StockPriceCacheEntry stockPriceCacheEntry )
+    private void setCompanyProperties( final String tickerSymbol, final StockPriceQuote stockPriceQuote )
     {
-        final StockPriceQuoteDTO stockPriceQuoteDTO = new StockPriceQuoteDTO();
-        stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
-        stockPriceQuoteDTO.setLastPrice( stockPriceCacheEntry.getStockPrice() );
-        stockPriceQuoteDTO.setStockPriceCacheState( stockPriceCacheEntry.getCacheState() );
-        stockPriceQuoteDTO.setExpirationTime( stockPriceCacheEntry.getExpiration() );
-        return stockPriceQuoteDTO;
+        final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityService
+            .getStockCompanyEntity( tickerSymbol );
+        stockPriceQuote.setCompanyName( stockCompanyEntity.getCompanyName() );
     }
 
     /**
@@ -218,15 +191,134 @@ public class StockInformationService implements MyLogger
         Objects.requireNonNull( containers, "stockDomainEntities cannot be null" );
         for ( final StockPriceContainer container : containers )
         {
-            this.setStockPrice( container, StockPriceFetchMode.ASYNCHRONOUS );
+            this.setStockPrice( container, ASYNCHRONOUS );
         }
         logMethodEnd( methodName );
     }
 
-    @Autowired
-    public void setStockPriceCache( final StockPriceCache stockPriceCache )
+    /**
+     * Obtains the stock information from the stock cache with the current stock information including the price,
+     * last price change, and company name.
+     * This information that was retrieved from the cache, is also saved back to the database stock table.
+     * @param container
+     * @param informationCacheFetchMode
+     */
+    public void setStockPrice( final StockPriceContainer container,
+                               final InformationCacheFetchMode informationCacheFetchMode )
     {
-        this.stockPriceCache = stockPriceCache;
+        final String methodName = "setStockPrice";
+        logMethodBegin( methodName, container.getTickerSymbol(), informationCacheFetchMode );
+        Objects.requireNonNull( container, "container cannot be null" );
+        Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
+        StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = null;
+        try
+        {
+            if ( informationCacheFetchMode.isSynchronous() )
+            {
+                stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
+                                                .synchronousGet( container.getTickerSymbol() );
+            }
+            else
+            {
+                stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
+                                                .asynchronousGet( container.getTickerSymbol() );
+            }
+            container.setStockPriceCacheState( stockPriceQuoteCacheEntry.getCacheState() );
+            switch ( stockPriceQuoteCacheEntry.getCacheState() )
+            {
+                case CURRENT:
+                    container.setLastPrice( stockPriceQuoteCacheEntry.getStockPrice() );
+                    break;
+
+                case NOT_FOUND:
+                    // the container is marked as not found.
+                    break;
+
+                case STALE:
+                    if ( informationCacheFetchMode.isSynchronous() )
+                    {
+                        container.setLastPrice( stockPriceQuoteCacheEntry.getFetchSubject()
+                                                                         .doOnError( throwable ->
+                                                                                    container
+                                                                                        .setStockPriceCacheState( InformationCacheEntryState.FAILURE ) )
+                                                                         .blockingFirst());
+                    }
+                    break;
+            }
+        }
+        catch( StockNotFoundException e )
+        {
+            // ignore, just don't update the stock price.
+        }
+        logMethodEnd( methodName, container );
+    }
+
+    /**
+     * Set the stock price quotes on the {@code containers}
+     * @param containers
+     */
+    public void setStockPriceQuote( final List<? extends StockPriceQuoteContainer> containers )
+    {
+        final String methodName = "setStockPriceQuote";
+        logMethodBegin( methodName, containers.size() );
+        Objects.requireNonNull( containers, "stockDomainEntities cannot be null" );
+        for ( final StockPriceQuoteContainer container : containers )
+        {
+            this.setStockPriceQuote( container, ASYNCHRONOUS );
+        }
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Retrieves the stock quote.  If the quote is in the cache, then the container is updated.  If the quote is not
+     * in the cache and {@code informationCacheFetchMode} == ASYNCHRONOUS, the container's stock cache state will be updated to
+     * reflect that the quote is being fetched.  If the {@code informationCacheFetchMode} == SYNCHRONOUS, the quote will be
+     * fetched immediately and the container will be  updated.
+     * @param container
+     * @param informationCacheFetchMode
+     */
+    public void setStockPriceQuote( final StockPriceQuoteContainer container, final InformationCacheFetchMode informationCacheFetchMode )
+    {
+        final String methodName = "setStockPriceQuote";
+        logMethodBegin( methodName );
+        final StockPriceQuoteDTO stockPriceQuoteDTO = this.getStockPriceQuote( container.getTickerSymbol(), informationCacheFetchMode ) ;
+        BeanUtils.copyProperties( stockPriceQuoteDTO, container );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Create the StockDTO from the stock price cache entry.
+     * @param tickerSymbol
+     * @param stockPriceQuoteCacheEntry
+     * @return
+     */
+    private StockPriceQuote stockPriceCacheEntryToStockPriceDTO( final String tickerSymbol,
+                                                                 final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry )
+    {
+        final StockPriceQuote stockPriceQuoteDTO = new StockPriceQuote();
+        stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
+        stockPriceQuoteDTO.setLastPrice( stockPriceQuoteCacheEntry.getStockPrice() );
+        stockPriceQuoteDTO.setStockPriceCacheState( stockPriceQuoteCacheEntry.getCacheState() );
+        stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheEntry.getExpiration() );
+        return stockPriceQuoteDTO;
+    }
+
+    /**
+     * Converts the StockPriceQuoteEntity into a StockPriceQuoteDTO.
+     * @param stockPriceQuote
+     * @return
+     */
+    private StockPriceQuoteDTO stockPriceQuoteToDTO( final StockPriceQuote stockPriceQuote )
+    {
+        final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
+        BeanUtils.copyProperties( stockPriceQuote, stockPriceQuoteDTO );
+        return stockPriceQuoteDTO;
+    }
+
+    @Autowired
+    public void setStockPriceQuoteCache( final StockPriceCache stockPriceQuoteCache )
+    {
+        this.stockPriceQuoteCache = stockPriceQuoteCache;
     }
 
     @Autowired
@@ -236,15 +328,9 @@ public class StockInformationService implements MyLogger
     }
 
     @Autowired
-    public void setStockQuoteEntityService( final StockQuoteEntityService stockQuoteEntityService )
+    public void setStockQuoteEntityCache( final StockQuoteEntityCache stockQuoteEntityCache )
     {
-        this.stockQuoteEntityService = stockQuoteEntityService;
-    }
-
-    @Autowired
-    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
-    {
-        this.iexTradingStockService = iexTradingStockService;
+        this.stockQuoteEntityCache = stockQuoteEntityCache;
     }
 
 }

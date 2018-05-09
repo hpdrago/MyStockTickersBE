@@ -358,7 +358,8 @@ public abstract class VersionedEntityService<EK extends Serializable,
             savedEntity = this.getRepository()
                               .save( entity );
         }
-        catch( javax.persistence.OptimisticLockException e )
+        catch( javax.persistence.OptimisticLockException |
+               org.springframework.orm.ObjectOptimisticLockingFailureException e )
         {
             E currentEntity = this.getRepository()
                                   .findOne( entity.getId() );

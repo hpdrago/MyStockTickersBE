@@ -1,6 +1,6 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.weblayer.dto.common.VersionedDTO;
+import com.stocktracker.weblayer.dto.common.BaseDatabaseEntityDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import java.security.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteDTO implements VersionedDTO<String>
+public class StockQuoteDTO extends BaseDatabaseEntityDTO
 {
     private String tickerSymbol;
     private String calculationPrice;
@@ -37,7 +37,6 @@ public class StockQuoteDTO implements VersionedDTO<String>
     private BigDecimal ytdChangePercent;
     private Timestamp lastQuoteRequestDate;
     private String discontinuedInd;
-    private Integer version;
 
     public String getTickerSymbol()
     {
@@ -296,18 +295,6 @@ public class StockQuoteDTO implements VersionedDTO<String>
     }
 
     @Override
-    public Integer getVersion()
-    {
-        return null;
-    }
-
-    @Override
-    public void setVersion( final Integer version )
-    {
-
-    }
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockQuoteDTO{" );
@@ -336,7 +323,7 @@ public class StockQuoteDTO implements VersionedDTO<String>
         sb.append( ", ytdChangePercent=" ).append( ytdChangePercent );
         sb.append( ", lastQuoteRequestDate=" ).append( lastQuoteRequestDate );
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

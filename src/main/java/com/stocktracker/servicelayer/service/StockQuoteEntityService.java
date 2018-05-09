@@ -7,7 +7,7 @@ import com.stocktracker.common.exceptions.StockQuoteNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.repositorylayer.repository.StockQuoteRepository;
-import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import com.stocktracker.weblayer.dto.StockQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     public StockQuoteEntity getStockQuote( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         StockQuoteEntity returnStockQuoteEntity = null;
         try
@@ -53,10 +53,6 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
             {
                 logDebug( methodName, "{0} stock quote is stale, refetching..." );
                 final StockQuoteEntity newStockQuoteEntity = getQuoteFromIEXTrading( tickerSymbol );
-                /*
-                 * Need to preserve the insert and update dates and version.
-                 */
-                newStockQuoteEntity.copyVitalEntityValues( existingStockQuoteEntity );
                 returnStockQuoteEntity = newStockQuoteEntity;
             }
             else
@@ -78,7 +74,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
      * @return
      * @throws StockNotFoundException
      */
-    private StockQuoteEntity getQuoteFromIEXTrading( final String tickerSymbol )
+    public StockQuoteEntity getQuoteFromIEXTrading( final String tickerSymbol )
         throws StockNotFoundException
     {
         final String methodName = "getQuoteFromIEXTrading";
@@ -98,7 +94,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                  * and merge the two entities' properties
                  */
                 final StockQuoteEntity existingStockQuoteEntity = this.getEntity( tickerSymbol );
-                newStockQuoteEntity.copyVitalEntityValues( existingStockQuoteEntity );
+                existingStockQuoteEntity.setLastQuoteRequestDate( new Timestamp( System.currentTimeMillis() ));
                 returnStockQuoteEntity = this.saveEntity( newStockQuoteEntity );
             }
             catch( EntityVersionMismatchException e1 )
@@ -113,6 +109,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                  */
                 try
                 {
+                    newStockQuoteEntity.setLastQuoteRequestDate( new Timestamp( System.currentTimeMillis() ));
                     returnStockQuoteEntity = this.addEntity( newStockQuoteEntity );
                 }
                 catch( EntityVersionMismatchException e1 )
@@ -137,7 +134,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
      * @param quote
      * @return
      */
-    private StockQuoteEntity quoteToStockQuoteEntity( final Quote quote )
+    public StockQuoteEntity quoteToStockQuoteEntity( final Quote quote )
     {
         final StockQuoteEntity stockQuoteEntity = this.createEntity();
         stockQuoteEntity.setTickerSymbol( quote.getSymbol() );

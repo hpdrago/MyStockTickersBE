@@ -3,8 +3,8 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheState;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -48,7 +48,7 @@ public class StockPositionDTO implements StockPriceContainer,
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
     private String customerId;
-    private StockPriceCacheState stockPriceCacheState;
+    private InformationCacheEntryState informationCacheEntryState;
     private Integer version;
 
     /**
@@ -103,9 +103,9 @@ public class StockPositionDTO implements StockPriceContainer,
     }
 
     @Override
-    public void setStockPriceCacheState( final StockPriceCacheState stockPriceCacheState )
+    public void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState )
     {
-        this.stockPriceCacheState = stockPriceCacheState;
+        this.informationCacheEntryState = informationCacheEntryState;
     }
 
     @Override
@@ -121,9 +121,9 @@ public class StockPositionDTO implements StockPriceContainer,
     }
 
     @Override
-    public StockPriceCacheState getStockPriceCacheState()
+    public InformationCacheEntryState getStockPriceCacheState()
     {
-        return this.stockPriceCacheState;
+        return this.informationCacheEntryState;
     }
 
     public void setCustomerId( final String customerId )
@@ -280,7 +280,7 @@ public class StockPositionDTO implements StockPriceContainer,
         sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", stockPriceCacheState=" ).append( stockPriceCacheState );
+        sb.append( ", informationCacheEntryState=" ).append( informationCacheEntryState );
         sb.append( ", version=" ).append( version );
         sb.append( '}' );
         return sb.toString();

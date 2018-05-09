@@ -1,14 +1,13 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
+import com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode;
 import com.stocktracker.servicelayer.service.stocks.StockInformationService;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
+import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -89,26 +88,16 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/stockPriceQuote/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<StockPriceQuoteDTO> getStockPrice( @PathVariable final String tickerSymbol )
+    public ResponseEntity<StockPriceQuoteDTO> getStockPriceQuote( @PathVariable final String tickerSymbol )
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be nulls");
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         StockPriceQuoteDTO stockPriceQuoteDTO = null;
         HttpStatus httpStatus = HttpStatus.OK;
-        try
-        {
-            stockPriceQuoteDTO = this.stockInformationService
-                                     .getStockQuote( tickerSymbol, StockPriceFetchMode.SYNCHRONOUS );
-        }
-        catch( StockNotFoundException |
-               StockCompanyNotFoundException |
-               javax.ws.rs.NotFoundException e )
-        {
-            httpStatus = HttpStatus.NOT_FOUND;
-        }
-        logMethodEnd( methodName, stockPriceQuoteDTO );
+        stockPriceQuoteDTO = this.stockInformationService
+                                 .getStockPriceQuote( tickerSymbol, InformationCacheFetchMode.SYNCHRONOUS );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest()

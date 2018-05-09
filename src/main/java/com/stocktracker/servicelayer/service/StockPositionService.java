@@ -137,7 +137,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
              * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
              */
             this.createPositionDTOList( customerUuid, tradeItAccountUuid, linkedAccountUuid, getPositionsAPIResult );
-            this.getStockPrices( stockPositionList );
+            this.setStockPrices( stockPositionList );
         }
         else
         {

@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service.common;
 
+import com.stocktracker.AppConfig;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
@@ -42,10 +43,10 @@ public class StockPositionComparator implements MyLogger
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
      */
-    @Async( "stockPositionEvaluatorThreadPool" )
-    public void comparePositions( final LinkedAccountEntity linkedAccountEntity,
-                                  final List<StockPositionEntity> stockPositionEntities,
-                                  final GetPositionsAPIResult getPositionsAPIResult )
+    @Async( AppConfig.STOCK_POSITION_EVALUATOR_THREAD_POOL )
+            public void comparePositions(final LinkedAccountEntity linkedAccountEntity,
+            final List<StockPositionEntity>stockPositionEntities,
+            final GetPositionsAPIResult getPositionsAPIResult )
         throws EntityVersionMismatchException,
                VersionedEntityNotFoundException
     {

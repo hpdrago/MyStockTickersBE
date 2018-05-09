@@ -121,8 +121,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
                                                                         {
                                                                             logError( methodName, throwable.getCause() );
                                                                         })
-                                                            .toBlocking()
-                                                            .first();
+                                                            .blockingFirst();
         logDebug( methodName, "received after blocking {0}", linkedAccountEntity );
         this.tradeItAsyncUpdateService
             .removeGetAccountOverviewRequest( linkedAccountUuid );

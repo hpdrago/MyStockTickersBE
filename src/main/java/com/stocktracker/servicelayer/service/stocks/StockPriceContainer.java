@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service.stocks;
 
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceCacheState;
+import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -12,8 +12,8 @@ public interface StockPriceContainer extends TickerSymbolContainer
 {
     void setLastPrice( final BigDecimal stockPrice );
     BigDecimal getLastPrice();
-    void setStockPriceCacheState( final StockPriceCacheState stockPriceCacheState );
-    StockPriceCacheState getStockPriceCacheState();
+    void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState );
+    InformationCacheEntryState getStockPriceCacheState();
     void setExpirationTime( final Timestamp expirationTime );
     Timestamp getExpirationTime();
 }

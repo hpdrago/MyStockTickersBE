@@ -1,12 +1,12 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.common;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * This enum defines the state of the stock quote returned from this cache.
- * This enum is only needed when the {@code StockPriceFetchMode} is asynchronous.
+ * This enum is only needed when the {@code InformationCacheFetchMode} is asynchronous.
  */
-public enum StockPriceCacheState
+public enum InformationCacheEntryState
 {
     /**
      * The stock quote is up to date within the EXPIRATION_TIME
@@ -37,9 +37,9 @@ public enum StockPriceCacheState
         return ordinal();
     }
 
-    public static StockPriceCacheState valueOf( final Integer stockQuoteState )
+    public static InformationCacheEntryState valueOf( final Integer stockQuoteState )
     {
-        StockPriceCacheState returnValue = null;
+        InformationCacheEntryState returnValue = null;
         for ( int i = 0; i < values().length; i++ )
         {
             if ( values()[i].ordinal() == stockQuoteState  )
@@ -49,7 +49,7 @@ public enum StockPriceCacheState
         }
         if ( returnValue == null )
         {
-            throw new IllegalArgumentException( stockQuoteState + " is not a valid StockPriceCacheState ordinal value" );
+            throw new IllegalArgumentException( stockQuoteState + " is not a valid InformationCacheEntryState ordinal value" );
         }
         return returnValue;
     }

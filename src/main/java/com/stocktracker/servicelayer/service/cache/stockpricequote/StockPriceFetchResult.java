@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 /**
  * This enum is used to identify the results of getting a stock price from IEXTrading or Yahoo.

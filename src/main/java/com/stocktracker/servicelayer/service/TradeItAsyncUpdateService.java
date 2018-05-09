@@ -7,13 +7,13 @@ import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
+import io.reactivex.Observable;
+import io.reactivex.subjects.AsyncSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import rx.Observable;
-import rx.subjects.AsyncSubject;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,8 +66,7 @@ public class TradeItAsyncUpdateService
         log.debug( methodName + " linkedAccountId: " + linkedAccountUuid );
         this.checkGetAccountOverviewExists( linkedAccountUuid );
         return this.getAccountOverviewSubjectMap
-                   .get( linkedAccountUuid )
-                   .asObservable();
+                   .get( linkedAccountUuid );
     }
 
     /**
@@ -196,7 +195,7 @@ public class TradeItAsyncUpdateService
         final AsyncSubject<LinkedAccountEntity> getAccountOverviewSubject = this.getAccountOverviewSubjectMap
                                                                                 .get( linkedAccountUuid );
         getAccountOverviewSubject.onError( exception );
-        getAccountOverviewSubject.onCompleted();
+        getAccountOverviewSubject.onComplete();
         log.debug( String.format( "%s.end linkedAccountId: %s", methodName, linkedAccountUuid ));
     }
 
@@ -213,7 +212,7 @@ public class TradeItAsyncUpdateService
         final AsyncSubject<LinkedAccountEntity> getAccountOverviewSubject = this.getAccountOverviewSubjectMap
                                                                                 .get( linkedAccountEntity.getUuid() );
         getAccountOverviewSubject.onNext( linkedAccountEntity );
-        getAccountOverviewSubject.onCompleted();
+        getAccountOverviewSubject.onComplete();
         log.debug( String.format( "%s.end linkedAccountId: %s", methodName, linkedAccountEntity.getUuid() ) );
     }
 

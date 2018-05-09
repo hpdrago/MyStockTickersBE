@@ -80,8 +80,6 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = super.entityToDTO( stockNoteEntity );
         stockNoteDTO.setNotesDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getNotesDate() ));
-        stockNoteDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getCreateDate() ));
-        stockNoteDTO.setUpdateDate( JSONDateConverter.toY4MMDD( stockNoteEntity.getUpdateDate() ));
         return stockNoteDTO;
     }
 

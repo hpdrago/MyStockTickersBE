@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.MyLogger;
 import org.springframework.context.annotation.Scope;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class GetStockQuoteTask implements Runnable, MyLogger
 {
     private StockQuoteServiceProvider serviceProvider;
-    private StockPriceCache stockPriceCache;
+    //private StockPriceCache stockPriceCache;
     private String tickerSymbol;
 
     @Override
@@ -35,10 +35,12 @@ public class GetStockQuoteTask implements Runnable, MyLogger
         this.tickerSymbol = tickerSymbol;
     }
 
+    /*
     public void setStockPriceCache( final StockPriceCache stockPriceCache )
     {
         this.stockPriceCache = stockPriceCache;
     }
+    */
 
 
     public void setServiceProvider( final StockQuoteServiceProvider serviceProvider )

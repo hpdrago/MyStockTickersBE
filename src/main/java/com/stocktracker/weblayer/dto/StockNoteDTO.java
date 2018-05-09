@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -18,10 +17,10 @@ import java.util.Objects;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContainer,
-                                                                UuidDTO,
-                                                                CustomerIdContainer,
-                                                                NotesSourceIdContainer
+public class StockNoteDTO extends BaseDatabaseEntityStockQuoteDTO implements StockPriceContainer,
+                                                                             UuidDTO,
+                                                                             CustomerIdContainer,
+                                                                             NotesSourceIdContainer
 {
     private String id;
     private String customerId;
@@ -92,26 +91,6 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
         this.notesSourceId = notesSourceId;
     }
 
-    public String getCreateDate()
-    {
-        return createDate;
-    }
-
-    public void setCreateDate( String createDate )
-    {
-        this.createDate = createDate;
-    }
-
-    public String getUpdateDate()
-    {
-        return updateDate;
-    }
-
-    public void setUpdateDate( String updateDate )
-    {
-        this.updateDate = updateDate;
-    }
-
     public Byte getNotesRating()
     {
         return notesRating;
@@ -150,17 +129,6 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
     public void setBullOrBear( Byte bullOrBear )
     {
         this.bullOrBear = bullOrBear;
-    }
-
-    @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
     }
 
     @Override
@@ -230,7 +198,6 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
         final StringBuilder sb = new StringBuilder( "StockQuoteDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", super=" ).append( super.toString() );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
         sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
@@ -242,9 +209,7 @@ public class StockNoteDTO extends StockPriceQuoteDTO implements StockPriceContai
         sb.append( ", actionTakenShares=" ).append( actionTakenShares );
         sb.append( ", actionTakenPrice=" ).append( actionTakenPrice );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
-        sb.append( ", createDate='" ).append( createDate ).append( '\'' );
-        sb.append( ", updateDate='" ).append( updateDate ).append( '\'' );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

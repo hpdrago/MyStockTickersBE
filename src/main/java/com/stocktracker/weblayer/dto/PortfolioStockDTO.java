@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -250,7 +249,7 @@ public class PortfolioStockDTO extends StockPriceQuoteDTO
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "PortfolioStockQuoteDTO{" );
+        final StringBuilder sb = new StringBuilder( "PortfolioStockDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", portfolioId=" ).append( portfolioId );

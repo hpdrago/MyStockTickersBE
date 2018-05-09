@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCatalystEventDTO extends BaseStockCompanyDTO
-    implements UuidDTO,
-               CustomerIdContainer
+public class StockCatalystEventDTO extends BaseDatabaseEntityStockQuoteDTO
+                                   implements UuidDTO,
+                                              CustomerIdContainer
 {
     private String id;
     private String customerId;
@@ -18,8 +18,6 @@ public class StockCatalystEventDTO extends BaseStockCompanyDTO
     private Byte dateOrTimePeriod;
     private Byte timePeriod;
     private Short timePeriodYear;
-    private Integer version;
-    private String companyName;
 
     public String getId()
     {
@@ -93,27 +91,6 @@ public class StockCatalystEventDTO extends BaseStockCompanyDTO
 
 
     @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    public String getCompanyName()
-    {
-        return companyName;
-    }
-
-    public void setCompanyName( final String companyName )
-    {
-        this.companyName = companyName;
-    }
-
-    @Override
     public boolean equals( final Object o )
     {
         if ( this == o )
@@ -148,7 +125,7 @@ public class StockCatalystEventDTO extends BaseStockCompanyDTO
         sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );
         sb.append( ", timePeriod=" ).append( timePeriod );
         sb.append( ", timePeriodYear=" ).append( timePeriodYear );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

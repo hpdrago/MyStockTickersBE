@@ -62,7 +62,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
     }
 
     /**
-     * Get all of the stock analyst consensus for a customer
+     * Get a page of the stock analyst consensus for a customer
      * @return
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
@@ -81,6 +81,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
         final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
                                                                              .getStockAnalystConsensusPage( pageRequest,
                                                                                                             UUIDUtil.uuid( customerId ));
+        logMethodEnd( methodName, "stockAnalystConsensus: " + stockAnalystConsensusDTOs.getContent() );
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }

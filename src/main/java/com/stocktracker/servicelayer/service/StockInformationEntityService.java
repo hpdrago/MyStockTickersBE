@@ -12,7 +12,7 @@ import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
@@ -26,6 +26,8 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import static com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode.ASYNCHRONOUS;
 
 /**
  * This is the base class for services that service DTO's that contain stock information.
@@ -44,12 +46,14 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     protected StockInformationService stockInformationService;
     protected StockNoteSourceEntityService stockNoteSourceService;
 
+    /*
     private enum StockPriceFetchAction
     {
         NONE,
         FETCH;
         protected boolean isFetch() { return this == FETCH; }
     }
+    */
 
     /**
      * Saves the DTO to the database and checks for child entity data including notes sources and tags to determine
@@ -134,7 +138,6 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodEnd( methodName );
     }
 
-
     /**
      * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
      *
@@ -145,42 +148,11 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
                                       @NotNull final Page<E> entityPage )
     {
-        return this.entitiesToDTOs( pageRequest, entityPage, StockPriceFetchAction.FETCH );
-    }
-
-    /**
-     * Converts a list of entities to to a list of DTO's.
-     * @param entities
-     * @return
-     */
-    protected List<D> entitiesToDTOs( @NotNull final List<E> entities,
-                                      @NotNull final StockPriceFetchAction stockPriceFetchAction )
-    {
-        final List<D> dtos = super.entitiesToDTOs( entities );
-        if ( stockPriceFetchAction.isFetch() )
-        {
-            this.getStockPrices( dtos );
-        }
-        return dtos;
-    }
-
-    /**
-     * Transforms {@code Page<ENTITY>} objects into {@code Page<DTO>} objects.
-     *
-     * @param pageRequest The information of the requested page.
-     * @param entityPage The {@code Page<ENTITY>} object.
-     * @param stockPriceFetchAction Determines if the stock quotes should be fetched.
-     * @return The created {@code Page<DTO>} object.
-     */
-    protected Page<D> entitiesToDTOs( @NotNull final Pageable pageRequest,
-                                      @NotNull final Page<E> entityPage,
-                                      @NotNull final StockPriceFetchAction stockPriceFetchAction )
-    {
         final String methodName = "entitiesToDTOs";
         logMethodBegin( methodName, pageRequest );
         Objects.requireNonNull( pageRequest, "pageRequest cannot be null" );
         Objects.requireNonNull( entityPage, "source cannot be null" );
-        final List<D> dtos = this.entitiesToDTOs( entityPage.getContent(), stockPriceFetchAction );
+        final List<D> dtos = this.entitiesToDTOs( entityPage.getContent() );
         logMethodEnd( methodName );
         return new PageImpl<>( dtos, pageRequest, entityPage.getTotalElements() );
     }
@@ -189,12 +161,25 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * Updates the stock quote information for all dtos
      * @param dtos
      */
-    protected void getStockPrices( final List<? extends StockPriceContainer> dtos )
+    protected void setStockPrices( final List<? extends StockPriceContainer> dtos )
     {
-        final String methodName = "getStockPrices";
+        final String methodName = "setStockPrices";
         logMethodBegin( methodName );
         this.stockInformationService
             .setStockPrice( dtos );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Updates the stock quote information for all dtos
+     * @param dtos
+     */
+    protected void setStockPriceQuotes( final List<? extends StockPriceQuoteContainer> dtos )
+    {
+        final String methodName = "setStockPriceQuotes";
+        logMethodBegin( methodName );
+        this.stockInformationService
+            .setStockPriceQuote( dtos );
         logMethodEnd( methodName );
     }
 
@@ -214,12 +199,28 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
          * I think this is a good use of instanceof...although I am not convinced, I'll have to think about this...
          * If any stock DTO is a stock company container, it will be populated automatically with the stock company
          * information.  No need for any sub cvl
+         *
+         * NEED TO SERIOUSLY THINK ABOUT A BETTER SOLUTION HERE....5/9/2017 Mike.
          */
-        if ( dto instanceof StockCompanyContainer )
+        /*
+         * StockPriceQuoteContainers contain everything in a StockPriceContainer so get that instead
+         */
+        if ( dto instanceof StockPriceQuoteContainer )
+        {
+            this.stockInformationService
+                .setStockPriceQuote( (StockPriceQuoteContainer) dto, ASYNCHRONOUS );
+        }
+        else if ( dto instanceof StockPriceContainer )
+        {
+            this.stockInformationService
+                .setStockPrice( dto, ASYNCHRONOUS );
+        }
+        else if ( dto instanceof StockCompanyContainer )
         {
             this.stockInformationService
                 .setCompanyInformation( (StockCompanyContainer)dto );
         }
+
         /*
          * Convert the UUID to a string and get the notes source name for the UUID
          */
@@ -326,7 +327,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto argument cannot be null" );
         this.stockInformationService
-            .setStockPrice( dto, StockPriceFetchMode.ASYNCHRONOUS );
+            .setStockPrice( dto, ASYNCHRONOUS );
         logMethodEnd( methodName );
     }
 

@@ -82,7 +82,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         Objects.requireNonNull( stockToBuyEntity );
         final StockToBuyDTO stockToBuyDTO = super.entityToDTO( stockToBuyEntity );
         stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
-        stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
+        //stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
         stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getBuyAfterDate() ) );
         return stockToBuyDTO;
     }

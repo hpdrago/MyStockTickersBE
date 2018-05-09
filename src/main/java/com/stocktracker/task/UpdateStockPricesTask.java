@@ -3,7 +3,7 @@ package com.stocktracker.task;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.stockinformationprovider.YahooStockService;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.YahooStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,13 +36,13 @@ public class UpdateStockPricesTask implements MyLogger
                     stockEntity.getLastPriceUpdate().before( yesterday );
                 if ( updateNeeded )
                 {
-                    StockPriceQuote stockTickerQuote = null;
+                    StockPriceQuoteEntity stockTickerQuote = null;
                     try
                     {
-                        stockTickerQuote = this.yahooStockService.getStockQuote( stockEntity.getTickerSymbol() );
+                        stockTickerQuote = this.yahooStockService.getStockPriceQuote( stockEntity.getTickerSymbol() );
                         logDebug( methodName, "{0} ${1} lastUpdate: {2}", stockEntity.getTickerSymbol(),
-                                  stockTickerQuote.getStockQuote(), stockTickerQuote.getLastPriceChange() );
-                        stockEntity.setStockPrice( stockTickerQuote.getStockQuote() );
+                                  stockTickerQuote.getStockPriceQuote(), stockTickerQuote.getLastPriceChange() );
+                        stockEntity.setStockPrice( stockTickerQuote.getStockPriceQuote() );
                         stockEntity.setLastPriceUpdate( new Timestamp( startTime ) );
                         stockEntity.setLastPriceChange( stockTickerQuote.getLastPriceChange() );
                         this.stockRepository.save( stockEntity );

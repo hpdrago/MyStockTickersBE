@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 

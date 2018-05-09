@@ -20,7 +20,7 @@ public class StockNotFoundException extends RuntimeException // RuntimeException
         this.discontinued = false;
     }
 
-    public StockNotFoundException( final String tickerSymbol, final Exception e )
+    public StockNotFoundException( final String tickerSymbol, final Throwable e )
     {
         super( "Unable to get a quote for " + tickerSymbol, e ) ;
         this.tickerSymbol = tickerSymbol;

@@ -7,7 +7,7 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
-import com.stocktracker.servicelayer.stockinformationprovider.IEXTradingStockService;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +31,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
 {
     private StockCompanyRepository stockCompanyRepository;
     private IEXTradingStockService iexTradingStockService;
-
-    /**
-     * Gets the stock company from the database and if not found throws StockCompanyNotFoundException.
-     * Call {@code getStockCompanyEntity} if you want to add the company to the database if the company is not found.
-     * @param tickerSymbol
-     * @return
-     * @throws StockCompanyNotFoundException
-     */
-    public StockCompanyEntity getStockCompany( final String tickerSymbol )
-        throws StockCompanyNotFoundException
-    {
-        final String methodName = "getStockCompany";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        final StockCompanyEntity stockCompanyEntity;
-        try
-        {
-            stockCompanyEntity = this.getEntity( tickerSymbol );
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            throw new StockCompanyNotFoundException( tickerSymbol, e );
-        }
-        logMethodEnd( methodName, stockCompanyEntity );
-        return stockCompanyEntity;
-    }
 
     /**
      * Get a page of StockDomainEntities's
@@ -159,6 +133,34 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         logMethodEnd( methodName, stockEntity );
         return stockEntity;
     }
+
+    /**
+     * Gets the stock company from the database and if not found throws StockCompanyNotFoundException.
+     * Call {@code getStockCompanyEntity} if you want to add the company to the database if the company is not found.
+     * @param tickerSymbol
+     * @return
+     * @throws StockCompanyNotFoundException
+     */
+    /*
+    public StockCompanyEntity getStockCompany( final String tickerSymbol )
+        throws StockCompanyNotFoundException
+    {
+        final String methodName = "getStockCompany";
+        logMethodBegin( methodName, tickerSymbol );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        final StockCompanyEntity stockCompanyEntity;
+        try
+        {
+            stockCompanyEntity = this.getEntity( tickerSymbol );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new StockCompanyNotFoundException( tickerSymbol, e );
+        }
+        logMethodEnd( methodName, stockCompanyEntity );
+        return stockCompanyEntity;
+    }
+    */
 
     /**
      * Retrieves a {@code StockCompanyEntity} from the database.

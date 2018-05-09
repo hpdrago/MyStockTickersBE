@@ -15,6 +15,7 @@ import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import java.util.UUID;
  */
 @Service
 @Transactional
+@EnableCaching(proxyTargetClass = true)
 public class TradeItAccountEntityService extends UuidEntityService<TradeItAccountEntity,
                                                                    TradeItAccountDTO,
                                                                    TradeItAccountRepository>

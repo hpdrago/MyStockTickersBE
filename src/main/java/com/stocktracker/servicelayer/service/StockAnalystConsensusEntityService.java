@@ -1,13 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.exceptions.DuplicateAnalystConsensusException;
-import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
-import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
-import com.stocktracker.servicelayer.stockinformationprovider.StockPriceFetchMode;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +19,6 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
                                                                                       StockAnalystConsensusRepository>
 {
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
-    private StockNoteSourceEntityService stockNoteSourceService;
 
     /**
      * Get the DTO for the stock ticker symbol.
@@ -148,9 +141,4 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         this.stockAnalystConsensusRepository = stockAnalystConsensusRepository;
     }
 
-    @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
-    {
-        this.stockNoteSourceService = stockNoteSourceService;
-    }
 }

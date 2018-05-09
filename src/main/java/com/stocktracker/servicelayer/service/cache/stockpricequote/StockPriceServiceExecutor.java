@@ -1,5 +1,6 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
+import com.stocktracker.AppConfig;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
@@ -28,22 +29,16 @@ public class StockPriceServiceExecutor
     private TreeSet<String> discontinuedStocks = new TreeSet();
     private StockCompanyEntityService stockCompanyEntityService;
 
-
     /**
      * Gets a stock quote for {@code tickerSymbol} asynchronously by creating a new thread.
      * @param tickerSymbol
-     * @param handleStockQuoteResult
-     * @throws StockQuoteUnavailableException
-     * @throws StockNotFoundException
      */
-    @Async( "stockQuoteThreadPool")
-    public void asynchronousGetStockPrice( final String tickerSymbol,
-                                           final HandleStockQuoteResult handleStockQuoteResult )
+    @Async( AppConfig.STOCK_PRICE_QUOTE_THREAD_POOL )
+    public void asynchronousGetStockPrice( final String tickerSymbol )
     {
         final String methodName = "asynchronousGetStockPrice";
         logger.debug( methodName + " " + tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        Objects.requireNonNull( handleStockQuoteResult, "handleStockQuoteResult cannot be null" );
         final String myTickerSymbol = checkTickerSymbol( tickerSymbol );
         BigDecimal stockPrice = null;
         try
@@ -66,7 +61,7 @@ public class StockPriceServiceExecutor
      * @param tickerSymbols
      * @param handleStockQuoteResult
      */
-    @Async( "stockQuoteThreadPool")
+    @Async( AppConfig.STOCK_PRICE_QUOTE_THREAD_POOL )
     public void asynchronousGetStockPrices( final List<String> tickerSymbols,
                                             final HandleStockQuoteResult handleStockQuoteResult )
     {
@@ -113,7 +108,7 @@ public class StockPriceServiceExecutor
      */
     private GetStockPriceResult getStockPrice( final String tickerSymbol )
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPriceQuote";
         logger.debug( methodName + " " + tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");

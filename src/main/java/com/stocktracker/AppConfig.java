@@ -11,18 +11,18 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AppConfig
 {
+    public static final String STOCK_PRICE_QUOTE_THREAD_POOL = "StockPriceQuoteThreadPool";
+    public static final String STOCK_QUOTE_THREAD_POOL = "StockQuoteThreadPool";
+    public static final String STOCK_POSITION_EVALUATOR_THREAD_POOL = "StockPositionEvaluatorThreadPool";
+    public static final String LINKED_ACCOUNT_GET_OVERVIEW_THREAD_POOL = "LinkedAccountGetOverviewThreadPool";
     /**
      * http://www.baeldung.com/spring-async
      * @return Thread pool executor
      */
-    @Bean(name = "stockQuoteThreadPool")
+    @Bean(name = STOCK_QUOTE_THREAD_POOL)
     public Executor stockQuoteThreadPoolTaskExecutor()
     {
-        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-        pool.setCorePoolSize(5);
-        pool.setMaxPoolSize(30);
-        pool.setWaitForTasksToCompleteOnShutdown(true);
-        pool.setThreadNamePrefix( "IStockPriceQuote-" );
+        ThreadPoolTaskExecutor pool = getThreadPoolTaskExecutor( STOCK_QUOTE_THREAD_POOL + "-" );
         return pool;
     }
 
@@ -30,14 +30,21 @@ public class AppConfig
      * http://www.baeldung.com/spring-async
      * @return Thread pool executor
      */
-    @Bean(name = "stockPositionEvaluatorThreadPool")
+    @Bean(name = STOCK_PRICE_QUOTE_THREAD_POOL)
+    public Executor stockPriceQuoteThreadPoolTaskExecutor()
+    {
+        ThreadPoolTaskExecutor pool = getThreadPoolTaskExecutor( STOCK_PRICE_QUOTE_THREAD_POOL + "-" );
+        return pool;
+    }
+
+    /**
+     * http://www.baeldung.com/spring-async
+     * @return Thread pool executor
+     */
+    @Bean(name = STOCK_POSITION_EVALUATOR_THREAD_POOL)
     public Executor stockPositionEvaluatorTaskExecutor()
     {
-        ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-        pool.setCorePoolSize(5);
-        pool.setMaxPoolSize(30);
-        pool.setWaitForTasksToCompleteOnShutdown(true);
-        pool.setThreadNamePrefix( "PositionEvaluator-" );
+        ThreadPoolTaskExecutor pool = getThreadPoolTaskExecutor( STOCK_POSITION_EVALUATOR_THREAD_POOL );
         return pool;
     }
 
@@ -45,14 +52,20 @@ public class AppConfig
      * http://www.baeldung.com/spring-async
      * @return Thread pool executor
      */
-    @Bean(name = "linkedAccountGetOverviewThreadPool")
+    @Bean(name = LINKED_ACCOUNT_GET_OVERVIEW_THREAD_POOL)
     public Executor linkedAccountGetOverviewTaskExecutor()
     {
+        ThreadPoolTaskExecutor pool = getThreadPoolTaskExecutor( LINKED_ACCOUNT_GET_OVERVIEW_THREAD_POOL );
+        return pool;
+    }
+
+    private ThreadPoolTaskExecutor getThreadPoolTaskExecutor( final String s )
+    {
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
-        pool.setCorePoolSize(5);
-        pool.setMaxPoolSize(30);
-        pool.setWaitForTasksToCompleteOnShutdown(true);
-        pool.setThreadNamePrefix( "GetAccountOverview-" );
+        pool.setCorePoolSize( 5 );
+        pool.setMaxPoolSize( 30 );
+        pool.setWaitForTasksToCompleteOnShutdown( true );
+        pool.setThreadNamePrefix( s );
         return pool;
     }
 }

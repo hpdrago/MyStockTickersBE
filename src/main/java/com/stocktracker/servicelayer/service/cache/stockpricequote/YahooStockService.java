@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.stockinformationprovider;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -33,7 +33,7 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
     public BigDecimal getStockPrice( final String tickerSymbol )
         throws StockNotFoundException
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         BigDecimal stockPrice = null;
@@ -63,18 +63,18 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
     }
 
     /**
-     * Create a {@code StockPriceQuote} from a {@code Stock} Yahoo stock instance
+     * Create a {@code StockPriceQuoteEntity} from a {@code Stock} Yahoo stock instance
      * @param stock
      * @return
      */
     /*
-    public StockPriceQuote getStockQuote( final Stock stock )
+    public StockPriceQuoteEntity getStockPriceQuote( final Stock stock )
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, stock );
         Objects.requireNonNull( stock, "stock cannot be null" );
         Objects.requireNonNull( stock.getSymbol(), "stock cannot be null" );
-        StockPriceQuote stockTickerQuote = new StockPriceQuote();
+        StockPriceQuoteEntity stockTickerQuote = new StockPriceQuoteEntity();
         stockTickerQuote.setTickerSymbol( stock.getSymbol() );
         stockTickerQuote.setStockPrice( stock.getQuote().getPrice() );
         stockTickerQuote.setOpenPrice( stock.getQuote().getOpen() );
@@ -117,10 +117,10 @@ public class YahooStockService implements MyLogger, StockQuoteServiceProvider
         logMethodBegin( methodName, container.getTickerSymbol() );
         Stock stock = getStock( container.getTickerSymbol() ) ;
         container.setCompanyName( stock.getName() );
-        StockPriceQuote stockTickerQuote = this.getStockQuote( stock );
+        StockPriceQuoteEntity stockTickerQuote = this.getStockPriceQuote( stock );
         container.setLastPriceChangeTimestamp( stockTickerQuote.getLastPriceChange() );
-        container.setStockPrice( stockTickerQuote.getStockQuote() );
-        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getStockQuote() );
+        container.setStockPrice( stockTickerQuote.getStockPriceQuote() );
+        logMethodEnd( methodName, container.getTickerSymbol() + " " + container.getStockPriceQuote() );
     }
     */
 
