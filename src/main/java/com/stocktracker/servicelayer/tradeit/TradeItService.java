@@ -2,11 +2,11 @@ package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;

@@ -2,7 +2,6 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -10,19 +9,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 /**
  * Created by mike on 5/7/2017.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockNoteDTO extends BaseDatabaseEntityStockQuoteDTO implements StockPriceContainer,
-                                                                             UuidDTO,
-                                                                             CustomerIdContainer,
-                                                                             NotesSourceIdContainer
+public class StockNoteDTO extends StockQuoteDTO
+                          implements CustomerIdContainer,
+                                     NotesSourceIdContainer,
+                                     UuidDTO
 {
-    private String id;
     private String customerId;
     private String notes;
     private String notesDate;
@@ -37,19 +34,6 @@ public class StockNoteDTO extends BaseDatabaseEntityStockQuoteDTO implements Sto
     private BigDecimal actionTakenPrice;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal stockPriceWhenCreated;
-    private String createDate;
-    private String updateDate;
-    private Integer version;
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
 
     public String getNotes()
     {
@@ -131,27 +115,6 @@ public class StockNoteDTO extends BaseDatabaseEntityStockQuoteDTO implements Sto
         this.bullOrBear = bullOrBear;
     }
 
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !(o instanceof StockNoteDTO) )
-        {
-            return false;
-        }
-        final StockNoteDTO that = (StockNoteDTO) o;
-        return Objects.equals( id, that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash( id );
-    }
-
     public Byte getActionTaken()
     {
         return actionTaken;
@@ -192,11 +155,11 @@ public class StockNoteDTO extends BaseDatabaseEntityStockQuoteDTO implements Sto
         this.stockPriceWhenCreated = stockPriceWhenCreated;
     }
 
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockQuoteDTO{" );
-        sb.append( "id=" ).append( id );
+        sb.append( "id=" ).append( super.getId() );
+        sb.append( ", tickerSymbol=" ).append( super.getTickerSymbol() );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", notes='" ).append( notes ).append( '\'' );
         sb.append( ", notesDate='" ).append( notesDate ).append( '\'' );
@@ -213,4 +176,5 @@ public class StockNoteDTO extends BaseDatabaseEntityStockQuoteDTO implements Sto
         sb.append( '}' );
         return sb.toString();
     }
+
 }

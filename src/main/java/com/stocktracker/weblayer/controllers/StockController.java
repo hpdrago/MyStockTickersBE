@@ -4,8 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode;
-import com.stocktracker.servicelayer.service.stocks.StockInformationService;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
 import com.stocktracker.weblayer.dto.StockSectorsDTO;
@@ -35,7 +34,8 @@ public class StockController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/stocks";
     private StockCompanyEntityService stockCompanyEntityService;
-    private StockInformationService stockInformationService;
+
+    private StockPriceQuoteService stockPriceQuoteService;
 
     /**
      * Get all of the stocks within the pageRequest parameters
@@ -96,8 +96,8 @@ public class StockController extends AbstractController implements MyLogger
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         StockPriceQuoteDTO stockPriceQuoteDTO = null;
         HttpStatus httpStatus = HttpStatus.OK;
-        stockPriceQuoteDTO = this.stockInformationService
-                                 .getStockPriceQuote( tickerSymbol, InformationCacheFetchMode.SYNCHRONOUS );
+        stockPriceQuoteDTO = this.stockPriceQuoteService
+                                 .getAsynchronousStockPriceQuote( tickerSymbol );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest()
@@ -169,9 +169,9 @@ public class StockController extends AbstractController implements MyLogger
     }
 
     @Autowired
-    public void setStockInformationService( final StockInformationService stockInformationService )
+    public void setStockPriceQuoteService( final StockPriceQuoteService stockPriceQuoteService )
     {
-        this.stockInformationService = stockInformationService;
+        this.stockPriceQuoteService = stockPriceQuoteService;
     }
 
 }

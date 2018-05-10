@@ -1,13 +1,14 @@
-package com.stocktracker.servicelayer.service.stocks;
+package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteContainer;
 
 /**
  * This interface defines the methods necessary for a class to receive StockQuoteEntity information from the
  * StockQuoteEntityCache.
  */
-public interface StockQuoteEntityContainer
+public interface StockQuoteEntityContainer extends StockQuoteContainer
 {
     /**
      * This method is called to set the {@code StockQuoteEntity}.  Classes implementing this interface can then
@@ -17,6 +18,6 @@ public interface StockQuoteEntityContainer
      * @param stockQuoteEntityCacheState State of the {@code stockQuoteEntity}
      * @param stockQuoteEntity
      */
-    void setStockQuoteEntity( final InformationCacheEntryState stockQuoteEntityCacheState,
+    void setStockQuoteEntity( final AsyncCacheEntryState stockQuoteEntityCacheState,
                               final StockQuoteEntity stockQuoteEntity );
 }

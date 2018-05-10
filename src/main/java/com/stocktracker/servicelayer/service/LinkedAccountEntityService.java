@@ -2,9 +2,9 @@ package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.EntityLoadingStatus;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;

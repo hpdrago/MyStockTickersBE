@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * This enum defines the state of the stock quote returned from this cache.
- * This enum is only needed when the {@code InformationCacheFetchMode} is asynchronous.
+ * This enum is only needed when the {@code AsyncCacheFetchMode} is asynchronous.
  */
-public enum InformationCacheEntryState
+public enum AsyncCacheEntryState
 {
     /**
      * The stock quote is up to date within the EXPIRATION_TIME
@@ -37,9 +37,9 @@ public enum InformationCacheEntryState
         return ordinal();
     }
 
-    public static InformationCacheEntryState valueOf( final Integer stockQuoteState )
+    public static AsyncCacheEntryState valueOf( final Integer stockQuoteState )
     {
-        InformationCacheEntryState returnValue = null;
+        AsyncCacheEntryState returnValue = null;
         for ( int i = 0; i < values().length; i++ )
         {
             if ( values()[i].ordinal() == stockQuoteState  )
@@ -49,7 +49,7 @@ public enum InformationCacheEntryState
         }
         if ( returnValue == null )
         {
-            throw new IllegalArgumentException( stockQuoteState + " is not a valid InformationCacheEntryState ordinal value" );
+            throw new IllegalArgumentException( stockQuoteState + " is not a valid AsyncCacheEntryState ordinal value" );
         }
         return returnValue;
     }

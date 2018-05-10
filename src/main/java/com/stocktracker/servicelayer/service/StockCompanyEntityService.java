@@ -8,6 +8,7 @@ import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
+import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -313,6 +314,39 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             logError( methodName, "Stock not found in stock {0} table to mark as discontinued.", tickerSymbol );
         }
         logMethodEnd( methodName );
+    }
+
+    /**
+     * Loads {@code container} with the company information.
+     *
+     * @param container
+     */
+    public void setCompanyInformation( final StockCompanyContainer container )
+    {
+        final String methodName = "setCompanyInformation";
+        logMethodBegin( methodName, container );
+        final StockCompanyEntity stockCompanyEntity;
+        try
+        {
+            stockCompanyEntity = this.getStockCompanyEntity( container.getTickerSymbol() );
+            container.setCompanyName( stockCompanyEntity.getCompanyName() );
+            container.setIndustry( stockCompanyEntity.getIndustry() );
+            container.setSector( stockCompanyEntity.getSector() );
+        }
+        catch( StockNotFoundException e )
+        {
+            logError( methodName, "Company not found for " + container.getTickerSymbol() );
+        }
+    }
+    /**
+     * Gets the Stock Company information and updates the properties in {@code companyContainer}.
+     *
+     * @param companyContainer Stock Company Container.
+     */
+    public void setCompanyProperties( final StockCompanyContainer companyContainer )
+    {
+        final StockCompanyEntity stockCompanyEntity = this.getStockCompanyEntity( companyContainer.getTickerSymbol() );
+        companyContainer.setCompanyName( stockCompanyEntity.getCompanyName() );
     }
 
     @Override

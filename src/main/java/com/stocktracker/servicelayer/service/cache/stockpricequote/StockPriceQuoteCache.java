@@ -1,8 +1,8 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.servicelayer.service.cache.common.InformationCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,10 @@ import java.util.concurrent.TimeUnit;
  * information from IEXTrading which is information that is not changed that often during the day.
  */
 @Service
-public class StockPriceQuoteCache extends InformationCache<StockPriceQuote,
-                                                           String,
-                                                           StockPriceQuoteCacheEntry,
-                                                           StockPriceQuoteServiceExecutor>
-                                   implements MyLogger
+public class StockPriceQuoteCache extends AsyncCache<StockPriceQuote,
+                                                     String,
+                                                     StockPriceQuoteCacheEntry,
+                                                     StockPriceQuoteServiceExecutor>
 {
     public static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis( 15 );
 

@@ -3,12 +3,9 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
-import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
-import com.stocktracker.servicelayer.service.stocks.StockOpenPriceContainer;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteContainer;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,10 +17,7 @@ import java.util.Objects;
  *
  * Created by mike on 12/10/2016.
  */
-public class StockPriceQuoteDTO implements StockPriceContainer,
-                                           StockOpenPriceContainer,
-                                           StockCompanyContainer,
-                                           StockPriceQuoteContainer
+public class StockPriceQuoteDTO implements StockPriceQuoteContainer
 {
     private String tickerSymbol;
     private String companyName;
@@ -33,29 +27,31 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
-    private InformationCacheEntryState informationCacheEntryState;
+    private AsyncCacheEntryState stockPriceQuoteCacheState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
     private BigDecimal openPrice;
 
-    public InformationCacheEntryState getStockPriceCacheState()
-    {
-        return informationCacheEntryState;
-    }
-
-    public void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState )
-    {
-        this.informationCacheEntryState = informationCacheEntryState;
-    }
 
     public String getTickerSymbol()
     {
         return tickerSymbol;
     }
-
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
+    }
+
+    @Override
+    public void setStockPriceQuoteCacheState( final AsyncCacheEntryState stockPriceQuoteCacheState )
+    {
+        this.stockPriceQuoteCacheState = stockPriceQuoteCacheState;
+    }
+
+    @Override
+    public AsyncCacheEntryState getStockPriceQuoteCacheState()
+    {
+        return this.stockPriceQuoteCacheState;
     }
 
     public BigDecimal getLastPrice()
@@ -102,30 +98,6 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
         this.companyName = companyName;
     }
 
-    @Override
-    public String getSector()
-    {
-        return this.sector;
-    }
-
-    @Override
-    public void setSector( final String sector )
-    {
-        this.sector = sector;
-    }
-
-    @Override
-    public String getIndustry()
-    {
-        return this.industry;
-    }
-
-    @Override
-    public void setIndustry( final String industry )
-    {
-        this.industry = industry;
-    }
-
     public Timestamp getExpirationTime()
     {
         return expirationTime;
@@ -137,7 +109,7 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
     }
 
     @Override
-    public void setStockPriceQuote( final InformationCacheEntryState cacheState, final StockPriceQuote information )
+    public void setStockPriceQuote( final AsyncCacheEntryState cacheState, final StockPriceQuote stockPriceQuote )
     {
 
     }
@@ -172,10 +144,11 @@ public class StockPriceQuoteDTO implements StockPriceContainer,
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", openPrice=" ).append( lastPrice );
-        sb.append( ", informationCacheEntryState=" ).append( informationCacheEntryState );
+        sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", industry'=" ).append( industry ).append( '\'' );
         sb.append( ", sector'=" ).append( sector ).append( '\'' );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

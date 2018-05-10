@@ -1,12 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.servicelayer.service.stocks.StockInformationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

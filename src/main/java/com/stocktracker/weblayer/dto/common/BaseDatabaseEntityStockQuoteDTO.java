@@ -1,12 +1,15 @@
-package com.stocktracker.weblayer.dto;
+package com.stocktracker.weblayer.dto.common;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteContainer;
-import com.stocktracker.weblayer.dto.common.BaseDatabaseEntityDTO;
+import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteContainer;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheClient;
+import org.springframework.beans.BeanUtils;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -18,30 +21,48 @@ import java.sql.Timestamp;
  * This base DTO, basically is a duplicate of StockPriceQuoteDTO, but they are used for different purposes and the
  * content can now be changed in either context without affecting the other.
  */
-public abstract class BaseDatabaseEntityStockQuoteDTO extends BaseDatabaseEntityDTO
-    implements StockPriceQuoteContainer
+public abstract class BaseDatabaseEntityStockQuoteDTO<K extends Serializable>
+    extends BaseDatabaseEntityDTO<K>
+    implements StockQuoteContainer,
+               StockQuoteEntityCacheClient
 {
     private String tickerSymbol;
     private String companyName;
-    private String sector;
-    private String industry;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
-    private InformationCacheEntryState informationCacheEntryState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
     private BigDecimal openPrice;
+    private AsyncCacheEntryState stockPriceQuoteCacheState;
+    private AsyncCacheEntryState stockQuoteCacheState;
 
-    public InformationCacheEntryState getStockPriceCacheState()
+    public void setStockQuoteEntity( final StockQuoteEntity stockQuoteEntity )
     {
-        return informationCacheEntryState;
+        BeanUtils.copyProperties( stockQuoteEntity, this );
     }
 
-    public void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState )
+    @Override
+    public AsyncCacheEntryState getStockQuoteCacheState()
     {
-        this.informationCacheEntryState = informationCacheEntryState;
+        return stockQuoteCacheState;
+    }
+
+    @Override
+    public void setStockQuoteCacheState( final AsyncCacheEntryState stockQuoteCacheState )
+    {
+        this.stockQuoteCacheState = stockQuoteCacheState;
+    }
+
+    public AsyncCacheEntryState getStockPriceQuoteCacheState()
+    {
+        return stockPriceQuoteCacheState;
+    }
+
+    public void setStockPriceQuoteCacheState( final AsyncCacheEntryState stockPriceQuoteCacheState )
+    {
+        this.stockPriceQuoteCacheState = stockPriceQuoteCacheState;
     }
 
     public String getTickerSymbol()
@@ -98,30 +119,6 @@ public abstract class BaseDatabaseEntityStockQuoteDTO extends BaseDatabaseEntity
         this.companyName = companyName;
     }
 
-    @Override
-    public String getSector()
-    {
-        return this.sector;
-    }
-
-    @Override
-    public void setSector( final String sector )
-    {
-        this.sector = sector;
-    }
-
-    @Override
-    public String getIndustry()
-    {
-        return this.industry;
-    }
-
-    @Override
-    public void setIndustry( final String industry )
-    {
-        this.industry = industry;
-    }
-
     public Timestamp getExpirationTime()
     {
         return expirationTime;
@@ -130,6 +127,16 @@ public abstract class BaseDatabaseEntityStockQuoteDTO extends BaseDatabaseEntity
     public void setExpirationTime( final Timestamp expirationTime )
     {
         this.expirationTime = expirationTime;
+    }
+
+    public AsyncCacheEntryState getStockPrideQuoteCacheState()
+    {
+        return this.stockPriceQuoteCacheState;
+    }
+
+    public void setStockPrideQuoteCacheState( final AsyncCacheEntryState stockPrideQuoteCacheState )
+    {
+        this.stockPriceQuoteCacheState = stockPrideQuoteCacheState;
     }
 
     @Override
@@ -141,11 +148,10 @@ public abstract class BaseDatabaseEntityStockQuoteDTO extends BaseDatabaseEntity
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", openPrice=" ).append( lastPrice );
-        sb.append( ", informationCacheEntryState=" ).append( informationCacheEntryState );
+        sb.append( ", stockPriceCacheState=" ).append( stockPriceQuoteCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
-        sb.append( ", industry='" ).append( industry ).append( '\'' );
-        sb.append( ", sector='" ).append( sector ).append( '\'' );
-        sb.append( ", super=" ).append( sector ).append( super.toString() );
+        sb.append( ", stockPriceQuoteCacheState='" ).append( stockPriceQuoteCacheState ).append( '\'' );
+        sb.append( ", super=" ).append( super.toString() ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

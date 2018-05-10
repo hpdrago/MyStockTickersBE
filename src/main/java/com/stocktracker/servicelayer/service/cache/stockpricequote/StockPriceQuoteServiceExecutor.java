@@ -2,9 +2,9 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheBaseCacheServiceExecutor;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBaseCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -21,8 +21,8 @@ import java.util.Optional;
 @Service
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
-public class StockPriceQuoteServiceExecutor extends InformationCacheBaseCacheServiceExecutor<String,StockPriceQuote>
-                                            implements InformationCacheServiceExecutor<String,StockPriceQuote>
+public class StockPriceQuoteServiceExecutor extends AsyncCacheBaseCacheServiceExecutor<String,StockPriceQuote>
+    implements AsyncCacheServiceExecutor<String,StockPriceQuote>
 {
     private StockPriceServiceExecutor stockPriceServiceExecutor;
     private StockPriceQuoteCache stockPriceQuoteCache;
@@ -62,7 +62,7 @@ public class StockPriceQuoteServiceExecutor extends InformationCacheBaseCacheSer
                 break;
 
             case EXCEPTION:
-                stockPriceQuote.setStockPriceCacheState( InformationCacheEntryState.FAILURE );
+                stockPriceQuote.setStockPriceQuoteCacheState( AsyncCacheEntryState.FAILURE );
                 stockPriceQuote.setError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
                 break;
         }

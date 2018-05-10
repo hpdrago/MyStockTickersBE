@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -16,6 +18,7 @@ import java.sql.Timestamp;
 @Entity
 @Table( name = "stock_quote", schema = "stocktracker", catalog = "" )
 public class StockQuoteEntity extends TickerSymbolEntity
+                              implements StockQuoteContainer
 {
     private String calculationPrice;
     private BigDecimal openPrice;
@@ -51,6 +54,19 @@ public class StockQuoteEntity extends TickerSymbolEntity
     public void setDiscontinuedInd( final String discontinuedInd )
     {
         this.discontinuedInd = discontinuedInd;
+    }
+
+    @Transient
+    @Override
+    public void setDiscontinued( final boolean discontinuedInd )
+    {
+        this.setDiscontinuedInd( discontinuedInd ? "Y" : "N" );
+    }
+
+    @Transient
+    public boolean isDiscontinued()
+    {
+        return this.discontinuedInd != null && this.discontinuedInd.equalsIgnoreCase( "Y" );
     }
 
     @Basic

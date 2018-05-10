@@ -2,7 +2,6 @@ package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
-import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import org.springframework.beans.factory.config.BeanDefinition;

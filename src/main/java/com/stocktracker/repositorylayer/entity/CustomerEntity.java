@@ -7,9 +7,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Collection;
 
 /**
  * Created by mike on 9/2/2016.

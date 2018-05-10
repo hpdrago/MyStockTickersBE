@@ -1,12 +1,11 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.AppConfig;
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheBaseCacheServiceExecutor;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBaseCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,8 @@ import java.util.Optional;
 @Service
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
-public class StockQuoteEntityServiceExecutor extends InformationCacheBaseCacheServiceExecutor<String,StockQuoteEntity>
-                                             implements InformationCacheServiceExecutor<String,StockQuoteEntity>
+public class StockQuoteEntityServiceExecutor extends AsyncCacheBaseCacheServiceExecutor<String,StockQuoteEntity>
+    implements AsyncCacheServiceExecutor<String,StockQuoteEntity>
 {
     /**
      * Service for the stock quote entities.

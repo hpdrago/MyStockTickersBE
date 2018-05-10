@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import io.reactivex.processors.BehaviorProcessor;
+
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ import java.util.Optional;
  * @param <T> - The type of information to obtain from the third party.
  * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
  */
-public interface InformationCacheServiceExecutor<K,T>
+public interface AsyncCacheServiceExecutor<K,T>
 {
     /**
      * Fetches the information for {@code searchKey} immediately.

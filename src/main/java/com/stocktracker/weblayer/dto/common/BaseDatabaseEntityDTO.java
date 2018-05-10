@@ -1,16 +1,29 @@
 package com.stocktracker.weblayer.dto.common;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * This is the base class for DTO's that are derived from database entities.  It contains the required fields in order
  * to perform updates and inserts into the database.
  */
-public abstract class BaseDatabaseEntityDTO implements VersionedDTO<String>
+public abstract class BaseDatabaseEntityDTO<K extends Serializable> implements VersionedDTO<K>
 {
+    private K id;
     private Integer version;
     private Timestamp createDate;
     private Timestamp updateDate;
+
+    @Override
+    public K getId()
+    {
+        return this.id;
+    }
+
+    public void setId( final K id )
+    {
+        this.id = id;
+    }
 
     public Integer getVersion()
     {

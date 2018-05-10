@@ -1,11 +1,11 @@
 package com.stocktracker.servicelayer.service;
 
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
@@ -122,7 +122,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
              * Get the positions stored in the database.
              */
             final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
-                .findAllByLinkedAccountUuid( linkedAccountUuid );
+                                                                        .findAllByLinkedAccountUuid( linkedAccountUuid );
 
             /*
              * Compare the positions returned from TradeIt with the contents of the database and make database updated
@@ -130,14 +130,13 @@ public class StockPositionService extends StockInformationEntityService<StockPos
              * the result as TradeIt is the source of truth concerning the positions the user has with the linked account.
              */
             final StockPositionComparator stockPositionComparator = new StockPositionComparator( this );
-            stockPositionComparator
-                .comparePositions( linkedAccountEntity, stockPositionEntities, getPositionsAPIResult );
+            stockPositionComparator.comparePositions( linkedAccountEntity, stockPositionEntities, getPositionsAPIResult );
 
             /*
              * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
              */
             this.createPositionDTOList( customerUuid, tradeItAccountUuid, linkedAccountUuid, getPositionsAPIResult );
-            this.setStockPrices( stockPositionList );
+            this.setStockPriceQuotes( stockPositionList );
         }
         else
         {

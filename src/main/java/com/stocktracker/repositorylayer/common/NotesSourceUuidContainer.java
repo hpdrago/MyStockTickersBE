@@ -2,9 +2,7 @@ package com.stocktracker.repositorylayer.common;
 
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 
-import javax.persistence.Transient;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Entities that contain a note source UUID implement this interface to enable automatic UUID conversion.

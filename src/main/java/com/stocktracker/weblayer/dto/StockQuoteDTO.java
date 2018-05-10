@@ -1,16 +1,20 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import com.stocktracker.weblayer.dto.common.BaseDatabaseEntityDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteDTO extends BaseDatabaseEntityDTO
+public class StockQuoteDTO extends BaseDatabaseEntityDTO<String>
+    implements StockPriceQuoteContainer
 {
     private String tickerSymbol;
     private String calculationPrice;
@@ -37,12 +41,15 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     private BigDecimal ytdChangePercent;
     private Timestamp lastQuoteRequestDate;
     private String discontinuedInd;
+    private BigDecimal lastPrice;
+
+    private AsyncCacheEntryState stockPriceQuoteCacheState;
+    private Timestamp expirationTime;
 
     public String getTickerSymbol()
     {
         return tickerSymbol;
     }
-
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
@@ -52,7 +59,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return calculationPrice;
     }
-
     public void setCalculationPrice( final String calculationPrice )
     {
         this.calculationPrice = calculationPrice;
@@ -72,7 +78,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return closePrice;
     }
-
     public void setClosePrice( final BigDecimal closePrice )
     {
         this.closePrice = closePrice;
@@ -82,7 +87,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return highPrice;
     }
-
     public void setHighPrice( final BigDecimal highPrice )
     {
         this.highPrice = highPrice;
@@ -92,7 +96,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return lowPrice;
     }
-
     public void setLowPrice( final BigDecimal lowPrice )
     {
         this.lowPrice = lowPrice;
@@ -102,7 +105,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return latestPrice;
     }
-
     public void setLatestPrice( final BigDecimal latestPrice )
     {
         this.latestPrice = latestPrice;
@@ -112,7 +114,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return latestPriceSource;
     }
-
     public void setLatestPriceSource( final String latestPriceSource )
     {
         this.latestPriceSource = latestPriceSource;
@@ -122,7 +123,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return latestPriceTime;
     }
-
     public void setLatestPriceTime( final Timestamp latestPriceTime )
     {
         this.latestPriceTime = latestPriceTime;
@@ -132,7 +132,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return latestUpdate;
     }
-
     public void setLatestUpdate( final Integer latestUpdate )
     {
         this.latestUpdate = latestUpdate;
@@ -142,7 +141,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return latestVolume;
     }
-
     public void setLatestVolume( final Integer latestVolume )
     {
         this.latestVolume = latestVolume;
@@ -152,7 +150,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return delayedPrice;
     }
-
     public void setDelayedPrice( final BigDecimal delayedPrice )
     {
         this.delayedPrice = delayedPrice;
@@ -162,7 +159,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return delayedPriceTime;
     }
-
     public void setDelayedPriceTime( final Integer delayedPriceTime )
     {
         this.delayedPriceTime = delayedPriceTime;
@@ -172,7 +168,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return previousClose;
     }
-
     public void setPreviousClose( final BigDecimal previousClose )
     {
         this.previousClose = previousClose;
@@ -182,7 +177,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return change;
     }
-
     public void setChange( final String change )
     {
         this.change = change;
@@ -192,7 +186,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return changePercent;
     }
-
     public void setChangePercent( final BigDecimal changePercent )
     {
         this.changePercent = changePercent;
@@ -202,7 +195,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return thirtyDayAvgVolume;
     }
-
     public void setThirtyDayAvgVolume( final Integer thirtyDayAvgVolume )
     {
         this.thirtyDayAvgVolume = thirtyDayAvgVolume;
@@ -212,7 +204,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return marketCap;
     }
-
     public void setMarketCap( final Integer marketCap )
     {
         this.marketCap = marketCap;
@@ -222,7 +213,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return peRatio;
     }
-
     public void setPeRatio( final BigDecimal peRatio )
     {
         this.peRatio = peRatio;
@@ -232,7 +222,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return week52High;
     }
-
     public void setWeek52High( final BigDecimal week52High )
     {
         this.week52High = week52High;
@@ -242,7 +231,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return week52Low;
     }
-
     public void setWeek52Low( final BigDecimal week52Low )
     {
         this.week52Low = week52Low;
@@ -252,7 +240,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return week52Change;
     }
-
     public void setWeek52Change( final BigDecimal week52Change )
     {
         this.week52Change = week52Change;
@@ -262,7 +249,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return ytdChangePercent;
     }
-
     public void setYtdChangePercent( final BigDecimal ytdChangePercent )
     {
         this.ytdChangePercent = ytdChangePercent;
@@ -272,7 +258,6 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return lastQuoteRequestDate;
     }
-
     public void setLastQuoteRequestDate( final Timestamp lastQuoteRequestDate )
     {
         this.lastQuoteRequestDate = lastQuoteRequestDate;
@@ -282,16 +267,51 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO
     {
         return discontinuedInd;
     }
-
     public void setDiscontinuedInd( final String discontinuedInd )
     {
         this.discontinuedInd = discontinuedInd;
     }
 
     @Override
-    public String getId()
+    public void setStockPriceQuote( final AsyncCacheEntryState stockPriceQuoteCacheState, final StockPriceQuote stockPriceQuote )
     {
-        return this.tickerSymbol;
+        this.setStockPriceQuoteCacheState( stockPriceQuoteCacheState );
+    }
+
+    @Override
+    public void setLastPrice( final BigDecimal lastPrice )
+    {
+        this.lastPrice = lastPrice;
+    }
+
+    @Override
+    public BigDecimal getLastPrice()
+    {
+        return this.lastPrice;
+    }
+
+    @Override
+    public void setStockPriceQuoteCacheState( final AsyncCacheEntryState stockPriceQuoteCacheState )
+    {
+        this.stockPriceQuoteCacheState = stockPriceQuoteCacheState;
+    }
+
+    @Override
+    public AsyncCacheEntryState getStockPriceQuoteCacheState()
+    {
+        return this.stockPriceQuoteCacheState;
+    }
+
+    @Override
+    public void setExpirationTime( final Timestamp expirationTime )
+    {
+        this.expirationTime = expirationTime;
+    }
+
+    @Override
+    public Timestamp getExpirationTime()
+    {
+        return this.expirationTime;
     }
 
     @Override

@@ -2,8 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
-import com.stocktracker.servicelayer.service.cache.common.InformationCache;
-import com.stocktracker.servicelayer.service.stocks.StockQuoteEntityContainer;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +14,10 @@ import javax.validation.constraints.NotNull;
  * they way we plan to use it initially.
  */
 @Service
-public class StockQuoteEntityCache extends InformationCache<StockQuoteEntity,
-                                                            String,
-                                                            StockQuoteEntityCacheEntry,
-                                                            StockQuoteEntityServiceExecutor>
+public class StockQuoteEntityCache extends AsyncCache<StockQuoteEntity,
+                                                      String,
+                                                      StockQuoteEntityCacheEntry,
+                                                      StockQuoteEntityServiceExecutor>
                                    implements MyLogger
 {
     private StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor;

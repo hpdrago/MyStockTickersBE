@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service.cache.common;
 /**
  * This enum identifies the different states of the cache price stock entry.
  */
-public enum InformationCacheFetchState
+public enum AsyncCacheFetchState
 {
     /**
      * The Stock Price is currently begin fetched.

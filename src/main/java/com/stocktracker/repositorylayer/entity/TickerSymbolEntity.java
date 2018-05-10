@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.repositorylayer.common.VersionedEntity;
+import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -9,7 +10,9 @@ import javax.persistence.Transient;
 import java.util.Objects;
 
 @MappedSuperclass
-public abstract class TickerSymbolEntity extends BaseEntity<String> implements VersionedEntity<String>
+public abstract class TickerSymbolEntity extends BaseEntity<String>
+    implements VersionedEntity<String>,
+               TickerSymbolContainer
 {
     public static final int TICKER_SYMBOL_LEN = 6;
     private String tickerSymbol;

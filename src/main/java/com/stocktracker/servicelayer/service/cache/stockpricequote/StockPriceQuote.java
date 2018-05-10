@@ -1,11 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
-import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
-import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
-import com.stocktracker.servicelayer.service.stocks.StockOpenPriceContainer;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
-import com.stocktracker.servicelayer.service.stocks.StockQuoteEntityContainer;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import org.springframework.beans.BeanUtils;
 
 import java.math.BigDecimal;
@@ -20,35 +16,65 @@ import java.util.Objects;
  *
  * Created by mike on 12/10/2016.
  */
-public class StockPriceQuote implements StockPriceContainer,
-                                        StockOpenPriceContainer,
-                                        StockCompanyContainer,
-                                        StockPriceQuoteContainer,
-                                        StockQuoteEntityContainer
+public class StockPriceQuote implements StockPriceQuoteContainer
 {
     private String tickerSymbol;
-    private String companyName;
+    /*private String companyName;
     private String sector;
     private String industry;
+    */
     private BigDecimal lastPrice;
     private Timestamp lastPriceChange;
-    private InformationCacheEntryState stockPriceQuoteCacheState;
-    private InformationCacheEntryState stockQuoteCacheState;
+    private AsyncCacheEntryState stockPriceQuoteCacheState;
+    //private AsyncCacheEntryState stockQuoteCacheState;
     private Timestamp expirationTime;
-    private BigDecimal openPrice;
+    //private BigDecimal openPrice;
     private String error;
 
     @Override
-    public InformationCacheEntryState getStockPriceCacheState()
+    public AsyncCacheEntryState getStockPriceQuoteCacheState()
     {
         return stockPriceQuoteCacheState;
     }
 
     @Override
-    public void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState )
+    public void setStockPriceQuoteCacheState( final AsyncCacheEntryState asyncCacheEntryState )
     {
-        this.stockPriceQuoteCacheState = informationCacheEntryState;
+        this.stockPriceQuoteCacheState = asyncCacheEntryState;
     }
+
+    /*
+    public AsyncCacheEntryState getStockQuoteCacheState()
+    {
+        return stockQuoteCacheState;
+    }
+
+    public void setStockQuoteCacheState( final AsyncCacheEntryState stockQuoteCacheState )
+    {
+        Objects.requireNonNull( stockQuoteCacheState, "Argument stockQuoteCacheState cannot be null" );
+        this.stockQuoteCacheState = stockQuoteCacheState;
+    }
+    */
+
+//    /**
+//     * Set the stock quote status.
+//     * @param stockQuoteEntityCacheState State of the {@code stockQuoteEntity}
+//     * @param stockQuoteEntity
+//     */
+//    @Override
+//    public void setStockQuoteEntity( final AsyncCacheEntryState stockQuoteEntityCacheState,
+//                                     final StockQuoteEntity stockQuoteEntity )
+//    {
+//        Objects.requireNonNull( stockQuoteEntityCacheState, "Argument stockQuoteEntityCacheState cannot be null" );
+//        /*
+//         * will be null while it's being retrieved in the background.
+//         */
+//        if ( stockQuoteEntity != null )
+//        {
+//            this.openPrice = stockQuoteEntity.getOpenPrice();
+//        }
+//        this.stockQuoteCacheState = stockQuoteEntityCacheState;
+//    }
 
     @Override
     public String getTickerSymbol()
@@ -78,7 +104,7 @@ public class StockPriceQuote implements StockPriceContainer,
         }
     }
 
-    @Override
+    /*@Override
     public Timestamp getLastPriceChange()
     {
         return lastPriceChange;
@@ -136,7 +162,7 @@ public class StockPriceQuote implements StockPriceContainer,
     public void setIndustry( final String industry )
     {
         this.industry = industry;
-    }
+    }*/
 
     @Override
     public Timestamp getExpirationTime()
@@ -156,43 +182,11 @@ public class StockPriceQuote implements StockPriceContainer,
      * @param stockPriceQuote
      */
     @Override
-    public void setStockPriceQuote( final InformationCacheEntryState cacheState, final StockPriceQuote stockPriceQuote )
+    public void setStockPriceQuote( final AsyncCacheEntryState cacheState, final StockPriceQuote stockPriceQuote )
     {
         this.stockPriceQuoteCacheState = cacheState;
         BeanUtils.copyProperties( stockPriceQuote, this );
     }
-
-    public InformationCacheEntryState getStockQuoteCacheState()
-    {
-        return stockQuoteCacheState;
-    }
-
-    public void setStockQuoteCacheState( final InformationCacheEntryState stockQuoteCacheState )
-    {
-        Objects.requireNonNull( stockQuoteCacheState, "Argument stockQuoteCacheState cannot be null" );
-        this.stockQuoteCacheState = stockQuoteCacheState;
-    }
-
-    /**
-     * Set the stock quote status.
-     * @param stockQuoteEntityCacheState State of the {@code stockQuoteEntity}
-     * @param stockQuoteEntity
-     */
-    @Override
-    public void setStockQuoteEntity( final InformationCacheEntryState stockQuoteEntityCacheState,
-                                     final StockQuoteEntity stockQuoteEntity )
-    {
-        Objects.requireNonNull( stockQuoteEntityCacheState, "Argument stockQuoteEntityCacheState cannot be null" );
-        /*
-         * will be null while it's being retrieved in the background.
-         */
-        if ( stockQuoteEntity != null )
-        {
-            this.openPrice = stockQuoteEntity.getOpenPrice();
-        }
-        this.stockQuoteCacheState = stockQuoteEntityCacheState;
-    }
-
     public String getError()
     {
         return error;
@@ -229,15 +223,15 @@ public class StockPriceQuote implements StockPriceContainer,
     {
         final StringBuilder sb = new StringBuilder( "StockPriceQuoteEntity{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName'=" ).append( companyName ).append( '\'' );
+        //sb.append( ", companyName'=" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", openPrice=" ).append( lastPrice );
         sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
-        sb.append( ", stockQuoteCacheState=" ).append( stockQuoteCacheState );
+        //sb.append( ", stockQuoteCacheState=" ).append( stockQuoteCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
-        sb.append( ", industry'=" ).append( industry ).append( '\'' );
-        sb.append( ", sector'=" ).append( sector ).append( '\'' );
+        //sb.append( ", industry'=" ).append( industry ).append( '\'' );
+        //sb.append( ", sector'=" ).append( sector ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

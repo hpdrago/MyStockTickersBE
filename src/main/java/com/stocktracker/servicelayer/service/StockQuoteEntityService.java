@@ -7,13 +7,20 @@ import com.stocktracker.common.exceptions.StockQuoteNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.repositorylayer.repository.StockQuoteRepository;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCache;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheClient;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheEntry;
 import com.stocktracker.weblayer.dto.StockQuoteDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,8 +33,65 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                                                                     StockQuoteDTO,
                                                                     StockQuoteRepository>
 {
+    private StockQuoteEntityCache stockQuoteEntityCache;
     private StockQuoteRepository stockQuoteRepository;
     private IEXTradingStockService iexTradingStockService;
+
+    /**
+     * Set the stock price quotes on the {@code containers}.
+     * @param clientList
+     * @param fetchMode Synchronous or asynchronous.
+     */
+    public void setStockQuote( final List<? extends StockQuoteEntityCacheClient> clientList, final AsyncCacheFetchMode fetchMode  )
+    {
+        final String methodName = "setStockQuote";
+        logMethodBegin( methodName, clientList.size() );
+        Objects.requireNonNull( clientList, "clientList cannot be null" );
+        clientList.forEach( client -> this.setStockQuote( client, fetchMode ));
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Retrieves the stock quote.  If the quote is in the cache, then the container is updated.  If the quote is not
+     * in the cache and {@code informationCacheFetchMode} == ASYNCHRONOUS, the container's stock cache state will be updated to
+     * reflect that the quote is being fetched.  If the {@code informationCacheFetchMode} == SYNCHRONOUS, the quote will be
+     * fetched immediately and the container will be  updated.
+     * @param stockQuoteEntityCacheClient
+     * @param fetchMode Synchronous or Asynchronous.
+     */
+    public void setStockQuote( final StockQuoteEntityCacheClient stockQuoteEntityCacheClient, final AsyncCacheFetchMode fetchMode )
+    {
+        final String methodName = "setStockQuote";
+        logMethodBegin( methodName );
+        //final StockQuoteEntity stockQuoteEntity = this.context.getBean( StockQuoteEntity.class );
+        StockQuoteEntityCacheEntry stockQuoteEntityCacheEntry;
+        if ( fetchMode.isASynchronous() )
+        {
+            stockQuoteEntityCacheEntry = this.stockQuoteEntityCache
+                                             .asynchronousGet( stockQuoteEntityCacheClient.getTickerSymbol() );
+        }
+        else
+        {
+            stockQuoteEntityCacheEntry = this.stockQuoteEntityCache
+                                             .synchronousGet( stockQuoteEntityCacheClient.getTickerSymbol() );
+        }
+        switch ( stockQuoteEntityCacheClient.getStockQuoteCacheState() )
+        {
+            case FAILURE:
+                stockQuoteEntityCacheClient.setError( stockQuoteEntityCacheEntry.getFetchThrowable().getMessage() );
+                break;
+
+            case CURRENT:
+            case STALE:
+                BeanUtils.copyProperties( stockQuoteEntityCacheEntry.getInformation(), stockQuoteEntityCacheClient );
+                break;
+
+            case NOT_FOUND:
+                stockQuoteEntityCacheClient.setError( "Not Found" );
+                break;
+        }
+        logMethodEnd( methodName );
+    }
 
     /**
      * Get a stock quote for the ticker symbol.
@@ -191,6 +255,12 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
     {
         this.iexTradingStockService = iexTradingStockService;
+    }
+
+    @Autowired
+    public void setStockQuoteEntityCache( final StockQuoteEntityCache stockQuoteEntityCache )
+    {
+        this.stockQuoteEntityCache = stockQuoteEntityCache;
     }
 
 }

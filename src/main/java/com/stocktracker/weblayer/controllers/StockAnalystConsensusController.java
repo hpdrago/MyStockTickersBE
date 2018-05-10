@@ -6,7 +6,6 @@ import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
-import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService;

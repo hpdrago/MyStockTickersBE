@@ -7,12 +7,13 @@ import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteContainer;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheClient;
 import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
-import com.stocktracker.servicelayer.service.stocks.StockInformationService;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchMode.ASYNCHRONOUS;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode.ASYNCHRONOUS;
 
 /**
  * This is the base class for services that service DTO's that contain stock information.
@@ -37,23 +38,15 @@ import static com.stocktracker.servicelayer.service.cache.common.InformationCach
  */
 public abstract class StockInformationEntityService<E extends UUIDEntity &
                                                               TickerSymbolContainer,
-                                                    D extends StockPriceContainer &
+                                                    D extends StockPriceQuoteContainer &
                                                               UuidDTO,
                                                     R extends JpaRepository<E,UUID>>
     extends UuidEntityService<E,D,R>
 {
     protected StockCompanyEntityService stockCompanyEntityService;
-    protected StockInformationService stockInformationService;
+    protected StockQuoteEntityService stockQuoteEntityService;
+    protected StockPriceQuoteService stockPriceQuoteService;
     protected StockNoteSourceEntityService stockNoteSourceService;
-
-    /*
-    private enum StockPriceFetchAction
-    {
-        NONE,
-        FETCH;
-        protected boolean isFetch() { return this == FETCH; }
-    }
-    */
 
     /**
      * Saves the DTO to the database and checks for child entity data including notes sources and tags to determine
@@ -158,28 +151,28 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     }
 
     /**
-     * Updates the stock quote information for all dtos
-     * @param dtos
-     */
-    protected void setStockPrices( final List<? extends StockPriceContainer> dtos )
-    {
-        final String methodName = "setStockPrices";
-        logMethodBegin( methodName );
-        this.stockInformationService
-            .setStockPrice( dtos );
-        logMethodEnd( methodName );
-    }
-
-    /**
-     * Updates the stock quote information for all dtos
+     * Updates the stock quote information for all dtos asynchronously.
      * @param dtos
      */
     protected void setStockPriceQuotes( final List<? extends StockPriceQuoteContainer> dtos )
     {
         final String methodName = "setStockPriceQuotes";
         logMethodBegin( methodName );
-        this.stockInformationService
-            .setStockPriceQuote( dtos );
+        this.stockPriceQuoteService
+             .setStockPriceQuote( dtos, ASYNCHRONOUS );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Updates the stock quote information for all dtos asynchronously.
+     * @param dtos
+     */
+    protected void setStockQuotes( final List<? extends StockQuoteEntityCacheClient> dtos )
+    {
+        final String methodName = "setStockPriceQuotes";
+        logMethodBegin( methodName );
+        this.stockQuoteEntityService
+            .setStockQuote( dtos, ASYNCHRONOUS );
         logMethodEnd( methodName );
     }
 
@@ -201,23 +194,23 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
          * information.  No need for any sub cvl
          *
          * NEED TO SERIOUSLY THINK ABOUT A BETTER SOLUTION HERE....5/9/2017 Mike.
-         */
+         *
         /*
          * StockPriceQuoteContainers contain everything in a StockPriceContainer so get that instead
          */
-        if ( dto instanceof StockPriceQuoteContainer )
+        if ( dto instanceof StockQuoteEntityCacheClient )
         {
-            this.stockInformationService
-                .setStockPriceQuote( (StockPriceQuoteContainer) dto, ASYNCHRONOUS );
+            this.stockQuoteEntityService
+                .setStockQuote( (StockQuoteEntityCacheClient) dto, ASYNCHRONOUS );
         }
-        else if ( dto instanceof StockPriceContainer )
+        else if ( dto instanceof StockPriceQuoteContainer )
         {
-            this.stockInformationService
-                .setStockPrice( dto, ASYNCHRONOUS );
+            this.stockPriceQuoteService
+                .setStockPriceQuote( dto, ASYNCHRONOUS );
         }
         else if ( dto instanceof StockCompanyContainer )
         {
-            this.stockInformationService
+            this.stockCompanyEntityService
                 .setCompanyInformation( (StockCompanyContainer)dto );
         }
 
@@ -326,8 +319,8 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         final String methodName = "updateStockPrice";
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto argument cannot be null" );
-        this.stockInformationService
-            .setStockPrice( dto, ASYNCHRONOUS );
+        this.stockPriceQuoteService
+            .setStockPriceQuote( dto, ASYNCHRONOUS );
         logMethodEnd( methodName );
     }
 
@@ -377,7 +370,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         /*
          * The stock price needs to be set the first time as it records the stock price when the record was created.
          */
-        entity.setStockPriceWhenCreated( this.stockInformationService
+        entity.setStockPriceWhenCreated( this.stockPriceQuoteService
                                              .getLastPrice( tickerSymbol ));
     }
 
@@ -416,19 +409,21 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     }
 
     @Autowired
-    public void setStockInformationService( final StockInformationService stockInformationService )
-    {
-        this.stockInformationService = stockInformationService;
-    }
-
-    protected StockInformationService getStockInformationService()
-    {
-        return stockInformationService;
-    }
-
-    @Autowired
     public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
     {
         this.stockNoteSourceService = stockNoteSourceService;
     }
+
+    @Autowired
+    public void setStockQuoteEntityService( final StockQuoteEntityService stockQuoteEntityService )
+    {
+        this.stockQuoteEntityService = stockQuoteEntityService;
+    }
+
+    @Autowired
+    public void setStockPriceQuoteService( final StockPriceQuoteService stockPriceQuoteService )
+    {
+        this.stockPriceQuoteService = stockPriceQuoteService;
+    }
+
 }

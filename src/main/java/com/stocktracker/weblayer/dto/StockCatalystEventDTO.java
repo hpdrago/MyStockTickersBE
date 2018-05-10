@@ -7,27 +7,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCatalystEventDTO extends BaseDatabaseEntityStockQuoteDTO
+public class StockCatalystEventDTO extends StockQuoteDTO
                                    implements UuidDTO,
                                               CustomerIdContainer
 {
-    private String id;
     private String customerId;
     private String catalystDate;
     private String catalystDesc;
     private Byte dateOrTimePeriod;
     private Byte timePeriod;
     private Short timePeriodYear;
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
 
     public String getCustomerId()
     {
@@ -91,35 +80,12 @@ public class StockCatalystEventDTO extends BaseDatabaseEntityStockQuoteDTO
 
 
     @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        final StockCatalystEventDTO that = (StockCatalystEventDTO) o;
-
-        return id.equals( that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockCatalystEventDTO{" );
-        sb.append( "id=" ).append( id );
+        sb.append( "id=" ).append( super.getId() );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( getTickerSymbol() ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
         sb.append( ", catalystDate='" ).append( catalystDate ).append( '\'' );
         sb.append( ", catalystDesc='" ).append( catalystDesc ).append( '\'' );
         sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );

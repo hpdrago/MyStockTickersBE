@@ -14,7 +14,7 @@ import java.util.List;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockToBuyDTO extends BaseDatabaseEntityStockQuoteDTO
+public class StockToBuyDTO extends StockQuoteDTO
                            implements NotesSourceIdContainer,
                                       UuidDTO,
                                       CustomerIdContainer,
@@ -25,7 +25,6 @@ public class StockToBuyDTO extends BaseDatabaseEntityStockQuoteDTO
     /*
      * Entity (DB columns)
      */
-    private String id;
     private String customerId;
     private String comments;
     private String notesSourceId;
@@ -36,18 +35,6 @@ public class StockToBuyDTO extends BaseDatabaseEntityStockQuoteDTO
     private String buyAfterDate;
     private List<String> tags;
     private BigDecimal avgAnalystPriceTarget;
-
-    @Override
-    public String getId()
-    {
-        return this.id;
-    }
-
-    @Override
-    public void setId( final String id )
-    {
-        this.id = id;
-    }
 
     public String getCustomerId()
     {
@@ -63,7 +50,7 @@ public class StockToBuyDTO extends BaseDatabaseEntityStockQuoteDTO
     @Override
     public String getEntityId()
     {
-        return this.id;
+        return this.getId();
     }
 
     public void setCustomerId( String customerId )
@@ -168,36 +155,12 @@ public class StockToBuyDTO extends BaseDatabaseEntityStockQuoteDTO
     }
 
     @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        final StockToBuyDTO that = (StockToBuyDTO) o;
-
-        return id.equals( that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
-
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockToBuyQuoteDTO{" );
-        sb.append( "id=" ).append( id );
+        sb.append( "id=" ).append( super.getId() );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( getTickerSymbol() ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName=" ).append( notesSourceName );

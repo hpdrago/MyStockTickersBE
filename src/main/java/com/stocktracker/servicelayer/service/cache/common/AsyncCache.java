@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState.CURRENT;
-import static com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState.STALE;
-import static com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchState.FETCHING;
-import static com.stocktracker.servicelayer.service.cache.common.InformationCacheFetchState.NOT_FETCHING;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.STALE;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.FETCHING;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.NOT_FETCHING;
 
 /**
  * This is a generic cache class that provides for the synchronous and asynchronous fetching of information from 
@@ -26,12 +26,12 @@ import static com.stocktracker.servicelayer.service.cache.common.InformationCach
  *
  * @param <T> - The type of information to obtain from the third party.
  * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
- * @param <E> - The cache entry type which is a subclass of InformationCacheEntry<T>.
+ * @param <E> - The cache entry type which is a subclass of AsyncCacheEntry<T>.
  * @param <X> - The interface definition of the class that will be performing synchronous and asynchronous work to
  *              get the information of type T.
  */
-public abstract class InformationCache<T,K,E extends InformationCacheEntry<T>,
-                                       X extends InformationCacheServiceExecutor<K,T>>
+public abstract class AsyncCache<T,K,E extends AsyncCacheEntry<T>,
+                                 X extends AsyncCacheServiceExecutor<K,T>>
     implements MyLogger
 {
     private Map<K,E> cacheMap = Collections.synchronizedMap( new HashMap<>() );
@@ -39,7 +39,7 @@ public abstract class InformationCache<T,K,E extends InformationCacheEntry<T>,
     /**
      * Constructor.
      */
-    protected InformationCache()
+    protected AsyncCache()
     {
     }
 
@@ -110,7 +110,7 @@ public abstract class InformationCache<T,K,E extends InformationCacheEntry<T>,
     }
 
     /**
-     * Obtains the information from the cache.
+     * Obtains the information from the cache asynchronously.
      * @param searchKey The key to search for the information.
      * @return If the information is in the cache and it is not stale, the information will be returned within
      *         the cache entry <E> container.

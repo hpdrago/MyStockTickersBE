@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -15,16 +14,11 @@ import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockAnalystConsensusDTO extends BaseDatabaseEntityStockQuoteDTO
-                                      implements StockPriceContainer,
-                                                 NotesSourceIdContainer,
-                                                 UuidDTO,
-                                                 CustomerIdContainer
+public class StockAnalystConsensusDTO extends StockQuoteDTO
+    implements NotesSourceIdContainer,
+               UuidDTO,
+               CustomerIdContainer
 {
-    /*
-     * Entity (DB columns)
-     */
-    private String id;
     private String customerId;
     private String comments;
     private Integer analystStrongBuyCount;
@@ -43,24 +37,9 @@ public class StockAnalystConsensusDTO extends BaseDatabaseEntityStockQuoteDTO
     private String notesSourceId;
     private String notesSourceName;
 
-    public static StockAnalystConsensusDTO newInstance()
-    {
-        return new StockAnalystConsensusDTO();
-    }
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String uuid )
-    {
-        this.id = uuid;
-    }
-
     public String getCustomerId()
     {
-        return customerId;
+        return this.customerId;
     }
 
     public void setCustomerId( String customerId )
@@ -222,35 +201,11 @@ public class StockAnalystConsensusDTO extends BaseDatabaseEntityStockQuoteDTO
         this.notesSourceName = notesSourceName;
     }
 
-    @Override
-    public boolean equals( final Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        final StockAnalystConsensusDTO that = (StockAnalystConsensusDTO) o;
-
-        return id.equals( that.id );
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
-        sb.append( "id=" ).append( id );
-        sb.append( ", customerId=" ).append( customerId );
+        sb.append( "id=" ).append( super.getId() );
+        sb.append( ", customerId=" ).append( this.getCustomerId() );
         sb.append( ", tickerSymbol='" ).append( getTickerSymbol() ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", analystStrongBuyCount=" ).append( analystStrongBuyCount );

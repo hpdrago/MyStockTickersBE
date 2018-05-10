@@ -7,7 +7,6 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.StockQuoteUnavailableException;
 import com.stocktracker.repositorylayer.entity.PortfolioStockEntity;
 import com.stocktracker.repositorylayer.repository.PortfolioStockRepository;
-import com.stocktracker.servicelayer.service.stocks.StockInformationService;
 import com.stocktracker.weblayer.dto.PortfolioStockDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;

@@ -1,8 +1,8 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.DuplicateEntityException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.common.VersionedEntity;
 import com.stocktracker.weblayer.dto.common.VersionedDTO;
 import org.springframework.beans.factory.annotation.Autowired;

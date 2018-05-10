@@ -2,9 +2,6 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
-import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntryState;
-import com.stocktracker.servicelayer.service.stocks.StockPriceContainer;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -12,7 +9,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.UUID;
 
 /**
@@ -21,20 +17,17 @@ import java.util.UUID;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPositionDTO implements StockPriceContainer,
-                                         UuidDTO,
+public class StockPositionDTO extends StockQuoteDTO
+                              implements UuidDTO,
                                          CustomerIdContainer
 {
-    private String id;
+    private String customerId;
     private String tradeItAccountId;
     private String linkedAccountId;
-    private String tickerSymbol;
     private String symbolClass;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal costBasis;
     private String holdingType;
-    @JsonSerialize( using = JSONMoneySerializer.class )
-    private BigDecimal lastPrice;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal quantity;
     @JsonSerialize( using = JSONMoneySerializer.class )
@@ -45,11 +38,7 @@ public class StockPositionDTO implements StockPriceContainer,
     private BigDecimal totalGainLossAbsolute;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal totalGainLossPercentage;
-    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
-    private Timestamp expirationTime;
-    private String customerId;
-    private InformationCacheEntryState informationCacheEntryState;
-    private Integer version;
+
 
     /**
      * Copies the TradeIt position information.
@@ -59,71 +48,14 @@ public class StockPositionDTO implements StockPriceContainer,
     {
         this.costBasis = new BigDecimal( tradeItPosition.getCostbasis() );
         this.holdingType = tradeItPosition.getHoldingType();
-        this.lastPrice = new BigDecimal( tradeItPosition.getLastPrice() );
+        this.setLastPrice( new BigDecimal( tradeItPosition.getLastPrice() ));
         this.quantity = new BigDecimal( tradeItPosition.getQuantity() );
-        this.tickerSymbol = tradeItPosition.getSymbol();
+        this.setTickerSymbol( tradeItPosition.getSymbol() );
         this.symbolClass = tradeItPosition.getSymbolClass();
         this.todayGainLossAbsolute = new BigDecimal( tradeItPosition.getTodayGainLossAbsolute() );
         this.todayGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
         this.totalGainLossAbsolute = new BigDecimal( tradeItPosition.getTodayGainLossAbsolute() );
         this.totalGainLossPercentage = new BigDecimal( tradeItPosition.getTodayGainLossPercentage() );
-    }
-
-    @Override
-    public String getId()
-    {
-        return null;
-    }
-
-    public void setId( final String id )
-    {
-        this.id = id;
-    }
-
-    @Override
-    public String getTickerSymbol()
-    {
-        return this.tickerSymbol;
-    }
-
-    public void setTickerSymbol( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
-    @Override
-    public BigDecimal getLastPrice()
-    {
-        return this.lastPrice;
-    }
-
-    public void setLastPrice( final BigDecimal lastPrice )
-    {
-        this.lastPrice = lastPrice;
-    }
-
-    @Override
-    public void setStockPriceCacheState( final InformationCacheEntryState informationCacheEntryState )
-    {
-        this.informationCacheEntryState = informationCacheEntryState;
-    }
-
-    @Override
-    public Timestamp getExpirationTime()
-    {
-        return this.expirationTime;
-    }
-
-    @Override
-    public void setExpirationTime( final Timestamp expirationTime )
-    {
-        this.expirationTime = expirationTime;
-    }
-
-    @Override
-    public InformationCacheEntryState getStockPriceCacheState()
-    {
-        return this.informationCacheEntryState;
     }
 
     public void setCustomerId( final String customerId )
@@ -221,17 +153,6 @@ public class StockPositionDTO implements StockPriceContainer,
         this.totalGainLossPercentage = totalGainLossPercentage;
     }
 
-    @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
     public String getTradeItAccountId()
     {
         return tradeItAccountId;
@@ -268,20 +189,19 @@ public class StockPositionDTO implements StockPriceContainer,
         final StringBuilder sb = new StringBuilder( "StockPositionDTO{" );
         sb.append( "tradeItAccountId=" ).append( tradeItAccountId );
         sb.append( ", linkedAccountId=" ).append( linkedAccountId );
-        sb.append( ", id=" ).append( id );
-        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", id=" ).append( super.getId() );
+        sb.append( ", tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
         sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
         sb.append( ", costBasis=" ).append( costBasis );
         sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
-        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", lastPrice=" ).append( super.getLastPrice() );
         sb.append( ", quantity=" ).append( quantity );
         sb.append( ", todayGainLossAbsolute=" ).append( todayGainLossAbsolute );
         sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
         sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", informationCacheEntryState=" ).append( informationCacheEntryState );
-        sb.append( ", version=" ).append( version );
+        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

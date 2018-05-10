@@ -1,23 +1,20 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
-import com.stocktracker.common.MyLogger;
 import io.reactivex.processors.BehaviorProcessor;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Optional;
 
 /**
  * <T> - The type of information to be retrieved from the third party source.
  * @param <T>
  */
-public abstract class InformationCacheEntry<T>
+public abstract class AsyncCacheEntry<T>
 {
-    private InformationCacheEntryState cacheState = InformationCacheEntryState.STALE;
+    private AsyncCacheEntryState cacheState = AsyncCacheEntryState.STALE;
     private long lastRefreshTime;
     private Timestamp expirationTime;
-    private InformationCacheFetchState fetchState = InformationCacheFetchState.NOT_FETCHING;
+    private AsyncCacheFetchState fetchState = AsyncCacheFetchState.NOT_FETCHING;
     private BehaviorProcessor<Optional<T>> fetchSubject;
     private Throwable fetchThrowable;
     private T information;
@@ -28,7 +25,7 @@ public abstract class InformationCacheEntry<T>
      *   Fetch State = NOT FETCHING
      *   Sets expiration time.
      */
-    public InformationCacheEntry()
+    public AsyncCacheEntry()
     {
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
         this.fetchSubject = BehaviorProcessor.create();
@@ -62,11 +59,11 @@ public abstract class InformationCacheEntry<T>
     /**
      * Identifies the cached state: CURRENT, STALE, FAILURE, NOT_FOUND
      */
-    public InformationCacheEntryState getCacheState()
+    public AsyncCacheEntryState getCacheState()
     {
         if ( this.isStale() )
         {
-            this.cacheState = InformationCacheEntryState.STALE;
+            this.cacheState = AsyncCacheEntryState.STALE;
         }
         return cacheState;
     }
@@ -75,7 +72,7 @@ public abstract class InformationCacheEntry<T>
      * Set the cache state
      * @param cacheState
      */
-    public void setCacheState( InformationCacheEntryState cacheState )
+    public void setCacheState( AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
@@ -106,12 +103,12 @@ public abstract class InformationCacheEntry<T>
     /**
      * Determines if the stock price is currently being fetched.
      */
-    public InformationCacheFetchState getFetchState()
+    public AsyncCacheFetchState getFetchState()
     {
         return fetchState;
     }
 
-    public void setFetchState( InformationCacheFetchState fetchState )
+    public void setFetchState( AsyncCacheFetchState fetchState )
     {
         this.fetchState = fetchState;
     }
@@ -161,7 +158,7 @@ public abstract class InformationCacheEntry<T>
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "InformationCacheEntry{" );
+        final StringBuilder sb = new StringBuilder( "AsyncCacheEntry{" );
         sb.append( "cacheState=" ).append( cacheState );
         sb.append( ", lastRefreshTime=" ).append( lastRefreshTime );
         sb.append( ", expirationTime=" ).append( expirationTime );

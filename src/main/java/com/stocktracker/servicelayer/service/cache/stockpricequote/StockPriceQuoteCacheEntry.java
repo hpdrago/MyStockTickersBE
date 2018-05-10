@@ -1,11 +1,11 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
-import com.stocktracker.servicelayer.service.cache.common.InformationCacheEntry;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry;
 
 /**
  * This class defines the Stock Price Quote cache's entry types.
  */
-public class StockPriceQuoteCacheEntry extends InformationCacheEntry<StockPriceQuote>
+public class StockPriceQuoteCacheEntry extends AsyncCacheEntry<StockPriceQuote>
 {
     /**
      * Identifies if the stock company table's existence has already been checked.
