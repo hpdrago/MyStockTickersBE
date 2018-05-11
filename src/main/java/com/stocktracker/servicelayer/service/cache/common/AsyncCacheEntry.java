@@ -6,17 +6,46 @@ import java.sql.Timestamp;
 import java.util.Optional;
 
 /**
+ * This class is the base class for all objects that are cached in the AsyncCache.
  * <T> - The type of information to be retrieved from the third party source.
  * @param <T>
  */
 public abstract class AsyncCacheEntry<T>
 {
+    /**
+     * The current state of the cached item.
+     */
     private AsyncCacheEntryState cacheState = AsyncCacheEntryState.STALE;
+
+    /**
+     * The last time the cached information was fetched.
+     */
     private long lastRefreshTime;
+
+    /**
+     * Identifies when the cached data will expire and will become STATE.
+     */
     private Timestamp expirationTime;
+
+    /**
+     * Identifies if the cached item is in the process of being fetched or not.
+     */
     private AsyncCacheFetchState fetchState = AsyncCacheFetchState.NOT_FETCHING;
+
+    /**
+     * The RxJava subject which is used to register to be notified when the asynchronous process completes.
+     * It is also used internally to notify all of the subscribers.
+     */
     private BehaviorProcessor<Optional<T>> fetchSubject;
+
+    /**
+     * The exception if the asynchronous request failed.
+     */
     private Throwable fetchThrowable;
+
+    /**
+     * The information being cached.
+     */
     private T information;
 
     /**
@@ -72,7 +101,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the cache state
      * @param cacheState
      */
-    public void setCacheState( AsyncCacheEntryState cacheState )
+    protected void setCacheState( AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
@@ -82,7 +111,7 @@ public abstract class AsyncCacheEntry<T>
         return lastRefreshTime;
     }
 
-    public void setLastRefreshTime( long lastRefreshTime )
+    protected void setLastRefreshTime( long lastRefreshTime )
     {
         this.lastRefreshTime = lastRefreshTime;
     }
@@ -95,7 +124,11 @@ public abstract class AsyncCacheEntry<T>
         return expirationTime;
     }
 
-    public void setExpirationTime( Timestamp expirationTime )
+    /**
+     * Set the expiration time.
+     * @param expirationTime
+     */
+    protected void setExpirationTime( Timestamp expirationTime )
     {
         this.expirationTime = expirationTime;
     }
@@ -108,7 +141,11 @@ public abstract class AsyncCacheEntry<T>
         return fetchState;
     }
 
-    public void setFetchState( AsyncCacheFetchState fetchState )
+    /**
+     * Set the fetch state.
+     * @param fetchState
+     */
+    protected void setFetchState( AsyncCacheFetchState fetchState )
     {
         this.fetchState = fetchState;
     }
@@ -129,7 +166,11 @@ public abstract class AsyncCacheEntry<T>
         return fetchThrowable;
     }
 
-    public void setFetchThrowable( final Throwable fetchThrowable )
+    /**
+     * Set the exception throwable.
+     * @param fetchThrowable
+     */
+    protected void setFetchThrowable( final Throwable fetchThrowable )
     {
         this.fetchThrowable = fetchThrowable;
     }
@@ -142,18 +183,6 @@ public abstract class AsyncCacheEntry<T>
     {
         return System.currentTimeMillis() > this.expirationTime.getTime();
     }
-
-    /*
-    public Observable getAsyncObservable()
-    {
-        return asyncObservable;
-    }
-
-    public void setAsyncObservable( final Observable asyncObservable )
-    {
-        this.asyncObservable = asyncObservable;
-    }
-    */
 
     @Override
     public String toString()

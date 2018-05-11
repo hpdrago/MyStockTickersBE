@@ -23,31 +23,6 @@ public class StockQuoteEntityCache extends AsyncCache<StockQuoteEntity,
     private StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor;
 
     /**
-     * Gets the Stock Quote from the cache if present, otherwise the Stock Quote is fetch asynchronously.
-     * {@code stockQuoteEntityContainer} will be upated with the Stock Quote information and the cache entry status.
-     * @param tickerSymbol
-     * @param stockQuoteEntityContainer
-     */
-    public void asynchronousGet( @NotNull final String tickerSymbol, @NotNull StockQuoteEntityContainer stockQuoteEntityContainer )
-    {
-        final String methodName = "asynchronousGet";
-        logMethodBegin( methodName, tickerSymbol );
-        final StockQuoteEntityCacheEntry cacheEntry = this.asynchronousGet( tickerSymbol );
-        stockQuoteEntityContainer.setStockQuoteEntity( cacheEntry.getCacheState(), cacheEntry.getInformation() );
-        logMethodEnd( methodName, cacheEntry );
-    }
-
-    /**
-     * Creates a new entity.
-     * @return
-     */
-    /*@Override
-    protected StockQuoteEntity createInformationObject()
-    {
-        return new StockQuoteEntity();
-    }*/
-
-    /**
      * Creates the cache entry.
      * @return
      */
