@@ -6,6 +6,9 @@ import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -17,12 +20,12 @@ import java.util.Objects;
  *
  * Created by mike on 12/10/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPriceQuoteDTO implements StockPriceQuoteContainer
 {
     private String tickerSymbol;
     private String companyName;
-    private String sector;
-    private String industry;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
@@ -146,8 +149,6 @@ public class StockPriceQuoteDTO implements StockPriceQuoteContainer
         sb.append( ", openPrice=" ).append( lastPrice );
         sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
-        sb.append( ", industry'=" ).append( industry ).append( '\'' );
-        sb.append( ", sector'=" ).append( sector ).append( '\'' );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

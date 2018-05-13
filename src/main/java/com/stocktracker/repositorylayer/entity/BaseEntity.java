@@ -68,6 +68,7 @@ public abstract class BaseEntity<K extends Serializable> implements VersionedEnt
         {
             logDebug( "preInsert", "id: {0}", this.getId() );
             this.createDate = new Timestamp( System.currentTimeMillis() );
+            this.updateDate = this.createDate;
         }
         this.version = 1;
     }

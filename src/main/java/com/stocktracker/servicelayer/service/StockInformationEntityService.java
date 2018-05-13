@@ -7,9 +7,8 @@ import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteContainer;
-import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheClient;
-import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
@@ -167,14 +166,16 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * Updates the stock quote information for all dtos asynchronously.
      * @param dtos
      */
-    protected void setStockQuotes( final List<? extends StockQuoteEntityCacheClient> dtos )
+    /*
+    protected void setStockQuotes( final List<? extends StockQuoteEntityCacheDataReceiver> dtos )
     {
         final String methodName = "setStockPriceQuotes";
         logMethodBegin( methodName );
         this.stockQuoteEntityService
-            .setStockQuote( dtos, ASYNCHRONOUS );
+            .setStockQuote( (StockQuoteEntityCacheDataReceiver) dtos );
         logMethodEnd( methodName );
     }
+    */
 
     /**
      * Converts the entity to a DTO and sets the stock price on the return DTO.
@@ -198,20 +199,20 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         /*
          * StockPriceQuoteContainers contain everything in a StockPriceContainer so get that instead
          */
-        if ( dto instanceof StockQuoteEntityCacheClient )
+        if ( dto instanceof StockQuoteEntityContainer )
         {
             this.stockQuoteEntityService
-                .setStockQuote( (StockQuoteEntityCacheClient) dto, ASYNCHRONOUS );
+                .setQuoteInformation( (StockQuoteEntityContainer)dto );
         }
         else if ( dto instanceof StockPriceQuoteContainer )
         {
             this.stockPriceQuoteService
                 .setStockPriceQuote( dto, ASYNCHRONOUS );
         }
-        else if ( dto instanceof StockCompanyContainer )
+        else if ( dto instanceof StockCompanyEntityContainer )
         {
             this.stockCompanyEntityService
-                .setCompanyInformation( (StockCompanyContainer)dto );
+                .setCompanyInformation( (StockCompanyEntityContainer) dto );
         }
 
         /*

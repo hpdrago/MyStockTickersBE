@@ -19,7 +19,7 @@ public class StockCompanyEntity extends TickerSymbolEntity
                                 implements StockCompanyContainer
 {
     private String companyName;
-    private String companyURL;
+    private String website;
     private String sector;
     private String industry;
     private String discontinuedInd;
@@ -37,15 +37,15 @@ public class StockCompanyEntity extends TickerSymbolEntity
     }
 
     @Basic
-    @Column( name = "company_url", nullable = true, length = 120 )
-    public String getCompanyURL()
+    @Column( name = "website", nullable = true, length = 120 )
+    public String getWebsite()
     {
-        return companyURL;
+        return website;
     }
 
-    public void setCompanyURL( final String quoteUrl )
+    public void setWebsite( final String quoteUrl )
     {
-        this.companyURL = quoteUrl;
+        this.website = quoteUrl;
     }
 
     @Basic
@@ -102,7 +102,7 @@ public class StockCompanyEntity extends TickerSymbolEntity
         final StringBuilder sb = new StringBuilder( "StockCompanyEntity{" );
         sb.append( "tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
-        sb.append( ", quoteUrl='" ).append( companyURL ).append( '\'' );
+        sb.append( ", quoteUrl='" ).append( website ).append( '\'' );
         sb.append( ", sector='" ).append( sector ).append( '\'' );
         sb.append( ", industry='" ).append( industry ).append( '\'' );
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );

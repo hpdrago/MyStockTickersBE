@@ -1,9 +1,13 @@
 package com.stocktracker.weblayer.dto;
 
+import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
-import com.stocktracker.weblayer.dto.common.BaseDatabaseEntityDTO;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,8 +17,10 @@ import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteDTO extends BaseDatabaseEntityDTO<String>
-    implements StockPriceQuoteContainer
+@Qualifier( "stockQuoteDTO")
+public class StockQuoteDTO extends DatabaseEntityDTO<String>
+    implements StockPriceQuoteContainer,
+               StockQuoteEntityContainer
 {
     private String tickerSymbol;
     private String calculationPrice;
@@ -44,7 +50,27 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO<String>
     private BigDecimal lastPrice;
 
     private AsyncCacheEntryState stockPriceQuoteCacheState;
+    private AsyncCacheEntryState stockQuoteCacheState;
     private Timestamp expirationTime;
+    private String stockQuoteError;
+
+    @Override
+    public void setStockQuoteEntity( final StockQuoteEntity stockQuoteEntity )
+    {
+        BeanUtils.copyProperties( stockQuoteEntity, this );
+    }
+
+    @Override
+    public void setStockQuoteCacheEntryState( final AsyncCacheEntryState stockQuoteEntityCacheState )
+    {
+        this.stockQuoteCacheState = stockPriceQuoteCacheState;
+    }
+
+    @Override
+    public void setStockQuoteCacheError( final String stockQuoteCacheError )
+    {
+        this.stockQuoteError = stockQuoteCacheError;
+    }
 
     public String getTickerSymbol()
     {
@@ -59,6 +85,7 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO<String>
     {
         return calculationPrice;
     }
+
     public void setCalculationPrice( final String calculationPrice )
     {
         this.calculationPrice = calculationPrice;
@@ -343,9 +370,13 @@ public class StockQuoteDTO extends BaseDatabaseEntityDTO<String>
         sb.append( ", ytdChangePercent=" ).append( ytdChangePercent );
         sb.append( ", lastQuoteRequestDate=" ).append( lastQuoteRequestDate );
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
+        sb.append( ", lastPrice=" ).append( lastPrice );
+        sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
+        sb.append( ", stockQuoteCacheState=" ).append( stockQuoteCacheState );
+        sb.append( ", expirationTime=" ).append( expirationTime );
+        sb.append( ", stockQuoteError='" ).append( stockQuoteError ).append( '\'' );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }
-
 }

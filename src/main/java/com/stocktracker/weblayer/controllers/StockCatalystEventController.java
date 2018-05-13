@@ -8,7 +8,7 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCatalystEventEntityService;
-import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
+import com.stocktracker.weblayer.dto.StockCatalystEventDTOEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,15 +43,15 @@ public class StockCatalystEventController extends AbstractController implements 
     @RequestMapping( value = CONTEXT_URL + "/page/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuid( final Pageable pageRequest,
-                                                                              @PathVariable String customerId )
+    public Page<StockCatalystEventDTOEntity> getStockCatalystEventsForCustomerUuid( final Pageable pageRequest,
+                                                                                    @PathVariable String customerId )
         throws CustomerNotFoundException,
                NotAuthorizedException
     {
         final String methodName = "getStockCatalystEventsForCustomerUuid";
         logMethodBegin( methodName, customerId );
         final UUID customerUuid = this.validateCustomerId( customerId );
-        Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
+        Page<StockCatalystEventDTOEntity> stockCatalystEventDTOs = this.stockCatalystEventService
                                                                  .getStockCatalystEventsForCustomerUuid( pageRequest, customerUuid );
         logMethodEnd( methodName, "stockCatalystEvent size: " + stockCatalystEventDTOs.getContent().size() );
         return stockCatalystEventDTOs;
@@ -64,16 +64,16 @@ public class StockCatalystEventController extends AbstractController implements 
     @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuidAndTickerSymbol( final Pageable pageRequest,
-                                                                                           @PathVariable String customerId,
-                                                                                           @PathVariable String tickerSymbol )
+    public Page<StockCatalystEventDTOEntity> getStockCatalystEventsForCustomerUuidAndTickerSymbol( final Pageable pageRequest,
+                                                                                                   @PathVariable String customerId,
+                                                                                                   @PathVariable String tickerSymbol )
         throws CustomerNotFoundException,
                NotAuthorizedException
     {
         final String methodName = "getStockCatalystEventsForCustomerUuidAndTickerSymbol";
         logMethodBegin( methodName, customerId, tickerSymbol );
         final UUID customerUuid = this.validateCustomerId( customerId );
-        Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.stockCatalystEventService
+        Page<StockCatalystEventDTOEntity> stockCatalystEventDTOs = this.stockCatalystEventService
             .getStockCatalystEventsForCustomerUuidAndTickerSymbol( pageRequest,
                                                                    customerUuid,
                                                                    tickerSymbol );
@@ -88,12 +88,12 @@ public class StockCatalystEventController extends AbstractController implements 
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockCatalystEventDTO getStockCatalystEvent( @PathVariable String stockCatalystEventId )
+    public StockCatalystEventDTOEntity getStockCatalystEvent( @PathVariable String stockCatalystEventId )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getStockCatalystEvent";
         logMethodBegin( methodName );
-        final StockCatalystEventDTO stockCatalystEventDTO = this.stockCatalystEventService
+        final StockCatalystEventDTOEntity stockCatalystEventDTO = this.stockCatalystEventService
                                                                 .getDTO( UUIDUtil.uuid( stockCatalystEventId ));
         logMethodEnd( methodName, stockCatalystEventDTO );
         return stockCatalystEventDTO;
@@ -137,8 +137,8 @@ public class StockCatalystEventController extends AbstractController implements 
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
-    public ResponseEntity<StockCatalystEventDTO> addStockCatalystEvent( @PathVariable String customerId,
-                                                                        @RequestBody StockCatalystEventDTO stockCatalystEventDTO )
+    public ResponseEntity<StockCatalystEventDTOEntity> addStockCatalystEvent( @PathVariable String customerId,
+                                                                              @RequestBody StockCatalystEventDTOEntity stockCatalystEventDTO )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,
@@ -147,7 +147,7 @@ public class StockCatalystEventController extends AbstractController implements 
         final String methodName = "addStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventDTO );
         this.validateCustomerId( customerId );
-        StockCatalystEventDTO newStockCatalystEventDTO = this.stockCatalystEventService
+        StockCatalystEventDTOEntity newStockCatalystEventDTO = this.stockCatalystEventService
                                                              .addDTO( stockCatalystEventDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
@@ -169,9 +169,9 @@ public class StockCatalystEventController extends AbstractController implements 
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
-    public ResponseEntity<StockCatalystEventDTO> saveStockCatalystEvent( @PathVariable String stockCatalystEventId,
-                                                                         @PathVariable String customerId,
-                                                                         @RequestBody StockCatalystEventDTO portfolioStockDTO )
+    public ResponseEntity<StockCatalystEventDTOEntity> saveStockCatalystEvent( @PathVariable String stockCatalystEventId,
+                                                                               @PathVariable String customerId,
+                                                                               @RequestBody StockCatalystEventDTOEntity portfolioStockDTO )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException
@@ -187,7 +187,7 @@ public class StockCatalystEventController extends AbstractController implements 
         /*
          * Save the stock
          */
-        StockCatalystEventDTO returnStockCatalystEventDTO = this.stockCatalystEventService
+        StockCatalystEventDTOEntity returnStockCatalystEventDTO = this.stockCatalystEventService
                                                                 .saveDTO( portfolioStockDTO );
         /*
          * send the response

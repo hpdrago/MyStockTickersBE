@@ -1,31 +1,130 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.weblayer.dto.common.VersionedDTO;
+import com.stocktracker.repositorylayer.common.VersionedEntity;
+import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
+import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * The DTO class for a stock company entity {@code StockCompanyEntity} which is retrieved from IEXTrading.
+ */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCompanyDTO extends BaseStockCompanyDTO implements VersionedDTO<String>
+public class StockCompanyDTO extends DatabaseEntityDTO<String>
+                             implements VersionedEntity,
+                                        StockCompanyContainer,
+                                        StockCompanyEntityContainer
 {
-    private Integer version;
+    private String tickerSymbol;
+    private String companyName;
+    private String website;
+    private String sector;
+    private String industry;
+    private String error;
+    private AsyncCacheEntryState cacheState;
 
     @Override
-    public String getId()
+    public void setStockCompanyEntity( final StockCompanyEntity stockCompanyEntity )
     {
-        return this.getTickerSymbol();
+        BeanUtils.copyProperties( stockCompanyEntity, this );
     }
 
     @Override
-    public Integer getVersion()
+    public void setStockCompanyCacheEntryState( final AsyncCacheEntryState cacheEntryState )
     {
-        return version;
+        this.cacheState = cacheEntryState;
     }
 
     @Override
-    public void setVersion( final Integer version )
+    public void setStockCompanyCacheError( final String error )
     {
-        this.version = version;
+        this.error = error;
+    }
+
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
+    public String getCompanyName()
+    {
+        return companyName;
+    }
+
+    public void setCompanyName( final String companyName )
+    {
+        this.companyName = companyName;
+    }
+
+    public String getWebsite()
+    {
+        return website;
+    }
+
+    public void setWebsite( final String website )
+    {
+        this.website = website;
+    }
+
+    public String getSector()
+    {
+        return sector;
+    }
+
+    public void setSector( final String sector )
+    {
+        this.sector = sector;
+    }
+
+    public String getIndustry()
+    {
+        return industry;
+    }
+
+    public void setIndustry( final String industry )
+    {
+        this.industry = industry;
+    }
+
+    public String getError()
+    {
+        return this.error;
+    }
+
+    public AsyncCacheEntryState getCacheState()
+    {
+        return cacheState;
+    }
+
+    public void setCacheState( final AsyncCacheEntryState cacheState )
+    {
+        this.cacheState = cacheState;
+    }
+
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "StockCompanyEntityCacheDTO{" );
+        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
+        sb.append( ", website='" ).append( website ).append( '\'' );
+        sb.append( ", sector='" ).append( sector ).append( '\'' );
+        sb.append( ", industry='" ).append( industry ).append( '\'' );
+        sb.append( ", error='" ).append( error ).append( '\'' );
+        sb.append( ", cacheState=" ).append( cacheState );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

@@ -16,7 +16,7 @@ import java.util.Objects;
  * This class contains the methods to interact with the Yahoo stock library
  */
 @Service
-public class YahooStockService implements MyLogger, StockQuoteServiceProvider
+public class YahooStockPriceService implements MyLogger, StockPriceQuoteServiceProvider
 {
     @Override
     public String getProviderName()

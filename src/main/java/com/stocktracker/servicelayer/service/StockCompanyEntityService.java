@@ -2,15 +2,18 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
-import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheDataReceiver;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCache;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheClient;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
-import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +34,56 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                                                                       StockCompanyRepository>
 {
     private StockCompanyRepository stockCompanyRepository;
+    private StockCompanyEntityCache stockCompanyEntityCache;
     private IEXTradingStockService iexTradingStockService;
+    private StockCompanyEntityCacheClient stockCompanyEntityCacheClient;
+
+    /**
+     * Updates the stock company information in {@code container}. It works with the {@code StockCompanyCache} to
+     * retrieve the stock company asynchronously if needed.
+     * @param container The container to set the value.
+     */
+    public void setCompanyInformation( final StockCompanyEntityContainer container )
+    {
+        final String methodName = "getStockCompanyDTO";
+        logMethodBegin( methodName, container.getTickerSymbol() );
+        /*
+         * Create the DTO.
+         */
+        final StockCompanyDTO stockCompanyDTO = this.context.getBean( StockCompanyDTO.class );
+        /*
+         * Create the cached data receiver.
+         */
+        final StockCompanyEntityCacheDataReceiver receiver = new StockCompanyEntityCacheDataReceiver( container.getTickerSymbol() );
+        /*
+         * Get the cached data or make an asynchronous request for the data.
+         */
+        this.stockCompanyEntityCacheClient.setCachedData( receiver );
+        /*
+         * Set the cache data and status results.
+         */
+        stockCompanyDTO.setStockCompanyEntity( receiver.getStockCompanyEntity() );
+        stockCompanyDTO.setStockCompanyCacheEntryState( receiver.getCacheState() );
+        stockCompanyDTO.setStockCompanyCacheError( receiver.getError() );
+        logMethodEnd( methodName, stockCompanyDTO );
+    }
+
+    /**
+     * Checks the stock company cache to see if the stock company is being fetched and if so, will block and wait for
+     * the fetch to complete.  If the company is in the cache but not being fetch, the cached version will be returned.
+     * Otherwise, database entity will be loaded.
+     * @param tickerSymbol
+     * @return Stock Company DTO
+     */
+    public StockCompanyDTO getStockCompanyDTO( final String tickerSymbol )
+    {
+        final String methodName = "getStockCompanyDTO";
+        logMethodBegin( methodName, tickerSymbol );
+        final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityCacheClient.getCachedData( tickerSymbol );
+        final StockCompanyDTO stockCompanyDTO = this.entityToDTO( stockCompanyEntity );
+        logMethodEnd( methodName, stockCompanyDTO );
+        return stockCompanyDTO;
+    }
 
     /**
      * Get a page of StockDomainEntities's
@@ -46,7 +98,8 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Get the page from the database
          */
-        final Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository.findAll( pageRequest );
+        final Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository
+                                                           .findAll( pageRequest );
         /*
          * Map from Entity to DomainEntity
          */
@@ -70,7 +123,8 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Get the page from the database
          */
-        final Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository.findByCompanyNameIsLikeOrTickerSymbolIsLike(
+        final Page<StockCompanyEntity> stockEntities = this.stockCompanyRepository
+                                                           .findByCompanyNameIsLikeOrTickerSymbolIsLike(
             pageRequest, companiesLike + "%", companiesLike + "%" );
         /*
          * Map from Entity to DomainEntity
@@ -78,21 +132,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         final Page<StockCompanyDTO> stockDTOPage = this.entitiesToDTOs( pageRequest, stockEntities );
         logMethodEnd( methodName );
         return stockDTOPage;
-    }
-
-    /**
-     * Determines if the {@code tickerSymbol exists}
-     * @param tickerSymbol
-     * @return
-     */
-    public boolean isStockExistsInDatabase( final String tickerSymbol )
-    {
-        final String methodName = "isStockExistsInDatabase";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        boolean exists = stockCompanyRepository.exists( tickerSymbol );
-        logMethodEnd( methodName, exists );
-        return exists;
     }
 
     /**
@@ -105,22 +144,22 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         final String methodName = "checkStock";
         logMethodBegin( methodName, tickerSymbol );
-        StockCompanyEntity stockEntity;
+        StockCompanyEntity stockCompanyEntity = null;
         try
         {
-            stockEntity = this.getStockCompanyEntity( tickerSymbol );
+            stockCompanyEntity = this.getEntity( tickerSymbol );
         }
         catch( StockNotFoundException e )
         {
             /*
              * Add a discontinued company
              */
-            stockEntity = this.context.getBean( StockCompanyEntity.class );
-            stockEntity.setTickerSymbol( tickerSymbol );
-            stockEntity.setDiscontinuedInd( true );
+            stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
+            stockCompanyEntity.setTickerSymbol( tickerSymbol );
+            stockCompanyEntity.setDiscontinuedInd( true );
             try
             {
-                stockEntity = this.addEntity( stockEntity );
+                stockCompanyEntity = this.addEntity( stockCompanyEntity );
             }
             catch( EntityVersionMismatchException e1 )
             {
@@ -131,119 +170,20 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                 // ignore, another must have added it.
             }
         }
-        logMethodEnd( methodName, stockEntity );
-        return stockEntity;
-    }
-
-    /**
-     * Gets the stock company from the database and if not found throws StockCompanyNotFoundException.
-     * Call {@code getStockCompanyEntity} if you want to add the company to the database if the company is not found.
-     * @param tickerSymbol
-     * @return
-     * @throws StockCompanyNotFoundException
-     */
-    /*
-    public StockCompanyEntity getStockCompany( final String tickerSymbol )
-        throws StockCompanyNotFoundException
-    {
-        final String methodName = "getStockCompany";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        final StockCompanyEntity stockCompanyEntity;
-        try
-        {
-            stockCompanyEntity = this.getEntity( tickerSymbol );
-        }
         catch( VersionedEntityNotFoundException e )
         {
-            throw new StockCompanyNotFoundException( tickerSymbol, e );
+            e.printStackTrace();
         }
         logMethodEnd( methodName, stockCompanyEntity );
         return stockCompanyEntity;
     }
-    */
 
     /**
-     * Retrieves a {@code StockCompanyEntity} from the database.
-     * If the stock company is not found in the database, a get company request will be attempted to validated that
-     * this is a valid ticker symbol. If a company cannot be found, StockNoteFoundException will be thrown
-     * @param tickerSymbol
-     * @return
-     * @throws StockNotFoundException
-     */
-    public StockCompanyEntity getStockCompanyEntity( final String tickerSymbol )
-        throws StockNotFoundException
-    {
-        final String methodName = "getStockCompanyEntity";
-        logMethodBegin( methodName, tickerSymbol );
-        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
-        StockCompanyEntity stockEntity = null;
-        try
-        {
-            stockEntity = this.getEntity( StringUtils.truncate( tickerSymbol, StockCompanyEntity.TICKER_SYMBOL_LEN ) );
-            /*
-             * Update old records with new data
-             */
-            if ( stockEntity.getSector() == null )
-            {
-                final Company company = this.iexTradingStockService
-                                            .getCompany( tickerSymbol );
-                if ( company == null )
-                {
-                    logDebug( methodName, "Cannot get a quote for stock " + tickerSymbol );
-                    throw new StockNotFoundException( tickerSymbol );
-                }
-                else
-                {
-                    /*
-                     * Mismatch retry logic, need to encapsulate this
-                     */
-                    boolean mismatch = false;
-                    do
-                    {
-                        mismatch = false;
-                        setCompanyProperties( company, stockEntity );
-                        try
-                        {
-                            stockEntity = this.saveEntity( stockEntity );
-                        }
-                        catch( EntityVersionMismatchException e )
-                        {
-                            stockEntity = this.getEntity( tickerSymbol );
-                            mismatch = true;
-                            logWarn( methodName, "Entity mismatch trying to save company {0}, trying again",
-                                     stockEntity );
-                        }
-                    }
-                    while( mismatch );
-                }
-            }
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            logDebug( methodName, tickerSymbol + " does note exist in the database, getting quote..." );
-            final Company company = this.iexTradingStockService
-                                        .getCompany( tickerSymbol );
-            if ( company == null )
-            {
-                logDebug( methodName, "Cannot get a quote for stock " + tickerSymbol );
-                throw new StockNotFoundException( tickerSymbol );
-            }
-            else
-            {
-                stockEntity = addStockCompany( company );
-            }
-        }
-        logMethodEnd( methodName, stockEntity );
-        return stockEntity;
-    }
-
-    /**
-     * add the stock company to the database.
+     * Adds the IEXTrading stock company to the database. Converts the Company to a StockCompanyEntity and then saves it.
      * @param company
      * @return
      */
-    public StockCompanyEntity addStockCompany( final Company company )
+    private StockCompanyEntity addStockCompany( final Company company )
     {
         final String methodName = "saveStockCompany";
         logMethodBegin( methodName, company );
@@ -255,7 +195,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         {
             stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
             stockCompanyEntity.setDiscontinuedInd( false );
-            setCompanyProperties( company, stockCompanyEntity );
+            BeanUtils.copyProperties( company, stockCompanyEntity );
             stockCompanyEntity = this.addEntity( stockCompanyEntity );
         }
         catch( EntityVersionMismatchException e )
@@ -268,20 +208,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         }
         logMethodEnd( methodName, stockCompanyEntity );
         return stockCompanyEntity;
-    }
-
-    /**
-     * Copies the property values from {@code company} to {@code stockCompanyEntity}
-     * @param company
-     * @param stockCompanyEntity
-     */
-    private void setCompanyProperties( final Company company, final StockCompanyEntity stockCompanyEntity )
-    {
-        stockCompanyEntity.setTickerSymbol( company.getSymbol() );
-        stockCompanyEntity.setCompanyName( company.getCompanyName() );
-        stockCompanyEntity.setIndustry( company.getIndustry() );
-        stockCompanyEntity.setSector( company.getSector() );
-        stockCompanyEntity.setCompanyURL( company.getWebsite() );
     }
 
     /**
@@ -311,42 +237,10 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         }
         catch( VersionedEntityNotFoundException e )
         {
-            logError( methodName, "Stock not found in stock {0} table to mark as discontinued.", tickerSymbol );
+            logError( methodName, "Failed to retrieve a stock company but it should exists or we wouldn't" +
+                                  "be marking it as discontinued." );
         }
         logMethodEnd( methodName );
-    }
-
-    /**
-     * Loads {@code container} with the company information.
-     *
-     * @param container
-     */
-    public void setCompanyInformation( final StockCompanyContainer container )
-    {
-        final String methodName = "setCompanyInformation";
-        logMethodBegin( methodName, container );
-        final StockCompanyEntity stockCompanyEntity;
-        try
-        {
-            stockCompanyEntity = this.getStockCompanyEntity( container.getTickerSymbol() );
-            container.setCompanyName( stockCompanyEntity.getCompanyName() );
-            container.setIndustry( stockCompanyEntity.getIndustry() );
-            container.setSector( stockCompanyEntity.getSector() );
-        }
-        catch( StockNotFoundException e )
-        {
-            logError( methodName, "Company not found for " + container.getTickerSymbol() );
-        }
-    }
-    /**
-     * Gets the Stock Company information and updates the properties in {@code companyContainer}.
-     *
-     * @param companyContainer Stock Company Container.
-     */
-    public void setCompanyProperties( final StockCompanyContainer companyContainer )
-    {
-        final StockCompanyEntity stockCompanyEntity = this.getStockCompanyEntity( companyContainer.getTickerSymbol() );
-        companyContainer.setCompanyName( stockCompanyEntity.getCompanyName() );
     }
 
     @Override
@@ -377,6 +271,18 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
     {
         this.iexTradingStockService = iexTradingStockService;
+    }
+
+    @Autowired
+    public void setStockCompanyEntityCache( final StockCompanyEntityCache stockCompanyEntityCache )
+    {
+        this.stockCompanyEntityCache = stockCompanyEntityCache;
+    }
+
+    @Autowired
+    public void setStockCompanyEntityCacheClient( final StockCompanyEntityCacheClient stockCompanyEntityCacheClient )
+    {
+        this.stockCompanyEntityCacheClient = stockCompanyEntityCacheClient;
     }
 
 }

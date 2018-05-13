@@ -1,65 +1,72 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.AppConfig;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBaseCacheServiceExecutor;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import pl.zankowski.iextrading4j.api.stocks.Quote;
 
-import java.util.Optional;
+import java.sql.Timestamp;
 
 /**
- * This class makes the calls to the IEXTrading API to get the Stock Quote: https://iextrading.com/developer/docs/#quote
+ * This class makes the calls to the IEXTrading API to get the Stock Quote: https://iextrading.com/developer/docs/#quote.
+ * Quotes are stored to the stock_quote table.
  */
 @Service
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
-public class StockQuoteEntityServiceExecutor extends AsyncCacheBaseCacheServiceExecutor<String,StockQuoteEntity>
-    implements AsyncCacheServiceExecutor<String,StockQuoteEntity>
+public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
+                                                                                             StockQuoteEntity,
+                                                                                             StockQuoteEntityService,
+                                                                                             Quote>
 {
     /**
      * Service for the stock quote entities.
      */
     private StockQuoteEntityService stockQuoteEntityService;
+    /**
+     * IEXTrading service.
+     */
+    private IEXTradingStockService iexTradingStockService;
 
     /**
-     * Fetches the StockQuote synchronously.
-     * @param tickerSymbol The ticker symbol to search for.
+     * Get the IEXTrading quote.
+     * @param tickerSymbol
      * @return
+     * @throws AsyncCacheDataNotFoundException
      */
     @Override
-    public Optional<StockQuoteEntity> synchronousFetch( final String tickerSymbol )
+    protected Quote getExternalData( final String tickerSymbol )
+        throws AsyncCacheDataNotFoundException
     {
-        final String methodName = "synchronousFetch";
+        final String methodName = "getExternalData";
         logMethodBegin( methodName, tickerSymbol );
-        StockQuoteEntity stockQuoteEntity;
-        try
+        final Quote quote = this.iexTradingStockService
+                                .getQuote( tickerSymbol );
+        if ( quote == null )
         {
-            stockQuoteEntity = this.stockQuoteEntityService
-                                   .getEntity( tickerSymbol );
-            /*
-             * Check to see if the quote has expired and if so, fetch a new quote.
-             */
-            if ( stockQuoteEntity.getUpdateDate().getTime() < (System.currentTimeMillis() - StockPriceQuoteCache.EXPIRATION_TIME ))
-            {
-                logDebug( methodName, "Quote for {0} has expired.  Fetching fresh quote", tickerSymbol );
-                stockQuoteEntity = this.stockQuoteEntityService.
-                                       getQuoteFromIEXTrading( tickerSymbol );
-            }
+            throw new AsyncCacheDataNotFoundException( tickerSymbol );
         }
-        catch( VersionedEntityNotFoundException e )
-        {
-            stockQuoteEntity = this.stockQuoteEntityService
-                                   .getQuoteFromIEXTrading( tickerSymbol );
-        }
-        return Optional.ofNullable( stockQuoteEntity );
+        logMethodEnd( methodName, quote );
+        return quote;
+    }
+
+    /**
+     * Copies the properties from {@code quote} to {@code stockQuoteEntity}
+     * @param quote
+     * @param stockQuoteEntity
+     */
+    @Override
+    protected void copyExternalDataToEntity( final Quote quote, final StockQuoteEntity stockQuoteEntity )
+    {
+        stockQuoteEntity.copyQuote( quote );
     }
 
     /**
@@ -70,7 +77,7 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheBaseCacheServiceE
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final String tickerSymbol, final BehaviorProcessor<Optional<StockQuoteEntity>> subject )
+    public void asynchronousFetch( final String tickerSymbol, final BehaviorProcessor<StockQuoteEntity> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
@@ -85,5 +92,17 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheBaseCacheServiceE
     public void setStockQuoteEntityService( final StockQuoteEntityService stockQuoteEntityService )
     {
         this.stockQuoteEntityService = stockQuoteEntityService;
+    }
+
+    @Autowired
+    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
+    {
+        this.iexTradingStockService = iexTradingStockService;
+    }
+
+    @Override
+    protected StockQuoteEntityService getEntityService()
+    {
+        return this.stockQuoteEntityService;
     }
 }

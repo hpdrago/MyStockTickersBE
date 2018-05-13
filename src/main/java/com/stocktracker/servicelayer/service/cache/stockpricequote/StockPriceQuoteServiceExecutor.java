@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBaseCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
 import io.reactivex.processors.BehaviorProcessor;
@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Price: https://iextrading.com/developer/docs/#price
@@ -21,7 +20,7 @@ import java.util.Optional;
 @Service
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
-public class StockPriceQuoteServiceExecutor extends AsyncCacheBaseCacheServiceExecutor<String,StockPriceQuote>
+public class StockPriceQuoteServiceExecutor extends AsyncCacheCacheServiceExecutor<String,StockPriceQuote>
     implements AsyncCacheServiceExecutor<String,StockPriceQuote>
 {
     private StockPriceServiceExecutor stockPriceServiceExecutor;
@@ -34,7 +33,7 @@ public class StockPriceQuoteServiceExecutor extends AsyncCacheBaseCacheServiceEx
      * @return
      */
     @Override
-    public Optional<StockPriceQuote> synchronousFetch( final String tickerSymbol )
+    public StockPriceQuote synchronousFetch( final String tickerSymbol )
     {
         final String methodName = "synchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
@@ -66,7 +65,7 @@ public class StockPriceQuoteServiceExecutor extends AsyncCacheBaseCacheServiceEx
                 stockPriceQuote.setError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
                 break;
         }
-        return Optional.of( stockPriceQuote );
+        return stockPriceQuote;
     }
 
     /**
@@ -77,7 +76,7 @@ public class StockPriceQuoteServiceExecutor extends AsyncCacheBaseCacheServiceEx
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final String tickerSymbol, final BehaviorProcessor<Optional<StockPriceQuote>> subject )
+    public void asynchronousFetch( final String tickerSymbol, final BehaviorProcessor<StockPriceQuote> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );

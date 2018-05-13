@@ -15,7 +15,6 @@ import org.springframework.util.Assert;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
 
@@ -58,7 +57,7 @@ public class StockPriceQuoteService extends BaseService
             if ( asyncCacheFetchMode.isSynchronous() )
             {
                 stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-                    .synchronousGet( container.getTickerSymbol() );
+                                                .synchronousGet( container.getTickerSymbol() );
             }
             else
             {
@@ -69,7 +68,7 @@ public class StockPriceQuoteService extends BaseService
             switch ( stockPriceQuoteCacheEntry.getCacheState() )
             {
                 case CURRENT:
-                    container.setLastPrice( stockPriceQuoteCacheEntry.getInformation().getLastPrice() );
+                    container.setLastPrice( stockPriceQuoteCacheEntry.getCachedData().getLastPrice() );
                     break;
 
                 case NOT_FOUND:
@@ -79,13 +78,13 @@ public class StockPriceQuoteService extends BaseService
                 case STALE:
                     if ( asyncCacheFetchMode.isSynchronous() )
                     {
-                        Optional<StockPriceQuote> optionalStockPriceQuote
+                        StockPriceQuote stockPriceQuote
                             = stockPriceQuoteCacheEntry.getFetchSubject()
                                                        .doOnError( throwable ->
                                                                        container
                                                                            .setStockPriceQuoteCacheState( FAILURE ) )
                                                        .blockingFirst();
-                        optionalStockPriceQuote.ifPresent( stockPriceQuote -> container.setLastPrice( stockPriceQuote.getLastPrice() ) );
+                        container.setLastPrice( stockPriceQuote.getLastPrice() );
                     }
                     break;
             }
@@ -129,7 +128,7 @@ public class StockPriceQuoteService extends BaseService
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
             .synchronousGet( tickerSymbol );
-        BigDecimal stockPrice = stockPriceQuoteCacheEntry.getInformation().getLastPrice();
+        BigDecimal stockPrice = stockPriceQuoteCacheEntry.getCachedData().getLastPrice();
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
     }
@@ -168,7 +167,7 @@ public class StockPriceQuoteService extends BaseService
      * @return
      * @throws StockNotFoundException
      */
-    public StockPriceQuote getSynchronousStockPriceQuote( final String tickerSymbol )
+    public StockPriceQuoteDTO getSynchronousStockPriceQuote( final String tickerSymbol )
         throws StockNotFoundException
     {
         final String methodName = "getSynchronousStockPriceQuote";
@@ -176,10 +175,11 @@ public class StockPriceQuoteService extends BaseService
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'" );
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-                                                                         .synchronousGet( tickerSymbol );
-        final StockPriceQuote stockPriceQuote = handleStockPriceQuoteCacheEntry( tickerSymbol, stockPriceQuoteCacheEntry );
+                                                                        .synchronousGet( tickerSymbol );
+        final StockPriceQuote stockPriceQuote = this.handleStockPriceQuoteCacheEntry( tickerSymbol, stockPriceQuoteCacheEntry );
+        final StockPriceQuoteDTO stockPriceQuoteDTO = this.stockPriceQuoteToDTO( stockPriceQuote );
         logMethodEnd( methodName, stockPriceQuote );
-        return stockPriceQuote;
+        return stockPriceQuoteDTO;
     }
 
     /**
@@ -219,7 +219,7 @@ public class StockPriceQuoteService extends BaseService
     {
         final StockPriceQuote stockPriceQuoteDTO = new StockPriceQuote();
         stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
-        stockPriceQuoteDTO.setLastPrice( stockPriceQuoteCacheEntry.getInformation().getLastPrice() );
+        stockPriceQuoteDTO.setLastPrice( stockPriceQuoteCacheEntry.getCachedData().getLastPrice() );
         stockPriceQuoteDTO.setStockPriceQuoteCacheState( stockPriceQuoteCacheEntry.getCacheState() );
         stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheEntry.getExpirationTime() );
         return stockPriceQuoteDTO;

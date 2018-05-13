@@ -7,7 +7,7 @@ import java.sql.Timestamp;
  * This is the base class for DTO's that are derived from database entities.  It contains the required fields in order
  * to perform updates and inserts into the database.
  */
-public abstract class BaseDatabaseEntityDTO<K extends Serializable> implements VersionedDTO<K>
+public abstract class DatabaseEntityDTO<K extends Serializable> implements VersionedDTO<K>
 {
     private K id;
     private Integer version;
@@ -58,7 +58,7 @@ public abstract class BaseDatabaseEntityDTO<K extends Serializable> implements V
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "BaseDatabaseEntityDTO{" );
+        final StringBuilder sb = new StringBuilder( "DatabaseEntityDTO{" );
         sb.append( "version=" ).append( version );
         sb.append( ", createDate=" ).append( createDate );
         sb.append( ", updateDate=" ).append( updateDate );

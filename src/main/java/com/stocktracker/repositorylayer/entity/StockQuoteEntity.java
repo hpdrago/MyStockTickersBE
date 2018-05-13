@@ -1,9 +1,10 @@
 package com.stocktracker.repositorylayer.entity;
 
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteContainer;
+import com.stocktracker.common.TradingHours;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import pl.zankowski.iextrading4j.api.stocks.Quote;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,7 +19,6 @@ import java.sql.Timestamp;
 @Entity
 @Table( name = "stock_quote", schema = "stocktracker", catalog = "" )
 public class StockQuoteEntity extends TickerSymbolEntity
-                              implements StockQuoteContainer
 {
     private String calculationPrice;
     private BigDecimal openPrice;
@@ -56,6 +56,7 @@ public class StockQuoteEntity extends TickerSymbolEntity
         this.discontinuedInd = discontinuedInd;
     }
 
+    /*
     @Transient
     @Override
     public void setDiscontinued( final boolean discontinuedInd )
@@ -68,6 +69,7 @@ public class StockQuoteEntity extends TickerSymbolEntity
     {
         return this.discontinuedInd != null && this.discontinuedInd.equalsIgnoreCase( "Y" );
     }
+    */
 
     @Basic
     @Column( name = "calculation_price", nullable = true, length = 20 )
@@ -333,6 +335,31 @@ public class StockQuoteEntity extends TickerSymbolEntity
         this.lastQuoteRequestDate = lastQuoteRequestDate;
     }
 
+    /**
+     * Stock quote information is very static so update it if it hasn't been updated before or if the data is older
+     * than a year.
+     * @param entity
+     * @return
+     */
+    public static boolean isCurrent( final StockQuoteEntity entity )
+    {
+        if ( TradingHours.isInSession() )
+        {
+            /*
+             * Need to retrieve at the beginning of the session to get the open price.
+             */
+            if ( entity.getUpdateDate().getTime() < TradingHours.getSessionStartTime() )
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString()
     {
@@ -364,5 +391,32 @@ public class StockQuoteEntity extends TickerSymbolEntity
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    public void copyQuote( final Quote quote )
+    {
+        this.setTickerSymbol( quote.getSymbol() );
+        this.setCalculationPrice( quote.getCalculationPrice() );
+        this.setOpenPrice( quote.getOpen() );
+        this.setClosePrice( quote.getClose() );
+        this.setHighPrice( quote.getHigh() );
+        this.setLowPrice( quote.getLow() );
+        this.setLatestPrice( quote.getLatestPrice() );
+        this.setLatestPriceSource( quote.getLatestSource() );
+        this.setLatestPriceTime( quote.getLatestTime() );
+        this.setLatestUpdate( quote.getLatestUpdate() );
+        this.setLatestVolume( quote.getLatestVolume().longValue() );
+        this.setDelayedPrice( quote.getDelayedPrice() );
+        this.setDelayedPriceTime( quote.getDelayedPriceTime() );
+        this.setPreviousClose( quote.getPreviousClose() );
+        this.setChangeAmount( quote.getChange() );
+        this.setChangePercent( quote.getChangePercent() );
+        this.setThirtyDayAvgVolume( quote.getAvgTotalVolume().longValue() );
+        this.setMarketCap( quote.getMarketCap().longValue() );
+        this.setPeRatio( quote.getPeRatio() );
+        this.setWeek52High( quote.getWeek52High() );
+        this.setWeek52Low( quote.getWeek52Low() );
+        this.setYtdChangePercent( quote.getYtdChange() );
+        this.setLastQuoteRequestDate( new Timestamp( System.currentTimeMillis() ));
     }
 }

@@ -1,12 +1,12 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
-import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 
 /**
  * This is the cache for IEXTrading Stock Quotes.  See https://iextrading.com/developer/docs/#quote for information
@@ -14,11 +14,10 @@ import javax.validation.constraints.NotNull;
  * they way we plan to use it initially.
  */
 @Service
-public class StockQuoteEntityCache extends AsyncCache<StockQuoteEntity,
-                                                      String,
+public class StockQuoteEntityCache extends AsyncCache<String,
+                                                      StockQuoteEntity,
                                                       StockQuoteEntityCacheEntry,
                                                       StockQuoteEntityServiceExecutor>
-                                   implements MyLogger
 {
     private StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor;
 
@@ -42,10 +41,15 @@ public class StockQuoteEntityCache extends AsyncCache<StockQuoteEntity,
         return this.stockQuoteEntityServiceExecutor;
     }
 
+    @Override
+    protected AsyncCacheStrategy getCacheStrategy()
+    {
+        return REMOVE;
+    }
+
     @Autowired
     public void setStockQuoteEntityServiceExecutor( final StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor )
     {
         this.stockQuoteEntityServiceExecutor = stockQuoteEntityServiceExecutor;
     }
-
 }

@@ -3,7 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.repositorylayer.entity.StockCatalystEventEntity;
 import com.stocktracker.repositorylayer.repository.StockCatalystEventRepository;
-import com.stocktracker.weblayer.dto.StockCatalystEventDTO;
+import com.stocktracker.weblayer.dto.StockCatalystEventDTOEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 @Service
 public class StockCatalystEventEntityService extends UuidEntityService<StockCatalystEventEntity,
-                                                                       StockCatalystEventDTO,
+    StockCatalystEventDTOEntity,
                                                                        StockCatalystEventRepository>
 {
     private StockCatalystEventRepository stockCatalystEventRepository;
@@ -30,15 +30,15 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
      * @param customerUuid
      * @return
      */
-    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuid( @NotNull final Pageable pageRequest,
-                                                                            @NotNull final UUID customerUuid )
+    public Page<StockCatalystEventDTOEntity> getStockCatalystEventsForCustomerUuid( @NotNull final Pageable pageRequest,
+                                                                                    @NotNull final UUID customerUuid )
     {
         final String methodName = "getStockCatalystEventsForCustomerUuid";
         logMethodBegin( methodName, pageRequest, customerUuid );
         Objects.requireNonNull( customerUuid, "customerId cannot be null" );
         Page<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
                                                                         .findByCustomerUuidOrderByTickerSymbol( pageRequest, customerUuid );
-        Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
+        Page<StockCatalystEventDTOEntity> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
         logMethodEnd( methodName, "Found " + stockCatalystEventEntities.getContent().size() + " catalyst events" );
         return stockCatalystEventDTOs;
@@ -51,9 +51,9 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
      * @param tickerSymbol
      * @return
      */
-    public Page<StockCatalystEventDTO> getStockCatalystEventsForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
-                                                                                             @NotNull final UUID customerUuid,
-                                                                                             @NotNull final String tickerSymbol )
+    public Page<StockCatalystEventDTOEntity> getStockCatalystEventsForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                                                   @NotNull final UUID customerUuid,
+                                                                                                   @NotNull final String tickerSymbol )
     {
         final String methodName = "getStockCatalystEventsForCustomerUuidAndTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerUuid, tickerSymbol );
@@ -61,16 +61,16 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Page<StockCatalystEventEntity> stockCatalystEventEntities = this.stockCatalystEventRepository
             .findByCustomerUuidAndTickerSymbolOrderByTickerSymbol( pageRequest, customerUuid, tickerSymbol );
-        Page<StockCatalystEventDTO> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
+        Page<StockCatalystEventDTOEntity> stockCatalystEventDTOs = this.entitiesToDTOs( pageRequest, stockCatalystEventEntities );
         logDebug( methodName, "stockCatalystEventList: {0}", stockCatalystEventDTOs );
         logMethodEnd( methodName, "Found " + stockCatalystEventEntities.getContent().size() + " catalyst events" );
         return stockCatalystEventDTOs;
     }
 
     @Override
-    protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
+    protected StockCatalystEventDTOEntity entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
-        StockCatalystEventDTO stockCatalystEventDTO = super.entityToDTO( stockCatalystEventEntity );
+        StockCatalystEventDTOEntity stockCatalystEventDTO = super.entityToDTO( stockCatalystEventEntity );
         if ( stockCatalystEventEntity.getCatalystDate() != null )
         {
             stockCatalystEventDTO.setCatalystDate( JSONDateConverter.toY4MMDD( stockCatalystEventEntity.getCatalystDate() ));
@@ -79,13 +79,13 @@ public class StockCatalystEventEntityService extends UuidEntityService<StockCata
     }
 
     @Override
-    protected StockCatalystEventDTO createDTO()
+    protected StockCatalystEventDTOEntity createDTO()
     {
-        return this.context.getBean( StockCatalystEventDTO.class );
+        return this.context.getBean( StockCatalystEventDTOEntity.class );
     }
 
     @Override
-    protected StockCatalystEventEntity dtoToEntity( final StockCatalystEventDTO stockCatalystEventDTO )
+    protected StockCatalystEventEntity dtoToEntity( final StockCatalystEventDTOEntity stockCatalystEventDTO )
     {
         Objects.requireNonNull( stockCatalystEventDTO );
         final StockCatalystEventEntity stockCatalystEventEntity = super.dtoToEntity( stockCatalystEventDTO );

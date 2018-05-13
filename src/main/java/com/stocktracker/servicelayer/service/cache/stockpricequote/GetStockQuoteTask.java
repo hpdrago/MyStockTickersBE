@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class GetStockQuoteTask implements Runnable, MyLogger
 {
-    private StockQuoteServiceProvider serviceProvider;
+    private StockPriceQuoteServiceProvider serviceProvider;
     //private StockPriceCache stockPriceCache;
     private String tickerSymbol;
 
@@ -43,7 +43,7 @@ public class GetStockQuoteTask implements Runnable, MyLogger
     */
 
 
-    public void setServiceProvider( final StockQuoteServiceProvider serviceProvider )
+    public void setServiceProvider( final StockPriceQuoteServiceProvider serviceProvider )
     {
         this.serviceProvider = serviceProvider;
     }

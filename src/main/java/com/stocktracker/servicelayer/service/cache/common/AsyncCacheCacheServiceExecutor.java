@@ -4,7 +4,6 @@ import com.stocktracker.servicelayer.service.BaseService;
 import io.reactivex.processors.BehaviorProcessor;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 /**
  * Base class for all Cache Service Executors.
@@ -12,7 +11,7 @@ import java.util.Optional;
  * @param <T> - The type of information to obtain from the third party.
  * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
  */
-public abstract class AsyncCacheBaseCacheServiceExecutor<K,T> extends BaseService
+public abstract class AsyncCacheCacheServiceExecutor<K,T> extends BaseService
     implements AsyncCacheServiceExecutor<K,T>
 {
     /**
@@ -24,13 +23,22 @@ public abstract class AsyncCacheBaseCacheServiceExecutor<K,T> extends BaseServic
      *
      * @param searchKey
      */
-    public void asynchronousFetch( @NotNull final K searchKey, @NotNull final BehaviorProcessor<Optional<T>> subject )
+    public void asynchronousFetch( @NotNull final K searchKey, @NotNull final BehaviorProcessor<T> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, searchKey );
-        final Optional<T> fetchResult = this.synchronousFetch( searchKey );
-        subject.onNext( fetchResult );
-        subject.onComplete();
+        final T fetchResult;
+        try
+        {
+            fetchResult = this.synchronousFetch( searchKey );
+            subject.onNext( fetchResult );
+            subject.onComplete();
+        }
+        catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
+        {
+            asyncCacheDataNotFoundException.printStackTrace();
+            subject.onError( asyncCacheDataNotFoundException );
+        }
         logMethodEnd( methodName, searchKey );
     }
 }

@@ -1,15 +1,34 @@
-package com.stocktracker.servicelayer.service.cache.stockpricequote;
+package com.stocktracker.servicelayer.service.cache.stockcompany;
 
+import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 
 /**
  * This interface defines the methods for classes that will get Stock Quote information from the StockQuoteEntityCache
  */
-public interface StockQuoteContainer extends TickerSymbolContainer
+public interface StockCompanyEntityContainer extends TickerSymbolContainer
 {
+    /**
+     * This method is called to set the {@code StockCompanyEntity}.  Classes implementing this interface can then
+     * extract any or all of the Stock Company (IEXTrading Company) properties as needed.
+     * @param stockCompanyEntity
+     */
+    void setStockCompanyEntity( final StockCompanyEntity stockCompanyEntity );
+
+    /**
+     * Identifies the state of the {@code StockCompanyEntity} received from the stock company cache.
+     * @param cacheEntryState
+     */
+    void setStockCompanyCacheEntryState( final AsyncCacheEntryState cacheEntryState );
+
+    /**
+     * This method is called to pass the error encountered while try to retrieve stock company from IEXTrading.
+     * @param error
+     */
+    void setStockCompanyCacheError( final String error );
+
+    /*
     boolean isDiscontinued();
     void setDiscontinued( final boolean discontinuedInd );
 
@@ -79,4 +98,5 @@ public interface StockQuoteContainer extends TickerSymbolContainer
 
     Timestamp getLastQuoteRequestDate();
     void setLastQuoteRequestDate( final Timestamp lastQuoteRequestDate );
+    */
 }

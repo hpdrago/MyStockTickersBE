@@ -20,7 +20,7 @@ import java.util.TreeSet;
 public class StockPriceServiceExecutor
 {
     private IEXTradingStockService iexTradingStockService;
-    private YahooStockService yahooStockService;
+    private YahooStockPriceService yahooStockService;
     private Logger logger = LoggerFactory.getLogger( StockPriceServiceExecutor.class );
     private TreeSet<String> discontinuedStocks = new TreeSet();
     private StockCompanyEntityService stockCompanyEntityService;
@@ -231,7 +231,7 @@ public class StockPriceServiceExecutor
     }
 
     @Autowired
-    public void setYahooStockService( final YahooStockService yahooStockService )
+    public void setYahooStockService( final YahooStockPriceService yahooStockService )
     {
         this.yahooStockService = yahooStockService;
     }

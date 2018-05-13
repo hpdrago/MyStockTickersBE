@@ -3,6 +3,9 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,6 +19,8 @@ import java.util.Objects;
  *
  * Created by mike on 12/10/2016.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPriceQuote implements StockPriceQuoteContainer
 {
     private String tickerSymbol;

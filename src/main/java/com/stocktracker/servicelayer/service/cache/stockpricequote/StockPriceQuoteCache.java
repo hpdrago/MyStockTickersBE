@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.KEEP;
+
 /**
  * This is the cache for Stock Price Quotes {@see StockPriceQuote} for columns values.  Stock price quote is basically
  * needed to enable us to only fetch stock prices when the values have become stale and need to be refetched.  A stock
@@ -19,8 +22,8 @@ import java.util.concurrent.TimeUnit;
  * information from IEXTrading which is information that is not changed that often during the day.
  */
 @Service
-public class StockPriceQuoteCache extends AsyncCache<StockPriceQuote,
-                                                     String,
+public class StockPriceQuoteCache extends AsyncCache<String,
+                                                     StockPriceQuote,
                                                      StockPriceQuoteCacheEntry,
                                                      StockPriceQuoteServiceExecutor>
 {
@@ -39,7 +42,7 @@ public class StockPriceQuoteCache extends AsyncCache<StockPriceQuote,
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, tickerSymbol );
         final StockPriceQuoteCacheEntry cacheEntry = this.asynchronousGet( tickerSymbol );
-        stockPriceQuoteContainer.setStockPriceQuote( cacheEntry.getCacheState(), cacheEntry.getInformation() );
+        stockPriceQuoteContainer.setStockPriceQuote( cacheEntry.getCacheState(), cacheEntry.getCachedData() );
         logMethodEnd( methodName, cacheEntry );
     }
 
@@ -59,7 +62,7 @@ public class StockPriceQuoteCache extends AsyncCache<StockPriceQuote,
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.getCacheEntry( tickerSymbol );
         if ( stockPriceQuoteCacheEntry != null )
         {
-            stockPriceQuoteCacheEntry.getInformation().setLastPrice( stockPrice );
+            stockPriceQuoteCacheEntry.getCachedData().setLastPrice( stockPrice );
         }
     }
 
@@ -81,6 +84,12 @@ public class StockPriceQuoteCache extends AsyncCache<StockPriceQuote,
     protected StockPriceQuoteServiceExecutor getExecutor()
     {
         return this.stockPriceQuoteServiceExecutor;
+    }
+
+    @Override
+    protected AsyncCacheStrategy getCacheStrategy()
+    {
+        return KEEP;
     }
 
     @Autowired

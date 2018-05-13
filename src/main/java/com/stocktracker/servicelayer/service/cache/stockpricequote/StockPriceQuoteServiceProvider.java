@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * Defines the methods required for a stock quote provider.
  */
-public interface StockQuoteServiceProvider
+public interface StockPriceQuoteServiceProvider
 {
     /**
      * Identifies the provider of the service

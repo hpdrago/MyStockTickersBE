@@ -3,12 +3,13 @@ package com.stocktracker.servicelayer.service.cache.common;
 import com.stocktracker.common.MyLogger;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.STALE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.FETCHING;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.NOT_FETCHING;
@@ -24,13 +25,15 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  * result will be passed back to the client which will then make a subsequent call to get the information.  This allows
  * for a quick query of information by the client with results returned quickly even if the results are stale. 
  *
- * @param <T> - The type of information to obtain from the third party.
+ * @param <T> - The type of cached data to obtain from the third party.
  * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
  * @param <E> - The cache entry type which is a subclass of AsyncCacheEntry<T>.
  * @param <X> - The interface definition of the class that will be performing synchronous and asynchronous work to
  *              get the information of type T.
  */
-public abstract class AsyncCache<T,K,E extends AsyncCacheEntry<T>,
+public abstract class AsyncCache<K extends Serializable,
+                                 T,
+                                 E extends AsyncCacheEntry<T>,
                                  X extends AsyncCacheServiceExecutor<K,T>>
     implements MyLogger
 {
@@ -110,6 +113,23 @@ public abstract class AsyncCache<T,K,E extends AsyncCacheEntry<T>,
     }
 
     /**
+     * This method is called to refresh the cached data for the {@code searchKey}.
+     * @param searchKey The key to search for.
+     * @param cachedData The stale data that needs to be refreshed which will be returned in the returned CacheEntry.
+     * @return
+     */
+    public E asynchronousGet( @NotNull final K searchKey,
+                              @NotNull final T cachedData )
+    {
+        final String methodName = "asynchronousGet";
+        logMethodBegin( methodName, searchKey, cachedData );
+        final E cacheEntry = this.asynchronousGet( searchKey );
+        cacheEntry.setCachedData( cachedData );
+        logMethodEnd( methodName );
+        return cacheEntry;
+    }
+
+    /**
      * Obtains the information from the cache asynchronously.
      * @param searchKey The key to search for the information.
      * @return If the information is in the cache and it is not stale, the information will be returned within
@@ -174,13 +194,22 @@ public abstract class AsyncCache<T,K,E extends AsyncCacheEntry<T>,
     {
         final String methodName = "synchronousFetch";
         logMethodBegin( methodName, searchKey, cacheEntry );
-        Optional<T> information = null;
+        T information = null;
         try
         {
             cacheEntry.setFetchState( FETCHING );
-            information = this.getExecutor()
-                              .synchronousFetch( searchKey );
-            cacheEntry.setInformation( information.get() );
+            try
+            {
+                information = this.getExecutor()
+                                  .synchronousFetch( searchKey );
+                cacheEntry.setCachedData( information );
+                cacheEntry.setCacheState( CURRENT );
+            }
+            catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
+            {
+                cacheEntry.setCacheState( FAILURE );
+                cacheEntry.setFetchThrowable( asyncCacheDataNotFoundException );
+            }
         }
         finally
         {
@@ -213,21 +242,21 @@ public abstract class AsyncCache<T,K,E extends AsyncCacheEntry<T>,
         cacheEntry.getFetchSubject()
                   .share()
                   .doOnError( throwable ->
-                              {
-                                  logError( methodName, String.format( "Search Key: %s", searchKey ), throwable );
-                                  cacheEntry.setFetchThrowable( throwable );
-                                  cacheEntry.setInformation( null );
-                                  cacheEntry.setFetchState( NOT_FETCHING );
-                                  cacheEntry.getFetchSubject().onError( throwable );
-                              })
-                  .subscribe( optionalT ->
-                              {
-                                  logDebug( methodName, "Completed fetch of key {0} value {1}",
-                                            searchKey, optionalT.get() );
-                                  cacheEntry.setInformation( optionalT.get() );
-                                  cacheEntry.setFetchState( NOT_FETCHING );
-                                  cacheEntry.setCacheState( CURRENT );
-                              });
+                  {
+                      logError( methodName, String.format( "Search Key: %s", searchKey ), throwable );
+                      cacheEntry.setFetchThrowable( throwable );
+                      cacheEntry.setCachedData( null );
+                      cacheEntry.setFetchState( NOT_FETCHING );
+                      cacheEntry.getFetchSubject().onError( throwable );
+                  })
+                  .blockingSubscribe( cacheData ->
+                  {
+                      logDebug( methodName, "Completed fetch of key {0} value {1}",
+                                searchKey, cacheData );
+                      cacheEntry.setCachedData( cacheData );
+                      cacheEntry.setFetchState( NOT_FETCHING );
+                      cacheEntry.setCacheState( CURRENT );
+                  });
         logMethodEnd( methodName );
     }
 
@@ -243,4 +272,9 @@ public abstract class AsyncCache<T,K,E extends AsyncCacheEntry<T>,
      */
     protected abstract X getExecutor();
 
+    /**
+     * Identies whether to keep cached data or remove it after all subscribers have been sent the data.
+     * @return
+     */
+    protected abstract AsyncCacheStrategy getCacheStrategy();
 }

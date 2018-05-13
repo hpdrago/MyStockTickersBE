@@ -3,11 +3,10 @@ package com.stocktracker.servicelayer.service.cache.common;
 import io.reactivex.processors.BehaviorProcessor;
 
 import java.sql.Timestamp;
-import java.util.Optional;
 
 /**
  * This class is the base class for all objects that are cached in the AsyncCache.
- * <T> - The type of information to be retrieved from the third party source.
+ * <T> - The type of cachedData to be retrieved from the third party source.
  * @param <T>
  */
 public abstract class AsyncCacheEntry<T>
@@ -18,7 +17,7 @@ public abstract class AsyncCacheEntry<T>
     private AsyncCacheEntryState cacheState = AsyncCacheEntryState.STALE;
 
     /**
-     * The last time the cached information was fetched.
+     * The last time the cached cachedData was fetched.
      */
     private long lastRefreshTime;
 
@@ -36,7 +35,7 @@ public abstract class AsyncCacheEntry<T>
      * The RxJava subject which is used to register to be notified when the asynchronous process completes.
      * It is also used internally to notify all of the subscribers.
      */
-    private BehaviorProcessor<Optional<T>> fetchSubject;
+    private BehaviorProcessor<T> fetchSubject;
 
     /**
      * The exception if the asynchronous request failed.
@@ -44,9 +43,9 @@ public abstract class AsyncCacheEntry<T>
     private Throwable fetchThrowable;
 
     /**
-     * The information being cached.
+     * The cachedData being cached.
      */
-    private T information;
+    private T cachedData;
 
     /**
      * Creates a new instance.
@@ -62,21 +61,21 @@ public abstract class AsyncCacheEntry<T>
     }
 
     /**
-     * Set the information object.
-     * @param information
+     * Set the cachedData object.
+     * @param cachedData
      */
-    public void setInformation( final T information )
+    public void setCachedData( final T cachedData )
     {
-        this.information = information;
+        this.cachedData = cachedData;
     }
 
     /**
-     * Get the information.
+     * Get the cachedData.
      * @return
      */
-    public T getInformation()
+    public T getCachedData()
     {
-        return this.information;
+        return this.cachedData;
     }
 
     /**
@@ -153,7 +152,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * The RxJava subject to contain any requests waiting for the stock price while it's being fetched.
      */
-    public BehaviorProcessor<Optional<T>> getFetchSubject()
+    public BehaviorProcessor<T> getFetchSubject()
     {
         return fetchSubject;
     }
@@ -192,7 +191,7 @@ public abstract class AsyncCacheEntry<T>
         sb.append( ", lastRefreshTime=" ).append( lastRefreshTime );
         sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", fetchState=" ).append( fetchState );
-        sb.append( ", information=" ).append( information );
+        sb.append( ", cachedData=" ).append( cachedData );
         sb.append( ", isStale=" ).append( this.isStale() );
         sb.append( '}' );
         return sb.toString();
