@@ -18,10 +18,10 @@ import java.io.Serializable;
  * @param <S> - The entity service.
  * @param <D> - The type of information to obtain from the third party.
  */
-public abstract class AsyncCacheDBEntityServiceExecutor< K extends Serializable,
-                                                               E extends VersionedEntity<K>,
-                                                               S extends VersionedEntityService<K,E,?,?,?>,
-                                                               D>
+public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
+                                                        E extends VersionedEntity<K>,
+                                                        S extends VersionedEntityService<K,E,?,?,?>,
+                                                        D>
     extends AsyncCacheCacheServiceExecutor<K,E>
 {
     /**
@@ -70,6 +70,8 @@ public abstract class AsyncCacheDBEntityServiceExecutor< K extends Serializable,
                  */
                 try
                 {
+                    entity = this.createEntity();
+                    this.copyExternalDataToEntity( externalData, entity );
                     entity = this.getEntityService()
                                  .addEntity( entity );
                 }
@@ -88,6 +90,12 @@ public abstract class AsyncCacheDBEntityServiceExecutor< K extends Serializable,
         while ( mismatch );
         return entity;
     }
+
+    /**
+     * A new entity is needed when adding an entity to the database from the external data that was retrieved.
+     * @return
+     */
+    protected abstract E createEntity();
 
     /**
      * This method is called after retrieving the external data.  By default, it simply calls {@code BeanUtils.copyProperties}.

@@ -23,9 +23,9 @@ import java.sql.Timestamp;
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
 public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
-                                                                                             StockQuoteEntity,
-                                                                                             StockQuoteEntityService,
-                                                                                             Quote>
+                                                                                       StockQuoteEntity,
+                                                                                       StockQuoteEntityService,
+                                                                                       Quote>
 {
     /**
      * Service for the stock quote entities.
@@ -56,6 +56,16 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
         }
         logMethodEnd( methodName, quote );
         return quote;
+    }
+
+    /**
+     * Creates a new entity.
+     * @return
+     */
+    @Override
+    protected StockQuoteEntity createEntity()
+    {
+        return this.context.getBean( StockQuoteEntity.class );
     }
 
     /**

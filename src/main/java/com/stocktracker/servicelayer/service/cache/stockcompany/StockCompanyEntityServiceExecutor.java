@@ -21,9 +21,9 @@ import pl.zankowski.iextrading4j.api.stocks.Company;
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
 public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
-                                                                                               StockCompanyEntity,
-                                                                                               StockCompanyEntityService,
-                                                                                               Company>
+                                                                                         StockCompanyEntity,
+                                                                                         StockCompanyEntityService,
+                                                                                         Company>
 {
     /**
      * Service for the stock company entities.
@@ -74,6 +74,16 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
          */
         super.asynchronousFetch( tickerSymbol, subject );
         logMethodEnd( methodName );
+    }
+
+    /**
+     * Creates a new entity instance.
+     * @return
+     */
+    @Override
+    protected StockCompanyEntity createEntity()
+    {
+        return this.context.getBean( StockCompanyEntity.class );
     }
 
     @Override
