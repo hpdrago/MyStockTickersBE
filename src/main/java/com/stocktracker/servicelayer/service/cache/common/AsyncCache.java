@@ -249,7 +249,7 @@ public abstract class AsyncCache<K extends Serializable,
                       cacheEntry.setFetchState( NOT_FETCHING );
                       cacheEntry.getFetchSubject().onError( throwable );
                   })
-                  .blockingSubscribe( cacheData ->
+                  .subscribe( cacheData ->
                   {
                       logDebug( methodName, "Completed fetch of key {0} value {1}",
                                 searchKey, cacheData );

@@ -42,10 +42,10 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
     public void setCachedData( final DR receiver )
     {
         final String methodName = "setCachedData";
-        final K entityKey = receiver.getEntityKey();
-        logMethodBegin( methodName, entityKey );
+        logMethodBegin( methodName, receiver );
         Objects.requireNonNull( receiver, "receiver argument cannon be null" );
         Objects.requireNonNull( receiver.getEntityKey(), "receiver's entity key cannot be null" );
+        final K entityKey = receiver.getEntityKey();
         try
         {
             /*

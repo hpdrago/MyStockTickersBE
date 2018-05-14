@@ -204,15 +204,18 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
             this.stockQuoteEntityService
                 .setQuoteInformation( (StockQuoteEntityContainer)dto );
         }
-        else if ( dto instanceof StockPriceQuoteContainer )
-        {
-            this.stockPriceQuoteService
-                .setStockPriceQuote( dto, ASYNCHRONOUS );
-        }
+        /*
+         * The quote contains the company name
+         */
         else if ( dto instanceof StockCompanyEntityContainer )
         {
             this.stockCompanyEntityService
                 .setCompanyInformation( (StockCompanyEntityContainer) dto );
+        }
+        if ( dto instanceof StockPriceQuoteContainer )
+        {
+            this.stockPriceQuoteService
+                .setStockPriceQuote( dto, ASYNCHRONOUS );
         }
 
         /*

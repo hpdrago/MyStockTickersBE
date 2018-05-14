@@ -17,10 +17,11 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
                                                                             StockCompanyEntityCacheEntry,
                                                                             StockCompanyEntityServiceExecutor,
                                                                             StockCompanyEntityCache,
-    StockCompanyEntityCacheDataReceiver,
+                                                                            StockCompanyEntityCacheDataReceiver,
                                                                             StockCompanyEntityService>
 {
     private StockCompanyEntityCache stockCompanyEntityCache;
+    private StockCompanyEntityService stockCompanyEntityService;
 
     /**
      * Stock company information is very static so update it if it hasn't been updated before or if the data is older
@@ -31,8 +32,8 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
     @Override
     protected boolean isCurrent( final StockCompanyEntity entity )
     {
-        return entity.getUpdateDate() == null ||
-               entity.getUpdateDate().getTime() < TimeUnit.DAYS.convert( 365, TimeUnit.MILLISECONDS );
+        return entity.getUpdateDate() != null &&
+               entity.getUpdateDate().getTime() > System.currentTimeMillis() - TimeUnit.DAYS.convert( 365, TimeUnit.MILLISECONDS );
     }
 
     /**
@@ -54,13 +55,19 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
     @Override
     protected StockCompanyEntityService getEntityService()
     {
-        return null;
+        return this.stockCompanyEntityService;
     }
 
     @Autowired
     public void setStockCompanyEntityCache( final StockCompanyEntityCache stockCompanyEntityCache )
     {
         this.stockCompanyEntityCache = stockCompanyEntityCache;
+    }
+
+    @Autowired
+    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
+    {
+        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 
 }

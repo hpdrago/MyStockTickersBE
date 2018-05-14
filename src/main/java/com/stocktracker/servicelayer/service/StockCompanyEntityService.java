@@ -48,10 +48,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         final String methodName = "getStockCompanyDTO";
         logMethodBegin( methodName, container.getTickerSymbol() );
         /*
-         * Create the DTO.
-         */
-        final StockCompanyDTO stockCompanyDTO = this.context.getBean( StockCompanyDTO.class );
-        /*
          * Create the cached data receiver.
          */
         final StockCompanyEntityCacheDataReceiver receiver = new StockCompanyEntityCacheDataReceiver( container.getTickerSymbol() );
@@ -62,10 +58,13 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Set the cache data and status results.
          */
-        stockCompanyDTO.setStockCompanyEntity( receiver.getStockCompanyEntity() );
-        stockCompanyDTO.setStockCompanyCacheEntryState( receiver.getCacheState() );
-        stockCompanyDTO.setStockCompanyCacheError( receiver.getError() );
-        logMethodEnd( methodName, stockCompanyDTO );
+        if ( receiver.getStockCompanyEntity() != null )
+        {
+            container.setStockCompanyEntity( receiver.getStockCompanyEntity() );
+        }
+        container.setStockCompanyCacheEntryState( receiver.getCacheState() );
+        container.setStockCompanyCacheError( receiver.getError() );
+        logMethodEnd( methodName, container );
     }
 
     /**
@@ -173,38 +172,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         catch( VersionedEntityNotFoundException e )
         {
             e.printStackTrace();
-        }
-        logMethodEnd( methodName, stockCompanyEntity );
-        return stockCompanyEntity;
-    }
-
-    /**
-     * Adds the IEXTrading stock company to the database. Converts the Company to a StockCompanyEntity and then saves it.
-     * @param company
-     * @return
-     */
-    private StockCompanyEntity addStockCompany( final Company company )
-    {
-        final String methodName = "saveStockCompany";
-        logMethodBegin( methodName, company );
-        Objects.requireNonNull( company, "company argument cannot be null" );
-        Objects.requireNonNull( company.getSymbol(), "company.symbol argument cannot be null" );
-        Objects.requireNonNull( company.getCompanyName(), "company.companyName argument cannot be null" );
-        StockCompanyEntity stockCompanyEntity = null;
-        try
-        {
-            stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
-            stockCompanyEntity.setDiscontinuedInd( false );
-            BeanUtils.copyProperties( company, stockCompanyEntity );
-            stockCompanyEntity = this.addEntity( stockCompanyEntity );
-        }
-        catch( EntityVersionMismatchException e )
-        {
-            logError( methodName, "Failed version check while adding stock company " + company );
-        }
-        catch( DuplicateEntityException e )
-        {
-            // ignore if it's already there.
         }
         logMethodEnd( methodName, stockCompanyEntity );
         return stockCompanyEntity;

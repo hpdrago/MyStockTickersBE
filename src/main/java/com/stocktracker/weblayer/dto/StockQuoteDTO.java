@@ -23,6 +23,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
                StockQuoteEntityContainer
 {
     private String tickerSymbol;
+    private String companyName;
     private String calculationPrice;
     private BigDecimal openPrice;
     private BigDecimal closePrice;
@@ -33,6 +34,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     private Timestamp latestPriceTime;
     private Integer latestUpdate;
     private Integer latestVolume;
+    private BigDecimal changeAmount;
     private BigDecimal delayedPrice;
     private Integer delayedPriceTime;
     private BigDecimal previousClose;
@@ -50,10 +52,15 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     private BigDecimal lastPrice;
 
     private AsyncCacheEntryState stockPriceQuoteCacheState;
+    private String stockPriceQuoteError;
     private AsyncCacheEntryState stockQuoteCacheState;
-    private Timestamp expirationTime;
     private String stockQuoteError;
+    private Timestamp expirationTime;
 
+    /**
+     * This method is called by the {@code StockQuoteCache} to set the stock quote properties on this DTO.
+     * @param stockQuoteEntity
+     */
     @Override
     public void setStockQuoteEntity( final StockQuoteEntity stockQuoteEntity )
     {
@@ -341,11 +348,63 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         return this.expirationTime;
     }
 
+    public String getCompanyName()
+    {
+        return companyName;
+    }
+
+    public void setCompanyName( final String companyName )
+    {
+        this.companyName = companyName;
+    }
+
+    public BigDecimal getChangeAmount()
+    {
+        return changeAmount;
+    }
+
+    public void setChangeAmount( final BigDecimal changeAmount )
+    {
+        this.changeAmount = changeAmount;
+    }
+
+    public AsyncCacheEntryState getStockQuoteCacheState()
+    {
+        return stockQuoteCacheState;
+    }
+
+    public void setStockQuoteCacheState( final AsyncCacheEntryState stockQuoteCacheState )
+    {
+        this.stockQuoteCacheState = stockQuoteCacheState;
+    }
+
+    public String getStockQuoteError()
+    {
+        return stockQuoteError;
+    }
+
+    public void setStockQuoteError( final String stockQuoteError )
+    {
+        this.stockQuoteError = stockQuoteError;
+    }
+
+    public String getStockPriceQuoteError()
+    {
+        return stockPriceQuoteError;
+    }
+
+    public void setStockPriceQuoteError( final String stockPriceQuoteError )
+    {
+        this.stockPriceQuoteError = stockPriceQuoteError;
+    }
+
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockQuoteDTO{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
+        sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", calculationPrice='" ).append( calculationPrice ).append( '\'' );
         sb.append( ", openPrice=" ).append( openPrice );
         sb.append( ", closePrice=" ).append( closePrice );
@@ -356,6 +415,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         sb.append( ", latestPriceTime=" ).append( latestPriceTime );
         sb.append( ", latestUpdate=" ).append( latestUpdate );
         sb.append( ", latestVolume=" ).append( latestVolume );
+        sb.append( ", changeAmount=" ).append( changeAmount );
         sb.append( ", delayedPrice=" ).append( delayedPrice );
         sb.append( ", delayedPriceTime=" ).append( delayedPriceTime );
         sb.append( ", previousClose=" ).append( previousClose );
@@ -372,9 +432,10 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
+        sb.append( ", stockPriceQuoteError=" ).append( stockPriceQuoteError );
         sb.append( ", stockQuoteCacheState=" ).append( stockQuoteCacheState );
-        sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", stockQuoteError='" ).append( stockQuoteError ).append( '\'' );
+        sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

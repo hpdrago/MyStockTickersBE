@@ -41,12 +41,21 @@ public class StockQuoteEntityCache extends AsyncCache<String,
         return this.stockQuoteEntityServiceExecutor;
     }
 
+    /**
+     * Identifies the strategy when retrieving cache entry from the cache.  Since the stock quote information is cached in the stock_quote table,
+     * we don't need to cache it in the cache and thus we can remove the cache entry after we have the asynchronous work completed.
+     * @return
+     */
     @Override
     protected AsyncCacheStrategy getCacheStrategy()
     {
         return REMOVE;
     }
 
+    /**
+     * Sets the executor that is the go-between the cache and the cache data receiver.
+     * @param stockQuoteEntityServiceExecutor
+     */
     @Autowired
     public void setStockQuoteEntityServiceExecutor( final StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor )
     {

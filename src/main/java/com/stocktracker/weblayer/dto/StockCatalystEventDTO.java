@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCatalystEventDTOEntity extends StockQuoteDTO
-                                         implements UuidDTO,
-                                                    CustomerIdContainer,
-                                                    StockQuoteEntityContainer,
-                                                    StockCompanyEntityContainer
+public class StockCatalystEventDTO extends StockQuoteDTO
+                                   implements UuidDTO,
+                                              CustomerIdContainer,
+                                              StockQuoteEntityContainer,
+                                              StockCompanyEntityContainer
 {
     private String customerId;
     private String catalystDate;
@@ -156,12 +156,12 @@ public class StockCatalystEventDTOEntity extends StockQuoteDTO
         this.stockQuoteCacheState = stockQuoteCacheState;
     }
 
-    public String getStockQuotError()
+    public String getStockQuoteError()
     {
         return stockQuoteError;
     }
 
-    public void setStockQuotError( final String stockQuotError )
+    public void setStockQuoteError( final String stockQuotError )
     {
         this.stockQuoteError = stockQuotError;
     }

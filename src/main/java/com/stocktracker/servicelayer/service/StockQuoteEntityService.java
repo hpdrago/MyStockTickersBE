@@ -32,10 +32,6 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         final String methodName = "getStockQuoteDTO";
         logMethodBegin( methodName, container.getTickerSymbol() );
         /*
-         * Create the DTO.
-         */
-        final StockQuoteDTO stockQuoteDTO = (StockQuoteDTO)this.context.getBean( "stockQuoteDTO" );
-        /*
          * Create the cached data receiver.
          */
         final StockQuoteEntityCacheDataReceiver receiver = new StockQuoteEntityCacheDataReceiver( container.getTickerSymbol() );
@@ -46,10 +42,13 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         /*
          * Set the cache data and status results.
          */
-        stockQuoteDTO.setStockQuoteEntity( receiver.getStockQuoteEntity() );
-        stockQuoteDTO.setStockQuoteCacheEntryState( receiver.getCacheState() );
-        stockQuoteDTO.setStockQuoteCacheError( receiver.getError() );
-        logMethodEnd( methodName, stockQuoteDTO );
+        if ( receiver.getStockQuoteEntity() != null )
+        {
+            container.setStockQuoteEntity( receiver.getStockQuoteEntity() );
+        }
+        container.setStockQuoteCacheEntryState( receiver.getCacheState() );
+        container.setStockQuoteCacheError( receiver.getError() );
+        logMethodEnd( methodName, container );
     }
 
     /**

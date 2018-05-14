@@ -26,7 +26,7 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
     private String website;
     private String sector;
     private String industry;
-    private String error;
+    private String cacheError;
     private AsyncCacheEntryState cacheState;
 
     @Override
@@ -42,9 +42,9 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
     }
 
     @Override
-    public void setStockCompanyCacheError( final String error )
+    public void setStockCompanyCacheError( final String cacheError )
     {
-        this.error = error;
+        this.cacheError = cacheError;
     }
 
     public String getTickerSymbol()
@@ -97,11 +97,6 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
         this.industry = industry;
     }
 
-    public String getError()
-    {
-        return this.error;
-    }
-
     public AsyncCacheEntryState getCacheState()
     {
         return cacheState;
@@ -110,6 +105,16 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
     public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
+    }
+
+    public String getCacheError()
+    {
+        return cacheError;
+    }
+
+    public void setCacheError( final String cacheError )
+    {
+        this.cacheError = cacheError;
     }
 
 
@@ -122,7 +127,7 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
         sb.append( ", website='" ).append( website ).append( '\'' );
         sb.append( ", sector='" ).append( sector ).append( '\'' );
         sb.append( ", industry='" ).append( industry ).append( '\'' );
-        sb.append( ", error='" ).append( error ).append( '\'' );
+        sb.append( ", cacheError='" ).append( cacheError ).append( '\'' );
         sb.append( ", cacheState=" ).append( cacheState );
         sb.append( '}' );
         return sb.toString();
