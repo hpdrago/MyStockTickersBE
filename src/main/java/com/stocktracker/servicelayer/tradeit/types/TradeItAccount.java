@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.types;
 
-import com.stocktracker.weblayer.dto.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 
 /**
  * This class defines the account fields that are returned in TradeIt authenticate call.

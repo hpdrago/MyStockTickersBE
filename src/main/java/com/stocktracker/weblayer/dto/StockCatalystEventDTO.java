@@ -5,6 +5,7 @@ import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
 import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityContainer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;

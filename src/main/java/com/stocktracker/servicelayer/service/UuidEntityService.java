@@ -4,7 +4,7 @@ import com.fasterxml.uuid.impl.UUIDUtil;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
-import com.stocktracker.weblayer.dto.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 

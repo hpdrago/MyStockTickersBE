@@ -31,14 +31,14 @@ public class StockQuoteEntity extends TickerSymbolEntity
     private String latestPriceSource;
     private String latestPriceTime;
     private Long latestUpdate;
-    private Long latestVolume;
+    private BigDecimal latestVolume;
     private BigDecimal delayedPrice;
     private Long delayedPriceTime;
     private BigDecimal previousClose;
     private BigDecimal changeAmount;
     private BigDecimal changePercent;
-    private Long thirtyDayAvgVolume;
-    private Long marketCap;
+    private BigDecimal thirtyDayAvgVolume;
+    private BigDecimal marketCap;
     private BigDecimal peRatio;
     private BigDecimal week52High;
     private BigDecimal week52Low;
@@ -194,12 +194,12 @@ public class StockQuoteEntity extends TickerSymbolEntity
 
     @Basic
     @Column( name = "latest_volume", nullable = true )
-    public Long getLatestVolume()
+    public BigDecimal getLatestVolume()
     {
         return latestVolume;
     }
 
-    public void setLatestVolume( final Long latestVolume )
+    public void setLatestVolume( final BigDecimal latestVolume )
     {
         this.latestVolume = latestVolume;
     }
@@ -266,24 +266,24 @@ public class StockQuoteEntity extends TickerSymbolEntity
 
     @Basic
     @Column( name = "thirty_day_avg_volume", nullable = true )
-    public Long getThirtyDayAvgVolume()
+    public BigDecimal getThirtyDayAvgVolume()
     {
         return thirtyDayAvgVolume;
     }
 
-    public void setThirtyDayAvgVolume( final Long thirtyDayAvgVolume )
+    public void setThirtyDayAvgVolume( final BigDecimal thirtyDayAvgVolume )
     {
         this.thirtyDayAvgVolume = thirtyDayAvgVolume;
     }
 
     @Basic
     @Column( name = "market_cap", nullable = true )
-    public Long getMarketCap()
+    public BigDecimal getMarketCap()
     {
         return marketCap;
     }
 
-    public void setMarketCap( final Long marketCap )
+    public void setMarketCap( final BigDecimal marketCap )
     {
         this.marketCap = marketCap;
     }
@@ -428,11 +428,9 @@ public class StockQuoteEntity extends TickerSymbolEntity
         this.setLowPrice( quote.getLow() );
         this.setLatestPriceSource( quote.getLatestSource() );
         this.setLatestPriceTime( quote.getLatestTime() );
-        this.setLatestVolume( quote.getLatestVolume().longValue() );
         this.setChangeAmount( quote.getChange() );
         this.setChangePercent( quote.getChangePercent() );
-        this.setThirtyDayAvgVolume( quote.getAvgTotalVolume().longValue() );
-        this.setMarketCap( quote.getMarketCap().longValue() );
+        this.setThirtyDayAvgVolume( quote.getAvgTotalVolume() );
         this.setYtdChangePercent( quote.getYtdChange() );
     }
 }

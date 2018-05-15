@@ -2,7 +2,6 @@ package com.stocktracker.weblayer.dto.common;
 
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
-import com.stocktracker.weblayer.dto.CustomerIdContainer;
 
 import java.util.List;
 

@@ -3,6 +3,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;

@@ -19,8 +19,8 @@ import java.sql.Timestamp;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Qualifier( "stockQuoteDTO")
 public class StockQuoteDTO extends DatabaseEntityDTO<String>
-    implements StockPriceQuoteContainer,
-               StockQuoteEntityContainer
+                           implements StockPriceQuoteContainer,
+                                      StockQuoteEntityContainer
 {
     private String tickerSymbol;
     private String companyName;
@@ -31,17 +31,16 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     private BigDecimal lowPrice;
     private BigDecimal latestPrice;
     private String latestPriceSource;
-    private Timestamp latestPriceTime;
-    private Integer latestUpdate;
-    private Integer latestVolume;
+    private String latestPriceTime;
+    private Long latestUpdate;
+    private BigDecimal latestVolume;
+    private BigDecimal thirtyDayAvgVolume;
     private BigDecimal changeAmount;
     private BigDecimal delayedPrice;
-    private Integer delayedPriceTime;
+    private Long delayedPriceTime;
     private BigDecimal previousClose;
-    private String change;
     private BigDecimal changePercent;
-    private Integer thirtyDayAvgVolume;
-    private Integer marketCap;
+    private BigDecimal marketCap;
     private BigDecimal peRatio;
     private BigDecimal week52High;
     private BigDecimal week52Low;
@@ -49,6 +48,8 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     private BigDecimal ytdChangePercent;
     private Timestamp lastQuoteRequestDate;
     private String discontinuedInd;
+
+    // Stock Price Quote fields
     private BigDecimal lastPrice;
 
     private AsyncCacheEntryState stockPriceQuoteCacheState;
@@ -153,29 +154,29 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         this.latestPriceSource = latestPriceSource;
     }
 
-    public Timestamp getLatestPriceTime()
+    public String getLatestPriceTime()
     {
         return latestPriceTime;
     }
-    public void setLatestPriceTime( final Timestamp latestPriceTime )
+    public void setLatestPriceTime( final String latestPriceTime )
     {
         this.latestPriceTime = latestPriceTime;
     }
 
-    public Integer getLatestUpdate()
+    public Long getLatestUpdate()
     {
         return latestUpdate;
     }
-    public void setLatestUpdate( final Integer latestUpdate )
+    public void setLatestUpdate( final Long latestUpdate )
     {
         this.latestUpdate = latestUpdate;
     }
 
-    public Integer getLatestVolume()
+    public BigDecimal getLatestVolume()
     {
         return latestVolume;
     }
-    public void setLatestVolume( final Integer latestVolume )
+    public void setLatestVolume( final BigDecimal latestVolume )
     {
         this.latestVolume = latestVolume;
     }
@@ -189,11 +190,11 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         this.delayedPrice = delayedPrice;
     }
 
-    public Integer getDelayedPriceTime()
+    public Long getDelayedPriceTime()
     {
         return delayedPriceTime;
     }
-    public void setDelayedPriceTime( final Integer delayedPriceTime )
+    public void setDelayedPriceTime( final Long delayedPriceTime )
     {
         this.delayedPriceTime = delayedPriceTime;
     }
@@ -207,15 +208,6 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         this.previousClose = previousClose;
     }
 
-    public String getChange()
-    {
-        return change;
-    }
-    public void setChange( final String change )
-    {
-        this.change = change;
-    }
-
     public BigDecimal getChangePercent()
     {
         return changePercent;
@@ -225,20 +217,20 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         this.changePercent = changePercent;
     }
 
-    public Integer getThirtyDayAvgVolume()
+    public BigDecimal getThirtyDayAvgVolume()
     {
         return thirtyDayAvgVolume;
     }
-    public void setThirtyDayAvgVolume( final Integer thirtyDayAvgVolume )
+    public void setThirtyDayAvgVolume( final BigDecimal thirtyDayAvgVolume )
     {
         this.thirtyDayAvgVolume = thirtyDayAvgVolume;
     }
 
-    public Integer getMarketCap()
+    public BigDecimal getMarketCap()
     {
         return marketCap;
     }
-    public void setMarketCap( final Integer marketCap )
+    public void setMarketCap( final BigDecimal marketCap )
     {
         this.marketCap = marketCap;
     }
@@ -419,7 +411,6 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         sb.append( ", delayedPrice=" ).append( delayedPrice );
         sb.append( ", delayedPriceTime=" ).append( delayedPriceTime );
         sb.append( ", previousClose=" ).append( previousClose );
-        sb.append( ", change='" ).append( change ).append( '\'' );
         sb.append( ", changePercent=" ).append( changePercent );
         sb.append( ", thirtyDayAvgVolume=" ).append( thirtyDayAvgVolume );
         sb.append( ", marketCap=" ).append( marketCap );

@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;

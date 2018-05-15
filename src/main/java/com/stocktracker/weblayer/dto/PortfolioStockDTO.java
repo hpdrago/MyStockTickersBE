@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -15,8 +16,8 @@ import java.math.BigDecimal;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class PortfolioStockDTO extends StockQuoteDTO
-    implements UuidDTO,
-               CustomerIdContainer
+                               implements UuidDTO,
+                                          CustomerIdContainer
 {
     private String customerId;
     private String portfolioId;

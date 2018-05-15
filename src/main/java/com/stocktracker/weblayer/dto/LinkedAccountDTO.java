@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.EntityLoadingStatus;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
