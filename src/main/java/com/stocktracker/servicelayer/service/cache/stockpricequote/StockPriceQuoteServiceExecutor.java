@@ -61,8 +61,8 @@ public class StockPriceQuoteServiceExecutor extends AsyncCacheCacheServiceExecut
                 break;
 
             case EXCEPTION:
-                stockPriceQuote.setStockPriceQuoteCacheState( AsyncCacheEntryState.FAILURE );
-                stockPriceQuote.setError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
+                stockPriceQuote.setCacheState( AsyncCacheEntryState.FAILURE );
+                stockPriceQuote.setCacheError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
                 break;
         }
         return stockPriceQuote;

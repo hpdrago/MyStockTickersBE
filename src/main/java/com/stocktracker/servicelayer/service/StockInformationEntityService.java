@@ -8,12 +8,14 @@ import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
-import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityContainer;
-import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
+import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOAsyncContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,8 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  */
 public abstract class StockInformationEntityService<E extends UUIDEntity &
                                                               TickerSymbolContainer,
-                                                    D extends StockPriceQuoteContainer &
+                                                    D extends StockPriceQuoteDTOContainer &
+                                                              StockQuoteDTOContainer &
                                                               UuidDTO,
                                                     R extends JpaRepository<E,UUID>>
     extends UuidEntityService<E,D,R>
@@ -153,7 +156,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * Updates the stock quote information for all dtos asynchronously.
      * @param dtos
      */
-    protected void setStockPriceQuotes( final List<? extends StockPriceQuoteContainer> dtos )
+    protected void setStockPriceQuotes( final List<? extends StockPriceQuoteDTOContainer> dtos )
     {
         final String methodName = "setStockPriceQuotes";
         logMethodBegin( methodName );
@@ -199,10 +202,10 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         /*
          * StockPriceQuoteContainers contain everything in a StockPriceContainer so get that instead
          */
-        if ( dto instanceof StockQuoteEntityContainer )
+        if ( dto instanceof StockQuoteDTOContainer )
         {
             this.stockQuoteEntityService
-                .setQuoteInformation( (StockQuoteEntityContainer)dto );
+                .setQuoteInformation( dto );
         }
         /*
          * The quote contains the company name
@@ -210,9 +213,9 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         else if ( dto instanceof StockCompanyEntityContainer )
         {
             this.stockCompanyEntityService
-                .setCompanyInformation( (StockCompanyEntityContainer) dto );
+                .setCompanyInformation( (StockCompanyDTOContainer) dto );
         }
-        if ( dto instanceof StockPriceQuoteContainer )
+        if ( dto instanceof StockPriceQuoteDTOContainer )
         {
             this.stockPriceQuoteService
                 .setStockPriceQuote( dto, ASYNCHRONOUS );

@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -15,11 +18,14 @@ import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockAnalystConsensusDTO extends StockQuoteDTO
-    implements NotesSourceIdContainer,
-               UuidDTO,
-               CustomerIdContainer
+public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
+                                      implements NotesSourceIdContainer,
+                                                 UuidDTO,
+                                                 CustomerIdContainer,
+                                                 StockPriceQuoteDTOContainer,
+                                                 StockQuoteDTOContainer
 {
+    private String tickerSymbol;
     private String customerId;
     private String comments;
     private Integer analystStrongBuyCount;
@@ -37,7 +43,21 @@ public class StockAnalystConsensusDTO extends StockQuoteDTO
     private String analystPriceDate;
     private String notesSourceId;
     private String notesSourceName;
+    private StockPriceQuoteDTO stockPriceQuoteDTO;
+    private StockQuoteDTO stockQuoteDTO;
 
+
+    @Override
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    @Override
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
     public String getCustomerId()
     {
         return this.customerId;
@@ -202,6 +222,30 @@ public class StockAnalystConsensusDTO extends StockQuoteDTO
         this.notesSourceName = notesSourceName;
     }
 
+    @Override
+    public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
+    {
+        this.stockPriceQuoteDTO = stockPriceQuoteDTO;
+    }
+
+    @Override
+    public StockPriceQuoteDTO getStockPriceQuote()
+    {
+        return this.stockPriceQuoteDTO;
+    }
+
+    @Override
+    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
+    {
+        this.stockQuoteDTO = stockQuoteDTO;
+    }
+
+    @Override
+    public StockQuoteDTO getStockQuote()
+    {
+        return this.stockQuoteDTO;
+    }
+
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
@@ -221,6 +265,8 @@ public class StockAnalystConsensusDTO extends StockQuoteDTO
         sb.append( ", analystPriceDate='" ).append( analystPriceDate ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
+        sb.append( ", stockPriceQuoteDTO=" ).append( stockPriceQuoteDTO );
+        sb.append( ", stockQuoteDTO=" ).append( stockQuoteDTO );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

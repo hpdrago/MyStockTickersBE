@@ -3,8 +3,8 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 import com.stocktracker.AppConfig;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
-
-import java.sql.Timestamp;
 
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Quote: https://iextrading.com/developer/docs/#quote.

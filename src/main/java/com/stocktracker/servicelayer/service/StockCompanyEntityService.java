@@ -6,19 +6,17 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
-import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCache;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheClient;
-import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
+import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import pl.zankowski.iextrading4j.api.stocks.Company;
 
 import java.util.Objects;
 
@@ -43,7 +41,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
      * retrieve the stock company asynchronously if needed.
      * @param container The container to set the value.
      */
-    public void setCompanyInformation( final StockCompanyEntityContainer container )
+    public void setCompanyInformation( final StockCompanyDTOContainer container )
     {
         final String methodName = "getStockCompanyDTO";
         logMethodBegin( methodName, container.getTickerSymbol() );
@@ -60,7 +58,8 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
          */
         if ( receiver.getStockCompanyEntity() != null )
         {
-            container.setStockCompanyEntity( receiver.getStockCompanyEntity() );
+            final StockCompanyDTO stockCompanyDTO = this.entityToDTO( receiver.getStockCompanyEntity() );
+            container.setStockCompanyDTO( stockCompanyDTO );
         }
         container.setStockCompanyCacheEntryState( receiver.getCacheState() );
         container.setStockCompanyCacheError( receiver.getError() );

@@ -96,7 +96,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
      * @param error
      */
     @Override
-    public void setError( final String error )
+    public void setCacheError( final String error )
     {
         this.error = error;
     }

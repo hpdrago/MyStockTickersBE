@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
-import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOAsyncContainer;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,10 +22,9 @@ import java.util.Objects;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuoteDTO implements StockPriceQuoteContainer
+public class StockPriceQuoteDTO implements StockPriceQuoteDTOAsyncContainer
 {
     private String tickerSymbol;
-    private String companyName;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
@@ -33,8 +32,38 @@ public class StockPriceQuoteDTO implements StockPriceQuoteContainer
     private AsyncCacheEntryState stockPriceQuoteCacheState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
-    private BigDecimal openPrice;
+    private AsyncCacheEntryState cacheState;
+    private String cacheError;
 
+    @Override
+    public void setCachedDTO( final StockPriceQuoteDTO dto )
+    {
+        BeanUtils.copyProperties( dto, this );
+    }
+
+    @Override
+    public void setCacheState( final AsyncCacheEntryState stockQuoteEntityCacheState )
+    {
+        this.cacheState = stockQuoteEntityCacheState;
+    }
+
+    @Override
+    public AsyncCacheEntryState getCacheState()
+    {
+        return this.cacheState;
+    }
+
+    @Override
+    public void setCacheError( final String stockQuoteCacheError )
+    {
+        this.cacheError = stockQuoteCacheError;
+    }
+
+    @Override
+    public String getCacheError()
+    {
+        return this.cacheError;
+    }
 
     public String getTickerSymbol()
     {
@@ -43,18 +72,6 @@ public class StockPriceQuoteDTO implements StockPriceQuoteContainer
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
-    }
-
-    @Override
-    public void setStockPriceQuoteCacheState( final AsyncCacheEntryState stockPriceQuoteCacheState )
-    {
-        this.stockPriceQuoteCacheState = stockPriceQuoteCacheState;
-    }
-
-    @Override
-    public AsyncCacheEntryState getStockPriceQuoteCacheState()
-    {
-        return this.stockPriceQuoteCacheState;
     }
 
     public BigDecimal getLastPrice()
@@ -81,26 +98,6 @@ public class StockPriceQuoteDTO implements StockPriceQuoteContainer
         this.lastPriceChange = lastPriceChange;
     }
 
-    public void setOpenPrice( final BigDecimal openPrice )
-    {
-        this.openPrice = openPrice;
-    }
-
-    public BigDecimal getOpenPrice()
-    {
-        return this.openPrice;
-    }
-
-    public String getCompanyName()
-    {
-        return companyName;
-    }
-
-    public void setCompanyName( final String companyName )
-    {
-        this.companyName = companyName;
-    }
-
     public Timestamp getExpirationTime()
     {
         return expirationTime;
@@ -109,12 +106,6 @@ public class StockPriceQuoteDTO implements StockPriceQuoteContainer
     public void setExpirationTime( final Timestamp expirationTime )
     {
         this.expirationTime = expirationTime;
-    }
-
-    @Override
-    public void setStockPriceQuote( final AsyncCacheEntryState cacheState, final StockPriceQuote stockPriceQuote )
-    {
-
     }
 
     @Override
@@ -143,12 +134,13 @@ public class StockPriceQuoteDTO implements StockPriceQuoteContainer
     {
         final StringBuilder sb = new StringBuilder( "StockPriceQuoteEntity{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", companyName'=" ).append( companyName ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
         sb.append( ", openPrice=" ).append( lastPrice );
         sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
+        sb.append( ", cacheState=" ).append( cacheState );
+        sb.append( ", cacheError=" ).append( cacheError );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

@@ -1,70 +1,53 @@
 package com.stocktracker.weblayer.dto;
 
-import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
-import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
-import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityContainer;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCatalystEventDTO extends StockQuoteDTO
+public class StockCatalystEventDTO extends DatabaseEntityDTO<String>
                                    implements UuidDTO,
                                               CustomerIdContainer,
-                                              StockQuoteEntityContainer,
-                                              StockCompanyEntityContainer
+                                              StockQuoteDTOContainer,
+                                              StockPriceQuoteDTOContainer
 {
+    private String tickerSymbol;
     private String customerId;
     private String catalystDate;
     private String catalystDesc;
     private Byte dateOrTimePeriod;
     private Byte timePeriod;
     private Short timePeriodYear;
-    private AsyncCacheEntryState stockCompanyCacheState;
-    private String stockCompanyError;
-    private AsyncCacheEntryState stockQuoteCacheState;
-    private String stockQuoteError;
+    private StockQuoteDTO stockQuoteDTO;
+    private StockPriceQuoteDTO stockPriceQuoteDTO;
 
-    @Override
-    public void setStockCompanyEntity( final StockCompanyEntity stockCompanyEntity )
+
+    public StockPriceQuoteDTO getStockPriceQuote()
     {
-        BeanUtils.copyProperties( stockCompanyEntity, this );
+        return stockPriceQuoteDTO;
     }
 
     @Override
-    public void setStockCompanyCacheEntryState( final AsyncCacheEntryState cacheEntryState )
+    public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
     {
-        this.stockQuoteCacheState = cacheEntryState;
+        this.stockPriceQuoteDTO = stockPriceQuoteDTO;
     }
 
     @Override
-    public void setStockCompanyCacheError( final String error )
+    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
     {
-        this.stockCompanyError = error;
+        this.stockQuoteDTO = stockQuoteDTO;
     }
 
-    @Override
-    public void setStockQuoteEntity( final StockQuoteEntity stockQuoteEntity )
+    public StockQuoteDTO getStockQuote()
     {
-        BeanUtils.copyProperties( stockQuoteEntity, this );
-    }
-
-    @Override
-    public void setStockQuoteCacheEntryState( final AsyncCacheEntryState stockQuoteEntityCacheState )
-    {
-        this.stockQuoteCacheState = stockQuoteEntityCacheState;
-    }
-
-    @Override
-    public void setStockQuoteCacheError( final String stockQuoteCacheError )
-    {
-        this.stockQuoteError = stockQuoteCacheError;
+        return stockQuoteDTO;
     }
 
     public String getCustomerId()
@@ -127,51 +110,23 @@ public class StockCatalystEventDTO extends StockQuoteDTO
         this.timePeriodYear = timePeriodYear;
     }
 
-    public AsyncCacheEntryState getStockCompanyCacheState()
+    @Override
+    public String getTickerSymbol()
     {
-        return stockCompanyCacheState;
+        return tickerSymbol;
     }
 
-    public void setStockCompanyCacheState( final AsyncCacheEntryState stockCompanyCacheState )
+    @Override
+    public void setTickerSymbol( final String tickerSymbol )
     {
-        this.stockCompanyCacheState = stockCompanyCacheState;
-    }
-
-    public String getStockCompanyError()
-    {
-        return stockCompanyError;
-    }
-
-    public void setStockCompanyError( final String stockCompanyError )
-    {
-        this.stockCompanyError = stockCompanyError;
-    }
-
-    public AsyncCacheEntryState getStockQuoteCacheState()
-    {
-        return stockQuoteCacheState;
-    }
-
-    public void setStockQuoteCacheState( final AsyncCacheEntryState stockQuoteCacheState )
-    {
-        this.stockQuoteCacheState = stockQuoteCacheState;
-    }
-
-    public String getStockQuoteError()
-    {
-        return stockQuoteError;
-    }
-
-    public void setStockQuoteError( final String stockQuotError )
-    {
-        this.stockQuoteError = stockQuotError;
+        this.tickerSymbol = tickerSymbol;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockCatalystEventDTOEntity{" );
-        sb.append( "tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
+        sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", id='" ).append( super.getId() ).append( '\'' );
         sb.append( ", customerId='" ).append( customerId ).append( '\'' );
         sb.append( ", catalystDate='" ).append( catalystDate ).append( '\'' );
@@ -179,10 +134,8 @@ public class StockCatalystEventDTO extends StockQuoteDTO
         sb.append( ", dateOrTimePeriod=" ).append( dateOrTimePeriod );
         sb.append( ", timePeriod=" ).append( timePeriod );
         sb.append( ", timePeriodYear=" ).append( timePeriodYear );
-        sb.append( ", stockCompanyCacheState=" ).append( stockCompanyCacheState );
-        sb.append( ", stockCompanyError='" ).append( stockCompanyError ).append( '\'' );
-        sb.append( ", stockQuoteCacheState=" ).append( stockQuoteCacheState );
-        sb.append( ", stockQuoteError='" ).append( stockQuoteError ).append( '\'' );
+        sb.append( ", stockQuoteDTO='" ).append( stockQuoteDTO ).append( '\'' );
+        sb.append( ", stockPriceQuoteDTO='" ).append( stockPriceQuoteDTO ).append( '\'' );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

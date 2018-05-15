@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 @Service
 public class StockCatalystEventEntityService extends StockInformationEntityService<StockCatalystEventEntity,
-    StockCatalystEventDTO,
+                                                                                   StockCatalystEventDTO,
                                                                                    StockCatalystEventRepository>
 {
     private StockCatalystEventRepository stockCatalystEventRepository;

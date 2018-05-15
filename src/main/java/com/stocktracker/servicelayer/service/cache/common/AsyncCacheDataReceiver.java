@@ -37,5 +37,5 @@ public interface AsyncCacheDataReceiver<EK extends Serializable,T>
      * Set the the error message if an exception occured while fetching.
      * @param error
      */
-    void setError( final String error );
+    void setCacheError( final String error );
 }

@@ -11,7 +11,6 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -348,42 +347,6 @@ public class StockQuoteEntity extends TickerSymbolEntity
         this.lastQuoteRequestDate = lastQuoteRequestDate;
     }
 
-    /**
-     * Stock quote information is very static so update it if it hasn't been updated before or if the data is older
-     * than a year.
-     * @param entity
-     * @return
-     */
-    public static boolean isCurrent( final StockQuoteEntity entity )
-    {
-        boolean current = false;
-        if ( TradingHours.isInSession() )
-        {
-            /*
-             * Need to retrieve at the beginning of the session to get the open price.
-             */
-            if ( entity.getUpdateDate().getTime() < TradingHours.getSessionStartTime() )
-            {
-                current = false;
-            }
-            else
-            {
-                current = true;
-            }
-        }
-        else
-        {
-            if ( entity.getUpdateDate().getTime() < TradingHours.getSessionStartTime() )
-            {
-                current = false;
-            }
-            else
-            {
-                current = true;
-            }
-        }
-        return current;
-    }
 
     @Override
     public String toString()

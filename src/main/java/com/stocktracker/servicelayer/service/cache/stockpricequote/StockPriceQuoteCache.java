@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
-import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,18 +32,20 @@ public class StockPriceQuoteCache extends AsyncCache<String,
 
     /**
      * Gets the Stock Quote from the cache if present, otherwise the Stock Quote is fetch asynchronously.
-     * {@code stockPriceQuoteContainer} will be upated with the Stock Quote information and the cache entry status.
+     * {@code stockPriceQuoteDTOContainer} will be upated with the Stock Quote information and the cache entry status.
      * @param tickerSymbol
-     * @param stockPriceQuoteContainer
+     * @param stockPriceQuoteDTOContainer
      */
-    public void asynchronousGet( @NotNull final String tickerSymbol, @NotNull StockPriceQuoteContainer stockPriceQuoteContainer )
+    /*
+    public void asynchronousGet( @NotNull final String tickerSymbol, @NotNull StockPriceQuoteDTOContainer stockPriceQuoteDTOContainer )
     {
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, tickerSymbol );
         final StockPriceQuoteCacheEntry cacheEntry = this.asynchronousGet( tickerSymbol );
-        stockPriceQuoteContainer.setStockPriceQuote( cacheEntry.getCacheState(), cacheEntry.getCachedData() );
+        stockPriceQuoteDTOContainer.setStockPriceQuote( cacheEntry.getCacheState(), cacheEntry.getCachedData() );
         logMethodEnd( methodName, cacheEntry );
     }
+    */
 
     /**
      * Updates the stock price cache for the ticker symbol.

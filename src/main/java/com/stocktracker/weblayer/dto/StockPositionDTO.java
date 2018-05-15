@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -18,10 +21,13 @@ import java.util.UUID;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPositionDTO extends StockQuoteDTO
+public class StockPositionDTO extends DatabaseEntityDTO<String>
                               implements UuidDTO,
-                                         CustomerIdContainer
+                                         CustomerIdContainer,
+                                         StockPriceQuoteDTOContainer,
+                                         StockQuoteDTOContainer
 {
+    private String tickerSymbol;
     private String customerId;
     private String tradeItAccountId;
     private String linkedAccountId;
@@ -39,7 +45,8 @@ public class StockPositionDTO extends StockQuoteDTO
     private BigDecimal totalGainLossAbsolute;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal totalGainLossPercentage;
-
+    private StockQuoteDTO stockQuoteDTO;
+    private StockPriceQuoteDTO stockPriceQuoteDTO;
 
     /**
      * Copies the TradeIt position information.
@@ -49,7 +56,6 @@ public class StockPositionDTO extends StockQuoteDTO
     {
         this.costBasis = new BigDecimal( tradeItPosition.getCostbasis() );
         this.holdingType = tradeItPosition.getHoldingType();
-        this.setLastPrice( new BigDecimal( tradeItPosition.getLastPrice() ));
         this.quantity = new BigDecimal( tradeItPosition.getQuantity() );
         this.setTickerSymbol( tradeItPosition.getSymbol() );
         this.symbolClass = tradeItPosition.getSymbolClass();
@@ -184,6 +190,38 @@ public class StockPositionDTO extends StockQuoteDTO
         this.linkedAccountId = linkedAccountId;
     }
 
+    public StockQuoteDTO getStockQuote()
+    {
+        return stockQuoteDTO;
+    }
+
+    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
+    {
+        this.stockQuoteDTO = stockQuoteDTO;
+    }
+
+    public StockPriceQuoteDTO getStockPriceQuote()
+    {
+        return stockPriceQuoteDTO;
+    }
+
+    public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
+    {
+        this.stockPriceQuoteDTO = stockPriceQuoteDTO;
+    }
+
+    @Override
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    @Override
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
     @Override
     public String toString()
     {
@@ -191,17 +229,18 @@ public class StockPositionDTO extends StockQuoteDTO
         sb.append( "tradeItAccountId=" ).append( tradeItAccountId );
         sb.append( ", linkedAccountId=" ).append( linkedAccountId );
         sb.append( ", id=" ).append( super.getId() );
-        sb.append( ", tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", symbolClass='" ).append( symbolClass ).append( '\'' );
         sb.append( ", costBasis=" ).append( costBasis );
         sb.append( ", holdingType='" ).append( holdingType ).append( '\'' );
-        sb.append( ", lastPrice=" ).append( super.getLastPrice() );
         sb.append( ", quantity=" ).append( quantity );
         sb.append( ", todayGainLossAbsolute=" ).append( todayGainLossAbsolute );
         sb.append( ", todayGainLossPercentage=" ).append( todayGainLossPercentage );
         sb.append( ", totalGainLossAbsolute=" ).append( totalGainLossAbsolute );
         sb.append( ", totalGainLossPercentage=" ).append( totalGainLossPercentage );
         sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", stockPriceQuoteDTO=" ).append( stockPriceQuoteDTO );
+        sb.append( ", stockQuoteDTO=" ).append( stockQuoteDTO );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

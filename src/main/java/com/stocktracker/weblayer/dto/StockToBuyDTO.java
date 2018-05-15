@@ -3,7 +3,10 @@ package com.stocktracker.weblayer.dto;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -15,17 +18,20 @@ import java.util.List;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockToBuyDTO extends StockQuoteDTO
+public class StockToBuyDTO extends DatabaseEntityDTO<String>
                            implements NotesSourceIdContainer,
                                       UuidDTO,
                                       CustomerIdContainer,
                                       StockPriceWhenCreatedContainer,
-                                      TagsContainer
+                                      TagsContainer,
+                                      StockPriceQuoteDTOContainer,
+                                      StockQuoteDTOContainer
 
 {
     /*
      * Entity (DB columns)
      */
+    private String tickerSymbol;
     private String customerId;
     private String comments;
     private String notesSourceId;
@@ -36,6 +42,32 @@ public class StockToBuyDTO extends StockQuoteDTO
     private String buyAfterDate;
     private List<String> tags;
     private BigDecimal avgAnalystPriceTarget;
+    private StockPriceQuoteDTO stockPriceQuoteDTO;
+    private StockQuoteDTO stockQuoteDTO;
+
+    @Override
+    public StockPriceQuoteDTO getStockPriceQuote()
+    {
+        return stockPriceQuoteDTO;
+    }
+
+    @Override
+    public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
+    {
+        this.stockPriceQuoteDTO = stockPriceQuoteDTO;
+    }
+
+    @Override
+    public StockQuoteDTO getStockQuote()
+    {
+        return stockQuoteDTO;
+    }
+
+    @Override
+    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
+    {
+        this.stockQuoteDTO = stockQuoteDTO;
+    }
 
     public String getCustomerId()
     {
@@ -114,6 +146,11 @@ public class StockToBuyDTO extends StockQuoteDTO
         this.completed = completed;
     }
 
+    public Boolean getCompleted()
+    {
+        return completed;
+    }
+
     public String getBuyAfterDate()
     {
         return buyAfterDate;
@@ -156,12 +193,24 @@ public class StockToBuyDTO extends StockQuoteDTO
     }
 
     @Override
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    @Override
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
+    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockToBuyQuoteDTO{" );
         sb.append( "id=" ).append( super.getId() );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", comments='" ).append( comments ).append( '\'' );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName=" ).append( notesSourceName );
@@ -171,6 +220,8 @@ public class StockToBuyDTO extends StockQuoteDTO
         sb.append( ", completed='" ).append( completed ).append( '\'' );
         sb.append( ", buyAfterDate='" ).append( buyAfterDate ).append( '\'' );
         sb.append( ", tags=" ).append( tags );
+        sb.append( ", stockPriceQuoteDTO=" ).append( stockPriceQuoteDTO );
+        sb.append( ", stockQuoteDTO=" ).append( stockQuoteDTO );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

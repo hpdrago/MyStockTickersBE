@@ -3,6 +3,9 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
+import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
+import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
+import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -15,10 +18,13 @@ import java.math.BigDecimal;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class PortfolioStockDTO extends StockQuoteDTO
+public class PortfolioStockDTO extends DatabaseEntityDTO<String>
                                implements UuidDTO,
-                                          CustomerIdContainer
+                                          CustomerIdContainer,
+                                          StockPriceQuoteDTOContainer,
+                                          StockQuoteDTOContainer
 {
+    private String tickerSymbol;
     private String customerId;
     private String portfolioId;
     private Integer numberOfShares;
@@ -36,6 +42,46 @@ public class PortfolioStockDTO extends StockQuoteDTO
     /***** Calculated fields *****/
     private Integer marketValue;
     private Integer costBasis;
+
+    private StockQuoteDTO stockQuoteDTO;
+    private StockPriceQuoteDTO stockPriceQuoteDTO;
+
+
+    @Override
+    public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
+    {
+        this.stockPriceQuoteDTO = stockPriceQuoteDTO;
+    }
+
+    @Override
+    public StockPriceQuoteDTO getStockPriceQuote()
+    {
+        return this.stockPriceQuoteDTO;
+    }
+
+    @Override
+    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
+    {
+        this.stockQuoteDTO = stockQuoteDTO;
+    }
+
+    @Override
+    public StockQuoteDTO getStockQuote()
+    {
+        return this.stockQuoteDTO;
+    }
+
+    @Override
+    public String getTickerSymbol()
+    {
+        return tickerSymbol;
+    }
+
+    @Override
+    public void setTickerSymbol( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
 
     public String getCustomerId()
     {
@@ -152,10 +198,17 @@ public class PortfolioStockDTO extends StockQuoteDTO
 
     private void calculateMarketValue()
     {
-        if ( this.numberOfShares != null && this.getLastPrice() != null )
+        if ( this.stockPriceQuoteDTO != null )
         {
-            this.marketValue = (int) (this.numberOfShares.floatValue() *
-                                      this.getLastPrice().floatValue());
+            if ( this.numberOfShares != null && this.stockPriceQuoteDTO.getLastPrice() != null )
+            {
+                this.marketValue = (int) (this.numberOfShares.floatValue() *
+                                          this.stockPriceQuoteDTO.getLastPrice().floatValue());
+            }
+            else
+            {
+                this.marketValue = 0;
+            }
         }
         else
         {
@@ -204,7 +257,7 @@ public class PortfolioStockDTO extends StockQuoteDTO
         sb.append( "id=" ).append( super.getId() );
         sb.append( ", customerId=" ).append( customerId );
         sb.append( ", portfolioId=" ).append( portfolioId );
-        sb.append( ", tickerSymbol='" ).append( super.getTickerSymbol() ).append( '\'' );
+        sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", numberOfShares=" ).append( numberOfShares );
         sb.append( ", averageUnitCost=" ).append( averageUnitCost );
         sb.append( ", realizedGains=" ).append( realizedGains );
@@ -216,6 +269,8 @@ public class PortfolioStockDTO extends StockQuoteDTO
         sb.append( ", sectorId=" ).append( sectorId );
         sb.append( ", marketValue=" ).append( marketValue );
         sb.append( ", costBasis=" ).append( costBasis );
+        sb.append( ", stockPriceQuoteDTO=" ).append( stockPriceQuoteDTO );
+        sb.append( ", stockQuoteDTO=" ).append( stockQuoteDTO );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

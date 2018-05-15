@@ -1,11 +1,9 @@
 package com.stocktracker.weblayer.dto;
 
 import com.stocktracker.repositorylayer.common.VersionedEntity;
-import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
-import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
+import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -18,8 +16,7 @@ import org.springframework.stereotype.Component;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockCompanyDTO extends DatabaseEntityDTO<String>
                              implements VersionedEntity,
-                                        StockCompanyContainer,
-                                        StockCompanyEntityContainer
+                                        StockCompanyDTOContainer
 {
     private String tickerSymbol;
     private String companyName;
@@ -30,21 +27,21 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
     private AsyncCacheEntryState cacheState;
 
     @Override
-    public void setStockCompanyEntity( final StockCompanyEntity stockCompanyEntity )
+    public void setStockCompanyDTO( final StockCompanyDTO stockCompanyEntity )
     {
         BeanUtils.copyProperties( stockCompanyEntity, this );
     }
 
     @Override
-    public void setStockCompanyCacheEntryState( final AsyncCacheEntryState cacheEntryState )
+    public void setStockCompanyCacheEntryState( final AsyncCacheEntryState stockCompanyEntityCacheState )
     {
-        this.cacheState = cacheEntryState;
+        this.cacheState = stockCompanyEntityCacheState;
     }
 
     @Override
-    public void setStockCompanyCacheError( final String cacheError )
+    public void setStockCompanyCacheError( final String stockCompanyCacheError )
     {
-        this.cacheError = cacheError;
+        this.cacheError = stockCompanyCacheError;
     }
 
     public String getTickerSymbol()
