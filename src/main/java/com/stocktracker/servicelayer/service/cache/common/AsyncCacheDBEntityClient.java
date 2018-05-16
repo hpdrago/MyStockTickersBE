@@ -55,21 +55,25 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
              */
             final T entity = this.getEntityService()
                                  .getEntity( receiver.getEntityKey() );
+            logDebug( methodName, "Loaded entity: " + entity );
             receiver.setCachedData( entity );
             /*
              * Check to see if the entity needs to be refreshed.
              */
             if ( this.isCurrent( entity ))
             {
+                logDebug( methodName, "Entity is CURRENT" );
                 receiver.setCacheDataState( CURRENT );
             }
             else
             {
+                logDebug( methodName, "Entity is STALE" );
                 receiver.setCacheDataState( STALE );
                 /*
                  * The entity is STALE and need to be refreshed.  This is the job for the cache to perform this work
                  * asynchronously.
                  */
+                logDebug( methodName, "Making asynchronous fetch" );
                 this.asynchronousFetch( receiver, entity );
             }
         }
@@ -146,12 +150,15 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
                                   .getCacheEntry( searchKey );
         if ( cacheEntry != null )
         {
+            logDebug( methodName, "cacheEntry: {0}", cacheEntry );
             if ( cacheEntry.getFetchState().isFetching() )
             {
+                logDebug( methodName, "Is fetching.  Blocking and waiting" );
                 final T finalCachedData = cachedData;
                 cacheEntry.getFetchSubject()
                           .blockingSubscribe( fetchedData ->
                                               {
+                                                  logDebug( methodName, "Received: " + fetchedData );
                                                   if ( fetchedData != null )
                                                   {
                                                       BeanUtils.copyProperties( fetchedData, finalCachedData );
@@ -172,6 +179,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             }
             else
             {
+                logDebug( methodName, "Not fetching.  Blocking and waiting" );
                 BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
                 receiver.setCachedData( cachedData );
                 receiver.setCacheDataState( CURRENT );

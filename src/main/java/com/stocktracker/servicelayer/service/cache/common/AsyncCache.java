@@ -71,12 +71,14 @@ public abstract class AsyncCache<K extends Serializable,
         final String methodName = "synchronousGet";
         logMethodBegin( methodName, searchKey );
         E returnCacheEntry = null;
-        final E cacheEntry = this.cacheMap.get( searchKey );
+        final E cacheEntry = this.cacheMap
+                                 .get( searchKey );
         /*
          * If null, the item is not in the cache
          */
         if ( cacheEntry == null )
         {
+            logTrace( methodName, "{0} is not in the cache", searchKey );
             returnCacheEntry = this.createCacheEntry();
             returnCacheEntry.setFetchState( FETCHING );
             returnCacheEntry.setCacheState( STALE );
@@ -91,13 +93,16 @@ public abstract class AsyncCache<K extends Serializable,
         {
             if ( cacheEntry.isStale() )
             {
+                logTrace( methodName, "{0} is STALE", searchKey );
                 switch ( cacheEntry.getFetchState() )
                 {
                     case FETCHING:
+                        logTrace( methodName, "{0} already fetching", searchKey );
                         returnCacheEntry = cacheEntry;
                         break;
 
                     case NOT_FETCHING:
+                        logTrace( methodName, "{0} fetching now", searchKey );
                         this.synchronousFetch( searchKey, cacheEntry );
                         returnCacheEntry = cacheEntry;
                         break;
@@ -108,6 +113,7 @@ public abstract class AsyncCache<K extends Serializable,
                 returnCacheEntry = cacheEntry;
             }
         }
+        logTrace( methodName, "cacheEntry: {0}", returnCacheEntry );
         logMethodEnd( methodName, returnCacheEntry );
         return returnCacheEntry;
     }
@@ -125,6 +131,7 @@ public abstract class AsyncCache<K extends Serializable,
         logMethodBegin( methodName, searchKey, cachedData );
         final E cacheEntry = this.asynchronousGet( searchKey );
         cacheEntry.setCachedData( cachedData );
+        logTrace( methodName, "cacheEntry: {0}", cacheEntry );
         logMethodEnd( methodName );
         return cacheEntry;
     }
@@ -144,12 +151,14 @@ public abstract class AsyncCache<K extends Serializable,
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, searchKey );
         E returnCacheEntry = null;
-        final E cacheEntry = this.cacheMap.get( searchKey );
+        final E cacheEntry = this.cacheMap
+                                 .get( searchKey );
         /*
          * If null, the item is not in the cache
          */
         if ( cacheEntry == null )
         {
+            logTrace( methodName, "{0} is not in the map", searchKey );
             returnCacheEntry = this.createCacheEntry();
             returnCacheEntry.setFetchState( FETCHING );
             returnCacheEntry.setCacheState( STALE );
@@ -164,13 +173,17 @@ public abstract class AsyncCache<K extends Serializable,
         {
             if ( cacheEntry.isStale() )
             {
+                cacheEntry.setCacheState( STALE );
+                logTrace( methodName, "{0} is in the map, but is STALE", searchKey );
                 switch ( cacheEntry.getFetchState() )
                 {
                     case FETCHING:
+                        logTrace( methodName, "{0} is currently being fetched", searchKey );
                         returnCacheEntry = cacheEntry;
                         break;
 
                     case NOT_FETCHING:
+                        logTrace( methodName, "{0} is NOT currently being fetched, fetching asynchronously", searchKey );
                         this.asynchronousFetch( searchKey, cacheEntry );
                         returnCacheEntry = cacheEntry;
                         break;
@@ -178,9 +191,11 @@ public abstract class AsyncCache<K extends Serializable,
             }
             else
             {
+                cacheEntry.setCacheState( CURRENT );
                 returnCacheEntry = cacheEntry;
             }
         }
+        logTrace( methodName, "cacheEntry: {0}", cacheEntry );
         logMethodEnd( methodName, returnCacheEntry );
         return returnCacheEntry;
     }
@@ -215,7 +230,7 @@ public abstract class AsyncCache<K extends Serializable,
         {
             cacheEntry.setFetchState( NOT_FETCHING );
         }
-
+        logTrace( methodName, "cacheEntry: {0}", cacheEntry );
         logMethodEnd( methodName, information );
     }
 
@@ -236,6 +251,7 @@ public abstract class AsyncCache<K extends Serializable,
          */
         this.getExecutor()
             .asynchronousFetch( searchKey, cacheEntry.getFetchSubject() );
+        logTrace( methodName, "Subscribing to subject for {0}", searchKey );
         /*
          * Setup the handling to handle the completed request.
          */
@@ -243,20 +259,23 @@ public abstract class AsyncCache<K extends Serializable,
                   .share()
                   .doOnError( throwable ->
                   {
-                      logError( methodName, String.format( "Search Key: %s", searchKey ), throwable );
+                      logError( methodName, String.format( "subscribe.onError for search Key: ", searchKey ), throwable );
                       cacheEntry.setFetchThrowable( throwable );
                       cacheEntry.setCachedData( null );
                       cacheEntry.setFetchState( NOT_FETCHING );
                       cacheEntry.getFetchSubject().onError( throwable );
+                      logTrace( methodName, "cacheEntry: {0}", cacheEntry );
                   })
                   .subscribe( cacheData ->
                   {
-                      logDebug( methodName, "Completed fetch of key {0} value {1}",
+                      logTrace( methodName, "subscribe.onNext fetch of key {0} value {1}",
                                 searchKey, cacheData );
                       cacheEntry.setCachedData( cacheData );
                       cacheEntry.setFetchState( NOT_FETCHING );
                       cacheEntry.setCacheState( CURRENT );
+                      logTrace( methodName, "cacheEntry: {0}", cacheEntry );
                   });
+        logTrace( methodName, "cacheEntry: {0}", cacheEntry );
         logMethodEnd( methodName );
     }
 

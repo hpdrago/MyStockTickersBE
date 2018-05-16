@@ -31,6 +31,8 @@ public abstract class AsyncCacheCacheServiceExecutor<K,T> extends BaseService
         try
         {
             fetchResult = this.synchronousFetch( searchKey );
+            logTrace( methodName, "fetchResult: {0}", fetchResult );
+            logTrace( methodName, "onNext();onComplete();" );
             subject.onNext( fetchResult );
             subject.onComplete();
         }
@@ -38,6 +40,7 @@ public abstract class AsyncCacheCacheServiceExecutor<K,T> extends BaseService
         {
             asyncCacheDataNotFoundException.printStackTrace();
             subject.onError( asyncCacheDataNotFoundException );
+            logTrace( methodName, "onError();" );
         }
         logMethodEnd( methodName, searchKey );
     }

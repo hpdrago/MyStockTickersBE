@@ -549,7 +549,7 @@ public interface MyLogger
         }
         catch ( Exception e )
         {
-            return "AWILogger -> " + e.getMessage();
+            return "AWILogger -> logging exception in method: " + methodName + " error: " + e.getMessage();
         }
     }
 }
