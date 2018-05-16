@@ -44,7 +44,6 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     private BigDecimal peRatio;
     private BigDecimal week52High;
     private BigDecimal week52Low;
-    private BigDecimal week52Change;
     private BigDecimal ytdChangePercent;
     private Timestamp lastQuoteRequestDate;
     private String discontinuedInd;
@@ -60,7 +59,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     }
 
     @Override
-    public void setCacheState( final AsyncCacheEntryState stockQuoteEntityCacheState )
+    public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
@@ -266,15 +265,6 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         this.week52Low = week52Low;
     }
 
-    public BigDecimal getWeek52Change()
-    {
-        return week52Change;
-    }
-    public void setWeek52Change( final BigDecimal week52Change )
-    {
-        this.week52Change = week52Change;
-    }
-
     public BigDecimal getYtdChangePercent()
     {
         return ytdChangePercent;
@@ -348,7 +338,6 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
         sb.append( ", peRatio=" ).append( peRatio );
         sb.append( ", week52High=" ).append( week52High );
         sb.append( ", week52Low=" ).append( week52Low );
-        sb.append( ", week52Change=" ).append( week52Change );
         sb.append( ", ytdChangePercent=" ).append( ytdChangePercent );
         sb.append( ", lastQuoteRequestDate=" ).append( lastQuoteRequestDate );
         sb.append( ", discontinuedInd='" ).append( discontinuedInd ).append( '\'' );

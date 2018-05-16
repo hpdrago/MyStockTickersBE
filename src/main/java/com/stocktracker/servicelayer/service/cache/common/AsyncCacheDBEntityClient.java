@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.STALE;
 
 /**
@@ -135,7 +137,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
      * @param searchKey
      * @return
      */
-    public T getCachedData( final K searchKey )
+    public void getCachedData( final K searchKey, final DR receiver )
     {
         final String methodName = "getCachedData";
         logMethodBegin( methodName, searchKey );
@@ -153,19 +155,26 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
                                                   if ( fetchedData != null )
                                                   {
                                                       BeanUtils.copyProperties( fetchedData, finalCachedData );
+                                                      receiver.setCachedData( fetchedData );
+                                                      receiver.setCacheDataState( CURRENT );
                                                   }
                                                   else
                                                   {
                                                       /*
                                                        * need to figure out what to do here, no one will see this.
                                                        */
-                                                      throw new AsyncCacheDataNotFoundException( searchKey );
+                                                      receiver.setCachedData( finalCachedData );
+                                                      receiver.setCacheDataState( NOT_FOUND );
+                                                      receiver.setCacheError( "Could not find entry for " + searchKey );
+                                                      //throw new AsyncCacheDataNotFoundException( searchKey );
                                                   }
                                               });
             }
             else
             {
                 BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
+                receiver.setCachedData( cachedData );
+                receiver.setCacheDataState( CURRENT );
             }
         }
         else
@@ -174,9 +183,10 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             cachedData = this.getCache()
                              .synchronousGet( searchKey )
                              .getCachedData();
+            receiver.setCachedData( cachedData );
+            receiver.setCacheDataState( CURRENT );
         }
-        logMethodEnd( methodName, cachedData );
-        return cachedData;
+        logMethodEnd( methodName, receiver );
     }
 
     /**

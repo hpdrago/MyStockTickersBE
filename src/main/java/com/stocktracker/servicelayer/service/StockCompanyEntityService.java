@@ -32,8 +32,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                                                                       StockCompanyRepository>
 {
     private StockCompanyRepository stockCompanyRepository;
-    private StockCompanyEntityCache stockCompanyEntityCache;
-    private IEXTradingStockService iexTradingStockService;
     private StockCompanyEntityCacheClient stockCompanyEntityCacheClient;
 
     /**
@@ -77,8 +75,22 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         final String methodName = "getStockCompanyDTO";
         logMethodBegin( methodName, tickerSymbol );
-        final StockCompanyEntity stockCompanyEntity = this.stockCompanyEntityCacheClient.getCachedData( tickerSymbol );
-        final StockCompanyDTO stockCompanyDTO = this.entityToDTO( stockCompanyEntity );
+        /*
+         * Create the cached data receiver.
+         */
+        final StockCompanyEntityCacheDataReceiver receiver = new StockCompanyEntityCacheDataReceiver( tickerSymbol );
+        this.stockCompanyEntityCacheClient.getCachedData( tickerSymbol, receiver );
+        StockCompanyDTO stockCompanyDTO;
+        if ( receiver.getStockCompanyEntity() == null )
+        {
+            stockCompanyDTO = this.context.getBean( StockCompanyDTO.class );
+        }
+        else
+        {
+            stockCompanyDTO = this.entityToDTO( receiver.getStockCompanyEntity() );
+        }
+        stockCompanyDTO.setCacheState( receiver.getCacheState() );
+        stockCompanyDTO.setCacheError( receiver.getError() );
         logMethodEnd( methodName, stockCompanyDTO );
         return stockCompanyDTO;
     }
@@ -231,18 +243,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     public void setStockCompanyRepository( final StockCompanyRepository stockCompanyRepository )
     {
         this.stockCompanyRepository = stockCompanyRepository;
-    }
-
-    @Autowired
-    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
-    {
-        this.iexTradingStockService = iexTradingStockService;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityCache( final StockCompanyEntityCache stockCompanyEntityCache )
-    {
-        this.stockCompanyEntityCache = stockCompanyEntityCache;
     }
 
     @Autowired

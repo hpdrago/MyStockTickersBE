@@ -116,7 +116,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/company/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/company/tickerSymbol/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public StockCompanyDTO getStockCompany( @PathVariable final String tickerSymbol )
@@ -138,7 +138,7 @@ public class StockController extends AbstractController implements MyLogger
      * @return
      */
     @CrossOrigin
-    @RequestMapping( value = CONTEXT_URL + "/quote/{tickerSymbol}",
+    @RequestMapping( value = CONTEXT_URL + "/quote/tickerSymbol/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
     public StockQuoteDTO getStockQuote( @PathVariable final String tickerSymbol )
@@ -148,15 +148,8 @@ public class StockController extends AbstractController implements MyLogger
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be nulls");
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
-        StockQuoteDTO stockQuoteDTO;
-        try
-        {
-            stockQuoteDTO = this.stockQuoteEntityService.getDTO( tickerSymbol );
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            throw new StockNotFoundException( tickerSymbol );
-        }
+        final StockQuoteDTO stockQuoteDTO = this.stockQuoteEntityService
+                                                .getStockQuoteDTO( tickerSymbol );
         logMethodEnd( methodName, stockQuoteDTO );
         return stockQuoteDTO;
     }
