@@ -2,6 +2,13 @@ package com.stocktracker.weblayer.dto.common;
 
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
+/**
+ * This interface defines the methods for DTO's receiving AsyncCache information.
+ * @param <D>
+ */
 public interface AsyncCacheDTOContainer<D>
 {
     /**
@@ -24,5 +31,21 @@ public interface AsyncCacheDTOContainer<D>
      */
     void setCacheError( final String stockQuoteCacheError );
 
+    /**
+     * Set the cache error;
+     * @return
+     */
     String getCacheError();
+
+    /**
+     * Set the expiration time.
+     * @param expirationTime
+     */
+    void setExpirationTime( final Timestamp expirationTime );
+
+    /**
+     * Get the expiration time.
+     * @return
+     */
+    Date getExpirationTime();
 }

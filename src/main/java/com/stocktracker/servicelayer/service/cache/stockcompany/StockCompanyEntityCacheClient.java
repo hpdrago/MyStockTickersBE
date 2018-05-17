@@ -6,6 +6,7 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClie
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,19 +23,6 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
 {
     private StockCompanyEntityCache stockCompanyEntityCache;
     private StockCompanyEntityService stockCompanyEntityService;
-
-    /**
-     * Stock company information is very static so update it if it hasn't been updated before or if the data is older
-     * than a year.
-     * @param entity
-     * @return
-     */
-    @Override
-    protected boolean isCurrent( final StockCompanyEntity entity )
-    {
-        return entity.getUpdateDate() != null &&
-               entity.getUpdateDate().getTime() > System.currentTimeMillis() - TimeUnit.DAYS.convert( 365, TimeUnit.MILLISECONDS );
-    }
 
     /**
      * Get the error message

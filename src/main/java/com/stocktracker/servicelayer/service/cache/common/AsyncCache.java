@@ -72,7 +72,7 @@ public abstract class AsyncCache<K extends Serializable,
         logMethodBegin( methodName, searchKey );
         E returnCacheEntry = null;
         final E cacheEntry = this.cacheMap
-                                 .get( searchKey );
+            .get( searchKey );
         /*
          * If null, the item is not in the cache
          */
@@ -87,6 +87,7 @@ public abstract class AsyncCache<K extends Serializable,
              */
             this.cacheMap
                 .put( searchKey, returnCacheEntry );
+            logTrace( methodName, "Created cache entry: {0}", cacheEntry );
             this.synchronousFetch( searchKey, returnCacheEntry );
         }
         else
@@ -124,16 +125,14 @@ public abstract class AsyncCache<K extends Serializable,
      * @param cachedData The stale data that needs to be refreshed which will be returned in the returned CacheEntry.
      * @return
      */
-    public E asynchronousGet( @NotNull final K searchKey,
-                              @NotNull final T cachedData )
+    public void asynchronousGet( @NotNull final K searchKey,
+                                 @NotNull final T cachedData )
     {
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, searchKey, cachedData );
         final E cacheEntry = this.asynchronousGet( searchKey );
         cacheEntry.setCachedData( cachedData );
-        logTrace( methodName, "cacheEntry: {0}", cacheEntry );
-        logMethodEnd( methodName );
-        return cacheEntry;
+        logMethodEnd( methodName, cacheEntry );
     }
 
     /**
@@ -150,27 +149,28 @@ public abstract class AsyncCache<K extends Serializable,
     {
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, searchKey );
-        E returnCacheEntry = null;
-        final E cacheEntry = this.cacheMap
-                                 .get( searchKey );
+        E cacheEntry = this.cacheMap
+                           .get( searchKey );
         /*
          * If null, the item is not in the cache
          */
         if ( cacheEntry == null )
         {
             logTrace( methodName, "{0} is not in the map", searchKey );
-            returnCacheEntry = this.createCacheEntry();
-            returnCacheEntry.setFetchState( FETCHING );
-            returnCacheEntry.setCacheState( STALE );
+            cacheEntry = this.createCacheEntry();
+            cacheEntry.setFetchState( FETCHING );
+            cacheEntry.setCacheState( STALE );
             /*
              * Store an "empty" cache entry for now
              */
             this.cacheMap
-                .put( searchKey, returnCacheEntry );
-            this.asynchronousFetch( searchKey, returnCacheEntry );
+                .put( searchKey, cacheEntry );
+            logTrace( methodName, "Created cache entry: {0}", cacheEntry );
+            this.asynchronousFetch( searchKey, cacheEntry );
         }
         else
         {
+            logTrace( methodName, "cacheEntry: {0}", cacheEntry );
             if ( cacheEntry.isStale() )
             {
                 cacheEntry.setCacheState( STALE );
@@ -179,25 +179,22 @@ public abstract class AsyncCache<K extends Serializable,
                 {
                     case FETCHING:
                         logTrace( methodName, "{0} is currently being fetched", searchKey );
-                        returnCacheEntry = cacheEntry;
                         break;
 
                     case NOT_FETCHING:
                         logTrace( methodName, "{0} is NOT currently being fetched, fetching asynchronously", searchKey );
+                        cacheEntry.setFetchState( FETCHING );
                         this.asynchronousFetch( searchKey, cacheEntry );
-                        returnCacheEntry = cacheEntry;
                         break;
                 }
             }
             else
             {
                 cacheEntry.setCacheState( CURRENT );
-                returnCacheEntry = cacheEntry;
             }
         }
-        logTrace( methodName, "cacheEntry: {0}", cacheEntry );
-        logMethodEnd( methodName, returnCacheEntry );
-        return returnCacheEntry;
+        logMethodEnd( methodName, cacheEntry );
+        return cacheEntry;
     }
 
     /**

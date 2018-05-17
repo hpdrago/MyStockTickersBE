@@ -1,5 +1,7 @@
 package com.stocktracker.weblayer.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
 import com.stocktracker.weblayer.dto.common.StockQuoteDTOAsyncContainer;
@@ -50,7 +52,8 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
 
     private AsyncCacheEntryState cacheState;
     private String cacheError;
-
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
+    private Timestamp expirationTime;
 
     @Override
     public void setCachedDTO( final StockQuoteDTO dto )
@@ -81,6 +84,17 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     {
         return this.cacheError;
     }
+
+    public Timestamp getExpirationTime()
+    {
+        return expirationTime;
+    }
+
+    public void setExpirationTime( final Timestamp expirationTime )
+    {
+        this.expirationTime = expirationTime;
+    }
+
 
     public String getTickerSymbol()
     {

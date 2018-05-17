@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntity;
 import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -10,13 +11,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_company", schema = "stocktracker", catalog = "" )
 public class StockCompanyEntity extends TickerSymbolEntity
-                                implements StockCompanyContainer
+                                implements StockCompanyContainer,
+                                           AsyncCacheDBEntity<String>
 {
     private String companyName;
     private String website;
@@ -94,6 +99,13 @@ public class StockCompanyEntity extends TickerSymbolEntity
     public boolean isDiscontinued()
     {
         return this.discontinuedInd == null ? false : this.discontinuedInd.equalsIgnoreCase( "Y" );
+    }
+
+    @Transient
+    @Override
+    public Timestamp getExpiration()
+    {
+        return new Timestamp( this.getUpdateDate().getTime() + TimeUnit.DAYS.convert( 365, TimeUnit.MILLISECONDS ));
     }
 
     @Override

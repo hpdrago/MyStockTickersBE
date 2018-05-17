@@ -8,12 +8,14 @@ import com.stocktracker.servicelayer.service.VersionedEntityService;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.STALE;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.NOT_FETCHING;
 
 /**
  * Abstract class that implements the common pattern of obtaining a value from a AsyncCache.
@@ -26,7 +28,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * @param  <S> The entity service.
  */
 public abstract class AsyncCacheDBEntityClient< K extends Serializable,
-                                                T extends VersionedEntity<K>,
+                                                T extends AsyncCacheDBEntity<K>,
                                                CE extends AsyncCacheEntry<T>,
                                                 X extends AsyncCacheServiceExecutor<K,T>,
                                                 C extends AsyncCache<K,T,CE,X>,
@@ -69,12 +71,14 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             {
                 logDebug( methodName, "Entity is STALE" );
                 receiver.setCacheDataState( STALE );
+                receiver.setCachedData( entity );
                 /*
                  * The entity is STALE and need to be refreshed.  This is the job for the cache to perform this work
                  * asynchronously.
                  */
                 logDebug( methodName, "Making asynchronous fetch" );
-                this.asynchronousFetch( receiver, entity );
+                this.getCache()
+                    .asynchronousGet( receiver.getEntityKey(), entity );
             }
         }
         catch( VersionedEntityNotFoundException e )
@@ -85,22 +89,6 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         logMethodEnd( methodName, receiver );
     }
 
-    /**
-     * Fetches the data asynchronously and updates the receiver with the cache state and stale data values from
-     * {@code entity}.
-     * @param receiver
-     * @param entity
-     */
-    protected void asynchronousFetch( final DR receiver, final T entity )
-    {
-        final String methodName = "asynchronousFetch";
-        logMethodBegin( methodName, receiver, entity );
-        final CE cacheEntry = this.getCache()
-                                  .asynchronousGet( receiver.getEntityKey(), entity );
-        receiver.setCacheDataState( cacheEntry.getCacheState() );
-        receiver.setCachedData( cacheEntry.getCachedData() );
-        logMethodEnd( methodName, receiver );
-    }
 
     /**
      * This method is called when no data exists and we need to cache to fetch the data.
@@ -122,7 +110,10 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
      * @param entity
      * @return
      */
-    protected abstract boolean isCurrent( final T entity );
+    protected boolean isCurrent( final T entity )
+    {
+        return entity.getExpiration().getTime() > System.currentTimeMillis();
+    }
 
     /**
      * Get the cache entry
@@ -137,7 +128,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
 
     /**
      * Get the cached data for a search key.  It is assumed that an attempt has been made to determine if the cached
-     * entry exists first.
+     * entry exists first and if the data is stale, the data will be retrieved.
      * @param searchKey
      * @return
      */
@@ -145,6 +136,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
     {
         final String methodName = "getCachedData";
         logMethodBegin( methodName, searchKey );
+
         T cachedData = this.createCachedDataObject();
         final CE cacheEntry = this.getCache()
                                   .getCacheEntry( searchKey );
@@ -155,6 +147,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             {
                 logDebug( methodName, "Is fetching.  Blocking and waiting" );
                 final T finalCachedData = cachedData;
+                final CE finalCacehEntry = cacheEntry;
                 cacheEntry.getFetchSubject()
                           .blockingSubscribe( fetchedData ->
                                               {
@@ -164,25 +157,41 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
                                                       BeanUtils.copyProperties( fetchedData, finalCachedData );
                                                       receiver.setCachedData( fetchedData );
                                                       receiver.setCacheDataState( CURRENT );
+                                                      finalCacehEntry.setFetchState( NOT_FETCHING );
+                                                      finalCacehEntry.setCacheState( CURRENT );
+                                                      finalCacehEntry.setCachedData( fetchedData );
                                                   }
                                                   else
                                                   {
-                                                      /*
-                                                       * need to figure out what to do here, no one will see this.
-                                                       */
-                                                      receiver.setCachedData( finalCachedData );
+                                                      receiver.setCachedData( null );
                                                       receiver.setCacheDataState( NOT_FOUND );
+                                                      finalCacehEntry.setFetchState( NOT_FETCHING );
                                                       receiver.setCacheError( "Could not find entry for " + searchKey );
-                                                      //throw new AsyncCacheDataNotFoundException( searchKey );
                                                   }
                                               });
             }
             else
             {
-                logDebug( methodName, "Not fetching.  Blocking and waiting" );
+                /*
+                 * It's in the cache.
+                 */
+                logDebug( methodName, "It's in the cache and not fetching, checking currency" );
                 BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
-                receiver.setCachedData( cachedData );
-                receiver.setCacheDataState( CURRENT );
+                if ( cacheEntry.isStale() )
+                {
+                    logDebug( methodName, "It's stale" );
+                    cachedData = this.getCache()
+                                     .synchronousGet( searchKey )
+                                     .getCachedData();
+                    receiver.setCachedData( cachedData );
+                    receiver.setCacheDataState( CURRENT );
+                }
+                else
+                {
+                    logDebug( methodName, "It's current" );
+                    receiver.setCachedData( cachedData );
+                    receiver.setCacheDataState( CURRENT );
+                }
             }
         }
         else

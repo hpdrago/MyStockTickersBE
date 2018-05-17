@@ -7,6 +7,8 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClie
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * This interface is used by any class that need information from the {@code StockQuoteEntityCache}.
  */
@@ -21,47 +23,6 @@ public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String
 {
     private StockQuoteEntityCache stockQuoteEntityCache;
     private StockQuoteEntityService stockQuoteEntityService;
-
-    /**
-     * Stock quote information is very static so update it if it hasn't been updated before or if the data is older
-     * than a year.
-     * @param entity
-     * @return
-     */
-    @Override
-    protected boolean isCurrent( final StockQuoteEntity entity )
-    {
-        boolean current = false;
-        if ( TradingHours.isInSession() )
-        {
-            /*
-             * Need to retrieve at the beginning of the session to get the open price.
-             */
-            if ( entity.getUpdateDate().getTime() < TradingHours.getTodaysSessionStartTime() )
-            {
-                current = false;
-            }
-            else
-            {
-                current = true;
-            }
-        }
-        else
-        {
-            /*
-             * If not in session, we need to get the closing values so any time after 4:00pm EST
-             */
-            if ( TradingHours.isAfterSessionEnd( entity.getUpdateDate().getTime() ))
-            {
-                current = true;
-            }
-            else
-            {
-                current = false;
-            }
-        }
-        return current;
-    }
 
     /**
      * Returns the {@code StockQuoteEntityCache} instance.

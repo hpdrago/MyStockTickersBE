@@ -4,6 +4,8 @@ import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 
+import java.util.Date;
+
 /**
  * This class implement the {@code AsyncCacheDataReceiver} interface in order to interact with the {@code StockCompanyAsyncCache}.
  * This class will contain the results of requesting a stock company from the cache.
@@ -14,6 +16,7 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     private StockCompanyEntity stockCompanyEntity;
     private AsyncCacheEntryState cacheState;
     private String error;
+    private Date dataExpiration;
 
     public StockCompanyEntityCacheDataReceiver( final String tickerSymbol )
     {
@@ -79,6 +82,17 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
         this.error = error;
     }
 
+    public Date getDataExpiration()
+    {
+        return dataExpiration;
+    }
+
+    @Override
+    public void setDataExpiration( final Date dataExpiration )
+    {
+        this.dataExpiration = dataExpiration;
+    }
+
     @Override
     public String toString()
     {
@@ -87,6 +101,7 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
         sb.append( ", stockCompanyEntity=" ).append( stockCompanyEntity );
         sb.append( ", cacheState=" ).append( cacheState );
         sb.append( ", error='" ).append( error ).append( '\'' );
+        sb.append( ", dataExpiration='" ).append( dataExpiration ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

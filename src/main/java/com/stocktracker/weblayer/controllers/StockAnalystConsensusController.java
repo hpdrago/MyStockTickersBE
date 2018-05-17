@@ -209,7 +209,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
     @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customerId/{customerId}",
                      method = RequestMethod.PUT )
     public ResponseEntity<StockAnalystConsensusDTO> updateStockAnalystConsensus( @RequestBody StockAnalystConsensusDTO stockAnalystConsensusDTO,
-                                                                                 @PathVariable Integer stockAnalystConsensusId,
+                                                                                 @PathVariable String stockAnalystConsensusId,
                                                                                  @PathVariable String customerId )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,

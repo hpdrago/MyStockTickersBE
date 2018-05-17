@@ -1,6 +1,7 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.TradingHours;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntity;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -11,14 +12,17 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_quote", schema = "stocktracker", catalog = "" )
 public class StockQuoteEntity extends TickerSymbolEntity
+                              implements AsyncCacheDBEntity<String>
 {
     private String calculationPrice;
     private String companyName;
@@ -347,6 +351,57 @@ public class StockQuoteEntity extends TickerSymbolEntity
         this.lastQuoteRequestDate = lastQuoteRequestDate;
     }
 
+    @Transient
+    @Override
+    public Timestamp getExpiration()
+    {
+        Timestamp expirationDate;
+        if ( TradingHours.isInSession() )
+        {
+            /*
+             * Need to retrieve at the beginning of the session to get the open price.
+             */
+            if ( this.getUpdateDate().getTime() < TradingHours.getTodaysSessionStartTime() )
+            {
+                expirationDate = new Timestamp( TradingHours.getTodaysSessionStartTime() );
+            }
+            else // the quote is good for the trading day.
+            {
+                expirationDate = new Timestamp( TradingHours.getTodaysSessionEndTime() );
+            }
+        }
+        else
+        {
+            /*
+             * If not in session, we need to get the closing values so any time after 4:00pm EST
+             */
+            if ( TradingHours.isAfterSessionEnd( this.getUpdateDate().getTime() ))
+            {
+                expirationDate = new Timestamp( TradingHours.getNextDaysSessionStartTime() );
+            }
+            else // expires at the end of the session.
+            {
+                expirationDate = new Timestamp( TradingHours.getTodaysSessionEndTime() );
+            }
+        }
+        return expirationDate;
+    }
+
+    public void copyQuote( final Quote quote )
+    {
+        BeanUtils.copyProperties( quote, this );
+        this.setTickerSymbol( quote.getSymbol() );
+        this.setOpenPrice( quote.getOpen() );
+        this.setClosePrice( quote.getClose() );
+        this.setHighPrice( quote.getHigh() );
+        this.setLowPrice( quote.getLow() );
+        this.setLatestPriceSource( quote.getLatestSource() );
+        this.setLatestPriceTime( quote.getLatestTime() );
+        this.setChangeAmount( quote.getChange() );
+        this.setChangePercent( quote.getChangePercent() );
+        this.setThirtyDayAvgVolume( quote.getAvgTotalVolume() );
+        this.setYtdChangePercent( quote.getYtdChange() );
+    }
 
     @Override
     public String toString()
@@ -379,21 +434,5 @@ public class StockQuoteEntity extends TickerSymbolEntity
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    public void copyQuote( final Quote quote )
-    {
-        BeanUtils.copyProperties( quote, this );
-        this.setTickerSymbol( quote.getSymbol() );
-        this.setOpenPrice( quote.getOpen() );
-        this.setClosePrice( quote.getClose() );
-        this.setHighPrice( quote.getHigh() );
-        this.setLowPrice( quote.getLow() );
-        this.setLatestPriceSource( quote.getLatestSource() );
-        this.setLatestPriceTime( quote.getLatestTime() );
-        this.setChangeAmount( quote.getChange() );
-        this.setChangePercent( quote.getChangePercent() );
-        this.setThirtyDayAvgVolume( quote.getAvgTotalVolume() );
-        this.setYtdChangePercent( quote.getYtdChange() );
     }
 }

@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * This interface is implemented by classes, probably DTO's, that receive cached data from an AsynCache.
@@ -38,4 +39,10 @@ public interface AsyncCacheDataReceiver<EK extends Serializable,T>
      * @param error
      */
     void setCacheError( final String error );
+
+    /**
+     * Sets the date and time when the data will expire.
+     * @param dataExpiration
+     */
+    void setDataExpiration( final Date dataExpiration );
 }

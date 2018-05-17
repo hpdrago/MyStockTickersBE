@@ -227,7 +227,7 @@ public class StockPriceQuoteService extends BaseService
         stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
         stockPriceQuoteDTO.setLastPrice( stockPriceQuoteCacheEntry.getCachedData().getLastPrice() );
         stockPriceQuoteDTO.setCacheState( stockPriceQuoteCacheEntry.getCacheState() );
-        stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheEntry.getExpirationTime() );
+        stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheEntry.getCachedData().getExpirationTime() );
         return stockPriceQuoteDTO;
     }
 

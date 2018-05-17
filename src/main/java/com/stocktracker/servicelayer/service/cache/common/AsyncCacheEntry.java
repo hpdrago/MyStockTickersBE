@@ -1,8 +1,10 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
+import io.reactivex.processors.AsyncProcessor;
 import io.reactivex.processors.BehaviorProcessor;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * This class is the base class for all objects that are cached in the AsyncCache.
@@ -24,7 +26,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * Identifies when the cached data will expire and will become STATE.
      */
-    private Timestamp expirationTime;
+    private Date expirationTime;
 
     /**
      * Identifies if the cached item is in the process of being fetched or not.
@@ -35,7 +37,7 @@ public abstract class AsyncCacheEntry<T>
      * The RxJava subject which is used to register to be notified when the asynchronous process completes.
      * It is also used internally to notify all of the subscribers.
      */
-    private BehaviorProcessor<T> fetchSubject;
+    private AsyncProcessor<T> fetchSubject;
 
     /**
      * The exception if the asynchronous request failed.
@@ -56,7 +58,7 @@ public abstract class AsyncCacheEntry<T>
     public AsyncCacheEntry()
     {
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
-        this.fetchSubject = BehaviorProcessor.create();
+        this.fetchSubject = AsyncProcessor.create();
         this.fetchSubject.serialize();
     }
 
@@ -64,7 +66,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the cachedData object.
      * @param cachedData
      */
-    public void setCachedData( final T cachedData )
+    public synchronized void setCachedData( final T cachedData )
     {
         this.cachedData = cachedData;
     }
@@ -73,7 +75,7 @@ public abstract class AsyncCacheEntry<T>
      * Get the cachedData.
      * @return
      */
-    public T getCachedData()
+    public synchronized T getCachedData()
     {
         return this.cachedData;
     }
@@ -87,7 +89,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * Identifies the cached state: CURRENT, STALE, FAILURE, NOT_FOUND
      */
-    public AsyncCacheEntryState getCacheState()
+    public synchronized AsyncCacheEntryState getCacheState()
     {
         if ( this.isStale() )
         {
@@ -100,17 +102,17 @@ public abstract class AsyncCacheEntry<T>
      * Set the cache state
      * @param cacheState
      */
-    protected void setCacheState( AsyncCacheEntryState cacheState )
+    protected synchronized void setCacheState( AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
 
-    public long getLastRefreshTime()
+    public synchronized long getLastRefreshTime()
     {
         return lastRefreshTime;
     }
 
-    protected void setLastRefreshTime( long lastRefreshTime )
+    protected synchronized void setLastRefreshTime( long lastRefreshTime )
     {
         this.lastRefreshTime = lastRefreshTime;
     }
@@ -118,7 +120,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * Determines when the stock price is stale.  Stock prices are stale after 15 minutes during trading hours.
      */
-    public Timestamp  getExpirationTime()
+    public synchronized Date getExpirationTime()
     {
         return expirationTime;
     }
@@ -127,7 +129,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the expiration time.
      * @param expirationTime
      */
-    protected void setExpirationTime( Timestamp expirationTime )
+    protected synchronized void setExpirationTime( Date expirationTime )
     {
         this.expirationTime = expirationTime;
     }
@@ -135,7 +137,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * Determines if the stock price is currently being fetched.
      */
-    public AsyncCacheFetchState getFetchState()
+    public synchronized AsyncCacheFetchState getFetchState()
     {
         return fetchState;
     }
@@ -144,7 +146,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the fetch state.
      * @param fetchState
      */
-    protected void setFetchState( AsyncCacheFetchState fetchState )
+    protected synchronized void setFetchState( AsyncCacheFetchState fetchState )
     {
         this.fetchState = fetchState;
     }
@@ -152,7 +154,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * The RxJava subject to contain any requests waiting for the stock price while it's being fetched.
      */
-    public BehaviorProcessor<T> getFetchSubject()
+    public synchronized AsyncProcessor<T> getFetchSubject()
     {
         return fetchSubject;
     }
@@ -160,7 +162,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * The exception if any occurred while fetchingProcessCashBatch.
      */
-    public Throwable getFetchThrowable()
+    public synchronized Throwable getFetchThrowable()
     {
         return fetchThrowable;
     }
@@ -169,7 +171,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the exception throwable.
      * @param fetchThrowable
      */
-    protected void setFetchThrowable( final Throwable fetchThrowable )
+    protected synchronized void setFetchThrowable( final Throwable fetchThrowable )
     {
         this.fetchThrowable = fetchThrowable;
     }
@@ -178,7 +180,7 @@ public abstract class AsyncCacheEntry<T>
      * Returns try if the entry has expired.
      * @return
      */
-    public boolean isStale()
+    public synchronized boolean isStale()
     {
         return System.currentTimeMillis() > this.expirationTime.getTime();
     }
@@ -186,7 +188,8 @@ public abstract class AsyncCacheEntry<T>
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "AsyncCacheEntry{" );
+        final StringBuilder sb = new StringBuilder( "AsyncCacheEntry" );
+        sb.append( "@" ).append( hashCode() ).append( "{" );
         sb.append( "cacheState=" ).append( cacheState );
         sb.append( ", lastRefreshTime=" ).append( lastRefreshTime );
         sb.append( ", expirationTime=" ).append( expirationTime );

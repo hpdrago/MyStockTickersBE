@@ -5,6 +5,7 @@ import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
+import io.reactivex.processors.AsyncProcessor;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -76,7 +77,7 @@ public class StockPriceQuoteServiceExecutor extends AsyncCacheCacheServiceExecut
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final String tickerSymbol, final BehaviorProcessor<StockPriceQuote> subject )
+    public void asynchronousFetch( final String tickerSymbol, final AsyncProcessor<StockPriceQuote> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );

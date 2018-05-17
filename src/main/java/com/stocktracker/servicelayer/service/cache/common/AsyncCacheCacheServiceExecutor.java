@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import com.stocktracker.servicelayer.service.BaseService;
+import io.reactivex.processors.AsyncProcessor;
 import io.reactivex.processors.BehaviorProcessor;
 
 import javax.validation.constraints.NotNull;
@@ -23,7 +24,7 @@ public abstract class AsyncCacheCacheServiceExecutor<K,T> extends BaseService
      *
      * @param searchKey
      */
-    public void asynchronousFetch( @NotNull final K searchKey, @NotNull final BehaviorProcessor<T> subject )
+    public void asynchronousFetch( @NotNull final K searchKey, @NotNull final AsyncProcessor<T> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, searchKey );

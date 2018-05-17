@@ -7,6 +7,7 @@ import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
+import io.reactivex.processors.AsyncProcessor;
 import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -65,7 +66,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final String tickerSymbol, final BehaviorProcessor<StockCompanyEntity> subject )
+    public void asynchronousFetch( final String tickerSymbol, final AsyncProcessor<StockCompanyEntity> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );

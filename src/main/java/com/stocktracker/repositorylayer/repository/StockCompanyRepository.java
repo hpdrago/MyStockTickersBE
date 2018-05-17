@@ -16,7 +16,7 @@ public interface StockCompanyRepository extends JpaRepository<StockCompanyEntity
     @Cacheable
     StockCompanyEntity findByTickerSymbol( final String tickerSymbol );
 
-    @Cacheable
+    @Cacheable("companyCache")
     Page<StockCompanyEntity> findByCompanyNameIsLikeOrTickerSymbolIsLike( Pageable pageRequest,
                                                                           String companyNameMatching,
                                                                           String tickerSymbolMatching );

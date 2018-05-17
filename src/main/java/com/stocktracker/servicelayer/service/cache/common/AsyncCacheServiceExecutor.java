@@ -1,6 +1,8 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
+import io.reactivex.processors.AsyncProcessor;
 import io.reactivex.processors.BehaviorProcessor;
+import org.reactivestreams.Processor;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,5 +28,5 @@ public interface AsyncCacheServiceExecutor<K,T>
      * @param searchKey
      * @return Observable of result.
      */
-    void asynchronousFetch( @NotNull final K searchKey, @NotNull final BehaviorProcessor<T> observable );
+    void asynchronousFetch( @NotNull final K searchKey, @NotNull final AsyncProcessor<T> observable );
 }
