@@ -27,37 +27,21 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
      * @return
      * @Throws IllegalArgumentException when customerId <= 0 and if tickerSymbol is null
      */
-    public StockAnalystConsensusDTO getStockAnalystConsensus( final UUID customerUuid, final String tickerSymbol )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusPage( @NotNull final Pageable pageRequest,
+                                                                        @NotNull final UUID customerUuid,
+                                                                        @NotNull final String tickerSymbol )
     {
-        final String methodName = "getStockAnalystConsensus";
+        final String methodName = "getStockAnalystConsensusPage";
         logMethodBegin( methodName, customerUuid, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
-        StockAnalystConsensusEntity stockAnalystConsensusEntity = this.stockAnalystConsensusRepository
-                                                                      .findByCustomerUuidAndTickerSymbol( customerUuid, tickerSymbol );
-        StockAnalystConsensusDTO stockAnalystConsensusDTO = null;
-        if ( stockAnalystConsensusEntity != null )
-        {
-            stockAnalystConsensusDTO = this.entityToDTO( stockAnalystConsensusEntity );
-        }
-        logMethodEnd( methodName, stockAnalystConsensusDTO );
-        return stockAnalystConsensusDTO;
-    }
-
-    /**
-     * Gets all of the consensus rows for the customer.
-     * @param customerUuid
-     * @return
-     */
-    public List<StockAnalystConsensusDTO> getAllStockAnalystConsensus( final UUID customerUuid )
-    {
-        final String methodName = "getAllStockAnalystConsensusList";
-        logMethodBegin( methodName, customerUuid );
-        Objects.requireNonNull( customerUuid, "customerId cannot be null" );
-        final List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
-                                                                                    .findByCustomerUuid( customerUuid );
-        final List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
-        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " records" );
+        final Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+                                                                                    .findByCustomerUuidAndTickerSymbol( pageRequest,
+                                                                                                                        customerUuid,
+                                                                                                                        tickerSymbol );
+        final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
+                                                                                              stockAnalystConsensusEntities );
+        logMethodEnd( methodName, stockAnalystConsensusDTOS );
         return stockAnalystConsensusDTOS;
     }
 
@@ -75,10 +59,29 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         logMethodBegin( methodName, pageRequest, customerUuid );
         Objects.requireNonNull( customerUuid, "customerId cannot be null" );
         final Page<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
-                                                                                    .findByCustomerUuid( pageRequest, customerUuid );
+                                                                                    .findByCustomerUuid( pageRequest,
+                                                                                                         customerUuid );
         final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( pageRequest,
                                                                                               stockAnalystConsensusEntities );
         logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.getContent().size() + " records" );
+        return stockAnalystConsensusDTOS;
+    }
+
+
+    /**
+     * Gets all of the consensus rows for the customer.
+     * @param customerUuid
+     * @return
+     */
+    public List<StockAnalystConsensusDTO> getAllStockAnalystConsensus( final UUID customerUuid )
+    {
+        final String methodName = "getAllStockAnalystConsensusList";
+        logMethodBegin( methodName, customerUuid );
+        Objects.requireNonNull( customerUuid, "customerId cannot be null" );
+        final List<StockAnalystConsensusEntity> stockAnalystConsensusEntities = this.stockAnalystConsensusRepository
+                                                                                    .findByCustomerUuid( customerUuid );
+        final List<StockAnalystConsensusDTO> stockAnalystConsensusDTOS = this.entitiesToDTOs( stockAnalystConsensusEntities );
+        logMethodEnd( methodName, "Found " + stockAnalystConsensusEntities.size() + " records" );
         return stockAnalystConsensusDTOS;
     }
 
@@ -140,5 +143,4 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
     {
         this.stockAnalystConsensusRepository = stockAnalystConsensusRepository;
     }
-
 }

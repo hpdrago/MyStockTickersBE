@@ -80,7 +80,32 @@ public class StockAnalystConsensusController extends AbstractController implemen
         final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
                                                                              .getStockAnalystConsensusPage( pageRequest,
                                                                                                             UUIDUtil.uuid( customerId ));
-        logMethodEnd( methodName, "stockAnalystConsensus: " + stockAnalystConsensusDTOs.getContent() );
+        logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
+        return stockAnalystConsensusDTOs;
+    }
+
+    /**
+     * Get a page of the stock analyst consensus for a customer and a ticker symbol.
+     * @return
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
+     */
+    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public Page<StockAnalystConsensusDTO> getStockAnalystConsensusPage( final Pageable pageRequest,
+                                                                        @PathVariable String tickerSymbol,
+                                                                        @PathVariable String customerId )
+        throws CustomerNotFoundException,
+               NotAuthorizedException
+    {
+        final String methodName = "getStockAnalystConsensusPage";
+        logMethodBegin( methodName, customerId, tickerSymbol );
+        this.validateCustomerId( customerId );
+        final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
+                                                                             .getStockAnalystConsensusPage( pageRequest,
+                                                                                                            UUIDUtil.uuid( customerId ),
+                                                                                                            tickerSymbol );
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }
