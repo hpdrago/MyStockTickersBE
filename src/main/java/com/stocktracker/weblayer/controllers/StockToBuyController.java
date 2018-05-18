@@ -41,14 +41,36 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/page/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyDTO> getStockStockToBuy( final Pageable pageRequest,
-                                                   final @NotNull @PathVariable String customerId )
+    public Page<StockToBuyDTO> getStockStockToBuyPage( final Pageable pageRequest,
+                                                       final @NotNull @PathVariable String customerId )
     {
-        final String methodName = "getStockStockToBuy";
+        final String methodName = "getStockStockToBuyPage";
         logMethodBegin( methodName, pageRequest, customerId );
         Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerUuid( pageRequest,
                                                                                     UUIDUtil.uuid( customerId ));
+        logDebug( methodName, "StocksToBuy: {0}", stockToBuyDTOs.getContent() );
+        logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
+        return stockToBuyDTOs;
+    }
+
+    /**
+     * Get all of the stock to buy for a customer and a ticker symbol
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public Page<StockToBuyDTO> getStockStockToBuyPage( final Pageable pageRequest,
+                                                       final @NotNull @PathVariable String customerId,
+                                                       final @NotNull @PathVariable String tickerSymbol )
+    {
+        final String methodName = "getStockStockToBuyPage";
+        logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
+        Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
+                                                 .getStockToBuyListForCustomerUuidAndTickerSymbol( pageRequest,
+                                                                                    UUIDUtil.uuid( customerId ),
+                                                                                                   tickerSymbol );
         logDebug( methodName, "StocksToBuy: {0}", stockToBuyDTOs.getContent() );
         logMethodEnd( methodName, "stockToBuyDTOs size: " + stockToBuyDTOs.getContent().size() );
         return stockToBuyDTOs;

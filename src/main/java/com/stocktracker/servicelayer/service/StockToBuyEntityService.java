@@ -60,7 +60,22 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
                                                         .findByCustomerUuid( pageRequest, customerUuid );
         Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
-        logDebug( methodName, "stockToBuyList: {0}", stockToBuyDTOs );
+        logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
+        return stockToBuyDTOs;
+    }
+
+    public Page<StockToBuyDTO> getStockToBuyListForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
+                                                                                @NotNull final UUID customerUuid,
+                                                                                @NotNull final String tickerSymbol )
+    {
+        final String methodName = "getStockToBuyListForCustomerUuidAndTickerSymbol";
+        logMethodBegin( methodName, pageRequest, customerUuid, tickerSymbol );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Page<StockToBuyEntity> stockToBuyEntities = this.stockToBuyRepository
+                                                        .findByCustomerUuidAndTickerSymbol( pageRequest, customerUuid,
+                                                                                            tickerSymbol );
+        Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
         return stockToBuyDTOs;
     }
