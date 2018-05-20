@@ -322,9 +322,7 @@ UNLOCK TABLES;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stock_analyst_consensus_BEFORE_INSERT` BEFORE INSERT ON `stock_analyst_consensus` FOR EACH ROW BEGIN    
     SET NEW.UPDATE_DATE = current_timestamp();
-    /*
-     * If any sentient changes, then change the last sentiment date
-     */
+    
 	IF NEW.ANALYST_STRONG_BUY_COUNT > 0 OR
        NEW.ANALYST_BUY_COUNT > 0  OR
        NEW.ANALYST_HOLD_COUNT > 0  OR
@@ -334,9 +332,7 @@ DELIMITER ;;
 		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
 	END IF;
 		
-    /*
-     * If any price sentient changes, then change the last price sentiment date
-     */    
+        
     IF NEW.AVG_ANALYST_PRICE_TARGET > 0 OR
        NEW.LOW_ANALYST_PRICE_TARGET > 0 OR
        NEW.HIGH_ANALYST_PRICE_TARGET > 0
@@ -379,9 +375,7 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`stocktracker`@`%`*/ /*!50003 TRIGGER `stock_analyst_consensus_BEFORE_UPDATE` BEFORE UPDATE ON `stock_analyst_consensus` FOR EACH ROW BEGIN
     DECLARE ErrorMessage VARCHAR(200);
-    /*
-     * Ensure that we are looking at the same version of the row, if not throw an exception
-     */
+    
     IF NEW.VERSION <> OLD.VERSION
     THEN
 		SET ErrorMessage = 'VERSION MISMATCH version 1: ';
@@ -390,17 +384,11 @@ DELIMITER ;;
         SET ErrorMessage = CONCAT( ErrorMessage, version2 );
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ErrorMessage;
     END IF;
-    /*
-     * Set the update date
-     */
+    
 	SET NEW.UPDATE_DATE = current_timestamp();
-    /*
-     * Increment the version number
-     */
+    
     SET NEW.VERSION = OLD.VERSION + 1;
-    /*
-     * If any sentient changes, then change the last sentiment date
-     */
+    
 	IF NEW.ANALYST_STRONG_BUY_COUNT    <> OLD.ANALYST_STRONG_BUY_COUNT OR
        NEW.ANALYST_BUY_COUNT           <> OLD.ANALYST_BUY_COUNT OR
        NEW.ANALYST_HOLD_COUNT          <> OLD.ANALYST_HOLD_COUNT OR
@@ -410,9 +398,7 @@ DELIMITER ;;
 		SET NEW.ANALYST_SENTIMENT_DATE = CURRENT_TIMESTAMP();
 	END IF;
 		
-    /*
-     * If any price target changes, then change the last price date
-     */    
+        
     IF NEW.AVG_ANALYST_PRICE_TARGET  <> OLD.AVG_ANALYST_PRICE_TARGET OR
        NEW.LOW_ANALYST_PRICE_TARGET  <> OLD.LOW_ANALYST_PRICE_TARGET OR
        NEW.HIGH_ANALYST_PRICE_TARGET <> OLD.HIGH_ANALYST_PRICE_TARGET
@@ -420,9 +406,7 @@ DELIMITER ;;
        SET NEW.ANALYST_PRICE_DATE = CURRENT_TIMESTAMP();
 	END IF;
     
-    /*
-     * When the source note changes, then update the used count appropriately.
-     */
+    
 	IF NEW.notes_source_uuid <> OLD.notes_source_uuid 
     THEN
 		UPDATE stock_note_source
@@ -883,9 +867,7 @@ DELIMITER ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `stock_to_buy_BEFORE_UPDATE` BEFORE UPDATE ON `stock_to_buy` FOR EACH ROW BEGIN
-    /*
-     * When the source note changes, then update the used count appropriately.
-     */
+    
 	IF NEW.notes_source_uuid <> OLD.notes_source_uuid 
     THEN
 		UPDATE stock_note_source
@@ -989,4 +971,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-05-18 15:49:45
+-- Dump completed on 2018-05-20 16:01:39
