@@ -46,21 +46,23 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Create the cached data receiver.
          */
-        final StockCompanyEntityCacheDataReceiver receiver = new StockCompanyEntityCacheDataReceiver( container.getTickerSymbol() );
+        final StockCompanyEntityCacheDataReceiver receiver = this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
+        receiver.setCacheKey( container.getTickerSymbol() );
         /*
          * Get the cached data or make an asynchronous request for the data.
          */
-        this.stockCompanyEntityCacheClient.setCachedData( receiver );
+        this.stockCompanyEntityCacheClient
+            .setCachedData( receiver );
         /*
          * Set the cache data and status results.
          */
-        if ( receiver.getStockCompanyEntity() != null )
+        if ( receiver.getCachedData() != null )
         {
-            final StockCompanyDTO stockCompanyDTO = this.entityToDTO( receiver.getStockCompanyEntity() );
+            final StockCompanyDTO stockCompanyDTO = this.entityToDTO( receiver.getCachedData() );
             container.setStockCompanyDTO( stockCompanyDTO );
         }
-        container.setStockCompanyCacheEntryState( receiver.getCacheState() );
-        container.setStockCompanyCacheError( receiver.getError() );
+        container.setStockCompanyCacheEntryState( receiver.getCacheDataState() );
+        container.setStockCompanyCacheError( receiver.getCacheError() );
         logMethodEnd( methodName, container );
     }
 
@@ -78,19 +80,20 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         /*
          * Create the cached data receiver.
          */
-        final StockCompanyEntityCacheDataReceiver receiver = new StockCompanyEntityCacheDataReceiver( tickerSymbol );
+        final StockCompanyEntityCacheDataReceiver receiver = this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
+        receiver.setCacheKey( tickerSymbol );
         this.stockCompanyEntityCacheClient.getCachedData( tickerSymbol, receiver );
         StockCompanyDTO stockCompanyDTO;
-        if ( receiver.getStockCompanyEntity() == null )
+        if ( receiver.getCachedData() == null )
         {
             stockCompanyDTO = this.context.getBean( StockCompanyDTO.class );
         }
         else
         {
-            stockCompanyDTO = this.entityToDTO( receiver.getStockCompanyEntity() );
+            stockCompanyDTO = this.entityToDTO( receiver.getCachedData() );
         }
-        stockCompanyDTO.setCacheState( receiver.getCacheState() );
-        stockCompanyDTO.setCacheError( receiver.getError() );
+        stockCompanyDTO.setCacheState( receiver.getCacheDataState() );
+        stockCompanyDTO.setCacheError( receiver.getCacheError() );
         logMethodEnd( methodName, stockCompanyDTO );
         return stockCompanyDTO;
     }

@@ -1,13 +1,10 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
-import com.stocktracker.common.TradingHours;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 /**
  * This interface is used by any class that need information from the {@code StockQuoteEntityCache}.

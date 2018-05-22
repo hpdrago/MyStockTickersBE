@@ -11,16 +11,22 @@ import java.util.Date;
  * 3. Error - A string value of any errors that occurred during the fetching of the data.
  * --4. Exception - Any exceptions that occurred during the fetching of the cached data.
  *
- * <EK> The entity key.
- *  <T> The entity type.
+ * <K> The cache key type.
+ * <T> The cached data type.
  */
-public interface AsyncCacheDataReceiver<EK extends Serializable,T>
+public interface AsyncCacheDataReceiver<K extends Serializable,T>
 {
     /**
-     * Get the entity key value.
+     * Set the cache key.
+     * @param cacheKey
+     */
+    void setCacheKey( final K cacheKey );
+
+    /**
+     * Get the cache key value.
      * @return
      */
-    EK getEntityKey();
+    K getCacheKey();
 
     /**
      * Set the cached data on the receiver.
@@ -29,10 +35,22 @@ public interface AsyncCacheDataReceiver<EK extends Serializable,T>
     void setCachedData( final T cachedData );
 
     /**
+     * Get the cached data that was set by the cache.
+     * @return
+     */
+    T getCachedData();
+
+    /**
      * Set the state of the cached data (STALE, CURRENT, ERROR).
      * @param cacheState
      */
     void setCacheDataState( final AsyncCacheEntryState cacheState );
+
+    /**
+     * Get the state of the cached data.
+     * @return
+     */
+    AsyncCacheEntryState getCacheDataState();
 
     /**
      * Set the the error message if an exception occured while fetching.
@@ -41,8 +59,20 @@ public interface AsyncCacheDataReceiver<EK extends Serializable,T>
     void setCacheError( final String error );
 
     /**
+     * Get the error message for exceptions encoutered in the cache.
+     * @return
+     */
+    String getCacheError();
+
+    /**
      * Sets the date and time when the data will expire.
      * @param dataExpiration
      */
     void setDataExpiration( final Date dataExpiration );
+
+    /**
+     * Get the expiration date.
+     * @return
+     */
+    Date getDataExpiration();
 }

@@ -1,10 +1,12 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheData;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
@@ -18,7 +20,7 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuote
+public class StockPriceQuote implements AsyncCacheData
 {
     private String tickerSymbol;
     private BigDecimal lastPrice;
@@ -86,6 +88,17 @@ public class StockPriceQuote
     public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
+    }
+
+    /**
+     * Get the expiration time.
+     * @return
+     */
+    @Override
+    @Transient
+    public Timestamp getExpiration()
+    {
+        return this.expirationTime;
     }
 
     @Override

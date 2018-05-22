@@ -11,23 +11,4 @@ import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 public interface StockQuoteEntityContainer extends TickerSymbolContainer,
                                                    AsyncCacheDataReceiver<String,StockQuoteEntity>
 {
-    /**
-     * This method is called to set the {@code StockQuoteEntity}.  Classes implementing this interface can then
-     * extract any or all of the Stock Quote (IEXTrading Quote) properties as needed.
-     * @param stockQuoteEntity
-     */
-    //void setStockQuoteEntity( final StockQuoteEntity stockQuoteEntity );
-
-    /**
-     * This method is called to set the state of the {@code StockQuoteEntity} received from the stock quote cache.
-     * @param stockQuoteEntityCacheState
-     */
-    //void setStockQuoteCacheEntryState( final AsyncCacheEntryState stockQuoteEntityCacheState );
-
-    /**
-     * This method is called to set the error encoutered while retrieving the Quote from IEXTrading.
-     * @param stockQuoteCacheError
-     */
-    //void setStockQuoteCacheError( final String stockQuoteCacheError );
-
 }

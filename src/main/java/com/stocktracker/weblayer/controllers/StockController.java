@@ -90,24 +90,16 @@ public class StockController extends AbstractController implements MyLogger
     @RequestMapping( value = CONTEXT_URL + "/stockPriceQuote/{tickerSymbol}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<StockPriceQuoteDTO> getStockPriceQuote( @PathVariable final String tickerSymbol )
+    public StockPriceQuoteDTO getStockPriceQuote( @PathVariable final String tickerSymbol )
     {
         final String methodName = "getStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be nulls");
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
-        StockPriceQuoteDTO stockPriceQuoteDTO = null;
-        HttpStatus httpStatus = HttpStatus.OK;
-        stockPriceQuoteDTO = this.stockPriceQuoteService
-                                 .getSynchronousStockPriceQuote( tickerSymbol );
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation( ServletUriComponentsBuilder
-                                     .fromCurrentRequest()
-                                     .path( "" )
-                                     .buildAndExpand( stockPriceQuoteDTO )
-                                     .toUri());
+        final StockPriceQuoteDTO stockPriceQuoteDTO = this.stockPriceQuoteService
+                                                          .getSynchronousStockPriceQuote( tickerSymbol );
         logMethodEnd( methodName, stockPriceQuoteDTO );
-        return new ResponseEntity<>( stockPriceQuoteDTO, httpHeaders, httpStatus );
+        return stockPriceQuoteDTO;
     }
 
     /**

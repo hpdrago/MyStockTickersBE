@@ -1,6 +1,5 @@
-package com.stocktracker.servicelayer.service.cache.stockquote;
+package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
-import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -9,58 +8,40 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-/**
- * This class implements the {@code AsyncCacheDataReceiver} interface in order to interact with the {@code StockQuoteAsyncCache}.
- * This class will contain the results of requesting a stock quote from the cache.  It will then be used to by the
- * {@code StockQuoteEntityService} to set the quote values on the target target class that is requesting stock quote
- * information.
- */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver<String,StockQuoteEntity>
+public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<String,StockPriceQuote>
 {
     private String tickerSymbol;
-    private StockQuoteEntity stockQuoteEntity;
+    private StockPriceQuote stockPriceQuote;
     private AsyncCacheEntryState cacheState;
     private String error;
     private Date dataExpiration;
 
     @Override
-    public void setCacheKey( final String key )
+    public void setCacheKey( final String cacheKey )
     {
-        this.tickerSymbol = key;
+        this.tickerSymbol = cacheKey;
     }
 
-    /**
-     * Key used to retrieve the {@code StockQuoteEntity} from the database.
-     * @return
-     */
     @Override
     public String getCacheKey()
     {
         return this.tickerSymbol;
     }
 
-    /**
-     * Set the StockQuoteEntity data.
-     * @param stockQuoteEntity
-     */
     @Override
-    public void setCachedData( final StockQuoteEntity stockQuoteEntity )
+    public void setCachedData( final StockPriceQuote stockPriceQuote )
     {
-        this.stockQuoteEntity = stockQuoteEntity;
+        this.stockPriceQuote = stockPriceQuote;
     }
 
     @Override
-    public StockQuoteEntity getCachedData()
+    public StockPriceQuote getCachedData()
     {
-        return this.stockQuoteEntity;
+        return this.stockPriceQuote;
     }
 
-    /**
-     * Set the cache data state.
-     * @param cacheState
-     */
     @Override
     public void setCacheDataState( final AsyncCacheEntryState cacheState )
     {
@@ -73,10 +54,6 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
         return this.cacheState;
     }
 
-    /**
-     * Set the error value from the asynchronous fetch process.
-     * @param error
-     */
     @Override
     public void setCacheError( final String error )
     {
@@ -86,7 +63,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     @Override
     public String getCacheError()
     {
-        return this.error;
+        return null;
     }
 
     @Override
@@ -95,18 +72,27 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
         this.dataExpiration = dataExpiration;
     }
 
-    @Override
     public Date getDataExpiration()
     {
-        return this.dataExpiration;
+        return dataExpiration;
+    }
+
+    public AsyncCacheEntryState getCacheState()
+    {
+        return cacheState;
+    }
+
+    public void setCacheState( final AsyncCacheEntryState cacheState )
+    {
+        this.cacheState = cacheState;
     }
 
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockQuoteEntityCacheDataReceiver{" );
+        final StringBuilder sb = new StringBuilder( "StockPriceQuoteDataReceiver{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", stockQuoteEntity=" ).append( stockQuoteEntity );
+        sb.append( ", stockPriceQuote=" ).append( stockPriceQuote );
         sb.append( ", cacheState=" ).append( cacheState );
         sb.append( ", error='" ).append( error ).append( '\'' );
         sb.append( ", dataExpiration=" ).append( dataExpiration );

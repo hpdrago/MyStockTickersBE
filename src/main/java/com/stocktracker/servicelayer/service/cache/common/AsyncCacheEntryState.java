@@ -29,6 +29,7 @@ public enum AsyncCacheEntryState
     public boolean isCurrent() { return this == CURRENT; }
     public boolean isStale() { return this == STALE; }
     public boolean isNotFound() { return this == NOT_FOUND; }
+    public boolean isFailure() { return this == FAILURE; }
 
 
     @JsonValue

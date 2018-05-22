@@ -3,6 +3,9 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
@@ -10,6 +13,8 @@ import java.util.Date;
  * This class implement the {@code AsyncCacheDataReceiver} interface in order to interact with the {@code StockCompanyAsyncCache}.
  * This class will contain the results of requesting a stock company from the cache.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiver<String,StockCompanyEntity>
 {
     private String tickerSymbol;
@@ -18,48 +23,14 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     private String error;
     private Date dataExpiration;
 
-    public StockCompanyEntityCacheDataReceiver( final String tickerSymbol )
+    @Override
+    public void setCacheKey( final String cacheKey )
     {
-        this.tickerSymbol = tickerSymbol;
-    }
-
-    public String getTickerSymbol()
-    {
-        return tickerSymbol;
-    }
-
-    public void setTickerSymbol( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
-    public StockCompanyEntity getStockCompanyEntity()
-    {
-        return stockCompanyEntity;
-    }
-
-    public void setStockCompanyEntity( final StockCompanyEntity stockCompanyEntity )
-    {
-        this.stockCompanyEntity = stockCompanyEntity;
-    }
-
-    public AsyncCacheEntryState getCacheState()
-    {
-        return cacheState;
-    }
-
-    public void setCacheState( final AsyncCacheEntryState cacheState )
-    {
-        this.cacheState = cacheState;
-    }
-
-    public String getError()
-    {
-        return error;
+        this.tickerSymbol = cacheKey;
     }
 
     @Override
-    public String getEntityKey()
+    public String getCacheKey()
     {
         return this.tickerSymbol;
     }
@@ -71,9 +42,21 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     }
 
     @Override
+    public StockCompanyEntity getCachedData()
+    {
+        return this.stockCompanyEntity;
+    }
+
+    @Override
     public void setCacheDataState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
+    }
+
+    @Override
+    public AsyncCacheEntryState getCacheDataState()
+    {
+        return this.cacheState;
     }
 
     @Override
@@ -82,6 +65,13 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
         this.error = error;
     }
 
+    @Override
+    public String getCacheError()
+    {
+        return null;
+    }
+
+    @Override
     public Date getDataExpiration()
     {
         return dataExpiration;
