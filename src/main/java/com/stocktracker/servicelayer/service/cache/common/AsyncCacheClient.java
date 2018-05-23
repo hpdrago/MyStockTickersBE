@@ -45,6 +45,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         logDebug( methodName, "Making asynchronous fetch for: {0}", key );
         final CE cacheEntry = this.getCache()
                                   .asynchronousGet( receiver.getCacheKey() );
+        logDebug( methodName, "cacheEntry: {0}", cacheEntry );
         receiver.setCacheDataState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
         if ( cacheEntry.getCacheState().isFailure() )
@@ -101,7 +102,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
             {
                 logDebug( methodName, "Is fetching.  Blocking and waiting" );
                 final T finalCachedData = cachedData;
-                final CE finalCacehEntry = cacheEntry;
+                final CE finalCacheEntry = cacheEntry;
                 cacheEntry.getFetchSubject()
                           .blockingSubscribe( fetchedData ->
                                               {
@@ -111,15 +112,15 @@ public abstract class AsyncCacheClient< K extends Serializable,
                                                       BeanUtils.copyProperties( fetchedData, finalCachedData );
                                                       receiver.setCachedData( fetchedData );
                                                       receiver.setCacheDataState( CURRENT );
-                                                      finalCacehEntry.setFetchState( NOT_FETCHING );
-                                                      finalCacehEntry.setCacheState( CURRENT );
-                                                      finalCacehEntry.setCachedData( fetchedData );
+                                                      finalCacheEntry.setFetchState( NOT_FETCHING );
+                                                      finalCacheEntry.setCacheState( CURRENT );
+                                                      finalCacheEntry.setCachedData( fetchedData );
                                                   }
                                                   else
                                                   {
                                                       receiver.setCachedData( null );
                                                       receiver.setCacheDataState( NOT_FOUND );
-                                                      finalCacehEntry.setFetchState( NOT_FETCHING );
+                                                      finalCacheEntry.setFetchState( NOT_FETCHING );
                                                       receiver.setCacheError( "Could not find entry for " + searchKey );
                                                   }
                                               });
@@ -130,7 +131,10 @@ public abstract class AsyncCacheClient< K extends Serializable,
                  * It's in the cache.
                  */
                 logDebug( methodName, "It's in the cache and not fetching, checking currency" );
-                BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
+                if ( cacheEntry.getCachedData() != null )
+                {
+                    BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
+                }
                 if ( cacheEntry.isStale() )
                 {
                     logDebug( methodName, "It's stale" );

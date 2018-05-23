@@ -7,8 +7,8 @@
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
 
-    <logger name="org.hibernate.type" level="INFO" />
-    <logger name="org.hibernate" level="INFO" />
+    <logger name="org.hibernate.type" level="info" />
+    <logger name="org.hibernate" level="info" />
 
     <root level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
@@ -35,12 +35,22 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.weblayer.controllers.StockController" level="trace" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.CustomerEntityService" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.cache.stockpricequote" level="trace" additivity="false">
+    <logger name="com.stocktracker.weblayer.controllers.StockController" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.stocktracker.servicelayer.service.cache.stockpricequote" level="info" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="com.stocktracker.servicelayer.service.StockPositionService" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
@@ -49,21 +59,21 @@
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
+
     <logger name="com.stocktracker.servicelayer.service.StockQuoteEntityService" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
 
-
     <logger name="com.stocktracker.servicelayer.service.cache.stockcompany" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
+
     <logger name="com.stocktracker.servicelayer.service.StockCompanyEntityService" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
-
 
     <logger name="com.stocktracker.servicelayer.service.StockAnalystConsensusEntityService" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>

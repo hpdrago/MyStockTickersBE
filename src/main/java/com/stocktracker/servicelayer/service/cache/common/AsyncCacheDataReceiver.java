@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -68,7 +69,7 @@ public interface AsyncCacheDataReceiver<K extends Serializable,T>
      * Sets the date and time when the data will expire.
      * @param dataExpiration
      */
-    void setDataExpiration( final Date dataExpiration );
+    void setDataExpiration( final Timestamp dataExpiration );
 
     /**
      * Get the expiration date.

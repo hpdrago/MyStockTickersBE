@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -90,7 +91,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     }
 
     @Override
-    public void setDataExpiration( final Date dataExpiration )
+    public void setDataExpiration( final Timestamp dataExpiration )
     {
         this.dataExpiration = dataExpiration;
     }

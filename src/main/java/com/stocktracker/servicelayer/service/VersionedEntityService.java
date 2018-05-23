@@ -352,6 +352,8 @@ public abstract class VersionedEntityService<EK extends Serializable,
      */
     private E save( final E entity )
     {
+        final String methodName = "save";
+        logMethodBegin( methodName, entity );
         final E savedEntity;
         try
         {
@@ -365,6 +367,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
                                   .findOne( entity.getId() );
             throw new EntityVersionMismatchException( currentEntity, e );
         }
+        logMethodEnd( methodName, savedEntity );
         return savedEntity;
     }
 

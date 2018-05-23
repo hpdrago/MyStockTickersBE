@@ -10,19 +10,14 @@ import java.util.Optional;
 public interface NotesSourceUuidContainer
 {
     /**
-     * Set the note source id.
-     * @param noteSourceId
+     * Sets the child notes source entity.
+     * @param stockNoteSourceEntity
      */
-    //void setNotesSourceUuid( final UUID noteSourceId );
+    void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity );
 
     /**
-     * Get the note source id.
+     * Gets the notes source entity.
      * @return
      */
-    //UUID getNotesSourceUuid();
-
-    void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity );
     Optional<StockNoteSourceEntity> getNotesSourceEntity();
-
-    //Optional<UUID> getStockNoteSourceUuid();
 }

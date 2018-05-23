@@ -8,7 +8,6 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServ
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import io.reactivex.processors.AsyncProcessor;
-import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -49,13 +48,19 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         try
         {
             final Company company = this.iexTradingStockService
-                .getCompany( tickerSymbol );
+                                        .getCompany( tickerSymbol );
             return company;
         }
         catch( StockNotFoundException e2 )
         {
             throw new AsyncCacheDataNotFoundException( tickerSymbol, e2 );
         }
+    }
+
+    protected void copyExternalDataToEntity( final Company company, final StockCompanyEntity companyEntity )
+    {
+        super.copyExternalDataToEntity( company, companyEntity );
+        companyEntity.setTickerSymbol( company.getSymbol() );
     }
 
     /**

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * This class implement the {@code AsyncCacheDataReceiver} interface in order to interact with the {@code StockCompanyAsyncCache}.
@@ -21,7 +21,7 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     private StockCompanyEntity stockCompanyEntity;
     private AsyncCacheEntryState cacheState;
     private String error;
-    private Date dataExpiration;
+    private Timestamp dataExpiration;
 
     @Override
     public void setCacheKey( final String cacheKey )
@@ -72,13 +72,13 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     }
 
     @Override
-    public Date getDataExpiration()
+    public Timestamp getDataExpiration()
     {
         return dataExpiration;
     }
 
     @Override
-    public void setDataExpiration( final Date dataExpiration )
+    public void setDataExpiration( final Timestamp dataExpiration )
     {
         this.dataExpiration = dataExpiration;
     }

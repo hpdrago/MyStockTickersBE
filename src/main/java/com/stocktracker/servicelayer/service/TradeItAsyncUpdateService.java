@@ -102,7 +102,7 @@ public class TradeItAsyncUpdateService
      *                             execute the API call to get the account summary information.
      * @param linkedAccountEntity This is the linked account that will be updated with the summary account information.
      */
-    @Async("linkedAccountGetOverviewThreadPool")
+    @Async("LinkedAccountGetOverviewThreadPool")
     public void updateLinkedAccount( final TradeItAccountEntity tradeItAccountEntity,
                                      final LinkedAccountEntity linkedAccountEntity )
     {

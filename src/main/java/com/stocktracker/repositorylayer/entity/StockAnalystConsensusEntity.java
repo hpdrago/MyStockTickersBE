@@ -1,6 +1,8 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
+import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
+import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -12,8 +14,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -22,7 +26,9 @@ import java.util.UUID;
 @Table( name = "stock_analyst_consensus", schema = "stocktracker", catalog = "" )
 public class StockAnalystConsensusEntity extends UUIDEntity
                                          implements CustomerUuidContainer,
-                                                    TickerSymbolContainer
+                                                    TickerSymbolContainer,
+                                                    NotesSourceUuidContainer,
+                                                    StockPriceWhenCreatedContainer
 {
     private UUID customerUuid;
     private String tickerSymbol;
@@ -39,12 +45,6 @@ public class StockAnalystConsensusEntity extends UUIDEntity
     private Timestamp analystPriceDate;
     private BigDecimal stockPriceWhenCreated;
     private StockNoteSourceEntity stockNoteSourceByNoteSourceUuid;
-    private Integer noteSourceUuid;
-
-    public static StockAnalystConsensusEntity newInstance()
-    {
-        return new StockAnalystConsensusEntity();
-    }
 
     @Basic
     @Column( name = "customer_uuid" )
@@ -226,16 +226,18 @@ public class StockAnalystConsensusEntity extends UUIDEntity
         this.stockNoteSourceByNoteSourceUuid = stockNoteSourceByNoteSourceUuid;
     }
 
-    @Basic
-    @Column( name = "notes_source_uuid", insertable = false, updatable = false )
-    public Integer getNoteSourceUuid()
+    @Transient
+    @Override
+    public void setNotesSourceEntity( final StockNoteSourceEntity stockNoteSourceEntity )
     {
-        return noteSourceUuid;
+        this.stockNoteSourceByNoteSourceUuid = stockNoteSourceEntity;
     }
 
-    public void setNoteSourceUuid( final Integer noteSourceUuid )
+    @Transient
+    @Override
+    public Optional<StockNoteSourceEntity> getNotesSourceEntity()
     {
-        this.noteSourceUuid = noteSourceUuid;
+        return Optional.ofNullable( this.stockNoteSourceByNoteSourceUuid );
     }
 
     @Override
@@ -257,7 +259,6 @@ public class StockAnalystConsensusEntity extends UUIDEntity
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
         sb.append( ", analystPriceDate=" ).append( analystPriceDate );
         sb.append( ", stockPriceWhenCreated=" ).append( stockPriceWhenCreated );
-        sb.append( ", noteSourceUuid=" ).append( noteSourceUuid );
         sb.append( ", stockNoteSourceByNoteSourceId=" ).append( stockNoteSourceByNoteSourceUuid );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

@@ -1,10 +1,8 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import io.reactivex.processors.AsyncProcessor;
-import io.reactivex.processors.BehaviorProcessor;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * This class is the base class for all objects that are cached in the AsyncCache.
@@ -26,7 +24,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * Identifies when the cached data will expire and will become STATE.
      */
-    private Date expirationTime;
+    private Timestamp expirationTime;
 
     /**
      * Identifies if the cached item is in the process of being fetched or not.
@@ -120,7 +118,7 @@ public abstract class AsyncCacheEntry<T>
     /**
      * Determines when the stock price is stale.  Stock prices are stale after 15 minutes during trading hours.
      */
-    public synchronized Date getExpirationTime()
+    public synchronized Timestamp getExpirationTime()
     {
         return expirationTime;
     }
@@ -129,7 +127,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the expiration time.
      * @param expirationTime
      */
-    protected synchronized void setExpirationTime( Date expirationTime )
+    protected synchronized void setExpirationTime( final Timestamp expirationTime )
     {
         this.expirationTime = expirationTime;
     }

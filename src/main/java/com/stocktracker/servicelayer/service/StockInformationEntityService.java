@@ -14,7 +14,6 @@ import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
 import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
-import com.stocktracker.weblayer.dto.common.StockQuoteDTOAsyncContainer;
 import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
@@ -231,11 +230,6 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
             if ( notesSourceUuidContainer.getNotesSourceEntity().isPresent() )
             {
                 final NotesSourceIdContainer notesSourceIdContainer = (NotesSourceIdContainer)dto;
-                /*
-                final StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
-                                                                        .getStockNoteSource( notesSourceUuidContainer
-                                                                                             .getNotesSourceUuid() );
-                                                                                             */
                 final StockNoteSourceEntity stockNoteSourceEntity = notesSourceUuidContainer.getNotesSourceEntity().get();
                 notesSourceIdContainer.setNotesSourceName( stockNoteSourceEntity.getName() );
                 notesSourceIdContainer.setNotesSourceId( stockNoteSourceEntity.getUuid().toString() );

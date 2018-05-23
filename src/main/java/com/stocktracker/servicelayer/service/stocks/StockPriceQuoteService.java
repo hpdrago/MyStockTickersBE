@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service.stocks;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.BaseService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheEntry;
@@ -149,10 +148,7 @@ public class StockPriceQuoteService extends BaseService
         this.stockPriceQuoteCacheClient
             .getCachedData( tickerSymbol, stockPriceQuoteDataReceiver );
         final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
-        BeanUtils.copyProperties( stockPriceQuoteDataReceiver, stockPriceQuoteDTO );
-        /*final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-                                                                        .synchronousGet( tickerSymbol );
-        final StockPriceQuoteDTO stockPriceQuoteDTO = this.handleStockPriceQuoteCacheEntry( tickerSymbol, stockPriceQuoteCacheEntry );*/
+        BeanUtils.copyProperties( stockPriceQuoteDataReceiver.getCachedData(), stockPriceQuoteDTO );
         logMethodEnd( methodName, stockPriceQuoteDTO );
         return stockPriceQuoteDTO;
     }

@@ -118,9 +118,9 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.6" level="project" />
-    <orderEntry type="library" name="Maven: pl.zankowski:iextrading4j-all:2.1.2" level="project" />
-    <orderEntry type="library" name="Maven: pl.zankowski:iextrading4j-api:2.1.2" level="project" />
-    <orderEntry type="library" name="Maven: pl.zankowski:iextrading4j-client:2.1.2" level="project" />
+    <orderEntry type="library" name="Maven: pl.zankowski:iextrading4j-all:2.1.4" level="project" />
+    <orderEntry type="library" name="Maven: pl.zankowski:iextrading4j-api:2.1.4" level="project" />
+    <orderEntry type="library" name="Maven: pl.zankowski:iextrading4j-client:2.1.4" level="project" />
     <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-client:2.8" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-common:2.8" level="project" />

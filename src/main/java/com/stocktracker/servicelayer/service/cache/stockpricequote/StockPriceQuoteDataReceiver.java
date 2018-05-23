@@ -6,22 +6,21 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<String,StockPriceQuote>
 {
     private String tickerSymbol;
-    private StockPriceQuote stockPriceQuote;
-    private AsyncCacheEntryState cacheState;
-    private String error;
-    private Date dataExpiration;
+    private StockPriceQuote stockPriceQuote = new StockPriceQuote();
 
     @Override
     public void setCacheKey( final String cacheKey )
     {
         this.tickerSymbol = cacheKey;
+        this.stockPriceQuote
+            .setTickerSymbol( cacheKey );
     }
 
     @Override
@@ -33,7 +32,14 @@ public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<Strin
     @Override
     public void setCachedData( final StockPriceQuote stockPriceQuote )
     {
-        this.stockPriceQuote = stockPriceQuote;
+        /*
+         * We never want the stock price quote to be null because it is the container for all of the cache values
+         * and settings.
+         */
+        if ( stockPriceQuote != null )
+        {
+            this.stockPriceQuote = stockPriceQuote;
+        }
     }
 
     @Override
@@ -45,46 +51,46 @@ public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<Strin
     @Override
     public void setCacheDataState( final AsyncCacheEntryState cacheState )
     {
-        this.cacheState = cacheState;
+        this.stockPriceQuote.setCacheState( cacheState );
     }
 
     @Override
     public AsyncCacheEntryState getCacheDataState()
     {
-        return this.cacheState;
+        return this.stockPriceQuote.getCacheState();
     }
 
     @Override
     public void setCacheError( final String error )
     {
-        this.error = error;
+        this.stockPriceQuote.setCacheError( error );
     }
 
     @Override
     public String getCacheError()
     {
-        return null;
+        return this.stockPriceQuote.getCacheError();
     }
 
     @Override
-    public void setDataExpiration( final Date dataExpiration )
+    public void setDataExpiration( final Timestamp dataExpiration )
     {
-        this.dataExpiration = dataExpiration;
+        this.stockPriceQuote.setExpirationTime( dataExpiration );
     }
 
-    public Date getDataExpiration()
+    public Timestamp getDataExpiration()
     {
-        return dataExpiration;
+        return this.stockPriceQuote.getExpiration();
     }
 
     public AsyncCacheEntryState getCacheState()
     {
-        return cacheState;
+        return this.stockPriceQuote.getCacheState();
     }
 
     public void setCacheState( final AsyncCacheEntryState cacheState )
     {
-        this.cacheState = cacheState;
+        this.stockPriceQuote.setCacheState( cacheState );
     }
 
     @Override
@@ -93,9 +99,6 @@ public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<Strin
         final StringBuilder sb = new StringBuilder( "StockPriceQuoteDataReceiver{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", stockPriceQuote=" ).append( stockPriceQuote );
-        sb.append( ", cacheState=" ).append( cacheState );
-        sb.append( ", error='" ).append( error ).append( '\'' );
-        sb.append( ", dataExpiration=" ).append( dataExpiration );
         sb.append( '}' );
         return sb.toString();
     }
