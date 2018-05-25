@@ -212,7 +212,7 @@ public class StockNotesController extends AbstractController implements MyLogger
         throws CustomerNotFoundException,
                NotAuthorizedException
     {
-        final String methodName = "getStocks";
+        final String methodName = "getStockNotes";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         this.validateCustomerId( customerId );
@@ -220,7 +220,7 @@ public class StockNotesController extends AbstractController implements MyLogger
                                                .getStockNotesForCustomerUuidAndTickerSymbol( pageRequest,
                                                                                            UUIDUtil.uuid( customerId ),
                                                                                            tickerSymbol );
-        //logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs );
+        logDebug( methodName, "stockNoteDTOs: {0}", stockNoteDTOs.getContent() );
         logMethodEnd( methodName, stockNoteDTOs.getTotalElements() );
         return stockNoteDTOs;
     }
