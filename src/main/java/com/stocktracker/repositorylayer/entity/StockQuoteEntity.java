@@ -372,10 +372,14 @@ public class StockQuoteEntity extends TickerSymbolEntity
         }
         else
         {
+            if ( TradingHours.isWeekend() )
+            {
+                expirationDate = new Timestamp( TradingHours.getNextDaysSessionStartTime() );
+            }
             /*
              * If not in session, we need to get the closing values so any time after 4:00pm EST
              */
-            if ( TradingHours.isAfterSessionEnd( this.getUpdateDate().getTime() ))
+            else if ( TradingHours.isAfterSessionEnd( this.getUpdateDate().getTime() ))
             {
                 expirationDate = new Timestamp( TradingHours.getNextDaysSessionStartTime() );
             }

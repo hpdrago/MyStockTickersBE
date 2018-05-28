@@ -29,5 +29,6 @@
         <mapping class="com.stocktracker.repositorylayer.entity.StockCompanyEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockKeyStatsEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockQuoteEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.GainsLossesEntity"/>
     </session-factory>
 </hibernate-configuration>

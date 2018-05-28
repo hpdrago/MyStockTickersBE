@@ -11,6 +11,7 @@ public class TradingHours
 {
     final static Calendar estCalendar = Calendar.getInstance( TimeZone.getTimeZone( "EST") );
     final static TimeZone estTimeZone = TimeZone.getTimeZone( "EST");
+
     /**
      * Determines if the market is currently in session.
      * @return
@@ -20,8 +21,7 @@ public class TradingHours
         /*
          * Return false for weekends.
          */
-        int dayOfWeek = estCalendar.get(Calendar.DAY_OF_WEEK);
-        if ( dayOfWeek == 0 || dayOfWeek == 7 )
+        if ( isWeekend() )
         {
             return false;
         }
@@ -36,10 +36,10 @@ public class TradingHours
      */
     public static long getTodaysSessionStartTime()
     {
-        final Calendar myCalendar = getCalendar();
-        myCalendar.set( Calendar.HOUR_OF_DAY, 9 );
-        myCalendar.set( Calendar.MINUTE, 30 );
-        return myCalendar.getTimeInMillis();
+        final Calendar estCalendar = getESTCalendar();
+        estCalendar.set( Calendar.HOUR_OF_DAY, 9 );
+        estCalendar.set( Calendar.MINUTE, 30 );
+        return estCalendar.getTimeInMillis();
     }
 
     /**
@@ -48,37 +48,37 @@ public class TradingHours
      */
     public static long getTodaysSessionEndTime()
     {
-        final Calendar myCalendar = getCalendar();
-        myCalendar.set( Calendar.HOUR_OF_DAY, 16 );
-        myCalendar.set( Calendar.MINUTE, 00 );
-        return myCalendar.getTimeInMillis();
+        final Calendar estCalendar = getESTCalendar();
+        estCalendar.set( Calendar.HOUR_OF_DAY, 16 );
+        estCalendar.set( Calendar.MINUTE, 00 );
+        return estCalendar.getTimeInMillis();
     }
 
     /**
-     * Get the start time of the current day's session.
+     * Get the start time of the next trading day's session.
      * @return
      */
     public static long getNextDaysSessionStartTime()
     {
-        final Calendar myCalendar = getCalendar();
-        myCalendar.add( Calendar.DATE, 1 ); // add one day.
-        myCalendar.set( Calendar.HOUR_OF_DAY, 9 );
-        myCalendar.set( Calendar.MINUTE, 30 );
-        /*
-         * If Saturday, move to Monday
-         */
-        if ( myCalendar.get( Calendar.DAY_OF_WEEK ) == 7 )
+        final Calendar estCalendar = getESTCalendar();
+        estCalendar.set( Calendar.HOUR_OF_DAY, 9 );
+        estCalendar.set( Calendar.MINUTE, 30 );
+        switch ( estCalendar.get( Calendar.DAY_OF_WEEK ) )
         {
-            myCalendar.add( Calendar.DATE, 2 );
+            case Calendar.FRIDAY:
+                estCalendar.add( Calendar.DATE, 3 );
+                break;
+            case Calendar.SATURDAY:
+                estCalendar.add( Calendar.DATE, 2 );
+                break;
+            case Calendar.SUNDAY:
+                estCalendar.add( Calendar.DATE, 1 );
+                break;
+            default:
+                estCalendar.add( Calendar.DATE, 1 );
+                break;
         }
-        /*
-         * If Sunday, move to Monday
-         */
-        else if ( myCalendar.get( Calendar.DAY_OF_WEEK ) == 6 )
-        {
-            myCalendar.add( Calendar.DATE, 1 );
-        }
-        return myCalendar.getTimeInMillis();
+        return estCalendar.getTimeInMillis();
     }
 
     /**
@@ -88,11 +88,16 @@ public class TradingHours
      */
     public static boolean isAfterSessionEnd( final long time )
     {
+        final Calendar estCalendar = getESTCalendar();
         return time > getTodaysSessionEndTime() &&
                time < getNextDaysSessionStartTime();
     }
 
-    private static Calendar getCalendar()
+    /**
+     * Get the EST Timezone calendar
+     * @return
+     */
+    private static Calendar getESTCalendar()
     {
         Calendar calendar = Calendar.getInstance( estTimeZone );
         calendar.setTime( new Date() );
@@ -106,5 +111,16 @@ public class TradingHours
     public static int getHour()
     {
         return estCalendar.get( Calendar.HOUR_OF_DAY );
+    }
+
+    /**
+     * Returns true if it is currently the weekend (Friday after 4:00pm EST, SAT, SUN
+     * @return
+     */
+    public static boolean isWeekend()
+    {
+        final Calendar estCalendar = getESTCalendar();
+        return estCalendar.get( Calendar.DAY_OF_WEEK ) == Calendar.SUNDAY ||
+               estCalendar.get( Calendar.DAY_OF_WEEK ) == Calendar.SATURDAY;
     }
 }

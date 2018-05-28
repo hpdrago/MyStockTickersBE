@@ -90,9 +90,27 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
      * @return StockNoteSourceEntity domain entity for stock note source id
      * @throws StockNoteSourceNotFoundException If the stock source is not found
      */
-    public StockNoteSourceEntity getStockNoteSource( final String notesSourceId )
+    public StockNoteSourceEntity getStockNoteSource( final UUID customerUuid, final String notesSourceId )
     {
-        return this.getStockNoteSource( UUIDUtil.uuid( notesSourceId ) );
+        final String methodName = "getStockNoteSource";
+        logDebug( methodName, "customer: %s notesSourceId: %d", customerUuid, notesSourceId );
+        try
+        {
+            return this.getStockNoteSource( UUIDUtil.uuid( notesSourceId ) );
+        }
+        catch( java.lang.NumberFormatException e )
+        {
+            logDebug( methodName, "Note source not found for {0} searching by name", notesSourceId );
+            final StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceRepository
+                                                                    .findByCustomerUuidAndName( customerUuid, notesSourceId );
+            if ( stockNoteSourceEntity != null )
+            {
+                logDebug( methodName, "Found note source by name: {0}", stockNoteSourceEntity );
+                return stockNoteSourceEntity;
+            }
+            throw new NumberFormatException( String.format(  "Failed to convert notesSourceId of '%s' to a UUID",
+                                                             notesSourceId ));
+        }
     }
 
     /**

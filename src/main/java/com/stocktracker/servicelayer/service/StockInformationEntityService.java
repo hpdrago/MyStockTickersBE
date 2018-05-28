@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.UUIDUtil;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
@@ -273,7 +274,8 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
                  !notesSourceIdContainer.getNotesSourceId().isEmpty() )
             {
                 final StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceService
-                                                                        .getStockNoteSource( notesSourceIdContainer.getNotesSourceId() );
+                                                                        .getStockNoteSource( ((CustomerUuidContainer)entity).getCustomerUuid(),
+                                                                                             notesSourceIdContainer.getNotesSourceId() );
                 notesSourceUuidContainer.setNotesSourceEntity( stockNoteSourceEntity );
             }
         }
