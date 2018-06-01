@@ -117,6 +117,27 @@ public class LinkedAccountController extends AbstractController
     }
 
     /**
+     * Get all of the accounts for a customer.
+     * @param customerId
+     * @return
+     * @throws TradeItAccountNotFoundException
+     */
+    @RequestMapping( value = CONTEXT_URL +
+                             "/customerId/{customerId}",
+                     method = GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable String customerId )
+        throws TradeItAccountNotFoundException
+    {
+        final String methodName = "getLinkedAccounts";
+        logMethodBegin( methodName, customerId );
+        List<LinkedAccountDTO> accounts = this.linkedAccountEntityService
+                                              .getLinkedAccountsForCustomer( UUIDUtil.uuid( customerId ));
+        logMethodEnd( methodName, "accounts size: " + accounts.size() );
+        return accounts;
+    }
+
+    /**
      * This is the subsequent call made after a call to {@code getLinkedAccounts}.
      * Obtaining the get account overview information for linked account is an asynchronous process.  When linked accounts
      * are selected from the database, each account is then asynchronously updated by calling the TradeIt get account

@@ -31,6 +31,23 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     private TradeItAsyncUpdateService tradeItAsyncUpdateService;
     private TradeItAccountEntityService tradeItAccountEntityService;
 
+
+    /**
+     * Get all of the linked account for a customer.
+     * @param customerUuid
+     * @return
+     */
+    public List<LinkedAccountDTO> getLinkedAccountsForCustomer( final UUID customerUuid )
+    {
+        final String methodName = "getLinkedAccountsForCustomer";
+        logMethodBegin( methodName, customerUuid );
+        final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
+                                                                    .findByCustomerUuid( customerUuid );
+        final List<LinkedAccountDTO> linkedAccountDTOs = this.entitiesToDTOs( linkedAccountEntities );
+        logMethodEnd( methodName, linkedAccountDTOs );
+        return linkedAccountDTOs;
+    }
+
     /**
      * This method will retrieve all of the linked accounts (child to the tradeit_account table) for the TradeIt account.
      * @param tradeItAccountUuid
@@ -46,7 +63,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         try
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
-                                                                  .getEntity( tradeItAccountUuid );
+                                       .getEntity( tradeItAccountUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {

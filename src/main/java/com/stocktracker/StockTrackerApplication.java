@@ -1,10 +1,14 @@
 package com.stocktracker;
 
+import com.stocktracker.servicelayer.service.StorageService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.annotation.Resource;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -14,11 +18,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * This is to avoid issues with DI of a Service that is transactional.
  * https://stackoverflow.com/questions/39483059/transactional-annotation-error
  */
-public class StockTrackerApplication
+public class StockTrackerApplication implements CommandLineRunner
 {
+    @Resource
+    private StorageService storageService;
+
     public static void main( String[] args )
     {
         SpringApplication.run( StockTrackerApplication.class, args );
+    }
+
+    @Override
+    public void run(String... arg) throws Exception
+    {
+        storageService.deleteAll();
+        storageService.init();
     }
 
     /**

@@ -1,6 +1,9 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,6 +21,8 @@ import java.util.UUID;
 /**
  * This entity contains the gains and losses for a single stock for a customers linked account.
  */
+@Component
+@Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "gains_losses", schema = "stocktracker", catalog = "" )
 public class GainsLossesEntity extends UUIDEntity

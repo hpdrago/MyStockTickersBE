@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class GainsLossesDTO extends DatabaseEntityDTO<String>
-                           implements UuidDTO,
-                                      CustomerIdContainer
+                            implements UuidDTO,
+                                       CustomerIdContainer
 {
     private String tickerSymbol;
     private String customerId;

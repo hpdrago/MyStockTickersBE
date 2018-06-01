@@ -2,13 +2,27 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.repositorylayer.entity.GainsLossesEntity;
 import com.stocktracker.repositorylayer.repository.GainsLossesRepository;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCache;
+import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheEntry;
 import com.stocktracker.weblayer.dto.GainsLossesDTO;
+import com.stocktracker.weblayer.dto.GainsLossesImportConfigurationDTO;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,7 +34,41 @@ public class GainsLossesEntityService extends UuidEntityService<GainsLossesEntit
                                                                 GainsLossesDTO,
                                                                 GainsLossesRepository>
 {
+    @Autowired
     private GainsLossesRepository gainsLossesRepository;
+
+    @Autowired
+    private GainsLossesImportService gainsLossesImportService;
+
+    /**
+     * Constructor.
+     * @param multipartFiles
+     * @param gainsLossesImportConfigurationDTO
+     * @return Summary of import results.
+     */
+    public String importGainsLosses( final MultipartFile[] multipartFiles,
+                                     final GainsLossesImportConfigurationDTO gainsLossesImportConfigurationDTO )
+        throws IOException,
+               InvalidFormatException
+    {
+        final String methodName = "importGainsLosses";
+        logMethodBegin( methodName, gainsLossesImportConfigurationDTO );
+        StringBuilder results = new StringBuilder();
+        if ( gainsLossesImportConfigurationDTO.isClearEntries() )
+        {
+            logDebug( methodName, "Deleting all gains and losses..." );
+            this.gainsLossesRepository
+                .deleteAll();
+        }
+        for ( final MultipartFile multipartFile: multipartFiles )
+        {
+            final String result = this.gainsLossesImportService
+                                      .importGainsLosses( multipartFile, gainsLossesImportConfigurationDTO );
+            results.append( result );
+        }
+        logMethodEnd( methodName, results.toString() );
+        return results.toString();
+    }
 
     /**
      * Searches for the one entry for the customer UUID and ticker symbol -- this is a unique combination.
@@ -97,9 +145,11 @@ public class GainsLossesEntityService extends UuidEntityService<GainsLossesEntit
         return this.gainsLossesRepository;
     }
 
+    /*
     @Autowired
     public void setGainsLossesRepository( final GainsLossesRepository gainsLossesRepository )
     {
         this.gainsLossesRepository = gainsLossesRepository;
     }
+    */
 }
