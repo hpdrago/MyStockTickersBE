@@ -112,6 +112,7 @@ public class GainsLossesEntity extends UUIDEntity
     public void setLinkedAccountByLinkedAccountUuid( final LinkedAccountEntity linkedAccountByLinkedAccountUuid )
     {
         this.linkedAccountByLinkedAccountUuid = linkedAccountByLinkedAccountUuid;
+        this.linkedAccountUuid = linkedAccountByLinkedAccountUuid.getId();
     }
 
     /**

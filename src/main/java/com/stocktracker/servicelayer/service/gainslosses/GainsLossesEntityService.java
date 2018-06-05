@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -147,13 +148,46 @@ public class GainsLossesEntityService extends UuidEntityService<GainsLossesEntit
     public Page<GainsLossesDTO> getGainsLosses( final Pageable pageRequest,
                                                 @NotNull final UUID customerUuid )
     {
-        final String methodName = "getGainsLossesListForCustomerUuid";
+        final String methodName = "getGainsLosses";
         logMethodBegin( methodName, pageRequest, customerUuid );
         Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         Page<GainsLossesEntity> gainsLossesEntities = this.gainsLossesRepository
                                                           .findByCustomerUuid( pageRequest, customerUuid );
         Page<GainsLossesDTO> gainsLossesDTOs = this.entitiesToDTOs( pageRequest, gainsLossesEntities );
-        logMethodEnd( methodName, "Found " + gainsLossesEntities.getContent().size() + " to buy" );
+        logMethodEnd( methodName, "Found " + gainsLossesEntities.getContent().size() + " gains/losses" );
+        return gainsLossesDTOs;
+    }
+
+    /**
+     * Get the list of all stock to buy for the customer
+     * @param customerUuid
+     * @return
+     */
+    public Page<GainsLossesDTO> getGainsLosses( final Pageable pageRequest,
+                                                @NotNull final UUID customerUuid,
+                                                @NotNull final String tickerSymbol )
+    {
+        final String methodName = "getGainsLosses";
+        logMethodBegin( methodName, pageRequest, customerUuid, tickerSymbol );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
+        Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
+        Page<GainsLossesEntity> gainsLossesEntities = this.gainsLossesRepository
+                                                          .findByCustomerUuidAndTickerSymbol( pageRequest, customerUuid,
+                                                                                              tickerSymbol );
+        Page<GainsLossesDTO> gainsLossesDTOs = this.entitiesToDTOs( pageRequest, gainsLossesEntities );
+        logMethodEnd( methodName, "Found " + gainsLossesEntities.getContent().size() + " gains/losses" );
+        return gainsLossesDTOs;
+    }
+
+    public List<GainsLossesDTO> getGainsLosses( final UUID customerUuid )
+    {
+        final String methodName = "getGainsLosses";
+        logMethodBegin( methodName, customerUuid );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
+        final List<GainsLossesEntity> gainsLossesEntities = this.gainsLossesRepository
+                                                                .findByCustomerUuid( customerUuid );
+        final List<GainsLossesDTO> gainsLossesDTOs = this.entitiesToDTOs(  gainsLossesEntities );
+        logMethodEnd( methodName, "Found " + gainsLossesEntities.size() + " gains/losses" );
         return gainsLossesDTOs;
     }
 
@@ -176,10 +210,20 @@ public class GainsLossesEntityService extends UuidEntityService<GainsLossesEntit
     }
 
     @Override
+    protected GainsLossesEntity dtoToEntity( final GainsLossesDTO dto )
+    {
+        final GainsLossesEntity gainsLossesEntity = super.dtoToEntity( dto );
+        gainsLossesEntity.setLinkedAccountByLinkedAccountUuid( this.linkedAccountEntityService
+                                                                   .dtoToEntity( dto.getLinkedAccount() ));
+        return gainsLossesEntity;
+    }
+
+    @Override
     public GainsLossesDTO entityToDTO( final GainsLossesEntity entity )
     {
         final GainsLossesDTO dto = super.entityToDTO( entity );
-        final LinkedAccountDTO linkedAccountDTO = linkedAccountEntityService.entityToDTO( entity.getLinkedAccountByLinkedAccountUuid() );
+        final LinkedAccountDTO linkedAccountDTO = this.linkedAccountEntityService
+                                                      .entityToDTO( entity.getLinkedAccountByLinkedAccountUuid() );
         dto.setLinkedAccount( linkedAccountDTO );
         return dto;
     }

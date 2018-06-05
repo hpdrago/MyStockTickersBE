@@ -23,6 +23,22 @@ public interface GainsLossesRepository extends JpaRepository<GainsLossesEntity,U
     Page<GainsLossesEntity> findByCustomerUuid( final Pageable pageRequest, final UUID customerUuid );
 
     /**
+     * Find the gains and losses for a customer.
+     * @param customerUuid
+     * @return
+     */
+    List<GainsLossesEntity> findByCustomerUuid( UUID customerUuid );
+
+    /**
+     * Find by customer uuid and ticker symbol.
+     * @param pageRequest
+     * @param customerUuid
+     * @param tickerSymbol
+     * @return
+     */
+    Page<GainsLossesEntity> findByCustomerUuidAndTickerSymbol( Pageable pageRequest, UUID customerUuid, String tickerSymbol );
+
+    /**
      * Get all of the stocks to buy records for a customer and ticker symbol.
      * @param customerUuid
      * @return
@@ -72,4 +88,5 @@ public interface GainsLossesRepository extends JpaRepository<GainsLossesEntity,U
     @Transactional
     @Modifying
     void deleteInBatch( Iterable<GainsLossesEntity> iterable );
+
 }

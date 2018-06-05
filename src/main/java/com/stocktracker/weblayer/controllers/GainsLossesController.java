@@ -34,6 +34,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -125,6 +126,24 @@ public class GainsLossesController extends AbstractController
     }
 
     /**
+     * Get all of the stock to buy for a customer
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
+                     method = RequestMethod.GET,
+                     produces = {MediaType.APPLICATION_JSON_VALUE} )
+    public List<GainsLossesDTO> getStockGainsLossesList( final Pageable pageRequest,
+                                                         final @NotNull @PathVariable String customerId )
+    {
+        final String methodName = "getStockGainsLossesList";
+        logMethodBegin( methodName, pageRequest, customerId );
+        final List<GainsLossesDTO> gainsLossesDTOs = this.gainsLossesService
+                                                         .getGainsLosses( UUIDUtil.uuid( customerId ) );
+        logMethodEnd( methodName, "gainsLossesDTOs size: " + gainsLossesDTOs.size() );
+        return gainsLossesDTOs;
+    }
+
+    /**
      * Get all of the stock to buy for a customer and a ticker symbol
      * @return
      */
@@ -133,7 +152,6 @@ public class GainsLossesController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<GainsLossesDTO> getStockGainsLossesPage( final Pageable pageRequest,
                                                          final @NotNull @PathVariable String customerId,
-                                                         final @NotNull @PathVariable String linkedAccountId,
                                                          final @NotNull @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockGainsLossesPage";
@@ -141,7 +159,6 @@ public class GainsLossesController extends AbstractController
         Page<GainsLossesDTO> gainsLossesDTOs = this.gainsLossesService
                                                    .getGainsLosses( pageRequest,
                                                                     UUIDUtil.uuid( customerId ),
-                                                                    UUIDUtil.uuid( linkedAccountId ),
                                                                     tickerSymbol );
         logDebug( methodName, "StocksToBuy: {0}", gainsLossesDTOs.getContent() );
         logMethodEnd( methodName, "gainsLossesDTOs size: " + gainsLossesDTOs.getContent().size() );

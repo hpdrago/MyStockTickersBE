@@ -76,6 +76,7 @@ public class GainsLossesImportService extends BaseService
                 importRow( customerUuid, linkedAccountEntity, row, gainsLossesImportConfigurationDTO, results, importStats );
             }
         }
+        results.append( "Successfully imported" );
         logMethodEnd( methodName );
     }
 
