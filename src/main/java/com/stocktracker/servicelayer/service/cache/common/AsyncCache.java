@@ -72,7 +72,7 @@ public abstract class AsyncCache<K extends Serializable,
         logMethodBegin( methodName, searchKey );
         E returnCacheEntry = null;
         final E cacheEntry = this.cacheMap
-            .get( searchKey );
+                                 .get( searchKey );
         /*
          * If null, the item is not in the cache
          */

@@ -21,7 +21,8 @@ import java.io.Serializable;
 public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
                                                         E extends VersionedEntity<K>,
                                                         S extends VersionedEntityService<K,E,?,?,?>,
-                                                        D>
+                                                        D,
+                                                        EX extends AsyncCacheDataNotFoundException>
     extends AsyncCacheCacheServiceExecutor<K,E>
 {
     /**
@@ -45,7 +46,7 @@ public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
         catch( Exception e )
         {
             logError( methodName, "searchKey not found: " + searchKey );
-            throw new AsyncCacheDataNotFoundException( searchKey, e );
+            throw this.createException( searchKey, e );
         }
         boolean mismatch = false;
         E entity = null;
@@ -121,4 +122,11 @@ public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
      */
     protected abstract S getEntityService();
 
+    /**
+     * Subclasses override to provide a contextual exception.
+     * @param key
+     * @param cause
+     * @return
+     */
+    protected abstract EX createException( final K key, final Exception cause );
 }

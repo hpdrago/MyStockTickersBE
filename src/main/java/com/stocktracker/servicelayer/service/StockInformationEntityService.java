@@ -186,7 +186,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * @return
      */
     @Override
-    protected D entityToDTO( final E entity )
+    public D entityToDTO( final E entity )
     {
         //final String methodName = "entityToDTO";
         //logMethodBegin( methodName, entity );

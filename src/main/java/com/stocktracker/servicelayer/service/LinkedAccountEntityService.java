@@ -154,7 +154,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
      * @return
      */
     @Override
-    protected LinkedAccountDTO entityToDTO( final LinkedAccountEntity entity )
+    public LinkedAccountDTO entityToDTO( final LinkedAccountEntity entity )
     {
         final LinkedAccountDTO linkedAccountDTO = super.entityToDTO( entity );
         linkedAccountDTO.setTradeItAccountId( entity.getTradeItAccountUuid().toString() );

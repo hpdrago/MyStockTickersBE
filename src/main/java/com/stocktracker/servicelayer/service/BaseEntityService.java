@@ -38,7 +38,7 @@ public abstract class BaseEntityService<EK extends Serializable,
      * @param entity Contains the entity information.
      * @return new DTO instance of type <D> with properties copied from the entity.
      */
-    protected D entityToDTO( final E entity )
+    public D entityToDTO( final E entity )
     {
         final D dto = this.createDTO();
         BeanUtils.copyProperties( entity, dto );

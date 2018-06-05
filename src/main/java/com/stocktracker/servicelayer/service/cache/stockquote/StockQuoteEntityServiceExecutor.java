@@ -1,13 +1,13 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.AppConfig;
+import com.stocktracker.common.exceptions.StockQuoteNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import io.reactivex.processors.AsyncProcessor;
-import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -24,7 +24,8 @@ import pl.zankowski.iextrading4j.api.stocks.Quote;
 public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
                                                                                        StockQuoteEntity,
                                                                                        StockQuoteEntityService,
-                                                                                       Quote>
+                                                                                       Quote,
+                                                                                       StockQuoteNotFoundException>
 {
     /**
      * Service for the stock quote entities.
@@ -51,7 +52,7 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
                                 .getQuote( tickerSymbol );
         if ( quote == null )
         {
-            throw new AsyncCacheDataNotFoundException( tickerSymbol );
+            throw new StockQuoteNotFoundException( tickerSymbol );
         }
         logMethodEnd( methodName, quote );
         return quote;
@@ -113,5 +114,11 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
     protected StockQuoteEntityService getEntityService()
     {
         return this.stockQuoteEntityService;
+    }
+
+    @Override
+    protected StockQuoteNotFoundException createException( final String key, final Exception cause )
+    {
+        return new StockQuoteNotFoundException( key, cause );
     }
 }

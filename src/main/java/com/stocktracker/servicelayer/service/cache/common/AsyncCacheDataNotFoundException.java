@@ -3,15 +3,15 @@ package com.stocktracker.servicelayer.service.cache.common;
 /**
  * This exception is used to indicate that retrieval of the required data failed.
  */
-public class AsyncCacheDataNotFoundException extends Exception
+public abstract class AsyncCacheDataNotFoundException extends Exception
 {
-    public AsyncCacheDataNotFoundException( final Object searchKey )
+    public AsyncCacheDataNotFoundException( final String message )
     {
-        super( "Failed to find data to cache for search key: " + searchKey );
+        super( message );
     }
 
-    public AsyncCacheDataNotFoundException( final Object searchKey, final Throwable e )
+    public AsyncCacheDataNotFoundException( final String message, final Exception e )
     {
-        super( "Failed to find data to cache for search key: " + searchKey, e );
+        super( message, e );
     }
 }

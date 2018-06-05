@@ -8,13 +8,11 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -33,7 +31,6 @@ public class GainsLossesEntity extends UUIDEntity
     private UUID linkedAccountUuid;
     private BigDecimal gains;
     private BigDecimal losses;
-    private BigDecimal totalGainsLosses;
     private LinkedAccountEntity linkedAccountByLinkedAccountUuid;
 
     @Basic
@@ -72,16 +69,13 @@ public class GainsLossesEntity extends UUIDEntity
         this.losses = losses;
     }
 
-    @Basic
-    @Column( name = "total_gains_losses", nullable = true, precision = 2 )
+    @Transient
     public BigDecimal getTotalGainsLosses()
     {
-        return totalGainsLosses;
-    }
-
-    public void setTotalGainsLosses( final BigDecimal totalGainsLosses )
-    {
-        this.totalGainsLosses = totalGainsLosses;
+        BigDecimal total = new BigDecimal( 0 );
+        total = total.add( this.losses == null ? new BigDecimal( 0 ) : this.losses );
+        total = total.add( this.gains == null ? new BigDecimal( 0 ) : this.gains );
+        return total;
     }
 
     @Basic
@@ -120,6 +114,34 @@ public class GainsLossesEntity extends UUIDEntity
         this.linkedAccountByLinkedAccountUuid = linkedAccountByLinkedAccountUuid;
     }
 
+    /**
+     * Add to the gains.
+     * @param gains
+     */
+    public void addGains( final BigDecimal gains )
+    {
+        Objects.requireNonNull( gains, "gains argument cannot be null" );
+        if ( this.gains == null )
+        {
+            this.gains = new BigDecimal( 0 );
+        }
+        this.gains = this.gains.add( gains );
+    }
+
+    /**
+     * Add to the losses.
+     * @param losses
+     */
+    public void addLosses( final BigDecimal losses )
+    {
+        Objects.requireNonNull( losses, "losses argument cannot be null" );
+        if ( this.losses == null )
+        {
+            this.losses = new BigDecimal( 0 );
+        }
+        this.losses = this.losses.add( losses );
+    }
+
     @Override
     public String toString()
     {
@@ -129,7 +151,6 @@ public class GainsLossesEntity extends UUIDEntity
         sb.append( ", linkedAccountUuid=" ).append( linkedAccountUuid );
         sb.append( ", gains=" ).append( gains );
         sb.append( ", losses=" ).append( losses );
-        sb.append( ", totalGainsLosses=" ).append( totalGainsLosses );
         sb.append( ", linkedAccountByLinkedAccountUuid=" ).append( linkedAccountByLinkedAccountUuid );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

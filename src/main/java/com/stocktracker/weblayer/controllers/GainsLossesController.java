@@ -2,16 +2,20 @@ package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.GainsLossesNotFoundException;
+import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.servicelayer.service.GainsLossesEntityService;
+import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
+import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
+import com.stocktracker.servicelayer.service.gainslosses.GainsLossesEntityService;
 import com.stocktracker.weblayer.dto.GainsLossesDTO;
 import com.stocktracker.weblayer.dto.GainsLossesImportConfigurationDTO;
+import com.stocktracker.weblayer.dto.StringDTO;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +34,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * This is the REST Controller for all Stock ToBuy methods.
@@ -39,44 +44,65 @@ import java.io.IOException;
 public class GainsLossesController extends AbstractController
 {
     private static final String CONTEXT_URL = "/gainsLosses";
+
+    @Autowired
     private GainsLossesEntityService gainsLossesService;
+
+    @Autowired
+    private LinkedAccountEntityService linkedAccountEntityService;
 
     /**
      * Import/upload a spreadsheet of gains/losses.
      * @param customerId
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/upload/customerId/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/importResults/customerId/{customerId}",
+                     method = RequestMethod.GET )
+    public ResponseEntity<StringDTO> getImportResults( @PathVariable final String customerId )
+        throws CustomerNotFoundException
+    {
+        final String methodName = "getImportResults";
+        logMethodBegin( methodName, customerId );
+        final UUID customerUuid = this.getCustomerUuid( customerId );
+        final StringDTO results = this.gainsLossesService
+                                      .getImportResults( customerUuid );
+        logMethodEnd( methodName, results );
+        return ResponseEntity.ok( results );
+    }
+
+    /**
+     * Import/upload a spreadsheet of gains/losses.
+     * @param customerId
+     * @return
+     */
+    @RequestMapping( value = CONTEXT_URL + "/import/customerId/{customerId}",
                      method=RequestMethod.POST,
                      consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
                      produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> handleFileUpload( @PathVariable final String customerId,
-                                                  @RequestParam( value = "configuration") final String configuration,
-                                                  @RequestParam( "files" ) MultipartFile[] multipartFiles )
-        throws IOException
+    public ResponseEntity<Void> importGainsLosses( @PathVariable final String customerId,
+                                                   @RequestParam final String linkedAccountId,
+                                                   @RequestParam( value = "configuration") final String configuration,
+                                                   @RequestParam( "files" ) MultipartFile[] multipartFiles )
+        throws IOException,
+               LinkedAccountNotFoundException,
+               CustomerNotFoundException,
+               InvalidFormatException
     {
         final String methodName = "handleFileUpload";
-        logMethodBegin( methodName, customerId, multipartFiles.length, configuration );
+        logMethodBegin( methodName, customerId, linkedAccountId, multipartFiles.length, configuration );
         final GainsLossesImportConfigurationDTO gainsLossesImportConfigurationDTO =
             new ObjectMapper().readValue( configuration, GainsLossesImportConfigurationDTO.class );
         logDebug( methodName, "configurationDTO: {0}", gainsLossesImportConfigurationDTO );
-        try
+        final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
+                                                            .getLinkedAccountEntity( UUIDUtil.uuid( linkedAccountId ) );
+        for ( final MultipartFile multipartFile: multipartFiles )
         {
-            for ( final MultipartFile multipartFile: multipartFiles )
-            {
-                logDebug( methodName, "{0} size: {0}", multipartFile.getOriginalFilename(), multipartFile.getSize() );
-                //final ByteArrayResource resource = new ByteArrayResource( multipartFile.getBytes() );
-            }
-            this.gainsLossesService
-                .importGainsLosses( multipartFiles, gainsLossesImportConfigurationDTO );
-            return new ResponseEntity<>( HttpStatus.OK );
+            logDebug( methodName, "{0} size: {0}", multipartFile.getOriginalFilename(), multipartFile.getSize() );
         }
-        catch( Exception e )
-        {
-            //message = "FAIL to upload " + file.getOriginalFilename() + "!";
-            logError( methodName, e );
-            return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED );
-        }
+        final UUID customerUuid = this.getCustomerUuid( customerId );
+        this.gainsLossesService
+            .importGainsLosses( customerUuid, linkedAccountEntity, multipartFiles, gainsLossesImportConfigurationDTO );
+        return new ResponseEntity<>( HttpStatus.OK );
     }
 
     /**
@@ -92,8 +118,7 @@ public class GainsLossesController extends AbstractController
         final String methodName = "getStockGainsLossesPage";
         logMethodBegin( methodName, pageRequest, customerId );
         Page<GainsLossesDTO> gainsLossesDTOs = this.gainsLossesService
-                                                   .getGainsLossesListForCustomerUuid( pageRequest,
-                                                                                       UUIDUtil.uuid( customerId ));
+                                                   .getGainsLosses( pageRequest, UUIDUtil.uuid( customerId ));
         logDebug( methodName, "StocksToBuy: {0}", gainsLossesDTOs.getContent() );
         logMethodEnd( methodName, "gainsLossesDTOs size: " + gainsLossesDTOs.getContent().size() );
         return gainsLossesDTOs;
@@ -108,14 +133,16 @@ public class GainsLossesController extends AbstractController
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public Page<GainsLossesDTO> getStockGainsLossesPage( final Pageable pageRequest,
                                                          final @NotNull @PathVariable String customerId,
+                                                         final @NotNull @PathVariable String linkedAccountId,
                                                          final @NotNull @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockGainsLossesPage";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Page<GainsLossesDTO> gainsLossesDTOs = this.gainsLossesService
-                                                 .getGainsLossesListForCustomerUuidAndTickerSymbol( pageRequest,
-                                                                                    UUIDUtil.uuid( customerId ),
-                                                                                                   tickerSymbol );
+                                                   .getGainsLosses( pageRequest,
+                                                                    UUIDUtil.uuid( customerId ),
+                                                                    UUIDUtil.uuid( linkedAccountId ),
+                                                                    tickerSymbol );
         logDebug( methodName, "StocksToBuy: {0}", gainsLossesDTOs.getContent() );
         logMethodEnd( methodName, "gainsLossesDTOs size: " + gainsLossesDTOs.getContent().size() );
         return gainsLossesDTOs;
@@ -125,18 +152,21 @@ public class GainsLossesController extends AbstractController
      * Get all of the stock to buy for a customer and a
      * @return
      */
-    @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
+    @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/linkedAccountId/{linkedAccountId}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GainsLossesDTO getStockGainsLosses( @NotNull final Pageable pageRequest,
                                                @NotNull @PathVariable String customerId,
+                                               @NotNull @PathVariable String linkedAccountId,
                                                @NotNull @PathVariable String tickerSymbol )
     {
         final String methodName = "getStockGainsLossesForTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         final GainsLossesDTO gainsLossesDTO = this.gainsLossesService
-                                                  .getByCustomerUuidAndTickerSymbol( UUIDUtil.uuid( customerId ),
-                                                                                     tickerSymbol );
+                                                  .getGainsLosses(
+                                                      UUIDUtil.uuid( customerId ),
+                                                      UUIDUtil.uuid( linkedAccountId ),
+                                                      tickerSymbol );
         logMethodEnd( methodName, gainsLossesDTO );
         return gainsLossesDTO;
     }
@@ -250,11 +280,5 @@ public class GainsLossesController extends AbstractController
                                      .buildAndExpand( returnGainsLossesDTO ).toUri());
         logMethodEnd( methodName, returnGainsLossesDTO );
         return new ResponseEntity<>( gainsLossesDTO, httpHeaders, HttpStatus.CREATED );
-    }
-
-    @Autowired
-    public void setGainsLossesService( final GainsLossesEntityService gainsLossesService )
-    {
-        this.gainsLossesService = gainsLossesService;
     }
 }

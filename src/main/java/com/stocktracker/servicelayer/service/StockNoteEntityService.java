@@ -75,7 +75,7 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
      * @return
      */
     @Override
-    protected StockNoteDTO entityToDTO( final StockNoteEntity stockNoteEntity )
+    public StockNoteDTO entityToDTO( final StockNoteEntity stockNoteEntity )
     {
         Objects.requireNonNull( stockNoteEntity );
         StockNoteDTO stockNoteDTO = super.entityToDTO( stockNoteEntity );

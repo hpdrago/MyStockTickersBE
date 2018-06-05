@@ -68,7 +68,7 @@ public class StockCatalystEventEntityService extends StockInformationEntityServi
     }
 
     @Override
-    protected StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
+    public StockCatalystEventDTO entityToDTO( final StockCatalystEventEntity stockCatalystEventEntity )
     {
         StockCatalystEventDTO stockCatalystEventDTO = super.entityToDTO( stockCatalystEventEntity );
         if ( stockCatalystEventEntity.getCatalystDate() != null )

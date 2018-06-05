@@ -5,14 +5,14 @@ package com.stocktracker.weblayer.dto;
  */
 public class GainsLossesImportConfigurationDTO
 {
-    private boolean skipLastRow;
+    private int skipHeaderRows;
+    private int skipFooterRows;
     private boolean tickerSymbolEmbeddedWithParens;
     private int tickerSymbolColumn;
     private int gainsColumn;
     private int lossColumn;
     private int gainsLossColumn;
     private boolean clearEntries;
-    private boolean skipFirstRow;
 
     public boolean isClearEntries()
     {
@@ -22,26 +22,6 @@ public class GainsLossesImportConfigurationDTO
     public void setClearEntries( final boolean clearEntries )
     {
         this.clearEntries = clearEntries;
-    }
-
-    public boolean isSkipFirstRow()
-    {
-        return skipFirstRow;
-    }
-
-    public void setSkipFirstRow( final boolean skipFirstRow )
-    {
-        this.skipFirstRow = skipFirstRow;
-    }
-
-    public boolean isSkipLastRow()
-    {
-        return skipLastRow;
-    }
-
-    public void setSkipLastRow( final boolean skipLastRow )
-    {
-        this.skipLastRow = skipLastRow;
     }
 
     public boolean isTickerSymbolEmbeddedWithParens()
@@ -94,18 +74,39 @@ public class GainsLossesImportConfigurationDTO
         this.gainsLossColumn = gainsLossColumn;
     }
 
+    public int getSkipHeaderRows()
+    {
+        return skipHeaderRows;
+    }
+
+    public void setSkipHeaderRows( final int skipHeaderRows )
+    {
+        this.skipHeaderRows = skipHeaderRows;
+    }
+
+    public int getSkipFooterRows()
+    {
+        return skipFooterRows;
+    }
+
+    public void setSkipFooterRows( final int skipFooterRows )
+    {
+        this.skipFooterRows = skipFooterRows;
+    }
+
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "GainsLossesImportConfigurationDTO{" );
-        sb.append( "skipLastRow=" ).append( skipLastRow );
+        sb.append( "skipHeaderRows=" ).append( skipHeaderRows );
+        sb.append( ", skipFooterRows=" ).append( skipFooterRows);
         sb.append( ", tickerSymbolEmbeddedWithParens=" ).append( tickerSymbolEmbeddedWithParens );
         sb.append( ", tickerSymbolColumn=" ).append( tickerSymbolColumn );
         sb.append( ", gainsColumn=" ).append( gainsColumn );
         sb.append( ", lossColumn=" ).append( lossColumn );
         sb.append( ", gainsLossColumn=" ).append( gainsLossColumn );
         sb.append( ", clearEntries=" ).append( clearEntries );
-        sb.append( ", skipFirstRow=" ).append( skipFirstRow );
         sb.append( '}' );
         return sb.toString();
     }

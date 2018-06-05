@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.AppConfig;
+import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
@@ -23,7 +24,8 @@ import pl.zankowski.iextrading4j.api.stocks.Company;
 public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
                                                                                          StockCompanyEntity,
                                                                                          StockCompanyEntityService,
-                                                                                         Company>
+                                                                                         Company,
+                                                                                         StockCompanyNotFoundException>
 {
     /**
      * Service for the stock company entities.
@@ -53,7 +55,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         }
         catch( StockNotFoundException e2 )
         {
-            throw new AsyncCacheDataNotFoundException( tickerSymbol, e2 );
+            throw new StockCompanyNotFoundException( tickerSymbol, e2 );
         }
     }
 
@@ -96,6 +98,12 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     protected StockCompanyEntityService getEntityService()
     {
         return this.stockCompanyEntityService;
+    }
+
+    @Override
+    protected StockCompanyNotFoundException createException( final String key, final Exception cause )
+    {
+        return new StockCompanyNotFoundException( key, cause );
     }
 
     @Autowired

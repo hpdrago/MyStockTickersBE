@@ -27,8 +27,10 @@ public interface GainsLossesRepository extends JpaRepository<GainsLossesEntity,U
      * @param customerUuid
      * @return
      */
-    Page<GainsLossesEntity> findByCustomerUuidAndTickerSymbol( final Pageable pageRequest, final UUID customerUuid,
-                                                               final String tickerSymbol );
+    Page<GainsLossesEntity> findByCustomerUuidAndLinkedAccountUuidAndTickerSymbol( final Pageable pageRequest,
+                                                                                   final UUID customerUuid,
+                                                                                   final UUID linkedAccountUuid,
+                                                                                   final String tickerSymbol );
 
     /**
      * Get all of the stocks to buy for the customer and the ticker symbol
@@ -37,8 +39,9 @@ public interface GainsLossesRepository extends JpaRepository<GainsLossesEntity,U
      * @param tickerSymbol
      * @return
      */
-    GainsLossesEntity findByCustomerUuidAndTickerSymbol( final UUID customerUuid,
-                                                         final String tickerSymbol );
+    GainsLossesEntity findByCustomerUuidAndLinkedAccountUuidAndTickerSymbol( final UUID customerUuid,
+                                                                             final UUID linkedAccountUuid,
+                                                                             final String tickerSymbol );
 
     @Override
     @Transactional

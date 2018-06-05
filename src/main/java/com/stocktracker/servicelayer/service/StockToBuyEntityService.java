@@ -92,7 +92,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
      * @return
      */
     @Override
-    protected StockToBuyDTO entityToDTO( final StockToBuyEntity stockToBuyEntity )
+    public StockToBuyDTO entityToDTO( final StockToBuyEntity stockToBuyEntity )
     {
         Objects.requireNonNull( stockToBuyEntity );
         final StockToBuyDTO stockToBuyDTO = super.entityToDTO( stockToBuyEntity );

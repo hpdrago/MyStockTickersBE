@@ -72,7 +72,7 @@ public abstract class UuidEntityService<E extends UUIDEntity,
      * @param entity Contains the entity information.
      * @return
      */
-    protected D entityToDTO( final E entity )
+    public D entityToDTO( final E entity )
     {
         //final String methodName = "entityToDTO";
         //logMethodBegin( methodName, entity );

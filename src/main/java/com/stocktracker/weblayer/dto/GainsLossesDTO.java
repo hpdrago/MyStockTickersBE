@@ -17,7 +17,7 @@ public class GainsLossesDTO extends DatabaseEntityDTO<String>
 {
     private String tickerSymbol;
     private String customerId;
-    private String linkedAccountId;
+    private LinkedAccountDTO linkedAccountDTO;
     private BigDecimal gains;
     private BigDecimal losses;
     private BigDecimal totalGainsLosses;
@@ -30,16 +30,6 @@ public class GainsLossesDTO extends DatabaseEntityDTO<String>
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
-    }
-
-    public String getLinkedAccountId()
-    {
-        return linkedAccountId;
-    }
-
-    public void setLinkedAccountId( final String linkedAccountId )
-    {
-        this.linkedAccountId = linkedAccountId;
     }
 
     public BigDecimal getGains()
@@ -84,16 +74,27 @@ public class GainsLossesDTO extends DatabaseEntityDTO<String>
         return this.customerId;
     }
 
+    public LinkedAccountDTO getLinkedAccount()
+    {
+        return linkedAccountDTO;
+    }
+
+    public void setLinkedAccount( final LinkedAccountDTO linkedAccountDTO )
+    {
+        this.linkedAccountDTO = linkedAccountDTO;
+    }
+
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "GainsLossesDTO{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", customerId=" ).append( customerId );
-        sb.append( ", linkedAccountId=" ).append( linkedAccountId );
         sb.append( ", gains=" ).append( gains );
         sb.append( ", losses=" ).append( losses );
         sb.append( ", totalGainsLosses=" ).append( totalGainsLosses );
+        sb.append( ", linkedAccount=" ).append( linkedAccountDTO );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
