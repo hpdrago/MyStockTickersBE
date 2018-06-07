@@ -166,6 +166,7 @@ public class StockCatalystEventController extends AbstractController implements 
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockCatalystEventId}/customerId/{customerId}",
@@ -175,7 +176,8 @@ public class StockCatalystEventController extends AbstractController implements 
                                                                          @RequestBody StockCatalystEventDTO portfolioStockDTO )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "saveStockCatalystEvent";
         logMethodBegin( methodName, stockCatalystEventId, customerId, portfolioStockDTO );

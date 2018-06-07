@@ -5,6 +5,7 @@ import io.reactivex.processors.BehaviorProcessor;
 import org.reactivestreams.Processor;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * This interface defines the methods for the information executor that provides two methods to obtain the requested

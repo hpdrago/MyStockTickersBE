@@ -1,10 +1,12 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.BaseService;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
@@ -30,10 +32,27 @@ public abstract class AsyncCacheClient< K extends Serializable,
     implements MyLogger
 {
     /**
-     * Working with the cache, and the entity service, attempts to retrieve the data from the database.  If it is not
-     * found or if the data is not current, an asynchronous fetch will be performed.  If the data is found and is current,
-     * the {@code receiver} is updated with the entity information.
-     * @param receiver
+     * Set the cached data on multiple receivers.  See {@code setCachedData} for details.
+     * @param receivers
+     */
+    public void setCachedData( final List<DR> receivers )
+    {
+        final String methodName = "setCachedData";
+        logMethodBegin( methodName, receivers.size() );
+        for ( final DR receiver: receivers )
+        {
+            this.setCachedData( receiver );
+        }
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Working with the cache, and the entity service, checks the cache for the data first and then attempts to
+     * retrieve the data from the database.  If it is not found or if the data is not current, an asynchronous fetch
+     * will be performed.  If the data is found and is current, the {@code receiver} is updated with the entity
+     * information. This method is call {@code setCachedData} because the receiver is updated (set) with the cached
+     * values if found or set with cache state information that indicates the data is being retrieved asyncrhonously.
+     * @param receiver The object that will "receive" the cached data and cache state values.
      */
     public void setCachedData( final DR receiver )
     {
@@ -103,7 +122,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
                 logDebug( methodName, "Is fetching.  Blocking and waiting" );
                 final T finalCachedData = cachedData;
                 final CE finalCacheEntry = cacheEntry;
-                cacheEntry.getFetchSubject()
+                cacheEntry.getAsyncProcessor()
                           .blockingSubscribe( fetchedData ->
                                               {
                                                   logDebug( methodName, "Received: " + fetchedData );

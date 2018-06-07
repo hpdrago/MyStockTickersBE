@@ -12,6 +12,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -47,6 +48,8 @@ public class StockPositionDTO extends DatabaseEntityDTO<String>
     private BigDecimal totalGainLossPercentage;
     private StockQuoteDTO stockQuoteDTO;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
+    private boolean stockPriceQuoteRequested;
+    private boolean stockQuoteRequested;
 
     /**
      * Copies the TradeIt position information.

@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.servicelayer.service.StockNoteSourceEntityService;
 import com.stocktracker.weblayer.dto.StockNoteSourceDTO;
@@ -50,14 +51,18 @@ public class StockNotesSourceController extends AbstractController
 
     /**
      * Add a stock note source to the database
-     *
+     * @param stockNoteSourceDTO
      * @return The stock that was added
+     * @return
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/customerId",
                      method = RequestMethod.POST )
     public ResponseEntity<StockNoteSourceDTO> addStockNoteSource( @RequestBody StockNoteSourceDTO stockNoteSourceDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "addStockNotesSource";
         logMethodBegin( methodName, stockNoteSourceDTO );

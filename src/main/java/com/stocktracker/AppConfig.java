@@ -13,8 +13,21 @@ public class AppConfig
 {
     public static final String STOCK_PRICE_QUOTE_THREAD_POOL = "StockPriceQuoteThreadPool";
     public static final String STOCK_QUOTE_THREAD_POOL = "StockQuoteThreadPool";
+    public static final String STOCK_COMPANY_THREAD_POOL = "StockCompanyThreadPool";
     public static final String STOCK_POSITION_EVALUATOR_THREAD_POOL = "StockPositionEvaluatorThreadPool";
     public static final String LINKED_ACCOUNT_GET_OVERVIEW_THREAD_POOL = "LinkedAccountGetOverviewThreadPool";
+
+    /**
+     * http://www.baeldung.com/spring-async
+     * @return Thread pool executor
+     */
+    @Bean(name = STOCK_COMPANY_THREAD_POOL)
+    public Executor stockCompanyThreadPoolTaskExecutor()
+    {
+        ThreadPoolTaskExecutor pool = getThreadPoolTaskExecutor( STOCK_COMPANY_THREAD_POOL + "-" );
+        return pool;
+    }
+
     /**
      * http://www.baeldung.com/spring-async
      * @return Thread pool executor

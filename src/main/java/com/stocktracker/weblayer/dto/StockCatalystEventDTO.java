@@ -9,6 +9,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
+
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockCatalystEventDTO extends DatabaseEntityDTO<String>
@@ -26,11 +28,25 @@ public class StockCatalystEventDTO extends DatabaseEntityDTO<String>
     private Short timePeriodYear;
     private StockQuoteDTO stockQuoteDTO;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
+    private boolean stockPriceQuoteRequested;
+    private boolean stockQuoteRequested;
 
 
     public StockPriceQuoteDTO getStockPriceQuote()
     {
         return stockPriceQuoteDTO;
+    }
+
+    @Transient
+    public void setQuoteRequested( final boolean requested )
+    {
+        this.stockQuoteRequested = requested;
+    }
+
+    @Transient
+    public boolean isQuoteRequested()
+    {
+        return this.stockQuoteRequested;
     }
 
     @Override

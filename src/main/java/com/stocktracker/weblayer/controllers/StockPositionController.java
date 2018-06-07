@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
@@ -42,6 +43,7 @@ public class StockPositionController extends AbstractController
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL
                              + "/linkedAccountId/{linkedAccountId}"
@@ -56,7 +58,8 @@ public class StockPositionController extends AbstractController
                TradeItAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               VersionedEntityNotFoundException,
+               DuplicateEntityException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );

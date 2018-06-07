@@ -1,10 +1,15 @@
 package com.stocktracker.servicelayer.service.cache.stockcompany;
 
+import com.stocktracker.AppConfig;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 
@@ -13,11 +18,14 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  * contained in the company.
  */
 @Service
-public class StockCompanyEntityCache extends AsyncCache<String,
-                                                        StockCompanyEntity,
-                                                        StockCompanyEntityCacheEntry,
-                                                        StockCompanyEntityServiceExecutor>
+public class StockCompanyEntityCache extends AsyncBatchCache<String,
+                                                             StockCompanyEntity,
+                                                             StockCompanyEntityCacheEntry,
+                                                             StockCompanyEntityCacheRequest,
+                                                             StockCompanyEntityCacheResponse,
+                                                             StockCompanyEntityServiceExecutor>
 {
+    @Autowired
     private StockCompanyEntityServiceExecutor stockCompanyEntityServiceExecutor;
 
     /**
@@ -46,9 +54,9 @@ public class StockCompanyEntityCache extends AsyncCache<String,
         return REMOVE;
     }
 
-    @Autowired
-    public void setStockCompanyEntityServiceExecutor( final StockCompanyEntityServiceExecutor stockCompanyEntityServiceExecutor )
+    @Override
+    protected StockCompanyEntityCacheRequest createBatchRequestType()
     {
-        this.stockCompanyEntityServiceExecutor = stockCompanyEntityServiceExecutor;
+        return this.context.getBean( StockCompanyEntityCacheRequest.class );
     }
 }

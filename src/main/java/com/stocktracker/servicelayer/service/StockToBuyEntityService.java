@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -21,7 +22,12 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
                                                                            StockToBuyDTO,
                                                                            StockToBuyRepository>
 {
+    @Autowired()
     private StockToBuyRepository stockToBuyRepository;
+
+    @Autowired
+    private StockQuoteEntityService stockQuoteEntityService;
+
 
     /**
      * Searches for the one entry for the customer UUID and ticker symbol -- this is a unique combination.
@@ -87,7 +93,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
     }
 
     /**
-     * Converts the entity to a dto.
+     * Converts the entity to a dto and gets cached stock information.
      * @param stockToBuyEntity
      * @return
      */
@@ -97,9 +103,22 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         Objects.requireNonNull( stockToBuyEntity );
         final StockToBuyDTO stockToBuyDTO = super.entityToDTO( stockToBuyEntity );
         stockToBuyDTO.setCompleted( stockToBuyEntity.getCompleted().equalsIgnoreCase( "Y" ) );
-        //stockToBuyDTO.setCreateDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getCreateDate() ) );
         stockToBuyDTO.setBuyAfterDate( JSONDateConverter.toY4MMDD( stockToBuyEntity.getBuyAfterDate() ) );
         return stockToBuyDTO;
+    }
+
+    /**
+     * Converts the entities to DTOs and gets cached stock information.
+     * @param entities
+     * @return
+     */
+    @Override
+    protected List<StockToBuyDTO> entitiesToDTOs( final List<StockToBuyEntity> entities )
+    {
+        final List<StockToBuyDTO> dtos = super.entitiesToDTOs( entities );
+        this.stockQuoteEntityService
+            .setStockQuoteInformation( dtos );
+        return dtos;
     }
 
     @Override
@@ -127,9 +146,4 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         return this.stockToBuyRepository;
     }
 
-    @Autowired
-    public void setStockToBuyRepository( final StockToBuyRepository stockToBuyRepository )
-    {
-        this.stockToBuyRepository = stockToBuyRepository;
-    }
 }

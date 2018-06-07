@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -21,7 +22,11 @@ public class StockCatalystEventEntityService extends StockInformationEntityServi
                                                                                    StockCatalystEventDTO,
                                                                                    StockCatalystEventRepository>
 {
+    @Autowired
     private StockCatalystEventRepository stockCatalystEventRepository;
+
+    @Autowired
+    private StockQuoteEntityService stockQuoteEntityService;
 
     /**
      * Get the list of all stock catalyst event for the customer
@@ -79,6 +84,15 @@ public class StockCatalystEventEntityService extends StockInformationEntityServi
     }
 
     @Override
+    protected List<StockCatalystEventDTO> entitiesToDTOs( final List<StockCatalystEventEntity> entities )
+    {
+        final List<StockCatalystEventDTO> dtos = super.entitiesToDTOs( entities );
+        this.stockQuoteEntityService
+            .setStockQuoteInformation( dtos );
+        return dtos;
+    }
+
+    @Override
     protected StockCatalystEventDTO createDTO()
     {
         return this.context.getBean( StockCatalystEventDTO.class );
@@ -106,11 +120,5 @@ public class StockCatalystEventEntityService extends StockInformationEntityServi
     protected StockCatalystEventRepository getRepository()
     {
         return this.stockCatalystEventRepository;
-    }
-
-    @Autowired
-    public void setStockCatalystEventRepository( final StockCatalystEventRepository stockCatalystEventRepository )
-    {
-        this.stockCatalystEventRepository = stockCatalystEventRepository;
     }
 }

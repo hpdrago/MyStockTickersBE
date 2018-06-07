@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
@@ -177,6 +178,12 @@ public class TradeItAsyncUpdateService
             log.error( String.format( "%s Entity version mismatch %s",
                                       methodName, linkedAccountEntity.getUuid() ), e1 );
             this.onGetAccountOverviewException( linkedAccountEntity.getUuid(), e1 );
+        }
+        catch( DuplicateEntityException e )
+        {
+            log.error( String.format( "%s Duplicate entity exception %s",
+                                      methodName, linkedAccountEntity.getUuid() ), e );
+            this.onGetAccountOverviewException( linkedAccountEntity.getUuid(), e );
         }
         log.warn( methodName + ".end" );
     }

@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -121,14 +122,14 @@ public class TradeItService implements MyLogger
      * @return instance of GetOAuthAccessTokenAPIResult which contains the TradeItAccountDTO that was created if the TradeIt
      * getOAuthAccessToken was successful.
      * @throws EntityVersionMismatchException
-     * @throws CustomerNotFoundException
+     * @throws DuplicateEntityException
      */
     public GetOAuthAccessTokenDTO getOAuthAccessToken( final UUID customerUuid,
                                                        @NotNull final String broker,
                                                        @NotNull final String accountName,
                                                        @NotNull final String oAuthVerifier )
         throws EntityVersionMismatchException,
-               CustomerNotFoundException
+               DuplicateEntityException
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerUuid, broker, accountName, oAuthVerifier );
@@ -141,8 +142,8 @@ public class TradeItService implements MyLogger
          * Create the parameter map
          */
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
-                                                                              .addParameter( TradeItParameter.OAUTH_VERIFIER_PARAM, oAuthVerifier )
-                                                                              .addParameter( TradeItParameter.BROKER_PARAM, broker );
+                                                                            .addParameter( TradeItParameter.OAUTH_VERIFIER_PARAM, oAuthVerifier )
+                                                                            .addParameter( TradeItParameter.BROKER_PARAM, broker );
         /*
          * Execute the TradeIt API call
          */
@@ -176,11 +177,13 @@ public class TradeItService implements MyLogger
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final UUID accountUuid )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, accountUuid );
@@ -227,11 +230,13 @@ public class TradeItService implements MyLogger
      * @throws TradeItAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public AuthenticateDTO authenticate( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, tradeItAccountUuid );
@@ -291,11 +296,13 @@ public class TradeItService implements MyLogger
      * @return Updated account entity.
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private TradeItAccountEntity handleAuthenticationResults( final TradeItAccountEntity tradeItAccountEntity,
                                                               final AuthenticateAPIResult authenticateAPIResult )
         throws TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "handleAuthenticationResults";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
@@ -337,13 +344,15 @@ public class TradeItService implements MyLogger
      * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public AnswerSecurityQuestionDTO answerSecurityQuestion( final UUID accountUuid,
                                                              final String questionResponse )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
                TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, accountUuid, questionResponse );
@@ -401,11 +410,15 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
+     * @throws TradeItAuthenticationException
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public KeepSessionAliveDTO keepSessionAlive( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException,
                TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, tradeItAccountUuid );
@@ -516,6 +529,13 @@ public class TradeItService implements MyLogger
              */
             logError( methodName, e );
         }
+        catch( DuplicateEntityException e )
+        {
+            /*
+             * Don't care if this fails.
+             */
+            logError( methodName, e );
+        }
         logMethodEnd( methodName, closeSessionDTO );
         return closeSessionDTO;
     }
@@ -527,11 +547,13 @@ public class TradeItService implements MyLogger
      * @return
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public GetPositionsAPIResult getPositions( final TradeItAccountEntity tradeItAccountEntity,
                                                final LinkedAccountEntity linkedAccountEntity )
         throws TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getId() );
@@ -562,11 +584,13 @@ public class TradeItService implements MyLogger
      * @return
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public GetAccountOverviewDTO getAccountOverview( final TradeItAccountEntity tradeItAccountEntity,
                                                      final String accountNumber )
         throws TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "getAccountOverview";
         logMethodBegin( methodName, tradeItAccountEntity.getUuid(), accountNumber  );
@@ -603,12 +627,14 @@ public class TradeItService implements MyLogger
      * @return The result of the TradeIt API call.
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private <T extends TradeItAPIResult> T callTradeIt( final TradeItAccountEntity tradeItAccountEntity,
                                                         final TradeItAPIRestCall<T> tradeItAPIRestCall,
                                                         final TradeItAPICallParameters tradeItAPICallParameterMap )
         throws TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "callTradeIt";
         logMethodBegin( methodName, tradeItAccountEntity.getUuid(),
@@ -650,10 +676,12 @@ public class TradeItService implements MyLogger
      *                             auth token and auth timestamp will be persisted.
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private AuthenticateAPIResult handleSessionExpired( final TradeItAccountEntity tradeItAccountEntity )
         throws TradeItAuthenticationException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "handleSessionExpired";
         logMethodBegin( methodName, tradeItAccountEntity );

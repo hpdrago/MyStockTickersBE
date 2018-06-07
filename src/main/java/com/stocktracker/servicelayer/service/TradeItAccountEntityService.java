@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -61,10 +62,12 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param userToken
      * @return
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public TradeItAccountDTO createAccount( final UUID customerUuid, final String broker, final String accountName,
                                             final String userId, final String userToken )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerUuid, broker, accountName, userId, userToken );
@@ -108,12 +111,14 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public void synchronizeTradeItAccount( final UUID tradeItAccountUuid,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "synchronizeTradeItAccount";
         logMethodBegin( methodName, tradeItAccountUuid, authenticateDTO );
@@ -140,12 +145,14 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public void synchronizeTradeItAccount( final TradeItAccountEntity tradeItAccountEntity,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "synchronizeTradeItAccount";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateDTO );
@@ -172,12 +179,14 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param keepSessionAliveAPIResult
      * @throws TradeItAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public void keepSessionAliveSuccess( final KeepSessionAliveDTO keepSessionAliveDTO,
                                          final TradeItAccountEntity tradeItAccountEntity,
                                          final KeepSessionAliveAPIResult keepSessionAliveAPIResult )
         throws TradeItAccountNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "keepSessionAliveSuccess";
         logMethodBegin( methodName, tradeItAccountEntity, keepSessionAliveAPIResult );
@@ -196,10 +205,12 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
      * @param tradeItAccountEntity
      * @param tradeItAccount The account information from TradeIt.
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public LinkedAccountEntity addLinkedAccount( final TradeItAccountEntity tradeItAccountEntity,
                                                  final TradeItAccount tradeItAccount )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "addLinkedAccount";
         logMethodBegin( methodName, tradeItAccountEntity, tradeItAccount );

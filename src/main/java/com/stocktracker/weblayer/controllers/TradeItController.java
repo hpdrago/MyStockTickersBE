@@ -2,6 +2,7 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.UUIDUtil;
 import com.stocktracker.common.exceptions.CustomerNotFoundException;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.NotAuthorizedException;
@@ -93,6 +94,7 @@ public class TradeItController extends AbstractController
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL + "/getOAuthAccessToken"
                                          + "/customerId/{customerId}"
@@ -107,7 +109,8 @@ public class TradeItController extends AbstractController
                                                        @PathVariable final String oAuthVerifier )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "getOAuthAccessToken";
         logMethodBegin( methodName, customerId, oAuthVerifier );
@@ -131,6 +134,7 @@ public class TradeItController extends AbstractController
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
                              + "/accountId/{accountId}"
@@ -143,7 +147,8 @@ public class TradeItController extends AbstractController
                TradeItAuthenticationException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "getOAuthTokenUpdateURL";
         logMethodBegin( methodName, customerId, accountId );
@@ -166,6 +171,7 @@ public class TradeItController extends AbstractController
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -179,7 +185,8 @@ public class TradeItController extends AbstractController
                EntityVersionMismatchException,
                LinkedAccountNotFoundException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "authenticate";
         logMethodBegin( methodName, accountId, customerId );
@@ -211,6 +218,7 @@ public class TradeItController extends AbstractController
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL + "/authenticate/"
                                          + "/accountId/{accountId}"
@@ -225,7 +233,8 @@ public class TradeItController extends AbstractController
                TradeItAuthenticationException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "answerSecurityQuestion";
         logMethodBegin( methodName, customerId, accountId, answer );
@@ -247,6 +256,7 @@ public class TradeItController extends AbstractController
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @RequestMapping( value = CONTEXT_URL + "/keepSessionAlive/"
                              + "/tradeItAccountId/{tradeItAccountId}"
@@ -259,23 +269,14 @@ public class TradeItController extends AbstractController
                TradeItAuthenticationException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "keepSessionAlive";
         logMethodBegin( methodName, customerId, tradeItAccountId );
         this.validateCustomerId( customerId );
         final KeepSessionAliveDTO keepSessionAliveDTO = this.tradeItService
                                                             .keepSessionAlive( UUIDUtil.uuid( tradeItAccountId ));
-        /*
-         * Synchronize the linked accounts identified by TradeIt with the linked account table.
-         */
-        /*
-        if ( keepSessionAliveDTO.isSuccessful() )
-        {
-            this.tradeItAccountEntityService
-                .synchronizeTradeItAccount( customerId, tradeItAccountId, keepSessionAliveDTO );
-        }
-        */
         logMethodEnd( methodName, keepSessionAliveDTO );
         return keepSessionAliveDTO;
     }

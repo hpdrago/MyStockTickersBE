@@ -18,7 +18,11 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
                                                                                       StockAnalystConsensusDTO,
                                                                                       StockAnalystConsensusRepository>
 {
+    @Autowired
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
+
+    @Autowired
+    private StockQuoteEntityService stockQuoteEntityService;
 
     /**
      * Get the DTO for the stock ticker symbol.
@@ -108,17 +112,14 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         return stockAnalystConsensusDTOS;
     }
 
-    /*
     @Override
-    protected StockAnalystConsensusDTO entityToDTO( final StockAnalystConsensusEntity stockAnalystConsensusEntity )
+    public StockAnalystConsensusDTO entityToDTO( final StockAnalystConsensusEntity entity )
     {
-        Objects.requireNonNull( stockAnalystConsensusEntity );
-        final StockAnalystConsensusDTO stockAnalystConsensusDTO = super.entityToDTO( stockAnalystConsensusEntity );
-        stockAnalystConsensusDTO.setAnalystPriceDate( stockAnalystConsensusEntity.getAnalystPriceDate() );
-        stockAnalystConsensusDTO.setAnalystSentimentDate( stockAnalystConsensusEntity.getAnalystSentimentDate() );
-        return stockAnalystConsensusDTO;
+        final StockAnalystConsensusDTO dto = super.entityToDTO( entity );
+        this.stockQuoteEntityService
+            .setStockQuoteInformation( dto );
+        return dto;
     }
-    */
 
     @Override
     protected StockAnalystConsensusDTO createDTO()
@@ -136,11 +137,5 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
     protected StockAnalystConsensusRepository getRepository()
     {
         return this.stockAnalystConsensusRepository;
-    }
-
-    @Autowired
-    public void setStockAnalystConsensusRepository( final StockAnalystConsensusRepository stockAnalystConsensusRepository )
-    {
-        this.stockAnalystConsensusRepository = stockAnalystConsensusRepository;
     }
 }

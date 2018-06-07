@@ -2,11 +2,10 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
 import io.reactivex.processors.AsyncProcessor;
-import io.reactivex.processors.BehaviorProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -21,7 +20,7 @@ import java.math.BigDecimal;
 @Service
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
-public class StockPriceQuoteServiceExecutor extends AsyncCacheCacheServiceExecutor<String,StockPriceQuote>
+public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheServiceExecutor<String,StockPriceQuote>
     implements AsyncCacheServiceExecutor<String,StockPriceQuote>
 {
     private StockPriceServiceExecutor stockPriceServiceExecutor;

@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service.common;
 import com.stocktracker.AppConfig;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
@@ -42,13 +43,15 @@ public class StockPositionComparator implements MyLogger
      * @param getPositionsAPIResult
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
+     * @throws DuplicateEntityException
      */
     @Async( AppConfig.STOCK_POSITION_EVALUATOR_THREAD_POOL )
             public void comparePositions(final LinkedAccountEntity linkedAccountEntity,
             final List<StockPositionEntity>stockPositionEntities,
             final GetPositionsAPIResult getPositionsAPIResult )
         throws EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               VersionedEntityNotFoundException,
+               DuplicateEntityException
     {
         final String methodName = "comparePositions";
         logMethodBegin( methodName, linkedAccountEntity );
@@ -88,9 +91,12 @@ public class StockPositionComparator implements MyLogger
     /**
      * Update stock position entities.
      * @param stockPositionEntities
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private void updateEntities( final Set<MyStockPositionEntity> stockPositionEntities )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         for ( final MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
         {
@@ -125,9 +131,12 @@ public class StockPositionComparator implements MyLogger
     /**
      * Add the entities to the database.
      * @param stockPositionEntities
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private void addEntities( final Set<MyStockPositionEntity> stockPositionEntities )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         for ( final MyStockPositionEntity myStockPositionEntity : stockPositionEntities )
         {

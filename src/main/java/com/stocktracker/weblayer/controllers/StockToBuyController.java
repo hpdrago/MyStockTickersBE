@@ -180,6 +180,7 @@ public class StockToBuyController extends AbstractController
      * @param stockToBuyDTO
      * @return
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockToBuyId}/customerId/{customerId}",
@@ -187,7 +188,8 @@ public class StockToBuyController extends AbstractController
     public ResponseEntity<StockToBuyDTO> saveStockToBuy( @PathVariable String stockToBuyId,
                                                          @PathVariable String customerId,
                                                          @RequestBody StockToBuyDTO stockToBuyDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "saveStockToBuy";
         logMethodBegin( methodName, customerId, stockToBuyId, stockToBuyDTO );

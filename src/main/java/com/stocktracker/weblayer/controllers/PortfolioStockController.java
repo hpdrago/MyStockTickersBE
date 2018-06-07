@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioStockMissingDataException;
 import com.stocktracker.common.exceptions.PortfolioStockNotFound;
@@ -146,15 +147,19 @@ public class PortfolioStockController extends AbstractController
 
     /**
      * Add a portfolio stock to the database
-     *
+     * @param portfolioStockDTO
+     * @param customerId
      * @return The customer stock that was added
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
         method = RequestMethod.PUT )
     public ResponseEntity<PortfolioStockDTO> savePortfolioStock( @RequestBody PortfolioStockDTO portfolioStockDTO,
                                                                  @PathVariable String customerId )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "savePortfolioStock";
         logMethodBegin( methodName, customerId, portfolioStockDTO );

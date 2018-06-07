@@ -1,6 +1,7 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
@@ -66,6 +67,7 @@ public class LinkedAccountController extends AbstractController
      * @param linkedAccountDTO
      * @return
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{linkedAccountId}/customerId/{customerId}",
@@ -73,7 +75,8 @@ public class LinkedAccountController extends AbstractController
     public ResponseEntity<LinkedAccountDTO> saveLinkedAccount( @PathVariable String linkedAccountId,
                                                                @PathVariable String customerId,
                                                                @RequestBody LinkedAccountDTO linkedAccountDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "saveLinkedAccount";
         logMethodBegin( methodName, customerId, linkedAccountId );

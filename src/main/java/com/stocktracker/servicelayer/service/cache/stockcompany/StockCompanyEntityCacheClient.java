@@ -2,26 +2,29 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityBatchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 /**
- * This interface is used by any class that need information from the {@code StockCompanyEntityCache}.
+ * This class the client interface to the {@code StockCompanyEntityCache}.  It defines the necessary methods and data
+ * types to correctly extend the {@code AsyncCacheDBEntityClient} which contains all of the required processing logic.
  */
 @Service
-public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<String,
-                                                                            StockCompanyEntity,
-                                                                            StockCompanyEntityCacheEntry,
-                                                                            StockCompanyEntityServiceExecutor,
-                                                                            StockCompanyEntityCache,
-                                                                            StockCompanyEntityCacheDataReceiver,
-                                                                            StockCompanyEntityService>
+public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityBatchClient<String,
+                                                                                 StockCompanyEntity,
+                                                                                 StockCompanyEntityCacheEntry,
+                                                                                 StockCompanyEntityCacheRequest,
+                                                                                 StockCompanyEntityCacheResponse,
+                                                                                 StockCompanyEntityServiceExecutor,
+                                                                                 StockCompanyEntityCache,
+                                                                                 StockCompanyEntityCacheDataReceiver,
+                                                                                 StockCompanyEntityService>
 {
+    @Autowired
     private StockCompanyEntityCache stockCompanyEntityCache;
+
+    @Autowired
     private StockCompanyEntityService stockCompanyEntityService;
 
     /**
@@ -44,18 +47,6 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
     protected StockCompanyEntityService getEntityService()
     {
         return this.stockCompanyEntityService;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityCache( final StockCompanyEntityCache stockCompanyEntityCache )
-    {
-        this.stockCompanyEntityCache = stockCompanyEntityCache;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 
 }

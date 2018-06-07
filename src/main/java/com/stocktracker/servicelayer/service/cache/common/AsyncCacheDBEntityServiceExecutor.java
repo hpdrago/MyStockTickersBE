@@ -17,13 +17,18 @@ import java.io.Serializable;
  * @param <E> - The versioned entity type.
  * @param <S> - The entity service.
  * @param <D> - The type of information to obtain from the third party.
+ * @param <EX>- The exception type used when the requested data is not found.
+ * @param <RQ>- The request type.
+ * @param <RS>- The response type.
  */
 public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
                                                         E extends VersionedEntity<K>,
                                                         S extends VersionedEntityService<K,E,?,?,?>,
                                                         D,
-                                                        EX extends AsyncCacheDataNotFoundException>
-    extends AsyncCacheCacheServiceExecutor<K,E>
+                                                        EX extends AsyncCacheDataNotFoundException,
+                                                        RQ extends AsyncBatchCacheRequest<K,E>,
+                                                        RS extends AsyncBatchCacheResponse<K,E>>
+    extends BaseAsyncCacheBatchServiceExecutor<K,E,RQ,RS>
 {
     /**
      * Fetches the information for {@code searchKey} from the external data source.

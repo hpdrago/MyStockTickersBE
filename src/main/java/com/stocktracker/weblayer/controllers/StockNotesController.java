@@ -79,8 +79,14 @@ public class StockNotesController extends AbstractController implements MyLogger
 
     /**
      * Update a stock note.
-     * @return The updated stock note.
+     * @param stockNotesDTO
+     * @param customerId
+     * @param stockNotesId
+     * @return
      * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/id/{stockNotesId}/customerId/{customerId}",
@@ -90,7 +96,8 @@ public class StockNotesController extends AbstractController implements MyLogger
                                                          @PathVariable( "stockNotesId" ) final String stockNotesId )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "updateStockNote";
         logMethodBegin( methodName, customerId, stockNotesId, stockNotesDTO );

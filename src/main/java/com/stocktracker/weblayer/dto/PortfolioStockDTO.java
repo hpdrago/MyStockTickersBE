@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 
 /**
@@ -44,7 +45,9 @@ public class PortfolioStockDTO extends DatabaseEntityDTO<String>
     private Integer costBasis;
 
     private StockQuoteDTO stockQuoteDTO;
+    private boolean stockQuoteRequested;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
+    private boolean stockPriceQuoteRequested;
 
 
     @Override

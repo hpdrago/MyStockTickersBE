@@ -1,10 +1,15 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
+import com.stocktracker.AppConfig;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 
@@ -14,11 +19,14 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  * they way we plan to use it initially.
  */
 @Service
-public class StockQuoteEntityCache extends AsyncCache<String,
-                                                      StockQuoteEntity,
-                                                      StockQuoteEntityCacheEntry,
-                                                      StockQuoteEntityServiceExecutor>
+public class StockQuoteEntityCache extends AsyncBatchCache<String,
+                                                           StockQuoteEntity,
+                                                           StockQuoteEntityCacheEntry,
+                                                           StockQuoteEntityCacheRequest,
+                                                           StockQuoteEntityCacheResponse,
+                                                           StockQuoteEntityServiceExecutor>
 {
+    @Autowired
     private StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor;
 
     /**
@@ -52,13 +60,9 @@ public class StockQuoteEntityCache extends AsyncCache<String,
         return REMOVE;
     }
 
-    /**
-     * Sets the executor that is the go-between the cache and the cache data receiver.
-     * @param stockQuoteEntityServiceExecutor
-     */
-    @Autowired
-    public void setStockQuoteEntityServiceExecutor( final StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor )
+    @Override
+    protected StockQuoteEntityCacheRequest createBatchRequestType()
     {
-        this.stockQuoteEntityServiceExecutor = stockQuoteEntityServiceExecutor;
+        return this.context.getBean( StockQuoteEntityCacheRequest.class );
     }
 }

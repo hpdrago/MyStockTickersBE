@@ -57,10 +57,12 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param service
      * @param updateEntities List of entities to update.
      * @throws EntityVersionMismatchException if any of the entities to update is out of sync with the database version.
+     * @throws DuplicateEntityException
      */
     private void updateEntities( final VersionedEntityService<K,E,?,?,?> service,
                                  final Set<E> updateEntities )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "updateEntities";
         logMethodBegin( methodName );

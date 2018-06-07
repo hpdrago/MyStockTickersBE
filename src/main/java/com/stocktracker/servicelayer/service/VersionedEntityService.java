@@ -35,9 +35,11 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param dto
      * @return Entity that was saved to the database.
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public D saveDTO( final D dto  )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "saveDTO";
         logMethodBegin( methodName, dto );
@@ -315,8 +317,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param entity
      * @return
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public E saveEntity( final E entity )
+        throws DuplicateEntityException
     {
         final String methodName = "saveEntity";
         logMethodBegin( methodName, entity );
@@ -349,8 +353,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * Private method used by add and update methods to update the database.
      * @param entity
      * @return
+     * @throws DuplicateEntityException
      */
     private E save( final E entity )
+        throws DuplicateEntityException
     {
         final String methodName = "save";
         logMethodBegin( methodName, entity );
@@ -366,6 +372,10 @@ public abstract class VersionedEntityService<EK extends Serializable,
             E currentEntity = this.getRepository()
                                   .findOne( entity.getId() );
             throw new EntityVersionMismatchException( currentEntity, e );
+        }
+        catch( org.springframework.dao.DataIntegrityViolationException e )
+        {
+            throw new DuplicateEntityException( entity, e );
         }
         logMethodEnd( methodName, savedEntity );
         return savedEntity;

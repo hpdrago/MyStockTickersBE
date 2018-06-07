@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Component

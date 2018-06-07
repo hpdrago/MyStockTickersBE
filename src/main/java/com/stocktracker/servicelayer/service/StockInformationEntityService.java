@@ -8,12 +8,10 @@ import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
 import com.stocktracker.repositorylayer.entity.StockTagEntity;
 import com.stocktracker.repositorylayer.entity.UUIDEntity;
-import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityContainer;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
-import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
 import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
@@ -45,9 +43,11 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
                                                     R extends JpaRepository<E,UUID>>
     extends UuidEntityService<E,D,R>
 {
+    @Autowired
     protected StockCompanyEntityService stockCompanyEntityService;
-    protected StockQuoteEntityService stockQuoteEntityService;
+    @Autowired
     protected StockPriceQuoteService stockPriceQuoteService;
+    @Autowired
     protected StockNoteSourceEntityService stockNoteSourceService;
 
     /**
@@ -56,10 +56,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * @param dto
      * @return DTO after saved to the database.
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @Override
     public D saveDTO( final D dto )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "saveDTO";
         logMethodBegin( methodName, dto );
@@ -153,34 +155,6 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     }
 
     /**
-     * Updates the stock quote information for all dtos asynchronously.
-     * @param dtos
-     */
-    protected void setStockPriceQuotes( final List<? extends StockPriceQuoteDTOContainer> dtos )
-    {
-        final String methodName = "setStockPriceQuotes";
-        logMethodBegin( methodName );
-        this.stockPriceQuoteService
-             .setStockPriceQuote( dtos, ASYNCHRONOUS );
-        logMethodEnd( methodName );
-    }
-
-    /**
-     * Updates the stock quote information for all dtos asynchronously.
-     * @param dtos
-     */
-    /*
-    protected void setStockQuotes( final List<? extends StockQuoteEntityCacheDataReceiver> dtos )
-    {
-        final String methodName = "setStockPriceQuotes";
-        logMethodBegin( methodName );
-        this.stockQuoteEntityService
-            .setStockQuote( (StockQuoteEntityCacheDataReceiver) dtos );
-        logMethodEnd( methodName );
-    }
-    */
-
-    /**
      * Converts the entity to a DTO and sets the stock price on the return DTO.
      * @param entity Contains the entity information.
      * @return
@@ -199,22 +173,29 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
          *
          * NEED TO SERIOUSLY THINK ABOUT A BETTER SOLUTION HERE....5/9/2017 Mike.
          *
+         * Need to develop some sort of "conversion" registration so that subclasses can register "converters" to be
+         * run on entity.
+         *
         /*
          * StockPriceQuoteContainers contain everything in a StockPriceContainer so get that instead
          */
+        /*
         if ( dto instanceof StockQuoteDTOContainer )
         {
             this.stockQuoteEntityService
                 .setQuoteInformation( dto );
         }
+        */
         /*
          * The quote contains the company name
          */
+        /*
         else if ( dto instanceof StockCompanyEntityContainer )
         {
             this.stockCompanyEntityService
                 .setCompanyInformation( (StockCompanyDTOContainer) dto );
         }
+        */
         if ( dto instanceof StockPriceQuoteDTOContainer )
         {
             this.stockPriceQuoteService
@@ -401,32 +382,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto argument cannot be null" );
         this.stockCompanyEntityService
-            .checkStockTableEntry( dto.getTickerSymbol() );
+            .checkStockCompanyTableEntry( dto.getTickerSymbol() );
         logMethodEnd( methodName );
     }
-
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
-    }
-
-    @Autowired
-    public void setStockNoteSourceService( final StockNoteSourceEntityService stockNoteSourceService )
-    {
-        this.stockNoteSourceService = stockNoteSourceService;
-    }
-
-    @Autowired
-    public void setStockQuoteEntityService( final StockQuoteEntityService stockQuoteEntityService )
-    {
-        this.stockQuoteEntityService = stockQuoteEntityService;
-    }
-
-    @Autowired
-    public void setStockPriceQuoteService( final StockPriceQuoteService stockPriceQuoteService )
-    {
-        this.stockPriceQuoteService = stockPriceQuoteService;
-    }
-
 }

@@ -15,14 +15,13 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "stock_quote", schema = "stocktracker", catalog = "" )
 public class StockQuoteEntity extends TickerSymbolEntity
-                              implements AsyncCacheDBEntity<String>
+    implements AsyncCacheDBEntity<String>
 {
     private String calculationPrice;
     private String companyName;

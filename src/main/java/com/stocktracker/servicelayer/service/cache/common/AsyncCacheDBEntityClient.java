@@ -11,8 +11,8 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
 
 /**
  * Abstract class that implements the common pattern of obtaining a value from a AsyncCache.
- * @param  <T> Cached data type.
  * @param  <K> Key type for cached data.
+ * @param  <T> Cached data type.
  * @param <CE> Cache Entry Type.
  * @param  <X> Cache Executor Type
  * @param  <C> Cache type.
@@ -43,33 +43,15 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         final K entityKey = receiver.getCacheKey();
         try
         {
+            this.updateDataReceiver( receiver );
             /*
-             * Retrieve the entity from the database, it might not exist.
+             * Check to see if the entity is STALE and needs to be refreshed.
              */
-            final T entity = this.getEntityService()
-                                 .getEntity( receiver.getCacheKey() );
-            logDebug( methodName, "Loaded entity: " + entity );
-            receiver.setCachedData( entity );
-            /*
-             * Check to see if the entity needs to be refreshed.
-             */
-            if ( this.isCurrent( entity ))
+            if ( receiver.getCacheDataState().isStale() )
             {
-                logDebug( methodName, "Entity is CURRENT" );
-                receiver.setCacheDataState( CURRENT );
-            }
-            else
-            {
-                logDebug( methodName, "Entity is STALE" );
-                receiver.setCacheDataState( STALE );
-                receiver.setCachedData( entity );
-                /*
-                 * The entity is STALE and need to be refreshed.  This is the job for the cache to perform this work
-                 * asynchronously.
-                 */
                 logDebug( methodName, "Making asynchronous fetch" );
                 this.getCache()
-                    .asynchronousGet( receiver.getCacheKey(), entity );
+                    .asynchronousGet( receiver.getCacheKey() );
             }
         }
         catch( VersionedEntityNotFoundException e )
@@ -78,6 +60,82 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             this.asynchronousFetch( receiver );
         }
         logMethodEnd( methodName, receiver );
+    }
+
+    /**
+     * Sets the cached data (if present) and the cache data state on the {@code receiver}.
+     * @param receiver
+     * @throws VersionedEntityNotFoundException
+     */
+    protected void updateDataReceiver( final DR receiver )
+        throws VersionedEntityNotFoundException
+    {
+        final String methodName = "updateDataReceiver";
+        logMethodBegin( methodName );
+        /*
+         * Check the cache first for existence.
+         */
+        final CE cacheEntry = this.getCache()
+                                  .getCacheEntry( receiver.getCacheKey() );
+        if ( cacheEntry == null || cacheEntry.isStale() )
+        {
+            /*
+             * Retrieve the entity from the database, it might not exist.
+             */
+            final T entity;
+            try
+            {
+                entity = this.getEntityService()
+                                     .getEntity( receiver.getCacheKey() );
+                logDebug( methodName, "Loaded entity: " + entity );
+                receiver.setCachedData( entity );
+                /*
+                 * Check to see if the entity needs to be refreshed.
+                 */
+                if ( this.isCurrent( entity ) )
+                {
+                    logDebug( methodName, "Entity is CURRENT" );
+                    receiver.setCacheDataState( CURRENT );
+                }
+                else
+                {
+                    logDebug( methodName, "Entity is STALE" );
+                    receiver.setCacheDataState( STALE );
+                    receiver.setCachedData( entity );
+                }
+                /*
+                 * Need to create the cache entry for stale entities because the client is going to request the updated
+                 * values.
+                 */
+                if ( cacheEntry == null && receiver.getCacheDataState().isStale() )
+                {
+                    this.getCache()
+                        .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCacheDataState() );
+                }
+            }
+            catch( VersionedEntityNotFoundException e )
+            {
+                /*
+                 * if the database entity is not found, then we need to retrieve the data.
+                 */
+                receiver.setCacheDataState( STALE );
+                this.getCache()
+                    .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCacheDataState() );
+                /*
+                 * Throw the exception back to the caller and let them decide what to do.
+                 * When requesting a single entity, there will be an async request made right away.
+                 * In batch mode, this exception is ignored as the request for data will be made in a batch.
+                 */
+                throw e;
+            }
+        }
+        else
+        {
+            logDebug( methodName, "Cache entry is present and current for {0}", receiver.getCacheKey() );
+            receiver.setCachedData( cacheEntry.getCachedData() );
+            receiver.setCacheDataState( CURRENT );
+        }
+        logMethodEnd( methodName );
     }
 
     /**
@@ -90,5 +148,9 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         return entity.getExpiration().getTime() > System.currentTimeMillis();
     }
 
+    /**
+     * Subclasses specify their entity service to be used to check the database for existence of requested entities.
+     * @return
+     */
     protected abstract S getEntityService();
 }

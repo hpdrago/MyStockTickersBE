@@ -229,6 +229,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{stockAnalystConsensusId}/customerId/{customerId}",
@@ -238,7 +239,8 @@ public class StockAnalystConsensusController extends AbstractController implemen
                                                                                  @PathVariable String customerId )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "saveStockAnalystConsensus";
         logMethodBegin( methodName, stockAnalystConsensusId, customerId, stockAnalystConsensusDTO );

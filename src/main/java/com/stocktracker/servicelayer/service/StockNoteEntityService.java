@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,7 +27,11 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     /**
      * Autowired service classes
      */
+    @Autowired
     private StockNoteRepository stockNoteRepository;
+
+    @Autowired
+    private StockQuoteEntityService stockQuoteEntityService;
 
     /**
      * Get all of the notes for a customer.
@@ -92,6 +97,15 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     }
 
     @Override
+    protected List<StockNoteDTO> entitiesToDTOs( final List<StockNoteEntity> entities )
+    {
+        final List<StockNoteDTO> dtos = super.entitiesToDTOs( entities );
+        this.stockQuoteEntityService
+            .setStockQuoteInformation( dtos );
+        return dtos;
+    }
+
+    @Override
     protected StockNoteDTO createDTO()
     {
         return this.context.getBean( StockNoteDTO.class );
@@ -107,12 +121,6 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     protected StockNoteRepository getRepository()
     {
         return this.stockNoteRepository;
-    }
-
-    @Autowired
-    public void setStockNoteRepository( final StockNoteRepository stockNoteRepository )
-    {
-        this.stockNoteRepository = stockNoteRepository;
     }
 
 }

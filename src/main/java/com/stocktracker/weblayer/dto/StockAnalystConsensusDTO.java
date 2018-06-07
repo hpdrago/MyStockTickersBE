@@ -13,6 +13,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -45,7 +46,8 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
     private String notesSourceName;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
-
+    private boolean stockPriceQuoteRequested;
+    private boolean stockQuoteRequested;
 
     @Override
     public String getTickerSymbol()

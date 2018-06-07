@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityBatchClient;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,15 +11,19 @@ import org.springframework.stereotype.Service;
  * This interface is used by any class that need information from the {@code StockQuoteEntityCache}.
  */
 @Service
-public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String,
-                                                                          StockQuoteEntity,
-                                                                          StockQuoteEntityCacheEntry,
-                                                                          StockQuoteEntityServiceExecutor,
-                                                                          StockQuoteEntityCache,
-                                                                          StockQuoteEntityCacheDataReceiver,
-                                                                          StockQuoteEntityService>
+public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityBatchClient<String,
+                                                                               StockQuoteEntity,
+                                                                               StockQuoteEntityCacheEntry,
+                                                                               StockQuoteEntityCacheRequest,
+                                                                               StockQuoteEntityCacheResponse,
+                                                                               StockQuoteEntityServiceExecutor,
+                                                                               StockQuoteEntityCache,
+                                                                               StockQuoteEntityCacheDataReceiver,
+                                                                               StockQuoteEntityService>
 {
+    @Autowired
     private StockQuoteEntityCache stockQuoteEntityCache;
+    @Autowired
     private StockQuoteEntityService stockQuoteEntityService;
 
     /**
@@ -50,25 +55,4 @@ public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String
     {
         return this.stockQuoteEntityService;
     }
-
-    /**
-     * DI for the cache.
-     * @param stockQuoteEntityCache
-     */
-    @Autowired
-    public void setStockQuoteEntityCache( final StockQuoteEntityCache stockQuoteEntityCache )
-    {
-        this.stockQuoteEntityCache = stockQuoteEntityCache;
-    }
-
-    /**
-     * DI for the entity service.
-     * @param stockQuoteEntityService
-     */
-    @Autowired
-    public void setStockQuoteEntityService( final StockQuoteEntityService stockQuoteEntityService )
-    {
-        this.stockQuoteEntityService = stockQuoteEntityService;
-    }
-
 }

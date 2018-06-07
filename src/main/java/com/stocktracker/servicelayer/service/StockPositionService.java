@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
@@ -30,10 +31,16 @@ public class StockPositionService extends StockInformationEntityService<StockPos
                                                                         StockPositionDTO,
                                                                         StockPositionRepository>
 {
+    @Autowired
     private StockPositionRepository stockPositionRepository;
+    @Autowired
     private TradeItService tradeItService;
+    @Autowired
     private TradeItAccountEntityService tradeItAccountEntityService;
+    @Autowired
     private LinkedAccountEntityService linkedAccountEntityService;
+    @Autowired
+    private StockQuoteEntityService stockQuoteEntityService;
 
     /**
      * Get the positions for the linked account.
@@ -46,6 +53,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
      * @throws TradeItAPIException
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
+     * @throws DuplicateEntityException
      */
     public List<StockPositionDTO> getPositions( final UUID customerUuid,
                                                 final UUID tradeItAccountUuid,
@@ -54,7 +62,8 @@ public class StockPositionService extends StockInformationEntityService<StockPos
                TradeItAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               VersionedEntityNotFoundException,
+               DuplicateEntityException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
@@ -85,6 +94,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
      * @throws EntityVersionMismatchException
      * @throws VersionedEntityNotFoundException
      * @throws TradeItAPIException
+     * @throws DuplicateEntityException
      */
     private List<StockPositionDTO> synchronizePositions( final UUID customerUuid,
                                                          final UUID tradeItAccountUuid,
@@ -93,7 +103,8 @@ public class StockPositionService extends StockInformationEntityService<StockPos
                LinkedAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
-               VersionedEntityNotFoundException
+               VersionedEntityNotFoundException,
+               DuplicateEntityException
     {
         final String methodName = "synchronizePositions";
         logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
@@ -101,7 +112,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
         try
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
-                .getEntity( tradeItAccountUuid );
+                                       .getEntity( tradeItAccountUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -136,7 +147,8 @@ public class StockPositionService extends StockInformationEntityService<StockPos
              * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
              */
             this.createPositionDTOList( customerUuid, tradeItAccountUuid, linkedAccountUuid, getPositionsAPIResult );
-            this.setStockPriceQuotes( stockPositionList );
+            this.stockQuoteEntityService
+                .setStockQuoteInformation( stockPositionList );
         }
         else
         {
@@ -187,29 +199,5 @@ public class StockPositionService extends StockInformationEntityService<StockPos
     protected StockPositionRepository getRepository()
     {
         return stockPositionRepository;
-    }
-
-    @Autowired
-    public void setStockPositionRepository( final StockPositionRepository stockPositionRepository )
-    {
-        this.stockPositionRepository = stockPositionRepository;
-    }
-
-    @Autowired
-    public void setTradeItService( final TradeItService tradeItService )
-    {
-        this.tradeItService = tradeItService;
-    }
-
-    @Autowired
-    public void setTradeItAccountEntityService( final TradeItAccountEntityService tradeItAccountEntityService )
-    {
-        this.tradeItAccountEntityService = tradeItAccountEntityService;
-    }
-
-    @Autowired
-    public void setLinkedAccountEntityService( final LinkedAccountEntityService linkedAccountEntityService )
-    {
-        this.linkedAccountEntityService = linkedAccountEntityService;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -44,6 +45,8 @@ public class StockToBuyDTO extends DatabaseEntityDTO<String>
     private BigDecimal avgAnalystPriceTarget;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
+    private boolean priceQuoteRequested;
+    private boolean stockQuoteRequested;
 
     @Override
     public StockPriceQuoteDTO getStockPriceQuote()

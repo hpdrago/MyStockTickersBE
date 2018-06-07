@@ -35,7 +35,7 @@ public abstract class AsyncCacheEntry<T>
      * The RxJava subject which is used to register to be notified when the asynchronous process completes.
      * It is also used internally to notify all of the subscribers.
      */
-    private AsyncProcessor<T> fetchSubject;
+    private AsyncProcessor<T> asyncProcessor;
 
     /**
      * The exception if the asynchronous request failed.
@@ -56,8 +56,8 @@ public abstract class AsyncCacheEntry<T>
     public AsyncCacheEntry()
     {
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
-        this.fetchSubject = AsyncProcessor.create();
-        this.fetchSubject.serialize();
+        this.asyncProcessor = AsyncProcessor.create();
+        this.asyncProcessor.serialize();
     }
 
     /**
@@ -153,9 +153,9 @@ public abstract class AsyncCacheEntry<T>
     /**
      * The RxJava subject to contain any requests waiting for the stock price while it's being fetched.
      */
-    public synchronized AsyncProcessor<T> getFetchSubject()
+    public synchronized AsyncProcessor<T> getAsyncProcessor()
     {
-        return fetchSubject;
+        return asyncProcessor;
     }
 
     /**

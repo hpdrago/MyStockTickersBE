@@ -273,6 +273,7 @@ public class GainsLossesController extends AbstractController
      * @param gainsLossesDTO
      * @return
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/id/{gainsLossesId}/customerId/{customerId}",
@@ -280,7 +281,8 @@ public class GainsLossesController extends AbstractController
     public ResponseEntity<GainsLossesDTO> saveGainsLosses( @PathVariable String gainsLossesId,
                                                            @PathVariable String customerId,
                                                            @RequestBody GainsLossesDTO gainsLossesDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "saveGainsLosses";
         logMethodBegin( methodName, customerId, gainsLossesId, gainsLossesDTO );

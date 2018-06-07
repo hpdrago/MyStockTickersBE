@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.common;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.SetComparator;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
@@ -36,10 +37,12 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param authenticateAPIResult
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public void compare( final TradeItAccountEntity tradeItAccountEntity, final AuthenticateAPIResult authenticateAPIResult )
         throws LinkedAccountNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         SetComparator<String>.SetComparatorResults validateLinkedAccountsResult = this.validateLinkedAccounts( tradeItAccountEntity,
                                                                                                                authenticateAPIResult );
@@ -56,12 +59,14 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param validateLinkedAccountsResult
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private void checkForUpdatedAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                           final AuthenticateAPIResult authenticateAPIResult,
                                           final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
         throws LinkedAccountNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "checkForUpdatedAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );
@@ -91,12 +96,14 @@ public class TradeItAccountComparisonService implements MyLogger
      * @throws IllegalArgumentException
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private void compareAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                   final AuthenticateAPIResult authenticateAPIResult,
                                   final String accountNumber )
         throws LinkedAccountNotFoundException,
-               EntityVersionMismatchException
+               EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "compareAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, accountNumber );
@@ -155,11 +162,13 @@ public class TradeItAccountComparisonService implements MyLogger
      * @param authenticateAPIResult
      * @param validateLinkedAccountsResult
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     private void checkForNewAccounts( final TradeItAccountEntity tradeItAccountEntity,
                                       final AuthenticateAPIResult authenticateAPIResult,
                                       final SetComparator<String>.SetComparatorResults validateLinkedAccountsResult )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "checkForNewAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, validateLinkedAccountsResult );

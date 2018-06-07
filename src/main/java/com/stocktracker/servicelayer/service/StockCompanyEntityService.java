@@ -6,10 +6,8 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
-import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCache;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheDataReceiver;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,8 +31,35 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                                                                       StockCompanyDTO,
                                                                       StockCompanyRepository>
 {
+    @Autowired
     private StockCompanyRepository stockCompanyRepository;
+    @Autowired
     private StockCompanyEntityCacheClient stockCompanyEntityCacheClient;
+
+    /**
+     * Set the stock company information for each container.
+     * @param containers
+     */
+    public void setCompanyInformation( final List<StockCompanyDTOContainer> containers )
+    {
+        final String methodName = "setStockCompanyInformation";
+        logMethodBegin( methodName, "containers.size=" + containers.size() );
+        final List<StockCompanyEntityCacheDataReceiver > receivers = new ArrayList<>();
+        for ( final StockCompanyDTOContainer container: containers )
+        {
+            final StockCompanyEntityCacheDataReceiver receiver = this.context
+                                                                     .getBean( StockCompanyEntityCacheDataReceiver.class );
+            receiver.setCacheKey( container.getTickerSymbol() );
+            receivers.add( receiver );
+        }
+        this.stockCompanyEntityCacheClient
+            .setCachedData( receivers );
+        /*
+         * Mark the DTO's as quote is requested.
+         */
+        //containers.forEach( container -> container.setStockCompanyRequested( true ) );
+        logMethodBegin( methodName );
+    }
 
     /**
      * Updates the stock company information in {@code container}. It works with the {@code StockCompanyCache} to
@@ -41,7 +68,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
      */
     public void setCompanyInformation( final StockCompanyDTOContainer container )
     {
-        final String methodName = "getStockCompanyDTO";
+        final String methodName = "setStockCompanyInformation";
         logMethodBegin( methodName, container.getTickerSymbol() );
         /*
          * Create the cached data receiver.
@@ -153,7 +180,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
      * @param tickerSymbol
      * @return
      */
-    public StockCompanyEntity checkStockTableEntry( final String tickerSymbol )
+    public StockCompanyEntity checkStockCompanyTableEntry( final String tickerSymbol )
     {
         final String methodName = "checkStock";
         logMethodBegin( methodName, tickerSymbol );
@@ -185,7 +212,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         }
         catch( VersionedEntityNotFoundException e )
         {
-            e.printStackTrace();
+            logError( methodName, e );
         }
         logMethodEnd( methodName, stockCompanyEntity );
         return stockCompanyEntity;
@@ -215,6 +242,10 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
                 this.stockCompanyRepository
                     .save( stockCompanyEntity );
             }
+            catch( DuplicateEntityException e )
+            {
+                // ignore
+            }
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -241,17 +272,4 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     {
         return this.stockCompanyRepository;
     }
-
-    @Autowired
-    public void setStockCompanyRepository( final StockCompanyRepository stockCompanyRepository )
-    {
-        this.stockCompanyRepository = stockCompanyRepository;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityCacheClient( final StockCompanyEntityCacheClient stockCompanyEntityCacheClient )
-    {
-        this.stockCompanyEntityCacheClient = stockCompanyEntityCacheClient;
-    }
-
 }

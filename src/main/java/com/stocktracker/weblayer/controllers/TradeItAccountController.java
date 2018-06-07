@@ -143,6 +143,7 @@ public class TradeItAccountController extends AbstractController implements MyLo
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
@@ -151,7 +152,8 @@ public class TradeItAccountController extends AbstractController implements MyLo
                                                           @RequestBody TradeItAccountDTO tradeItAccountDTO )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               DuplicateEntityException
     {
         final String methodName = "saveAccount";
         logMethodBegin( methodName, customerId, tradeItAccountDTO );

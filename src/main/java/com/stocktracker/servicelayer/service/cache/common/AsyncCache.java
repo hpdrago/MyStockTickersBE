@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import com.stocktracker.common.MyLogger;
+import com.stocktracker.servicelayer.service.BaseService;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -35,6 +36,7 @@ public abstract class AsyncCache<K extends Serializable,
                                  T,
                                  E extends AsyncCacheEntry<T>,
                                  X extends AsyncCacheServiceExecutor<K,T>>
+    extends BaseService
     implements MyLogger
 {
     private Map<K,E> cacheMap = Collections.synchronizedMap( new HashMap<>() );
@@ -117,22 +119,6 @@ public abstract class AsyncCache<K extends Serializable,
         logTrace( methodName, "cacheEntry: {0}", returnCacheEntry );
         logMethodEnd( methodName, returnCacheEntry );
         return returnCacheEntry;
-    }
-
-    /**
-     * This method is called to refresh the cached data for the {@code searchKey}.
-     * @param searchKey The key to search for.
-     * @param cachedData The stale data that needs to be refreshed which will be returned in the returned CacheEntry.
-     * @return
-     */
-    public void asynchronousGet( @NotNull final K searchKey,
-                                 @NotNull final T cachedData )
-    {
-        final String methodName = "asynchronousGet";
-        logMethodBegin( methodName, searchKey, cachedData );
-        final E cacheEntry = this.asynchronousGet( searchKey );
-        cacheEntry.setCachedData( cachedData );
-        logMethodEnd( methodName, cacheEntry );
     }
 
     /**
@@ -247,12 +233,12 @@ public abstract class AsyncCache<K extends Serializable,
          * immediately.
          */
         this.getExecutor()
-            .asynchronousFetch( searchKey, cacheEntry.getFetchSubject() );
+            .asynchronousFetch( searchKey, cacheEntry.getAsyncProcessor() );
         logTrace( methodName, "Subscribing to subject for {0}", searchKey );
         /*
          * Setup the handling to handle the completed request.
          */
-        cacheEntry.getFetchSubject()
+        cacheEntry.getAsyncProcessor()
                   .share()
                   .doOnError( throwable ->
                   {
@@ -260,7 +246,7 @@ public abstract class AsyncCache<K extends Serializable,
                       cacheEntry.setFetchThrowable( throwable );
                       cacheEntry.setCachedData( null );
                       cacheEntry.setFetchState( NOT_FETCHING );
-                      cacheEntry.getFetchSubject().onError( throwable );
+                      cacheEntry.getAsyncProcessor().onError( throwable );
                       logTrace( methodName, "cacheEntry: {0}", cacheEntry );
                   })
                   .subscribe( cacheData ->
@@ -274,6 +260,27 @@ public abstract class AsyncCache<K extends Serializable,
                   });
         logTrace( methodName, "cacheEntry: {0}", cacheEntry );
         logMethodEnd( methodName );
+    }
+
+    /**
+     * Creates a new cache entry and adds it to the cache.
+     * @param key
+     * @param cachedData
+     * @param cacheDataState
+     */
+    public void createCacheEntry( final K key, final T cachedData, final AsyncCacheEntryState cacheDataState )
+    {
+        final String methodName = "createCacheEntry";
+        logMethodBegin( methodName, key, cacheDataState );
+        E cacheEntry = this.createCacheEntry();
+        cacheEntry.setFetchState( NOT_FETCHING );
+        cacheEntry.setCacheState( cacheDataState );
+        /*
+         * Store an "empty" cache entry for now
+         */
+        this.cacheMap
+            .put( key, cacheEntry );
+        logMethodEnd( methodName, key );
     }
 
     /**
@@ -293,4 +300,5 @@ public abstract class AsyncCache<K extends Serializable,
      * @return
      */
     protected abstract AsyncCacheStrategy getCacheStrategy();
+
 }

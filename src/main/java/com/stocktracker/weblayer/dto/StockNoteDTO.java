@@ -12,6 +12,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 
 /**
@@ -43,6 +44,8 @@ public class StockNoteDTO extends DatabaseEntityDTO<String>
     private BigDecimal stockPriceWhenCreated;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
+    private boolean stockPriceQuoteRequested;
+    private boolean stockQuoteRequested;
 
     public String getNotes()
     {

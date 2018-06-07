@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @param <T> - The type of information to obtain from the third party.
  * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
  */
-public abstract class AsyncCacheCacheServiceExecutor<K,T> extends BaseService
+public abstract class BaseAsyncCacheServiceExecutor<K,T> extends BaseService
     implements AsyncCacheServiceExecutor<K,T>
 {
     /**

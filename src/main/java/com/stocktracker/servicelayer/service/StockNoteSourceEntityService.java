@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.UUIDUtil;
+import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.StockNoteSourceNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
@@ -73,7 +74,7 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
                     stockNoteSourceDTOContainer.setNotesSourceId( stockNoteSourceEntity.getUuid().toString() );
                     stockNoteSourceDTOContainer.setNotesSourceName( stockNoteSourceEntity.getName() );
                 }
-                catch( org.springframework.dao.DataIntegrityViolationException e )
+                catch( DuplicateEntityException e )
                 {
                     logWarn( methodName, "duplicate source insert attempt: " +
                                          stockNoteSourceDTOContainer.getNotesSourceId() );
@@ -155,9 +156,12 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
      * Create a new stock note source
      * @param stockNoteSourceDTO
      * @return
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
      */
     public StockNoteSourceDTO createStockNoteSource( final StockNoteSourceDTO stockNoteSourceDTO )
-        throws EntityVersionMismatchException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException
     {
         final String methodName = "createStockNoteSource";
         logMethodBegin( methodName, stockNoteSourceDTO );

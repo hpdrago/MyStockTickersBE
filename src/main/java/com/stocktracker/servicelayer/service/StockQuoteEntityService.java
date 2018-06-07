@@ -9,6 +9,9 @@ import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This service contains the methods for the StockQuoteEntity.
  */
@@ -19,17 +22,47 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                                                                     StockQuoteDTO,
                                                                     StockQuoteRepository>
 {
+    @Autowired
     private StockQuoteRepository stockQuoteRepository;
+    @Autowired
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
+
+    /**
+     * Gets the stock quote information for all of the DTOs in {@code containers}.  The quotes are fetched as a batch
+     * using the stock quote client.
+     * @param containers
+     */
+    public void setStockQuoteInformation( final List<? extends StockQuoteDTOContainer> containers )
+    {
+        final String methodName = "setStockQuoteInformation";
+        logMethodBegin( methodName, containers.size() );
+        final List<StockQuoteEntityCacheDataReceiver > receivers = new ArrayList<>();
+        /*
+         * Create the request data.
+         */
+        for ( final StockQuoteDTOContainer container: containers )
+        {
+            final StockQuoteEntityCacheDataReceiver receiver = this.context
+                                                                   .getBean( StockQuoteEntityCacheDataReceiver.class );
+            receiver.setCacheKey( container.getTickerSymbol() );
+            receivers.add( receiver );
+        }
+        /*
+         * Make the batch data request.
+         */
+        this.stockQuoteEntityCacheClient
+            .setCachedData( receivers );
+        logMethodEnd( methodName );
+    }
 
     /**
      * Updates the stock quote information in {@code container}. It works with the {@code StockQuoteCache} to
      * retrieve the stock quote asynchronously if needed.
      * @param container The container to set the value.
      */
-    public void setQuoteInformation( final StockQuoteDTOContainer container )
+    public void setStockQuoteInformation( final StockQuoteDTOContainer container )
     {
-        final String methodName = "getStockQuote";
+        final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, container.getTickerSymbol() );
         /*
          * Create the cached data receiver.
@@ -39,7 +72,8 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         /*
          * Get the cached data or make an asynchronous request for the data.
          */
-        this.stockQuoteEntityCacheClient.setCachedData( receiver );
+        this.stockQuoteEntityCacheClient
+            .setCachedData( receiver );
         /*
          * Set the cache data and status results.
          */
@@ -112,17 +146,5 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     protected StockQuoteRepository getRepository()
     {
         return this.stockQuoteRepository;
-    }
-
-    @Autowired
-    public void setStockQuoteRepository( final StockQuoteRepository stockQuoteRepository )
-    {
-        this.stockQuoteRepository = stockQuoteRepository;
-    }
-
-    @Autowired
-    public void setStockQuoteEntityCacheClient( final StockQuoteEntityCacheClient stockQuoteEntityCacheClient )
-    {
-        this.stockQuoteEntityCacheClient = stockQuoteEntityCacheClient;
     }
 }
