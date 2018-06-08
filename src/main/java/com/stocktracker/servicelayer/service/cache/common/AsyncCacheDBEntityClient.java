@@ -86,7 +86,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             try
             {
                 entity = this.getEntityService()
-                                     .getEntity( receiver.getCacheKey() );
+                             .getEntity( receiver.getCacheKey() );
                 logDebug( methodName, "Loaded entity: " + entity );
                 receiver.setCachedData( entity );
                 /*
@@ -101,8 +101,8 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
                 {
                     logDebug( methodName, "Entity is STALE" );
                     receiver.setCacheDataState( STALE );
-                    receiver.setCachedData( entity );
                 }
+                receiver.setCachedData( entity );
                 /*
                  * Need to create the cache entry for stale entities because the client is going to request the updated
                  * values.

@@ -45,8 +45,6 @@ public class StockToBuyDTO extends DatabaseEntityDTO<String>
     private BigDecimal avgAnalystPriceTarget;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
-    private boolean priceQuoteRequested;
-    private boolean stockQuoteRequested;
 
     @Override
     public StockPriceQuoteDTO getStockPriceQuote()
