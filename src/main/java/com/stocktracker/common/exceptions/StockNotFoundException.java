@@ -29,6 +29,7 @@ public class StockNotFoundException extends RuntimeException // RuntimeException
 
     public StockNotFoundException( final String tickerSymbol, final boolean discontinued )
     {
+        super( "Ticker symbol " + tickerSymbol + " has been discontinued or not found" ) ;
         this.tickerSymbol = tickerSymbol;
         this.discontinued = true;
     }

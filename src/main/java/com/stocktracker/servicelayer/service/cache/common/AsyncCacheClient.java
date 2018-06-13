@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.BaseService;
 import org.springframework.beans.BeanUtils;
 
@@ -71,7 +70,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         {
             receiver.setCacheError( cacheEntry.getFetchThrowable().getMessage() );
         }
-        receiver.setDataExpiration( cacheEntry.getExpirationTime() );
+        receiver.setExpirationTime( cacheEntry.getExpirationTime() );
         logMethodEnd( methodName, receiver );
     }
 
@@ -111,7 +110,6 @@ public abstract class AsyncCacheClient< K extends Serializable,
         final String methodName = "getCachedData";
         logMethodBegin( methodName, searchKey );
 
-        T cachedData = this.createCachedDataObject();
         final CE cacheEntry = this.getCache()
                                   .getCacheEntry( searchKey );
         if ( cacheEntry != null )
@@ -119,68 +117,112 @@ public abstract class AsyncCacheClient< K extends Serializable,
             logDebug( methodName, "cacheEntry: {0}", cacheEntry );
             if ( cacheEntry.getFetchState().isFetching() )
             {
-                logDebug( methodName, "Is fetching.  Blocking and waiting" );
-                final T finalCachedData = cachedData;
-                final CE finalCacheEntry = cacheEntry;
-                cacheEntry.getAsyncProcessor()
-                          .blockingSubscribe( fetchedData ->
-                                              {
-                                                  logDebug( methodName, "Received: " + fetchedData );
-                                                  if ( fetchedData != null )
-                                                  {
-                                                      BeanUtils.copyProperties( fetchedData, finalCachedData );
-                                                      receiver.setCachedData( fetchedData );
-                                                      receiver.setCacheDataState( CURRENT );
-                                                      finalCacheEntry.setFetchState( NOT_FETCHING );
-                                                      finalCacheEntry.setCacheState( CURRENT );
-                                                      finalCacheEntry.setCachedData( fetchedData );
-                                                  }
-                                                  else
-                                                  {
-                                                      receiver.setCachedData( null );
-                                                      receiver.setCacheDataState( NOT_FOUND );
-                                                      finalCacheEntry.setFetchState( NOT_FETCHING );
-                                                      receiver.setCacheError( "Could not find entry for " + searchKey );
-                                                  }
-                                              });
+                this.handleInCacheIsFetching( searchKey, receiver, cacheEntry );
             }
             else
             {
-                /*
-                 * It's in the cache.
-                 */
-                logDebug( methodName, "It's in the cache and not fetching, checking currency" );
-                if ( cacheEntry.getCachedData() != null )
-                {
-                    BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
-                }
-                if ( cacheEntry.isStale() )
-                {
-                    logDebug( methodName, "It's stale" );
-                    cachedData = this.getCache()
-                                     .synchronousGet( searchKey )
-                                     .getCachedData();
-                    receiver.setCachedData( cachedData );
-                    receiver.setCacheDataState( CURRENT );
-                }
-                else
-                {
-                    logDebug( methodName, "It's current" );
-                    receiver.setCachedData( cachedData );
-                    receiver.setCacheDataState( CURRENT );
-                }
+                this.handleInCacheNotFetching( searchKey, receiver, cacheEntry );
             }
         }
         else
         {
-            logDebug( methodName, searchKey + " is not in the cache, fetching now" );
-            cachedData = this.getCache()
-                             .synchronousGet( searchKey )
-                             .getCachedData();
+            this.handleNotInCache( searchKey, receiver );
+        }
+        logMethodEnd( methodName, receiver );
+    }
+
+    /**
+     * Handles the case when the information is not found in the cache.  An synchronous call to obtain the information
+     * will be made.
+     * @param searchKey
+     * @param receiver
+     */
+    protected void handleNotInCache( final K searchKey, final DR receiver )
+    {
+        final String methodName = "handleNotInCache";
+        logDebug( methodName, searchKey + " is not in the cache, fetching now" );
+        final T cachedData = this.getCache()
+                                 .synchronousGet( searchKey )
+                                 .getCachedData();
+        receiver.setCachedData( cachedData );
+        receiver.setCacheDataState( CURRENT );
+    }
+
+    /**
+     * Handles the case when the entry is in the cache and it is not begin fetch so it should be current.
+     * @param searchKey
+     * @param receiver
+     * @param cacheEntry
+     */
+    protected void handleInCacheNotFetching( final K searchKey, final DR receiver, final CE cacheEntry )
+    {
+        final String methodName = "handleInCacheNotFetching";
+        /*
+         * It's not fetching
+         */
+        logDebug( methodName, "It's in the cache and not fetching, checking currency" );
+        if ( cacheEntry.getCachedData() != null )
+        {
+            T cachedData = this.createCachedDataObject();
+            BeanUtils.copyProperties( cacheEntry.getCachedData(), cachedData );
+        }
+        if ( cacheEntry.isStale() )
+        {
+            logDebug( methodName, "It's stale" );
+            T cachedData = this.getCache()
+                               .synchronousGet( searchKey )
+                               .getCachedData();
             receiver.setCachedData( cachedData );
             receiver.setCacheDataState( CURRENT );
         }
-        logMethodEnd( methodName, receiver );
+        else
+        {
+            logDebug( methodName, "It's current" );
+            receiver.setCachedData( cacheEntry.getCachedData() );
+            receiver.setCacheDataState( CURRENT );
+        }
+    }
+
+    /**
+     * Handles the condition when the information is already being fetched.  This method will subcribe to be notified
+     * when the fetch has completed.  This is a blocking call.
+     * @param searchKey
+     * @param receiver
+     * @param cacheEntry
+     */
+    protected void handleInCacheIsFetching( final K searchKey, final DR receiver, final CE cacheEntry )
+    {
+        final String methodName = "handleIsFetching";
+        logMethodBegin( methodName, searchKey, cacheEntry );
+        Objects.requireNonNull( searchKey, "searchKey argument cannot be null" );
+        Objects.requireNonNull( cacheEntry, "cacheEntry argument cannot be null" );
+        logDebug( methodName, "Is fetching.  Blocking and waiting" );
+        final T finalCachedData = cacheEntry.getCachedData() == null
+                                  ? this.createCachedDataObject()
+                                  : cacheEntry.getCachedData();
+        final CE finalCacheEntry = cacheEntry;
+        cacheEntry.getAsyncProcessor()
+                  .blockingSubscribe( fetchedData ->
+                                      {
+                                          logDebug( methodName, "Received: " + fetchedData );
+                                          if ( fetchedData != null )
+                                          {
+                                              BeanUtils.copyProperties( fetchedData, finalCachedData );
+                                              receiver.setCachedData( fetchedData );
+                                              receiver.setCacheDataState( CURRENT );
+                                              finalCacheEntry.setFetchState( NOT_FETCHING );
+                                              finalCacheEntry.setCacheState( CURRENT );
+                                              finalCacheEntry.setCachedData( fetchedData );
+                                          }
+                                          else
+                                          {
+                                              receiver.setCachedData( null );
+                                              receiver.setCacheDataState( NOT_FOUND );
+                                              finalCacheEntry.setFetchState( NOT_FETCHING );
+                                              receiver.setCacheError( "Could not find entry for " + searchKey );
+                                          }
+                                      });
+        logMethodEnd( methodName, searchKey );
     }
 
     /**

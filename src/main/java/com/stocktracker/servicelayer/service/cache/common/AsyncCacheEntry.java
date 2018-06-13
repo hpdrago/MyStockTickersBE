@@ -67,6 +67,10 @@ public abstract class AsyncCacheEntry<T>
     public synchronized void setCachedData( final T cachedData )
     {
         this.cachedData = cachedData;
+        if ( cachedData == null )
+        {
+            T newCacheData = null;
+        }
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
     }
 
@@ -181,7 +185,7 @@ public abstract class AsyncCacheEntry<T>
      */
     public synchronized boolean isStale()
     {
-        return System.currentTimeMillis() > this.expirationTime.getTime();
+        return this.cacheState.isStale();
     }
 
     @Override

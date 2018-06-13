@@ -9,8 +9,14 @@ import java.util.Date;
  * This interface defines the methods for DTO's receiving AsyncCache information.
  * @param <D>
  */
-public interface AsyncCacheDTOContainer<D>
+public interface AsyncCacheDTOContainer<K,D>
 {
+    /**
+     * Get the key to the cache.
+     * @return
+     */
+    K getCacheKey();
+
     /**
      * This method is called to set the cached {@code dto}.
      * @param dto

@@ -122,7 +122,7 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
     public void asynchronousFetch( final Map<String, StockQuoteEntityCacheRequest> asyncBatchCacheRequests )
     {
         final String methodName = "asynchronousFetch";
-        logMethodBegin( methodName, asyncBatchCacheRequests.size() );
+        logMethodBegin( methodName, asyncBatchCacheRequests.keySet() );
         Map<String, StockQuoteEntityCacheRequest> requestMap = new HashMap<>();
         for ( final StockQuoteEntityCacheRequest entry: asyncBatchCacheRequests.values() )
         {
@@ -156,7 +156,7 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
     public List<StockQuoteEntityCacheResponse> synchronousFetch( final Map<String, StockQuoteEntityCacheRequest> requests )
     {
         final String methodName = "synchronousFetch";
-        logMethodBegin( methodName, requests.size() );
+        logMethodBegin( methodName, requests.keySet() );
         /*
          * Get all of the ticker symbols.
          */
@@ -188,8 +188,10 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
                           }
                           catch( DuplicateEntityException e )
                           {
+                              logDebug( methodName, "DuplicateEntityException encountered saving {0}",
+                                        stockQuoteEntity );
                               /*
-                               * Retrieve and resave information.
+                               * Retrieve and re0save information.
                                */
                               try
                               {
@@ -206,6 +208,11 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
                               catch( DuplicateEntityException e1 )
                               {
                                   // ignore
+                              }
+                              catch( Exception ex )
+                              {
+                                  stockQuoteEntityCacheResponse.setException( ex );
+                                  logError( methodName, ex );
                               }
                           }
                           stockQuoteEntityCacheResponse.setData( stockQuoteEntity );

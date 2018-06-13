@@ -45,7 +45,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.cache.stockpricequote" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.cache.stockpricequote" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
@@ -55,7 +55,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.cache.stockquote" level="trace" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.cache.stockquote" level="info" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>

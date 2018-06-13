@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.repositorylayer.repository.StockQuoteRepository;
+import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteCacheBatchProcessor;
 import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheDataReceiver;
 import com.stocktracker.weblayer.dto.StockQuoteDTO;
@@ -9,7 +10,6 @@ import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +24,12 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
 {
     @Autowired
     private StockQuoteRepository stockQuoteRepository;
+
     @Autowired
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
+
+    @Autowired
+    private StockQuoteCacheBatchProcessor stockQuoteCacheBatchProcessor;
 
     /**
      * Gets the stock quote information for all of the DTOs in {@code containers}.  The quotes are fetched as a batch
@@ -36,22 +40,8 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     {
         final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, containers.size() );
-        final List<StockQuoteEntityCacheDataReceiver > receivers = new ArrayList<>();
-        /*
-         * Create the request data.
-         */
-        for ( final StockQuoteDTOContainer container: containers )
-        {
-            final StockQuoteEntityCacheDataReceiver receiver = this.context
-                                                                   .getBean( StockQuoteEntityCacheDataReceiver.class );
-            receiver.setCacheKey( container.getTickerSymbol() );
-            receivers.add( receiver );
-        }
-        /*
-         * Make the batch data request.
-         */
-        this.stockQuoteEntityCacheClient
-            .setCachedData( receivers );
+        this.stockQuoteCacheBatchProcessor
+            .processBatch( containers );
         logMethodEnd( methodName );
     }
 
@@ -107,6 +97,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
          * Create the cached data receiver.
          */
         final StockQuoteEntityCacheDataReceiver receiver = this.context.getBean( StockQuoteEntityCacheDataReceiver.class );
+        receiver.setCacheKey( tickerSymbol );
         /*
          * Block and wait for results
          */

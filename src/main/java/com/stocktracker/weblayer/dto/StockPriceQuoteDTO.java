@@ -29,11 +29,16 @@ public class StockPriceQuoteDTO implements StockPriceQuoteDTOAsyncContainer
     private BigDecimal lastPrice;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp lastPriceChange;
-    private AsyncCacheEntryState stockPriceQuoteCacheState;
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
     private AsyncCacheEntryState cacheState;
     private String cacheError;
+
+    @Override
+    public String getCacheKey()
+    {
+        return this.tickerSymbol;
+    }
 
     @Override
     public void setCachedDTO( final StockPriceQuoteDTO dto )
@@ -136,12 +141,9 @@ public class StockPriceQuoteDTO implements StockPriceQuoteDTOAsyncContainer
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", lastPrice=" ).append( lastPrice );
         sb.append( ", lastPriceChange=" ).append( lastPriceChange );
-        sb.append( ", openPrice=" ).append( lastPrice );
-        sb.append( ", stockPriceQuoteCacheState=" ).append( stockPriceQuoteCacheState );
         sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", cacheState=" ).append( cacheState );
         sb.append( ", cacheError=" ).append( cacheError );
-        sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

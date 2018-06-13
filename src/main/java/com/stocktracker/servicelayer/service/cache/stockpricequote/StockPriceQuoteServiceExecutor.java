@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
+import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheBatchServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
@@ -12,6 +14,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Price: https://iextrading.com/developer/docs/#price
@@ -20,12 +28,22 @@ import java.math.BigDecimal;
 @Service
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
-public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheServiceExecutor<String,StockPriceQuote>
+public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceExecutor<String,
+                                                                                       StockPriceQuote,
+                                                                                       StockPriceQuoteCacheRequest,
+                                                                                       StockPriceQuoteCacheResponse>
     implements AsyncCacheServiceExecutor<String,StockPriceQuote>
 {
     private StockPriceServiceExecutor stockPriceServiceExecutor;
     private StockPriceQuoteCache stockPriceQuoteCache;
     private StockCompanyEntityService stockCompanyEntityService;
+
+
+    @Override
+    public List synchronousFetch( final Map requests )
+    {
+        return null;
+    }
 
     /**
      * Fetches the StockQuote synchronously.
@@ -50,18 +68,21 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheServiceExecuto
                     .markStockAsDiscontinued( tickerSymbol );
                 stockPriceQuoteCacheEntry.setDiscontinued( true );
                 stockPriceQuote.setLastPrice( new BigDecimal( 0 ));
+                stockPriceQuote.setCacheState( NOT_FOUND );
                 break;
 
             case NOT_FOUND:
+                stockPriceQuote.setCacheState( NOT_FOUND );
                 stockPriceQuote.setLastPrice( new BigDecimal( 0 ));
                 break;
 
             case SUCCESS:
+                stockPriceQuote.setCacheState( CURRENT );
                 stockPriceQuote.setLastPrice( getStockPriceResult.getStockPrice() );
                 break;
 
             case EXCEPTION:
-                stockPriceQuote.setCacheState( AsyncCacheEntryState.FAILURE );
+                stockPriceQuote.setCacheState( FAILURE );
                 stockPriceQuote.setCacheError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
                 break;
         }

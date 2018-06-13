@@ -80,17 +80,6 @@ public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
     }
 
     @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
-    @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "TradeItAccountDTO{" );

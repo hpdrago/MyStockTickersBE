@@ -2,6 +2,8 @@ package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
 import com.stocktracker.weblayer.dto.common.StockQuoteDTOAsyncContainer;
@@ -21,7 +23,8 @@ import java.sql.Timestamp;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Qualifier( "stockQuoteDTO")
 public class StockQuoteDTO extends DatabaseEntityDTO<String>
-                           implements StockQuoteDTOAsyncContainer
+                           implements StockQuoteDTOAsyncContainer,
+                                      AsyncCacheDataReceiver<String,StockQuoteEntity>
 
 {
     private String tickerSymbol;
@@ -69,6 +72,42 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
 
     @Override
     public AsyncCacheEntryState getCacheState()
+    {
+        return this.cacheState;
+    }
+
+    @Override
+    public void setCacheKey( final String cacheKey )
+    {
+        this.tickerSymbol = cacheKey;
+    }
+
+    @Override
+    public String getCacheKey()
+    {
+        return this.tickerSymbol;
+    }
+
+    @Override
+    public void setCachedData( final StockQuoteEntity stockQuoteEntity )
+    {
+        BeanUtils.copyProperties( stockQuoteEntity, this );
+    }
+
+    @Override
+    public StockQuoteEntity getCachedData()
+    {
+        return null;
+    }
+
+    @Override
+    public void setCacheDataState( final AsyncCacheEntryState cacheState )
+    {
+        this.cacheState = cacheState;
+    }
+
+    @Override
+    public AsyncCacheEntryState getCacheDataState()
     {
         return this.cacheState;
     }

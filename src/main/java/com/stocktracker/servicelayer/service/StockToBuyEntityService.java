@@ -3,6 +3,8 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
+import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,8 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
     @Autowired
     private StockQuoteEntityService stockQuoteEntityService;
 
+    @Autowired
+    private StockPriceQuoteService stockPriceQuoteService;
 
     /**
      * Searches for the one entry for the customer UUID and ticker symbol -- this is a unique combination.
@@ -42,7 +46,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final StockToBuyEntity stockToBuyEntity = this.stockToBuyRepository
-                                                        .findByCustomerUuidAndTickerSymbol( customerUuid, tickerSymbol );
+                                                      .findByCustomerUuidAndTickerSymbol( customerUuid, tickerSymbol );
         StockToBuyDTO stockToBuyDTO = null;
         if ( stockToBuyEntity != null )
         {
@@ -118,6 +122,8 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         final List<StockToBuyDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService
             .setStockQuoteInformation( dtos );
+        this.stockPriceQuoteService
+            .setStockPriceQuotes( dtos );
         return dtos;
     }
 

@@ -6,7 +6,7 @@ import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
 /**
  * This interface is implemented by DTO's that contain a cached {@code StockPriceQuoteDTO} instance.
  */
-public interface StockPriceQuoteDTOAsyncContainer extends AsyncCacheDTOContainer<StockPriceQuoteDTO>,
+public interface StockPriceQuoteDTOAsyncContainer extends AsyncCacheDTOContainer<String,StockPriceQuoteDTO>,
                                                           TickerSymbolContainer
 {
 }

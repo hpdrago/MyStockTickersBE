@@ -73,12 +73,12 @@ public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<Strin
     }
 
     @Override
-    public void setDataExpiration( final Timestamp dataExpiration )
+    public void setExpirationTime( final Timestamp dataExpiration )
     {
         this.stockPriceQuote.setExpirationTime( dataExpiration );
     }
 
-    public Timestamp getDataExpiration()
+    public Timestamp getExpirationTime()
     {
         return this.stockPriceQuote.getExpiration();
     }

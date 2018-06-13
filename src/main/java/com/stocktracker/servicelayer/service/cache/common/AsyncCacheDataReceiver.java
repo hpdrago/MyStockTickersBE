@@ -69,11 +69,11 @@ public interface AsyncCacheDataReceiver<K extends Serializable,T>
      * Sets the date and time when the data will expire.
      * @param dataExpiration
      */
-    void setDataExpiration( final Timestamp dataExpiration );
+    void setExpirationTime( final Timestamp dataExpiration );
 
     /**
      * Get the expiration date.
      * @return
      */
-    Date getDataExpiration();
+    Timestamp getExpirationTime();
 }

@@ -70,7 +70,7 @@ public abstract class AsyncCacheDBEntityBatchClient< K extends Serializable,
          */
         if ( requestKeys.isEmpty() )
         {
-            logError( methodName, "All entities are CURRENT, no asynchronous fetch required." );
+            logDebug( methodName, "All entities are CURRENT, no asynchronous fetch required." );
         }
         else
         {

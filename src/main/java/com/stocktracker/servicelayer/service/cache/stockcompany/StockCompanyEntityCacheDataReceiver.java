@@ -72,13 +72,13 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     }
 
     @Override
-    public Timestamp getDataExpiration()
+    public Timestamp getExpirationTime()
     {
         return dataExpiration;
     }
 
     @Override
-    public void setDataExpiration( final Timestamp dataExpiration )
+    public void setExpirationTime( final Timestamp dataExpiration )
     {
         this.dataExpiration = dataExpiration;
     }

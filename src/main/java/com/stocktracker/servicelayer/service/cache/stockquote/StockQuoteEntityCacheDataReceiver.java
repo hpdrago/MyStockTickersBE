@@ -24,7 +24,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     private StockQuoteEntity stockQuoteEntity;
     private AsyncCacheEntryState cacheState;
     private String error;
-    private Date dataExpiration;
+    private Timestamp dataExpiration;
 
     @Override
     public void setCacheKey( final String key )
@@ -91,13 +91,13 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     }
 
     @Override
-    public void setDataExpiration( final Timestamp dataExpiration )
+    public void setExpirationTime( final Timestamp dataExpiration )
     {
         this.dataExpiration = dataExpiration;
     }
 
     @Override
-    public Date getDataExpiration()
+    public Timestamp getExpirationTime()
     {
         return this.dataExpiration;
     }

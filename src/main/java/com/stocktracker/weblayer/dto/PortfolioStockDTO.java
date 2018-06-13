@@ -252,7 +252,6 @@ public class PortfolioStockDTO extends DatabaseEntityDTO<String>
         this.costBasis = costBasis;
     }
 
-
     @Override
     public String toString()
     {

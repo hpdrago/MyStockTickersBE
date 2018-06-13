@@ -30,7 +30,7 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
     public void asynchronousFetch( @NotNull final Map<K,RQ> requests )
     {
         final String methodName = "asynchronousFetch";
-        logMethodBegin( methodName, requests.size() );
+        logMethodBegin( methodName, requests.size() + " requests: " + requests.keySet() );
         /*
          * Execute the batch request.
          */

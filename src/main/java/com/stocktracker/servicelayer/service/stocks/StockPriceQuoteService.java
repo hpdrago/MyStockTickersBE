@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service.stocks;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.BaseService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheEntry;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,6 +28,42 @@ public class StockPriceQuoteService extends BaseService
 {
     private StockPriceQuoteCache stockPriceQuoteCache;
     private StockPriceQuoteCacheClient stockPriceQuoteCacheClient;
+
+    /**
+     * Set the stock price quotes for the list of dto containers.
+     * @param containers
+     */
+    public void setStockPriceQuotes( final List<? extends StockPriceQuoteDTOContainer> containers )
+    {
+        final String methodName = "setStockPriceQuotes";
+        Objects.requireNonNull( containers, "containers argument cannot be null" );
+        logMethodBegin( methodName, containers.size() + " containers" );
+        final List<StockPriceQuoteDataReceiver> receivers = new ArrayList<>();
+        /*
+         * Create the receivers for the stock price quotes.
+         */
+        containers.forEach( container ->
+                            {
+                                final StockPriceQuoteDataReceiver receiver = this.context.getBean( StockPriceQuoteDataReceiver.class );
+                                receiver.setCacheKey( container.getTickerSymbol() );
+                                receivers.add( receiver );
+                            });
+        /*
+         * Get the stock price quotes.
+         */
+        this.stockPriceQuoteCacheClient
+            .setCachedData( receivers );
+        /*
+         * Update the containers with the cache results.
+         */
+        for ( int i = 0; i < containers.size(); i++ )
+        {
+            final StockPriceQuoteDTOContainer container = containers.get( i );
+            final StockPriceQuoteDataReceiver receiver = receivers.get( i );
+            this.setStockPriceQuote( container, receiver );
+        }
+        logMethodEnd( methodName );
+    }
 
     /**
      * Set the stock price quote on all container entries.
@@ -56,15 +94,27 @@ public class StockPriceQuoteService extends BaseService
         stockPriceQuoteDataReceiver.setCacheKey( container.getTickerSymbol() );
         this.stockPriceQuoteCacheClient
             .setCachedData( stockPriceQuoteDataReceiver );
+        setStockPriceQuote( container, stockPriceQuoteDataReceiver );
+        logMethodEnd( methodName, container );
+    }
+
+    /**
+     * Sets the {@code StockPriceQuoteDTO} value on the {@code container}.
+     * @param container
+     * @param stockPriceQuoteDataReceiver
+     */
+    private void setStockPriceQuote( final StockPriceQuoteDTOContainer container,
+                                     final StockPriceQuoteDataReceiver stockPriceQuoteDataReceiver )
+    {
         final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
         if ( stockPriceQuoteDataReceiver.getCachedData() != null )
         {
             BeanUtils.copyProperties( stockPriceQuoteDataReceiver.getCachedData(), stockPriceQuoteDTO );
             stockPriceQuoteDTO.setCacheError( stockPriceQuoteDataReceiver.getCacheError() );
+            stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteDataReceiver.getExpirationTime() );
         }
         stockPriceQuoteDTO.setCacheState( stockPriceQuoteDataReceiver.getCacheState() );
         container.setStockPriceQuote( stockPriceQuoteDTO );
-        logMethodEnd( methodName, container );
     }
 
     /**

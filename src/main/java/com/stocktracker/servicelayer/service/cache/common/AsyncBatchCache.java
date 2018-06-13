@@ -30,6 +30,8 @@ public abstract class AsyncBatchCache<K extends Serializable,
      */
     public void asynchronousGet( final List<K> requestKeys )
     {
+        final String methodName = "asynchronousGet";
+        logMethodBegin( methodName, requestKeys );
         final Map<K,RQ> requestMap = new HashMap<>();
         /*
          * Convert the request keys into a map of {@code AsyncBatchCacheRequest}s keyed by the cache key.
@@ -54,6 +56,7 @@ public abstract class AsyncBatchCache<K extends Serializable,
          */
         this.getExecutor()
             .asynchronousFetch( requestMap );
+        logMethodEnd( methodName, requestMap );
     }
 
     /**

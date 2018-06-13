@@ -56,18 +56,6 @@ public class StockNoteSourceDTO implements UuidDTO,
         this.customerId = customerId;
     }
 
-
-    @Override
-    public Integer getVersion()
-    {
-        return version;
-    }
-
-    public void setVersion( final Integer version )
-    {
-        this.version = version;
-    }
-
     @Override
     public String toString()
     {

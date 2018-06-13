@@ -195,12 +195,12 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
             this.stockCompanyEntityService
                 .setCompanyInformation( (StockCompanyDTOContainer) dto );
         }
-        */
         if ( dto instanceof StockPriceQuoteDTOContainer )
         {
             this.stockPriceQuoteService
                 .setStockPriceQuote( dto, ASYNCHRONOUS );
         }
+        */
 
         /*
          * Convert the UUID to a string and get the notes source name for the UUID

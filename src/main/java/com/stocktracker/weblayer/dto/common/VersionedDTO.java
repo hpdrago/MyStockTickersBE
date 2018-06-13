@@ -10,16 +10,4 @@ public interface VersionedDTO<K extends Serializable>
      * @return
      */
     K getId();
-
-    /**
-     * Get the entity version.
-     * @return
-     */
-    Integer getVersion();
-
-    /**
-     * Set the entity version.
-     * @param version
-     */
-    void setVersion( final Integer version );
 }
