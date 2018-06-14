@@ -39,7 +39,6 @@ public abstract class BaseAsyncCacheServiceExecutor<K,T> extends BaseService
         }
         catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
         {
-            asyncCacheDataNotFoundException.printStackTrace();
             subject.onError( asyncCacheDataNotFoundException );
             logTrace( methodName, "onError();" );
         }

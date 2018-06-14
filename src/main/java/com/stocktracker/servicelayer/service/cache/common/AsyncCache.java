@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.STALE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.FETCHING;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.NOT_FETCHING;
@@ -83,8 +84,6 @@ public abstract class AsyncCache<K extends Serializable,
         {
             logTrace( methodName, "{0} is not in the cache", searchKey );
             returnCacheEntry = this.createCacheEntry();
-            returnCacheEntry.setFetchState( FETCHING );
-            returnCacheEntry.setCacheState( STALE );
             /*
              * Store an "empty" cache entry for now
              */
@@ -201,13 +200,20 @@ public abstract class AsyncCache<K extends Serializable,
             {
                 information = this.getExecutor()
                                   .synchronousFetch( searchKey );
+                logDebug( methodName, "information: {0}", information );
                 cacheEntry.setCachedData( information );
                 cacheEntry.setCacheState( CURRENT );
             }
             catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
             {
+                logDebug( methodName, "NOT_FOUND" );
+                cacheEntry.setCacheState( NOT_FOUND );
+            }
+            catch( Throwable e )
+            {
                 cacheEntry.setCacheState( FAILURE );
-                cacheEntry.setFetchThrowable( asyncCacheDataNotFoundException );
+                cacheEntry.setFetchThrowable( e );
+                logDebug( methodName, "FAILURE: " + e.getMessage() );
             }
         }
         finally
@@ -244,10 +250,21 @@ public abstract class AsyncCache<K extends Serializable,
                   .doOnError( throwable ->
                   {
                       logError( methodName, String.format( "subscribe.onError for search Key: ", searchKey ), throwable );
-                      cacheEntry.setFetchThrowable( throwable );
                       cacheEntry.setCachedData( null );
+                      /*
+                       * Check for a not found exception first, that's a normal scenario
+                       */
+                      if ( throwable instanceof AsyncCacheDataNotFoundException )
+                      {
+                          cacheEntry.setCacheState( NOT_FOUND );
+                      }
+                      else
+                      {
+                          cacheEntry.setFetchThrowable( throwable );
+                          cacheEntry.setCacheState( FAILURE );
+                          cacheEntry.getAsyncProcessor().onError( throwable );
+                      }
                       cacheEntry.setFetchState( NOT_FETCHING );
-                      cacheEntry.getAsyncProcessor().onError( throwable );
                       logTrace( methodName, "cacheEntry: {0}", cacheEntry );
                   })
                   .subscribe( cacheData ->

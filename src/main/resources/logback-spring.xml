@@ -40,7 +40,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.weblayer.controllers.StockController" level="info" additivity="false">
+    <logger name="com.stocktracker.weblayer.controllers.StockController" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
@@ -55,7 +55,7 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.cache.stockquote" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.cache.stockquote" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
@@ -65,12 +65,12 @@
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.cache.stockcompany" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.cache.stockcompany" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="com.stocktracker.servicelayer.service.StockCompanyEntityService" level="info" additivity="false">
+    <logger name="com.stocktracker.servicelayer.service.StockCompanyEntityService" level="trace" additivity="false">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </logger>

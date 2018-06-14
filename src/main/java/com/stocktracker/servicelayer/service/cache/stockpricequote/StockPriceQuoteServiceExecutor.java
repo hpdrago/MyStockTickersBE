@@ -52,6 +52,7 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
      */
     @Override
     public StockPriceQuote synchronousFetch( final String tickerSymbol )
+        throws StockPriceNotFoundException
     {
         final String methodName = "synchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
@@ -63,29 +64,22 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
         switch ( getStockPriceResult.getStockPriceFetchResult() )
         {
             case DISCONTINUED:
-                //if ( stockPriceQuoteCacheEntry.isStockTableEntryValidated() )
                 this.stockCompanyEntityService
                     .markStockAsDiscontinued( tickerSymbol );
                 stockPriceQuoteCacheEntry.setDiscontinued( true );
-                stockPriceQuote.setLastPrice( new BigDecimal( 0 ));
-                stockPriceQuote.setCacheState( NOT_FOUND );
-                break;
+                throw new StockPriceNotFoundException( tickerSymbol );
 
             case NOT_FOUND:
-                stockPriceQuote.setCacheState( NOT_FOUND );
-                stockPriceQuote.setLastPrice( new BigDecimal( 0 ));
-                break;
+                throw new StockPriceNotFoundException( tickerSymbol );
 
             case SUCCESS:
-                stockPriceQuote.setCacheState( CURRENT );
                 stockPriceQuote.setLastPrice( getStockPriceResult.getStockPrice() );
                 break;
 
             case EXCEPTION:
-                stockPriceQuote.setCacheState( FAILURE );
-                stockPriceQuote.setCacheError( stockPriceQuoteCacheEntry.getFetchThrowable().getMessage() );
-                break;
+                throw new StockPriceNotFoundException( tickerSymbol, getStockPriceResult.getException() );
         }
+        logMethodEnd( methodName, stockPriceQuote );
         return stockPriceQuote;
     }
 

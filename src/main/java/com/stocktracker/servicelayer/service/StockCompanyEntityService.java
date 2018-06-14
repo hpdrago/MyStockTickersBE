@@ -109,7 +109,18 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
          */
         final StockCompanyEntityCacheDataReceiver receiver = this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
         receiver.setCacheKey( tickerSymbol );
-        this.stockCompanyEntityCacheClient.getCachedData( tickerSymbol, receiver );
+        this.stockCompanyEntityCacheClient
+            .getCachedData( tickerSymbol, receiver );
+        /*
+         * This maybe the first time the stock company is being fetched so we need to check to see if it is being
+         * fetch and then wait for the result.
+         */
+        if ( receiver.getCacheDataState().isStale() )
+        {
+            logDebug( methodName, "Waiting for asynchronous fetch to complete for {0}", tickerSymbol );
+            this.stockCompanyEntityCacheClient
+                .getCachedData( tickerSymbol, receiver );
+        }
         StockCompanyDTO stockCompanyDTO;
         if ( receiver.getCachedData() == null )
         {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchState.NOT_FETCHING;
 
@@ -109,7 +110,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
     {
         final String methodName = "getCachedData";
         logMethodBegin( methodName, searchKey );
-
+        receiver.setCacheKey( searchKey );
         final CE cacheEntry = this.getCache()
                                   .getCacheEntry( searchKey );
         if ( cacheEntry != null )
@@ -141,11 +142,15 @@ public abstract class AsyncCacheClient< K extends Serializable,
     {
         final String methodName = "handleNotInCache";
         logDebug( methodName, searchKey + " is not in the cache, fetching now" );
-        final T cachedData = this.getCache()
-                                 .synchronousGet( searchKey )
-                                 .getCachedData();
-        receiver.setCachedData( cachedData );
-        receiver.setCacheDataState( CURRENT );
+        final CE cacheEntry = this.getCache()
+                                  .synchronousGet( searchKey );
+        receiver.setCachedData( cacheEntry.getCachedData() );
+        receiver.setCacheDataState( cacheEntry.getCacheState() );
+        if ( cacheEntry.getFetchThrowable() != null )
+        {
+            receiver.setCacheError( cacheEntry.getFetchThrowable().getMessage() );
+        }
+        receiver.setExpirationTime( cacheEntry.getExpirationTime() );
     }
 
     /**
@@ -202,6 +207,23 @@ public abstract class AsyncCacheClient< K extends Serializable,
                                   : cacheEntry.getCachedData();
         final CE finalCacheEntry = cacheEntry;
         cacheEntry.getAsyncProcessor()
+                  .doOnError( (Throwable e) ->
+                            {
+                                if ( e instanceof AsyncCacheDataNotFoundException )
+                                {
+                                    receiver.setCachedData( null );
+                                    receiver.setCacheDataState( NOT_FOUND );
+                                    finalCacheEntry.setFetchState( NOT_FETCHING );
+                                    receiver.setCacheError( "Could not find entry for " + searchKey );
+                                }
+                                else
+                                {
+                                    receiver.setCachedData( null );
+                                    receiver.setCacheDataState( FAILURE );
+                                    finalCacheEntry.setFetchState( NOT_FETCHING );
+                                    receiver.setCacheError( e.getMessage() );
+                                }
+                            })
                   .blockingSubscribe( fetchedData ->
                                       {
                                           logDebug( methodName, "Received: " + fetchedData );

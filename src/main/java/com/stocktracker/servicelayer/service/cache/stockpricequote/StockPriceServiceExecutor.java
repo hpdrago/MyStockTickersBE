@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
+import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import org.slf4j.Logger;
@@ -17,13 +18,15 @@ import java.util.TreeSet;
  * will result in the request being run on a separate thread.
  */
 @Service
-public class StockPriceServiceExecutor
+public class StockPriceServiceExecutor implements MyLogger
 {
+    @Autowired
     private IEXTradingStockService iexTradingStockService;
+    @Autowired
     private YahooStockPriceService yahooStockService;
-    private Logger logger = LoggerFactory.getLogger( StockPriceServiceExecutor.class );
-    private TreeSet<String> discontinuedStocks = new TreeSet();
+    @Autowired
     private StockCompanyEntityService stockCompanyEntityService;
+    private TreeSet<String> discontinuedStocks = new TreeSet();
 
     /**
      * Fetch the stock quote synchronously.
@@ -34,11 +37,11 @@ public class StockPriceServiceExecutor
     public GetStockPriceResult synchronousGetStockPrice( final String tickerSymbol )
     {
         final String methodName = "synchronousGetStockPrice";
-        logger.debug( methodName + ".begin " + tickerSymbol );
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         final GetStockPriceResult getStockPriceResult = this.getStockPrice( tickerSymbol );
-        logger.debug( methodName + ".end " + tickerSymbol + " " + getStockPriceResult );
+        logMethodEnd( methodName, getStockPriceResult );
         return getStockPriceResult;
     }
 
@@ -49,8 +52,8 @@ public class StockPriceServiceExecutor
      */
     private GetStockPriceResult getStockPrice( final String tickerSymbol )
     {
-        final String methodName = "getStockPriceQuote";
-        logger.debug( methodName + " " + tickerSymbol );
+        final String methodName = "getStockPrice";
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         final GetStockPriceResult getStockPriceResult = new GetStockPriceResult();
@@ -60,7 +63,7 @@ public class StockPriceServiceExecutor
         BigDecimal stockPrice = null;
         if ( this.discontinuedStocks.contains( myTickerSymbol ))
         {
-            logger.debug( methodName + " myTickerSymbol " + myTickerSymbol + " is no longer valid." );
+            logDebug( methodName, " myTickerSymbol {0} is no longer valid.", myTickerSymbol );
             getStockPriceResult.setStockPriceFetchResult( StockPriceFetchResult.DISCONTINUED );
         }
         else
@@ -82,7 +85,7 @@ public class StockPriceServiceExecutor
             }
             catch( Exception e )
             {
-                logger.error( methodName + " Failed to get quote from IEXTrading: " + e.getMessage() );
+                logError( methodName, " Failed to get quote from IEXTrading" + e.getMessage() );
                 if ( !triedYahoo )
                 {
                     try
@@ -96,7 +99,7 @@ public class StockPriceServiceExecutor
                 }
                 if ( stockPrice == null )
                 {
-                    logger.error( methodName + " Failed to get quote(null) from IEXTrading for " + myTickerSymbol );
+                    logError( methodName, " Failed to get quote(null) from IEXTrading for " + myTickerSymbol );
                     getStockPriceResult.setStockPriceResult( StockPriceFetchResult.NOT_FOUND );
                 }
                 else
@@ -106,7 +109,7 @@ public class StockPriceServiceExecutor
                 }
             }
         }
-        logger.debug( methodName + " " + getStockPriceResult );
+        logMethodEnd( methodName, getStockPriceResult );
         return getStockPriceResult;
     }
 
@@ -120,7 +123,7 @@ public class StockPriceServiceExecutor
         throws StockNotFoundException
     {
         final String methodName = "getPriceFromYahoo";
-        logger.debug( methodName + " " + tickerSymbol );
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
 
@@ -132,16 +135,16 @@ public class StockPriceServiceExecutor
                 stockPrice = this.yahooStockService.getStockPrice( tickerSymbol );
                 if ( stockPrice == null )
                 {
-                    logger.error( methodName + " Failed to get quote(null) from Yahoo for " + tickerSymbol );
+                    logError( methodName, " Failed to get quote(null) from Yahoo for " + tickerSymbol );
                 }
                 else
                 {
-                    logger.debug( methodName + " Stock quote obtained from Yahoo for " + tickerSymbol );
+                    logDebug( methodName, " Stock quote obtained from Yahoo for " + tickerSymbol );
                 }
             }
             catch( StockNotFoundException e )
             {
-                logger.warn( methodName + " Failed to get quote(StockNotFoundException) from Yahoo for " + tickerSymbol );
+                logWarn( methodName," Failed to get quote(StockNotFoundException) from Yahoo for " + tickerSymbol );
                 this.handleStockNotFoundException( tickerSymbol );
                 //logger.warn( methodName + " " );
                 throw e;
@@ -149,7 +152,7 @@ public class StockPriceServiceExecutor
         }
         else
         {
-            logger.info( methodName + " tickerSymbol " + tickerSymbol + " is no longer valid." );
+            logInfo( methodName, " tickerSymbol " + tickerSymbol + " is no longer valid." );
         }
         return stockPrice;
     }
@@ -162,12 +165,13 @@ public class StockPriceServiceExecutor
     private void handleStockNotFoundException( final String tickerSymbol )
     {
         final String methodName = "handleStockNotFoundException";
-        logger.info( methodName + " " + tickerSymbol );
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         this.discontinuedStocks.add( tickerSymbol );
         this.stockCompanyEntityService
             .markStockAsDiscontinued( tickerSymbol );
+        logMethodEnd( methodName, tickerSymbol );
     }
 
     /**
@@ -180,7 +184,7 @@ public class StockPriceServiceExecutor
         throws StockNotFoundException
     {
         final String methodName = "getPriceFromIEXTrading";
-        logger.debug( methodName + " " + tickerSymbol );
+        logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         BigDecimal stockPrice = null;
@@ -189,16 +193,16 @@ public class StockPriceServiceExecutor
             stockPrice = this.iexTradingStockService.getPrice( tickerSymbol );
             if ( stockPrice == null )
             {
-                logger.error( methodName + " Failed to get quote(null) from IEXTrading for " + tickerSymbol );
+                logError( methodName," Failed to get quote(null) from IEXTrading for " + tickerSymbol );
             }
             else
             {
-                logger.debug( methodName + " Stock quote obtained from IEXTrading for " + tickerSymbol );
+                logError( methodName, " Stock quote obtained from IEXTrading for " + tickerSymbol );
             }
         }
         else
         {
-            logger.info( methodName + " tickerSymbol " + tickerSymbol + " is no longer valid." );
+            logInfo( methodName, " tickerSymbol " + tickerSymbol + " is no longer valid." );
         }
         return stockPrice;
     }
@@ -212,23 +216,5 @@ public class StockPriceServiceExecutor
             return tickerSymbol.substring( 0, tickerSymbol.indexOf( ' ' ));
         }
         return tickerSymbol;
-    }
-
-    @Autowired
-    public void setIexTradingStockService( final IEXTradingStockService iexTradingStockService )
-    {
-        this.iexTradingStockService = iexTradingStockService;
-    }
-
-    @Autowired
-    public void setYahooStockService( final YahooStockPriceService yahooStockService )
-    {
-        this.yahooStockService = yahooStockService;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
     }
 }

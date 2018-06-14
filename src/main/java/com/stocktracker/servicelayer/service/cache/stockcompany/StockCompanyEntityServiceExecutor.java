@@ -133,6 +133,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         companies.stream()
                  .forEach( company ->
                   {
+                      logDebug( methodName, "for company: {0}", company );
                       StockCompanyEntity stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
                       this.copyExternalDataToEntity( company, stockCompanyEntity );
                       final StockCompanyEntityCacheResponse stockCompanyEntityCacheResponse = this.context
@@ -150,6 +151,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
                       stockCompanyEntityCacheResponse.setData( stockCompanyEntity );
                       responses.add( stockCompanyEntityCacheResponse );
                   } );
+        logMethodEnd( methodName );
         return responses;
     }
 
@@ -163,18 +165,37 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     protected Company getExternalData( final String tickerSymbol )
         throws AsyncCacheDataNotFoundException
     {
+        final String methodName = "getExternalData";
+        logMethodBegin( methodName, tickerSymbol );
+        Company company = null;
         try
         {
-            final Company company = this.iexTradingStockService
-                                        .getCompany( tickerSymbol );
+            company = this.iexTradingStockService
+                          .getCompany( tickerSymbol );
             return company;
         }
-        catch( StockNotFoundException e2 )
+        catch( StockNotFoundException e )
         {
-            throw new StockCompanyNotFoundException( tickerSymbol, e2 );
+            throw new StockCompanyNotFoundException( tickerSymbol, e );
+        }
+        finally
+        {
+            if ( company == null )
+            {
+                logMethodEnd( methodName, tickerSymbol + " was not found" );
+            }
+            else
+            {
+                logMethodEnd( methodName, company );
+            }
         }
     }
 
+    /**
+     * Copy company information from the IEXTrading data to the company entity.
+     * @param company
+     * @param companyEntity
+     */
     protected void copyExternalDataToEntity( final Company company, final StockCompanyEntity companyEntity )
     {
         super.copyExternalDataToEntity( company, companyEntity );

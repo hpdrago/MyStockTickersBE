@@ -74,7 +74,7 @@ public abstract class AsyncCacheBatchProcessor< K extends Serializable,
                 throw new IllegalStateException( String.format( "Container dtoId (%s) does not match receiver cache key (%s)",
                                                                 this.getCacheKey( container ), receiver.getCacheKey() ));
             }
-            Objects.requireNonNull( receiver.getCachedData(), "CachedData is null for " + receiver.getCacheKey() );
+            //Objects.requireNonNull( receiver.getCachedData(), "CachedData is null for " + receiver.getCacheKey() );
             /*
              * Convert the entity to a dto, copy the cache status values, and set the container's dto value.
              */

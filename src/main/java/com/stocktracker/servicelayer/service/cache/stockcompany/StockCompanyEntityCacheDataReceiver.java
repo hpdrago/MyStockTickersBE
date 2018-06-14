@@ -68,7 +68,7 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     @Override
     public String getCacheError()
     {
-        return null;
+        return this.error;
     }
 
     @Override

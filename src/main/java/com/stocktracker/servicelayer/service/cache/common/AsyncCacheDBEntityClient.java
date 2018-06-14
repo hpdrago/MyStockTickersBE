@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.STALE;
 
 /**
@@ -50,7 +51,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
              */
             if ( receiver.getCacheDataState().isStale() )
             {
-                logDebug( methodName, "Making asynchronous fetch" );
+                logDebug( methodName, "Making asynchronous fetch for {0}", receiver.getCacheKey() );
                 this.getCache()
                     .asynchronousGet( receiver.getCacheKey() );
             }
@@ -79,6 +80,9 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         }
         catch( VersionedEntityNotFoundException e )
         {
+            //receiver.setCacheDataState( NOT_FOUND );
+            //receiver.setCacheError( searchKey + " was not found" );
+            logDebug( methodName, "{0} was not in the map, asynchronously fetching now", searchKey );
             this.asynchronousFetch( receiver );
         }
         logMethodEnd( methodName, searchKey );

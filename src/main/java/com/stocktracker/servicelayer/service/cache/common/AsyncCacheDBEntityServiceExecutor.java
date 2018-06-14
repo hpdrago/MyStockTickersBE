@@ -48,6 +48,10 @@ public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
         {
             externalData = this.getExternalData( searchKey );
         }
+        catch( AsyncCacheDataNotFoundException e )
+        {
+            throw e;
+        }
         catch( Exception e )
         {
             logError( methodName, "searchKey not found: " + searchKey );
