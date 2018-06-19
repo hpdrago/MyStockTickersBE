@@ -1,6 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
+import com.stocktracker.servicelayer.service.IEXTradingStockService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
@@ -11,8 +12,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
@@ -32,10 +35,15 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
 {
     @Autowired
     private StockPriceServiceExecutor stockPriceServiceExecutor;
+
     @Autowired
     private StockPriceQuoteCache stockPriceQuoteCache;
+
     @Autowired
     private StockCompanyEntityService stockCompanyEntityService;
+
+    @Autowired
+    private IEXTradingStockService iexTradingStockService;
 
     /**
      * Get stock price quotes for a list of ticker symbols.
@@ -47,9 +55,9 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
     {
         final String methodName = "getExternalData";
         logMethodBegin( methodName, tickerSymbols );
-        final List<GetStockPriceResult> stockPriceResults = stockPriceServiceExecutor.synchronousGetStockPrices( tickerSymbols );
+        final Map<String,BigDecimal> stockPriceResults = this.iexTradingStockService.getStockPrices( tickerSymbols );
         final List<StockPriceQuote> stockPriceQuotes = new ArrayList<>( tickerSymbols.size() );
-        for ( GetStockPriceResult stockPriceResult : stockPriceResults )
+        for (  stockPriceResult : stockPriceResults )
         {
             StockPriceQuote stockPriceQuote;
             try

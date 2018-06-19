@@ -23,13 +23,8 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
                                                                     StockNoteSourceDTO,
                                                                     StockNoteSourceRepository>
 {
-    private StockNoteSourceRepository stockNoteSourceRepository;
-
     @Autowired
-    public void setStockNoteSourceRepository( final StockNoteSourceRepository stockNoteSourceRepository )
-    {
-        this.stockNoteSourceRepository = stockNoteSourceRepository;
-    }
+    private StockNoteSourceRepository stockNoteSourceRepository;
 
     /**
      * Check {@code stockNoteSourceDTOContainer} to see if the user entered a new note source.

@@ -121,8 +121,8 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         final List<StockToBuyDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService
             .setStockQuoteInformation( dtos );
-        //this.stockPriceQuoteService
-        //    .setStockPriceQuotes( dtos );
+        this.stockPriceQuoteService
+            .setStockPriceQuotes( dtos );
         return dtos;
     }
 

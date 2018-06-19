@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
@@ -297,15 +298,17 @@ public abstract class AsyncCache<K extends Serializable,
      * Creates a new cache entry and adds it to the cache.
      * @param key
      * @param cachedData
-     * @param cacheDataState
+     * @param cacheState
      */
-    public void createCacheEntry( final K key, final T cachedData, final AsyncCacheEntryState cacheDataState )
+    public void createCacheEntry( final K key, final T cachedData, final AsyncCacheEntryState cacheState )
     {
         final String methodName = "createCacheEntry";
-        logMethodBegin( methodName, key, cacheDataState );
+        logMethodBegin( methodName, key, cacheState );
+        Objects.requireNonNull( key, "key argument cannot be null" );
+        Objects.requireNonNull( cacheState, "cacheState argument cannot be null" );
         E cacheEntry = this.createCacheEntry();
         cacheEntry.setFetchState( NOT_FETCHING );
-        cacheEntry.setCacheState( cacheDataState );
+        cacheEntry.setCacheState( cacheState );
         cacheEntry.setCachedData( cachedData );
         /*
          * Store an "empty" cache entry for now

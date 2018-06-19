@@ -48,7 +48,8 @@ public class StockPriceQuoteService extends BaseService
         final List<StockPriceQuoteDTO> dtos = containers.stream()
                                                    .map( (StockPriceQuoteDTOContainer container) ->
                                                          {
-                                                             final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
+                                                             StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
+                                                             container.setStockPriceQuote( stockPriceQuoteDTO );
                                                              stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
                                                              return stockPriceQuoteDTO;
                                                          })

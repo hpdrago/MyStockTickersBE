@@ -35,16 +35,16 @@ public class IEXTradingStockService implements MyLogger
      * @param tickerSymbols The ticker symbols to get the stock companies for.
      * @return
      */
-    public List<BigDecimal> getStockPrices( final List<String> tickerSymbols )
+    public Map<String,BigDecimal> getStockPrices( final List<String> tickerSymbols )
     {
         final String methodName = "getStockPrices";
         logMethodBegin( methodName, tickerSymbols );
         final BatchMarketStocksRequestBuilder batchMarketStocksRequestBuilder = getBatchMarketStocksRequestBuilder( tickerSymbols, BatchStocksType.PRICE );
-        final Map<String, BatchStocks> batchStocksMap = iexTradingClient.executeRequest( batchMarketStocksRequestBuilder.build() );
-        final List<BigDecimal> stockPrices = batchStocksMap.values()
-                                                           .stream()
-                                                           .map( batchStocks -> batchStocks.getPrice() )
-                                                           .collect(Collectors.toList());
+        final Map<String,BatchStocks> batchStocksMap = iexTradingClient.executeRequest( batchMarketStocksRequestBuilder.build() );
+        final Map<String,BigDecimal> stockPrices = batchStocksMap.entrySet()
+                                                                 .stream()
+                                                                 .collect(Collectors.toMap( entry -> entry.getKey(),
+                                                                                            entry -> entry.getValue().getPrice() ));
         logMethodEnd( methodName, stockPrices.size() );
         return stockPrices;
     }

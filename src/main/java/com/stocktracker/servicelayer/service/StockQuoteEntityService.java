@@ -45,7 +45,9 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         final List<StockQuoteDTO> dtos = containers.stream()
                                                    .map( (StockQuoteDTOContainer container) ->
                                                          {
-                                                             final StockQuoteDTO stockQuoteDTO = this.context.getBean( StockQuoteDTO.class );
+                                                             StockQuoteDTO stockQuoteDTO = this.context
+                                                                                               .getBean( StockQuoteDTO.class );
+                                                             container.setStockQuoteDTO( stockQuoteDTO );
                                                              stockQuoteDTO.setCacheKey( container.getTickerSymbol() );
                                                              return stockQuoteDTO;
                                                          })
