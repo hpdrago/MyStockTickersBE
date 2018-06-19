@@ -3,10 +3,10 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDTOContainer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
-import com.stocktracker.weblayer.dto.common.StockQuoteDTOAsyncContainer;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Qualifier( "stockQuoteDTO")
 public class StockQuoteDTO extends DatabaseEntityDTO<String>
-                           implements StockQuoteDTOAsyncContainer,
-                                      AsyncCacheDataReceiver<String,StockQuoteEntity>
+                           implements AsyncCacheDataReceiver<String,StockQuoteEntity>,
+                                      AsyncCacheDTOContainer<String,StockQuoteDTO>
 
 {
     private String tickerSymbol;
@@ -58,20 +58,22 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
 
-    @Override
-    public void setCachedDTO( final StockQuoteDTO dto )
-    {
-        BeanUtils.copyProperties( dto, this );
-    }
-
-    @Override
-    public void setCacheState( final AsyncCacheEntryState cacheState )
+    public void setCachedDataState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
 
-    @Override
+    public AsyncCacheEntryState getCacheDataState()
+    {
+        return this.cacheState;
+    }
+
     public AsyncCacheEntryState getCacheState()
+    {
+        return this.cacheState;
+    }
+
+    public AsyncCacheEntryState getCacheEntryState()
     {
         return this.cacheState;
     }
@@ -107,7 +109,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     }
 
     @Override
-    public AsyncCacheEntryState getCacheDataState()
+    public AsyncCacheEntryState getCachedDataState()
     {
         return this.cacheState;
     }

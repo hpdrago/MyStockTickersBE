@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheClient;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
  * Client interface with the Stock Price Quote Cache.
  */
 @Service
-public class StockPriceQuoteCacheClient extends AsyncCacheClient<String,
-                                                                 StockPriceQuote,
-                                                                 StockPriceQuoteCacheEntry,
-                                                                 StockPriceQuoteServiceExecutor,
-                                                                 StockPriceQuoteCache,
-                                                                 StockPriceQuoteDataReceiver>
+public class StockPriceQuoteCacheClient extends AsyncCacheBatchClient<String,
+                                                                      StockPriceQuote,
+                                                                      StockPriceQuoteCacheEntry,
+                                                                      StockPriceQuoteCacheDataReceiver,
+                                                                      StockPriceQuoteCacheRequest,
+                                                                      StockPriceQuoteCacheResponse,
+                                                                      StockPriceQuoteServiceExecutor,
+                                                                      StockPriceQuoteCache>
 {
     private StockPriceQuoteCache stockPriceQuoteCache;
 

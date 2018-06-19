@@ -74,7 +74,7 @@ public abstract class UuidEntityService<E extends UUIDEntity,
      */
     public D entityToDTO( final E entity )
     {
-        //final String methodName = "entityToDTO";
+        //final String methodName = "cachedDataToDTO";
         //logMethodBegin( methodName, entity );
         final D dto = super.entityToDTO( entity );
         dto.setId( entity.getUuid().toString() );

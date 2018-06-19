@@ -2,6 +2,8 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheData;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCachedDataContainer;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,7 +22,8 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuote implements AsyncCacheData
+public class StockPriceQuote implements AsyncCacheData,
+                                        AsyncCachedDataContainer<String,StockPriceQuote>
 {
     private String tickerSymbol;
     private BigDecimal lastPrice;
@@ -74,10 +77,48 @@ public class StockPriceQuote implements AsyncCacheData
     {
         return cacheError;
     }
-
     public void setCacheError( final String cacheError )
     {
         this.cacheError = cacheError;
+    }
+
+
+    @Override
+    public String getCacheKey()
+    {
+        return this.tickerSymbol;
+    }
+
+    @Override
+    public void setCacheKey( final String cacheKey )
+    {
+        this.tickerSymbol = cacheKey;
+    }
+
+    @Override
+    public void setCachedData( final StockPriceQuote stockPriceQuote )
+    {
+        this.tickerSymbol = stockPriceQuote.getTickerSymbol();
+        this.lastPrice = stockPriceQuote.lastPrice;
+        this.lastPriceChange = stockPriceQuote.lastPriceChange;
+    }
+
+    @Override
+    public StockPriceQuote getCachedData()
+    {
+        return this;
+    }
+
+    @Override
+    public void setCachedDataState( final AsyncCacheEntryState cacheState )
+    {
+        this.cacheState = cacheState;
+    }
+
+    @Override
+    public AsyncCacheEntryState getCacheDataState()
+    {
+        return this.cacheState;
     }
 
     public AsyncCacheEntryState getCacheState()

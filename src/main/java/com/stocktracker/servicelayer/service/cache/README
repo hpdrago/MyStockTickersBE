@@ -1,0 +1,26 @@
+AsyncCaching Readme
+
+The async caching mechanism for StoxTracker is somewhat complicated.  The requirements are as follows:
+
+Request to third party entities including IEXTrading and TradeIt, when possible, should be performed asynchronously so
+that client is not waiting for ALL of the data to be loaded.  The user should be presented with the information that
+is readily available when the data is retrieved and the client will evaluate the data being loaded to see if a subsequent
+request to get the current data values is necessary and if so, makes that synchronous call to get the data.
+
+The idea here is that while the data is being returned to the user, the third party information is being fetched in the
+background, and then the client will make another request, as indicated above, to block and wait (if necessary) to get
+the current information.
+
+Because of these requirements, each cache entry contains a RxJava Flowable (Observable subject) that will contain the
+asynchronously fetched value if it has been returned by the time the client requests the information, or the client call
+will block and wait on the flowable to be completed.
+
+The cache must must provide single and batch data requests.  At this time, only IEXTrading provides requesting information
+in batches -- up to 100 ticker symbols.
+
+The other interesting requirement is that most of the IEXTrading stock information is cached in the database because the
+information does not expire in a short amount of time.  Therefore, the cache is checked first, and if the information is
+not in the cache, the database is searched for the information.  Then the information, regardless of whether it came
+from the cache or database is checked for currency.  If it is stale, it is re-fetched and then stored in the database.
+Stock price quotes are not stored in the database and are only stored in memory because the information is stale almost
+after it has been retrieved -- during trading hours.

@@ -1,15 +1,14 @@
-package com.stocktracker.weblayer.dto.common;
+package com.stocktracker.servicelayer.service.cache.common;
 
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
 /**
  * This interface defines the methods for DTO's receiving AsyncCache information.
- * @param <D>
+ * @param <T> Type of cached data.
  */
-public interface AsyncCacheDTOContainer<K,D>
+public interface AsyncCachedDataContainer<K extends Serializable,T>
 {
     /**
      * Get the key to the cache.
@@ -18,18 +17,34 @@ public interface AsyncCacheDTOContainer<K,D>
     K getCacheKey();
 
     /**
-     * This method is called to set the cached {@code dto}.
-     * @param dto
+     * Set the cache key.
+     * @param cacheKey
      */
-    void setCachedDTO( final D dto );
+    void setCacheKey( K cacheKey );
+
+    /**
+     * This method is called to set the cached {@code cachedData}.
+     * @param cachedData
+     */
+    void setCachedData( final T cachedData );
+
+    /**
+     * Get the cached data.
+     * @return
+     */
+    T getCachedData();
 
     /**
      * This method is called to set the state of the {@code StockQuoteDTO} received from the stock quote cache.
      * @param stockQuoteEntityCacheState
      */
-    void setCacheState( final AsyncCacheEntryState stockQuoteEntityCacheState );
+    void setCachedDataState( final AsyncCacheEntryState stockQuoteEntityCacheState );
 
-    AsyncCacheEntryState getCacheState();
+    /**
+     * Get the cache entry state.
+     * @return
+     */
+    AsyncCacheEntryState getCacheDataState();
 
     /**
      * This method is called to set the error encoutered while retrieving the Quote from IEXTrading.

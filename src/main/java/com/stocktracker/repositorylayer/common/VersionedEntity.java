@@ -15,6 +15,12 @@ public interface VersionedEntity<K>
     K getId();
 
     /**
+     * Set the id.
+     * @param id
+     */
+    void setId( K id );
+
+    /**
      * Get the entity version.
      * @return
      */
@@ -31,4 +37,5 @@ public interface VersionedEntity<K>
      * @param createDate
      */
     void setCreateDate( final Timestamp createDate );
+
 }

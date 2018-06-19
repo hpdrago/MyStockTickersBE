@@ -2,7 +2,6 @@ package com.stocktracker.weblayer.controllers;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
@@ -12,17 +11,13 @@ import com.stocktracker.weblayer.dto.StockQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Objects;
 

@@ -32,6 +32,30 @@ public class StockCatalystEventDTO extends DatabaseEntityDTO<String>
     private boolean stockQuoteRequested;
 
 
+    @Override
+    public void setStockQuoteDTO( final StockQuoteDTO stockQuoteDTO )
+    {
+        this.stockQuoteDTO = stockQuoteDTO;
+    }
+
+    @Override
+    public StockQuoteDTO getStockQuoteDTO()
+    {
+        return this.stockQuoteDTO;
+    }
+
+    @Override
+    public String getCacheKey()
+    {
+        return this.tickerSymbol;
+    }
+
+    @Override
+    public void setCacheKey( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
     public StockPriceQuoteDTO getStockPriceQuote()
     {
         return stockPriceQuoteDTO;
@@ -53,17 +77,6 @@ public class StockCatalystEventDTO extends DatabaseEntityDTO<String>
     public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
     {
         this.stockPriceQuoteDTO = stockPriceQuoteDTO;
-    }
-
-    @Override
-    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
-    {
-        this.stockQuoteDTO = stockQuoteDTO;
-    }
-
-    public StockQuoteDTO getStockQuote()
-    {
-        return stockQuoteDTO;
     }
 
     public String getCustomerId()

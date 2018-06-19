@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.tradeit;
 
 import com.stocktracker.common.MyLogger;
-import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;

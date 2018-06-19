@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityBatchClient;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
  * types to correctly extend the {@code AsyncCacheDBEntityClient} which contains all of the required processing logic.
  */
 @Service
-public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityBatchClient<String,
-                                                                                 StockCompanyEntity,
-                                                                                 StockCompanyEntityCacheEntry,
-                                                                                 StockCompanyEntityCacheRequest,
-                                                                                 StockCompanyEntityCacheResponse,
-                                                                                 StockCompanyEntityServiceExecutor,
-                                                                                 StockCompanyEntityCache,
-                                                                                 StockCompanyEntityCacheDataReceiver,
-                                                                                 StockCompanyEntityService>
+public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<String,
+                                                                            StockCompanyEntity,
+                                                                            StockCompanyEntityCacheEntry,
+                                                                            StockCompanyEntityCacheDataReceiver,
+                                                                            StockCompanyEntityCacheRequest,
+                                                                            StockCompanyEntityCacheResponse,
+                                                                            StockCompanyEntityServiceExecutor,
+                                                                            StockCompanyEntityCache,
+                                                                            StockCompanyEntityService>
 {
     @Autowired
     private StockCompanyEntityCache stockCompanyEntityCache;

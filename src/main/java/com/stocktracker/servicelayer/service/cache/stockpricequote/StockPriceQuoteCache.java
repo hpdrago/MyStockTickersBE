@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +21,12 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  * information from IEXTrading which is information that is not changed that often during the day.
  */
 @Service
-public class StockPriceQuoteCache extends AsyncCache<String,
-                                                     StockPriceQuote,
-                                                     StockPriceQuoteCacheEntry,
-                                                     StockPriceQuoteServiceExecutor>
+public class StockPriceQuoteCache extends AsyncBatchCache<String,
+                                                          StockPriceQuote,
+                                                          StockPriceQuoteCacheEntry,
+                                                          StockPriceQuoteCacheRequest,
+                                                          StockPriceQuoteCacheResponse,
+                                                          StockPriceQuoteServiceExecutor>
 {
     public static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis( 15 );
 
@@ -42,7 +44,7 @@ public class StockPriceQuoteCache extends AsyncCache<String,
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, tickerSymbol );
         final StockPriceQuoteCacheEntry cacheEntry = this.asynchronousGet( tickerSymbol );
-        stockPriceQuoteDTOContainer.setStockPriceQuote( cacheEntry.getCacheState(), cacheEntry.getCachedData() );
+        stockPriceQuoteDTOContainer.setStockPriceQuote( cacheEntry.getCacheEntryState(), cacheEntry.getCachedData() );
         logMethodEnd( methodName, cacheEntry );
     }
     */
@@ -99,4 +101,9 @@ public class StockPriceQuoteCache extends AsyncCache<String,
         this.stockPriceQuoteServiceExecutor = stockPriceQuoteServiceExecutor;
     }
 
+    @Override
+    protected StockPriceQuoteCacheRequest createBatchRequestType()
+    {
+        return this.context.getBean( StockPriceQuoteCacheRequest.class );
+    }
 }

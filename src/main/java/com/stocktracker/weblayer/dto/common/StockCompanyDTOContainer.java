@@ -8,6 +8,7 @@ import com.stocktracker.weblayer.dto.StockCompanyDTO;
  * This interface defines the methods for classes that will get Stock Company information from the StockCompanyDTOCache
  */
 public interface StockCompanyDTOContainer extends TickerSymbolContainer
+
 {
     /**
      * This method is called to set the {@code StockCompanyDTO}.  Classes implementing this interface can then

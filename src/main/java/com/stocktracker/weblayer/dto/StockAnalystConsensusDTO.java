@@ -13,7 +13,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.beans.Transient;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -237,13 +236,13 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
     }
 
     @Override
-    public void setStockQuote( final StockQuoteDTO stockQuoteDTO )
+    public void setStockQuoteDTO( final StockQuoteDTO stockQuoteDTO )
     {
         this.stockQuoteDTO = stockQuoteDTO;
     }
 
     @Override
-    public StockQuoteDTO getStockQuote()
+    public StockQuoteDTO getStockQuoteDTO()
     {
         return this.stockQuoteDTO;
     }
@@ -272,5 +271,17 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @Override
+    public String getCacheKey()
+    {
+        return tickerSymbol;
+    }
+
+    @Override
+    public void setCacheKey( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
     }
 }

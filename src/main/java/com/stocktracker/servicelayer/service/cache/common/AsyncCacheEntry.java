@@ -105,7 +105,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the cache state
      * @param cacheState
      */
-    protected synchronized void setCacheState( AsyncCacheEntryState cacheState )
+    public synchronized void setCacheState( AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
@@ -174,7 +174,7 @@ public abstract class AsyncCacheEntry<T>
      * Set the exception throwable.
      * @param fetchThrowable
      */
-    protected synchronized void setFetchThrowable( final Throwable fetchThrowable )
+    public synchronized void setFetchThrowable( final Throwable fetchThrowable )
     {
         this.fetchThrowable = fetchThrowable;
     }

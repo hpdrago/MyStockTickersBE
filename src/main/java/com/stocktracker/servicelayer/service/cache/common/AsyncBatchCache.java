@@ -45,6 +45,7 @@ public abstract class AsyncBatchCache<K extends Serializable,
                              if ( cacheEntry == null )
                              {
                                  cacheEntry = this.createCacheEntry();
+                                 this.addCacheEntry( cacheKey, cacheEntry );
                              }
                              asyncBatchCacheRequest.setCacheKey( cacheKey );
                              asyncBatchCacheRequest.setAsyncProcessor( cacheEntry.getAsyncProcessor() );

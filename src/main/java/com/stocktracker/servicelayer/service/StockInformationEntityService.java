@@ -13,7 +13,6 @@ import com.stocktracker.servicelayer.service.stocks.StockPriceWhenCreatedContain
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
 import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOContainer;
-import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import com.stocktracker.weblayer.dto.common.TagsContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +36,8 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  */
 public abstract class StockInformationEntityService<E extends UUIDEntity &
                                                               TickerSymbolContainer,
-                                                    D extends StockPriceQuoteDTOContainer &
-                                                              StockQuoteDTOContainer &
-                                                              UuidDTO,
+                                                    D extends UuidDTO &
+                                                              TickerSymbolContainer,
                                                     R extends JpaRepository<E,UUID>>
     extends UuidEntityService<E,D,R>
 {
@@ -162,7 +160,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Override
     public D entityToDTO( final E entity )
     {
-        //final String methodName = "entityToDTO";
+        //final String methodName = "cachedDataToDTO";
         //logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity argument cannot be null" );
         D dto = super.entityToDTO( entity );
@@ -304,7 +302,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto argument cannot be null" );
         this.stockPriceQuoteService
-            .setStockPriceQuote( dto, ASYNCHRONOUS );
+            .setStockPriceQuote( (StockPriceQuoteDTOContainer) dto, ASYNCHRONOUS );
         logMethodEnd( methodName );
     }
 

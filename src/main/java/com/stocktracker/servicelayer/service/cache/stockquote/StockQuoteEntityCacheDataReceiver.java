@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * This class implements the {@code AsyncCacheDataReceiver} interface in order to interact with the {@code StockQuoteAsyncCache}.
@@ -69,7 +68,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     }
 
     @Override
-    public AsyncCacheEntryState getCacheDataState()
+    public AsyncCacheEntryState getCachedDataState()
     {
         return this.cacheState;
     }

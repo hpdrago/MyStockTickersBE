@@ -2,22 +2,18 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.AppConfig;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
-import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheBatchServiceExecutor;
-import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
+import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheBatchServiceExecutor;
 import io.reactivex.processors.AsyncProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
 
@@ -34,15 +30,50 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
                                                                                        StockPriceQuoteCacheResponse>
     implements AsyncCacheServiceExecutor<String,StockPriceQuote>
 {
+    @Autowired
     private StockPriceServiceExecutor stockPriceServiceExecutor;
+    @Autowired
     private StockPriceQuoteCache stockPriceQuoteCache;
+    @Autowired
     private StockCompanyEntityService stockCompanyEntityService;
 
-
+    /**
+     * Get stock price quotes for a list of ticker symbols.
+     * @param tickerSymbols
+     * @return
+     */
     @Override
-    public List synchronousFetch( final Map requests )
+    protected List<StockPriceQuote> getExternalData( final List<String> tickerSymbols )
     {
-        return null;
+        final String methodName = "getExternalData";
+        logMethodBegin( methodName, tickerSymbols );
+        final List<GetStockPriceResult> stockPriceResults = stockPriceServiceExecutor.synchronousGetStockPrices( tickerSymbols );
+        final List<StockPriceQuote> stockPriceQuotes = new ArrayList<>( tickerSymbols.size() );
+        for ( GetStockPriceResult stockPriceResult : stockPriceResults )
+        {
+            StockPriceQuote stockPriceQuote;
+            try
+            {
+                stockPriceQuote = processStockPriceQuoteResult( stockPriceResult );
+            }
+            catch( StockPriceNotFoundException e )
+            {
+                stockPriceQuote = this.context.getBean( StockPriceQuote.class );
+                stockPriceQuote.setTickerSymbol( stockPriceResult.getTickerSymbol() );
+                stockPriceQuote.setCacheError( e.getMessage() );
+                stockPriceQuote.setCacheState( NOT_FOUND );
+            }
+            catch( Throwable e )
+            {
+                stockPriceQuote = this.context.getBean( StockPriceQuote.class );
+                stockPriceQuote.setTickerSymbol( stockPriceResult.getTickerSymbol() );
+                stockPriceQuote.setCacheError( e.getMessage() );
+                stockPriceQuote.setCacheState( FAILURE );
+            }
+            stockPriceQuotes.add( stockPriceQuote );
+        }
+        logMethodEnd( stockPriceQuotes.size() + " stock quotes" );
+        return stockPriceQuotes;
     }
 
     /**
@@ -51,35 +82,54 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
      * @return
      */
     @Override
-    public StockPriceQuote synchronousFetch( final String tickerSymbol )
+    public StockPriceQuote getExternalData( final String tickerSymbol )
         throws StockPriceNotFoundException
     {
-        final String methodName = "synchronousFetch";
+        final String methodName = "getExternalData";
         logMethodBegin( methodName, tickerSymbol );
-        final GetStockPriceResult getStockPriceResult = stockPriceServiceExecutor.synchronousGetStockPrice( tickerSymbol );
+        final GetStockPriceResult stockPriceResult = stockPriceServiceExecutor.synchronousGetStockPrice( tickerSymbol );
+        final StockPriceQuote stockPriceQuote = processStockPriceQuoteResult( stockPriceResult );
+        logMethodEnd( methodName, stockPriceQuote );
+        return stockPriceQuote;
+    }
+
+    /**
+     * Process the stock price quote result returned from the stock price service executor.
+     * @param stockPriceResult
+     * @return
+     * @throws StockPriceNotFoundException
+     */
+    private StockPriceQuote processStockPriceQuoteResult( final GetStockPriceResult stockPriceResult )
+        throws StockPriceNotFoundException
+    {
         final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-                                                                        .getCacheEntry( tickerSymbol );
-        stockPriceQuote.setTickerSymbol( tickerSymbol );
-        switch ( getStockPriceResult.getStockPriceFetchResult() )
+                                                                        .getCacheEntry( stockPriceResult.getTickerSymbol() );
+        stockPriceQuote.setTickerSymbol( stockPriceResult.getTickerSymbol() );
+        switch ( stockPriceResult.getStockPriceFetchResult() )
         {
             case DISCONTINUED:
                 this.stockCompanyEntityService
-                    .markStockAsDiscontinued( tickerSymbol );
-                stockPriceQuoteCacheEntry.setDiscontinued( true );
-                throw new StockPriceNotFoundException( tickerSymbol );
+                    .markStockAsDiscontinued( stockPriceResult.getTickerSymbol() );
+                stockPriceQuoteCacheEntry.setStockTableEntryValidated( true );
+                throw new StockPriceNotFoundException( stockPriceResult.getTickerSymbol() );
 
             case NOT_FOUND:
-                throw new StockPriceNotFoundException( tickerSymbol );
+                throw new StockPriceNotFoundException( stockPriceResult.getTickerSymbol() );
 
             case SUCCESS:
-                stockPriceQuote.setLastPrice( getStockPriceResult.getStockPrice() );
+                stockPriceQuote.setCacheState( AsyncCacheEntryState.CURRENT );
+                stockPriceQuote.setLastPrice( stockPriceResult.getStockPrice() );
+                stockPriceQuote.setCacheError( null );
                 break;
 
             case EXCEPTION:
-                throw new StockPriceNotFoundException( tickerSymbol, getStockPriceResult.getException() );
+                stockPriceQuoteCacheEntry.setStockTableEntryValidated( true );
+                final StockPriceNotFoundException exception = new StockPriceNotFoundException( stockPriceResult.getTickerSymbol(),
+                                                                                               stockPriceResult.getException() );
+                throw exception;
+
         }
-        logMethodEnd( methodName, stockPriceQuote );
         return stockPriceQuote;
     }
 
@@ -99,21 +149,15 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
         logMethodEnd( methodName );
     }
 
-    @Autowired
-    public void setStockPriceServiceExecutor( final StockPriceServiceExecutor stockPriceServiceExecutor )
+    @Override
+    protected String getCacheKey( final StockPriceQuote externalData )
     {
-        this.stockPriceServiceExecutor = stockPriceServiceExecutor;
+        return externalData.getCacheKey();
     }
 
-    @Autowired
-    public void setStockPriceQuoteCache( final StockPriceQuoteCache stockPriceQuoteCache )
+    @Override
+    protected StockPriceQuoteCacheResponse newResponse()
     {
-        this.stockPriceQuoteCache = stockPriceQuoteCache;
-    }
-
-    @Autowired
-    public void setStockCompanyEntityService( final StockCompanyEntityService stockCompanyEntityService )
-    {
-        this.stockCompanyEntityService = stockCompanyEntityService;
+        return this.context.getBean( StockPriceQuoteCacheResponse.class );
     }
 }

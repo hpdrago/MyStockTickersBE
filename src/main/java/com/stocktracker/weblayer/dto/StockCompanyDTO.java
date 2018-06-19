@@ -9,13 +9,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
+
 /**
  * The DTO class for a stock company entity {@code StockCompanyEntity} which is retrieved from IEXTrading.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockCompanyDTO extends DatabaseEntityDTO<String>
-                             implements VersionedEntity,
+                             implements VersionedEntity<String>,
                                         StockCompanyDTOContainer
 {
     private String tickerSymbol;
@@ -25,6 +27,7 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
     private String industry;
     private String cacheError;
     private AsyncCacheEntryState cacheState;
+    private Timestamp expirationTime;
 
     @Override
     public void setStockCompanyDTO( final StockCompanyDTO stockCompanyEntity )
@@ -114,6 +117,15 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
         this.cacheError = cacheError;
     }
 
+    public void setExpirationTime( final Timestamp expirationTime )
+    {
+        this.expirationTime = expirationTime;
+    }
+
+    public Timestamp getExpirationTime()
+    {
+        return expirationTime;
+    }
 
     @Override
     public String toString()
@@ -126,6 +138,7 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
         sb.append( ", industry='" ).append( industry ).append( '\'' );
         sb.append( ", cacheError='" ).append( cacheError ).append( '\'' );
         sb.append( ", cacheState=" ).append( cacheState );
+        sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( '}' );
         return sb.toString();
     }

@@ -54,7 +54,7 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     }
 
     @Override
-    public AsyncCacheEntryState getCacheDataState()
+    public AsyncCacheEntryState getCachedDataState()
     {
         return this.cacheState;
     }

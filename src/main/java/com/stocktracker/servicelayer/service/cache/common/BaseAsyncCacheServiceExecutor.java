@@ -2,7 +2,6 @@ package com.stocktracker.servicelayer.service.cache.common;
 
 import com.stocktracker.servicelayer.service.BaseService;
 import io.reactivex.processors.AsyncProcessor;
-import io.reactivex.processors.BehaviorProcessor;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,7 +30,7 @@ public abstract class BaseAsyncCacheServiceExecutor<K,T> extends BaseService
         final T fetchResult;
         try
         {
-            fetchResult = this.synchronousFetch( searchKey );
+            fetchResult = this.getExternalData( searchKey );
             logTrace( methodName, "fetchResult: {0}", fetchResult );
             logTrace( methodName, "onNext();onComplete();" );
             subject.onNext( fetchResult );

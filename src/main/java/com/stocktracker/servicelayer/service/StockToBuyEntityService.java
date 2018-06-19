@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.repositorylayer.entity.StockToBuyEntity;
 import com.stocktracker.repositorylayer.repository.StockToBuyRepository;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.weblayer.dto.StockToBuyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +111,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
     }
 
     /**
-     * Converts the entities to DTOs and gets cached stock information.
+     * Converts the entities to DTOs and gets cached stock quote and stock price information.
      * @param entities
      * @return
      */
@@ -122,8 +121,8 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         final List<StockToBuyDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService
             .setStockQuoteInformation( dtos );
-        this.stockPriceQuoteService
-            .setStockPriceQuotes( dtos );
+        //this.stockPriceQuoteService
+        //    .setStockPriceQuotes( dtos );
         return dtos;
     }
 

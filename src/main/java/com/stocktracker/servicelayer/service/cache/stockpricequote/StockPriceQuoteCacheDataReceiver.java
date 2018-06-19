@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<String,StockPriceQuote>
+public class StockPriceQuoteCacheDataReceiver implements AsyncCacheDataReceiver<String,StockPriceQuote>
 {
     private String tickerSymbol;
     private StockPriceQuote stockPriceQuote = new StockPriceQuote();
@@ -55,7 +55,7 @@ public class StockPriceQuoteDataReceiver implements AsyncCacheDataReceiver<Strin
     }
 
     @Override
-    public AsyncCacheEntryState getCacheDataState()
+    public AsyncCacheEntryState getCachedDataState()
     {
         return this.stockPriceQuote.getCacheState();
     }

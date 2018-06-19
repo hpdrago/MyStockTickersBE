@@ -395,6 +395,10 @@ public class StockQuoteEntity extends TickerSymbolEntity
         return expirationDate;
     }
 
+    /**
+     * Copies the {@code quote} properties that are not the same name as properties in this entity.
+     * @param quote
+     */
     public void copyQuote( final Quote quote )
     {
         BeanUtils.copyProperties( quote, this );

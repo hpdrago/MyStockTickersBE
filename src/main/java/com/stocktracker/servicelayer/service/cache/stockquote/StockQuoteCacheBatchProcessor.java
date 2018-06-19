@@ -1,10 +1,8 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
-import com.stocktracker.servicelayer.service.StockQuoteEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchProcessor;
 import com.stocktracker.weblayer.dto.StockQuoteDTO;
-import com.stocktracker.weblayer.dto.common.StockQuoteDTOContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,38 +13,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<String,
                                                                             StockQuoteEntity,
+                                                                            StockQuoteEntityCacheEntry,
                                                                             StockQuoteEntityCacheDataReceiver,
+                                                                            StockQuoteEntityCacheRequest,
+                                                                            StockQuoteEntityCacheResponse,
+                                                                            StockQuoteEntityContainer,
                                                                             StockQuoteDTO,
-                                                                            StockQuoteDTOContainer,
-                                                                            StockQuoteEntityCacheClient,
-                                                                            StockQuoteEntityService>
+                                                                            StockQuoteEntityServiceExecutor,
+                                                                            StockQuoteEntityCache,
+                                                                            StockQuoteEntityCacheClient>
 {
     @Autowired
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
 
-    @Autowired
-    private StockQuoteEntityService stockQuoteEntityService;
-
-    /**
-     * Sets the {@code StockQuoteDTO} on the {@code container}.
-     * @param dto
-     * @param container
-     */
     @Override
-    protected void setCachedDTO( final StockQuoteDTO dto, final StockQuoteDTOContainer container )
+    protected void setDTOContainer( final StockQuoteEntityContainer cachedDataContainer, final StockQuoteDTO dtoContainer )
     {
-        container.setStockQuote( dto );
+        /*
+         * The cached data will be null if the data is not found, needs to be fetched, or there was an error.
+         */
+        if ( cachedDataContainer.getCachedData() != null )
+        {
+            dtoContainer.setCachedData( cachedDataContainer.getCachedData() );
+        }
     }
 
-    /**
-     * Extracts the cache key (ticker symbol) from the container.
-     * @param container
-     * @return
-     */
     @Override
-    protected String getCacheKey( final StockQuoteDTOContainer container )
+    protected String getCacheKey( final StockQuoteEntityContainer container )
     {
-        return container.getTickerSymbol();
+        return container.getCacheKey();
     }
 
     @Override
@@ -56,14 +51,14 @@ public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<Stri
     }
 
     @Override
-    public StockQuoteEntityCacheClient getAsyncCacheClient()
+    protected StockQuoteEntityContainer newContainer()
     {
-        return this.stockQuoteEntityCacheClient;
+        return this.context.getBean( StockQuoteEntityContainer.class );
     }
 
     @Override
-    public StockQuoteEntityService getEntityService()
+    public StockQuoteEntityCacheClient getAsyncCacheClient()
     {
-        return this.stockQuoteEntityService;
+        return this.stockQuoteEntityCacheClient;
     }
 }

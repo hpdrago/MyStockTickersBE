@@ -2,14 +2,15 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
+import com.stocktracker.servicelayer.service.IEXTradingStockService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
@@ -27,6 +28,25 @@ public class StockPriceServiceExecutor implements MyLogger
     @Autowired
     private StockCompanyEntityService stockCompanyEntityService;
     private TreeSet<String> discontinuedStocks = new TreeSet();
+
+    /**
+     * Get stock price quotes for a list of ticker symbols.
+     * @param tickerSymbols
+     * @return
+     */
+    public List<GetStockPriceResult> synchronousGetStockPrices( final List<String> tickerSymbols )
+    {
+        final String methodName = "synchronousGetStockPrices";
+        logMethodBegin( methodName, tickerSymbols );
+        final List<GetStockPriceResult> stockPriceResults = new ArrayList<>( tickerSymbols.size() );
+        tickerSymbols.forEach( tickerSymbol ->
+                               {
+                                   GetStockPriceResult stockPriceResult = this.synchronousGetStockPrice( tickerSymbol );
+                                   stockPriceResults.add( stockPriceResult );
+                               });
+        logMethodEnd( methodName, stockPriceResults.size() + " stock price quotes" );
+        return stockPriceResults;
+    }
 
     /**
      * Fetch the stock quote synchronously.

@@ -3,13 +3,13 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 import com.stocktracker.AppConfig;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
-import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
+import com.stocktracker.servicelayer.service.IEXTradingStockService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.IEXTradingStockService;
 import io.reactivex.processors.AsyncProcessor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -17,10 +17,8 @@ import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Company: https://iextrading.com/developer/docs/#company
@@ -30,11 +28,11 @@ import java.util.stream.Collectors;
 @EnableAsync(proxyTargetClass = true)
 public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
                                                                                          StockCompanyEntity,
-                                                                                         StockCompanyEntityService,
                                                                                          Company,
+                                                                                         StockCompanyEntityService,
                                                                                          StockCompanyNotFoundException,
-    StockCompanyEntityCacheRequest,
-    StockCompanyEntityCacheResponse>
+                                                                                         StockCompanyEntityCacheRequest,
+                                                                                         StockCompanyEntityCacheResponse>
 {
     /**
      * Service for the stock company entities.
@@ -62,7 +60,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
         /*
-         * The super class calls this.synchronousFetch and takes care of the subject notification.
+         * The super class calls this.getExternalData and takes care of the subject notification.
          */
         super.asynchronousFetch( tickerSymbol, asyncProcessor );
         logMethodEnd( methodName );
@@ -70,7 +68,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
 
     /**
      * This method, when called, is run a new thread and makes a call to the super class to make perform the asynchronous
-     * fetch logic which, in part, ends up calling the {@code synchronousFetch} method below to perform the batch
+     * fetch logic which, in part, ends up calling the {@code getExternalData} method below to perform the batch
      * stock company fetch.
      * @param asyncBatchCacheRequests
      */
@@ -80,115 +78,81 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, asyncBatchCacheRequests.size() );
-        Map<String, StockCompanyEntityCacheRequest> requestMap = new HashMap<>();
-        for ( final StockCompanyEntityCacheRequest entry: asyncBatchCacheRequests.values() )
-        {
-            requestMap.put( entry.getCacheKey(), entry );
-            /*
-             * IEXTrading is limited to 100 symbols at a time.
-             */
-            if ( requestMap.size() == 100 )
-            {
-                super.asynchronousFetch( requestMap );
-                requestMap = new HashMap<>();
-            }
-        }
-        /*
-         * If there were more than 100, then this is remaining elements to process, otherwise it contains all of the
-         * elements to process.
-         */
-        if ( requestMap.size() > 0 )
-        {
-            super.asynchronousFetch( requestMap );
-        }
+        super.asynchronousFetch( asyncBatchCacheRequests );
         logMethodEnd( methodName );
     }
 
+//    /**
+//     * Fetches the stock companies from IEXTrading. One for each ticker symbol.
+//     * @param tickerSymbols
+//     * @return
+//     */
+//    @Override
+//    protected List<StockCompanyEntity> getExternalData( final List<String> tickerSymbols )
+//    {
+//        final String methodName = "getExternalData";
+//        logMethodBegin( methodName, tickerSymbols );
+//        List<StockCompanyEntity> stockCompanyEntities = new ArrayList<>();
+//        final List<Company> companies = this.iexTradingStockService
+//                                            .getCompanies( tickerSymbols );
+//        companies.forEach( company ->
+//                           {
+//                               logDebug( methodName, "for company: {0}", company );
+//                               StockCompanyEntity stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
+//                               this.copyExternalDataToEntity( company, stockCompanyEntity );
+//                               try
+//                               {
+//                                   stockCompanyEntity = this.stockCompanyEntityService
+//                                                            .saveEntity( stockCompanyEntity );
+//                               }
+//                               catch( DuplicateEntityException e )
+//                               {
+//                                   // ignore
+//                               }
+//                               stockCompanyEntities.add( stockCompanyEntity );
+//                           } );
+//        logMethodEnd( methodName, stockCompanyEntities.size() + " companies" );
+//        return stockCompanyEntities;
+//    }
+
+    @Override
+    protected String getCacheKeyFromThirdPartyData( final Company company )
+    {
+        return company.getSymbol();
+    }
+
     /**
-     * This method is called to get a batch of IEXTrading Company instances on a single call.
-     * @param requests Contains the information to make the batch request.
+     * Retrieves the stock companys for the ticker symbols.
+     * @param tickerSymbols
      * @return
      */
     @Override
-    public List<StockCompanyEntityCacheResponse> synchronousFetch( final Map<String, StockCompanyEntityCacheRequest> requests )
+    protected List<Company> getThirdPartyData( final List<String> tickerSymbols )
     {
-        final String methodName = "synchronousFetch";
-        logMethodBegin( methodName, requests.size() );
-        /*
-         * Get all of the ticker symbols.
-         */
-        final List<String> tickerSymbols = requests.values()
-                                                   .stream()
-                                                   .map( stockCompanyEntityAsyncBatchRequest -> stockCompanyEntityAsyncBatchRequest.getCacheKey() )
-                                                   .collect( Collectors.toList() );
-        /*
-         * Get the companies for the ticker symbols.
-         */
+        final String methodName = "getThirdPartyData";
+        logMethodBegin( methodName, tickerSymbols );
         final List<Company> companies = this.iexTradingStockService
                                             .getCompanies( tickerSymbols );
-        List<StockCompanyEntityCacheResponse> responses = new ArrayList<>();
-        /*
-         * Update existing companies and insert new companies.
-         */
-        companies.stream()
-                 .forEach( company ->
-                  {
-                      logDebug( methodName, "for company: {0}", company );
-                      StockCompanyEntity stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
-                      this.copyExternalDataToEntity( company, stockCompanyEntity );
-                      final StockCompanyEntityCacheResponse stockCompanyEntityCacheResponse = this.context
-                                                                                      .getBean( StockCompanyEntityCacheResponse.class );
-                      stockCompanyEntityCacheResponse.setCacheKey( company.getSymbol() );
-                      try
-                      {
-                          stockCompanyEntity = this.stockCompanyEntityService
-                                                   .saveEntity( stockCompanyEntity );
-                      }
-                      catch( DuplicateEntityException e )
-                      {
-                          // ignore
-                      }
-                      stockCompanyEntityCacheResponse.setData( stockCompanyEntity );
-                      responses.add( stockCompanyEntityCacheResponse );
-                  } );
-        logMethodEnd( methodName );
-        return responses;
+        logMethodEnd( methodName, "Received " + companies.size() + " stock companies" );
+        return companies;
     }
 
     /**
-     * Fetch the stock company information from IEXTrading.
+     * Get the stock company.
      * @param tickerSymbol
      * @return
      * @throws AsyncCacheDataNotFoundException
      */
     @Override
-    protected Company getExternalData( final String tickerSymbol )
+    protected Company getThirdPartyData( final String tickerSymbol )
         throws AsyncCacheDataNotFoundException
     {
-        final String methodName = "getExternalData";
+        final String methodName = "getThirdPartyData";
         logMethodBegin( methodName, tickerSymbol );
-        Company company = null;
-        try
-        {
-            company = this.iexTradingStockService
-                          .getCompany( tickerSymbol );
-            return company;
-        }
-        catch( StockNotFoundException e )
-        {
-            throw new StockCompanyNotFoundException( tickerSymbol, e );
-        }
-        finally
-        {
-            if ( company == null )
-            {
-                logMethodEnd( methodName, tickerSymbol + " was not found" );
-            }
-            else
-            {
-                logMethodEnd( methodName, company );
-            }
-        }
+        final Company company = this.iexTradingStockService
+                                    .getCompany( tickerSymbol );
+        logMethodEnd( methodName, company );
+        return company;
     }
 
     /**
@@ -198,8 +162,20 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
      */
     protected void copyExternalDataToEntity( final Company company, final StockCompanyEntity companyEntity )
     {
-        super.copyExternalDataToEntity( company, companyEntity );
         companyEntity.setTickerSymbol( company.getSymbol() );
+        BeanUtils.copyProperties( company, companyEntity );
+    }
+
+    @Override
+    protected String getCacheKey( final StockCompanyEntity stockCompanyEntity )
+    {
+        return stockCompanyEntity.getTickerSymbol();
+    }
+
+    @Override
+    protected StockCompanyEntityCacheResponse newResponse()
+    {
+        return this.context.getBean( StockCompanyEntityCacheResponse.class );
     }
 
     /**
@@ -223,4 +199,5 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     {
         return new StockCompanyNotFoundException( key, cause );
     }
+
 }

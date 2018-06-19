@@ -1,4 +1,4 @@
-package com.stocktracker.servicelayer.service.cache.stockpricequote;
+package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -10,7 +10,6 @@ import pl.zankowski.iextrading4j.api.stocks.Company;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 import pl.zankowski.iextrading4j.client.IEXTradingClient;
 import pl.zankowski.iextrading4j.client.rest.request.stocks.BatchMarketStocksRequestBuilder;
-import pl.zankowski.iextrading4j.client.rest.request.stocks.BatchStocksRequestBuilder;
 import pl.zankowski.iextrading4j.client.rest.request.stocks.BatchStocksType;
 import pl.zankowski.iextrading4j.client.rest.request.stocks.CompanyRequestBuilder;
 import pl.zankowski.iextrading4j.client.rest.request.stocks.PriceRequestBuilder;
@@ -30,6 +29,25 @@ import java.util.stream.Collectors;
 public class IEXTradingStockService implements MyLogger
 {
     private IEXTradingClient iexTradingClient = IEXTradingClient.create();
+
+    /**
+     * Using the market batch API, get a batch of stock companies.
+     * @param tickerSymbols The ticker symbols to get the stock companies for.
+     * @return
+     */
+    public List<BigDecimal> getStockPrices( final List<String> tickerSymbols )
+    {
+        final String methodName = "getStockPrices";
+        logMethodBegin( methodName, tickerSymbols );
+        final BatchMarketStocksRequestBuilder batchMarketStocksRequestBuilder = getBatchMarketStocksRequestBuilder( tickerSymbols, BatchStocksType.PRICE );
+        final Map<String, BatchStocks> batchStocksMap = iexTradingClient.executeRequest( batchMarketStocksRequestBuilder.build() );
+        final List<BigDecimal> stockPrices = batchStocksMap.values()
+                                                           .stream()
+                                                           .map( batchStocks -> batchStocks.getPrice() )
+                                                           .collect(Collectors.toList());
+        logMethodEnd( methodName, stockPrices.size() );
+        return stockPrices;
+    }
 
     /**
      * Using the market batch API, get a batch of stock companies.

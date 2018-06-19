@@ -3,9 +3,8 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDTOContainer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-import com.stocktracker.weblayer.dto.common.StockPriceQuoteDTOAsyncContainer;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,7 @@ import java.util.Objects;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuoteDTO implements StockPriceQuoteDTOAsyncContainer
+public class StockPriceQuoteDTO implements AsyncCacheDTOContainer<String,StockPriceQuoteDTO>
 {
     private String tickerSymbol;
     @JsonSerialize( using = JSONMoneySerializer.class )
@@ -41,30 +40,26 @@ public class StockPriceQuoteDTO implements StockPriceQuoteDTOAsyncContainer
     }
 
     @Override
-    public void setCachedDTO( final StockPriceQuoteDTO dto )
+    public void setCacheKey( final String tickerSymbol )
     {
-        BeanUtils.copyProperties( dto, this );
+        this.tickerSymbol = tickerSymbol;
     }
 
-    @Override
     public void setCacheState( final AsyncCacheEntryState stockQuoteEntityCacheState )
     {
         this.cacheState = stockQuoteEntityCacheState;
     }
 
-    @Override
     public AsyncCacheEntryState getCacheState()
     {
         return this.cacheState;
     }
 
-    @Override
     public void setCacheError( final String stockQuoteCacheError )
     {
         this.cacheError = stockQuoteCacheError;
     }
 
-    @Override
     public String getCacheError()
     {
         return this.cacheError;
@@ -74,6 +69,7 @@ public class StockPriceQuoteDTO implements StockPriceQuoteDTOAsyncContainer
     {
         return tickerSymbol;
     }
+
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;

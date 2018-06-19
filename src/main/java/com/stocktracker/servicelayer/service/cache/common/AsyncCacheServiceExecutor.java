@@ -1,11 +1,8 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
 import io.reactivex.processors.AsyncProcessor;
-import io.reactivex.processors.BehaviorProcessor;
-import org.reactivestreams.Processor;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * This interface defines the methods for the information executor that provides two methods to obtain the requested
@@ -21,7 +18,7 @@ public interface AsyncCacheServiceExecutor<K,T>
      * @param searchKey The search key.
      * @return Information of type T wrapped in an Optional.
      */
-    T synchronousFetch( @NotNull final K searchKey )
+    T getExternalData( @NotNull final K searchKey )
         throws AsyncCacheDataNotFoundException;
 
     /**

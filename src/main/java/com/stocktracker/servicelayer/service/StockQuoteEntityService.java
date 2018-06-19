@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This service contains the methods for the StockQuoteEntity.
@@ -24,10 +25,8 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
 {
     @Autowired
     private StockQuoteRepository stockQuoteRepository;
-
     @Autowired
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
-
     @Autowired
     private StockQuoteCacheBatchProcessor stockQuoteCacheBatchProcessor;
 
@@ -40,8 +39,19 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     {
         final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, containers.size() );
+        /*
+         * Create DTO for each container.
+         */
+        final List<StockQuoteDTO> dtos = containers.stream()
+                                                   .map( (StockQuoteDTOContainer container) ->
+                                                         {
+                                                             final StockQuoteDTO stockQuoteDTO = this.context.getBean( StockQuoteDTO.class );
+                                                             stockQuoteDTO.setCacheKey( container.getTickerSymbol() );
+                                                             return stockQuoteDTO;
+                                                         })
+                                                   .collect(Collectors.toList());
         this.stockQuoteCacheBatchProcessor
-            .processBatch( containers );
+            .getCachedData( dtos );
         logMethodEnd( methodName );
     }
 
@@ -63,7 +73,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
          * Get the cached data or make an asynchronous request for the data.
          */
         this.stockQuoteEntityCacheClient
-            .setCachedData( receiver );
+            .getCachedData( receiver );
         /*
          * Set the cache data and status results.
          */
@@ -76,9 +86,9 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         {
             stockQuoteDTO = this.context.getBean( StockQuoteDTO.class );
         }
-        stockQuoteDTO.setCacheState( receiver.getCacheDataState() );
+        stockQuoteDTO.setCachedDataState( receiver.getCachedDataState() );
         stockQuoteDTO.setCacheError( receiver.getCacheError() );
-        container.setStockQuote( stockQuoteDTO );
+        container.setStockQuoteDTO( stockQuoteDTO );
         logMethodEnd( methodName, container );
     }
 
@@ -115,7 +125,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         {
             stockQuoteDTO = this.context.getBean( StockQuoteDTO.class );
         }
-        stockQuoteDTO.setCacheState( receiver.getCacheDataState() );
+        stockQuoteDTO.setCachedDataState( receiver.getCachedDataState() );
         stockQuoteDTO.setCacheError( receiver.getCacheError() );
         logMethodEnd( methodName, stockQuoteDTO );
         return stockQuoteDTO;

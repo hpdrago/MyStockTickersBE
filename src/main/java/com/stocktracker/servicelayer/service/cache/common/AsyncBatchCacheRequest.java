@@ -21,17 +21,14 @@ public class AsyncBatchCacheRequest<K,T>
     {
         return cacheKey;
     }
-
     public void setCacheKey( final K cacheKey )
     {
         this.cacheKey = cacheKey;
     }
-
     public AsyncProcessor<T> getAsyncProcessor()
     {
         return asyncProcessor;
     }
-
     public void setAsyncProcessor( final AsyncProcessor<T> asyncProcessor )
     {
         this.asyncProcessor = asyncProcessor;
@@ -45,5 +42,4 @@ public class AsyncBatchCacheRequest<K,T>
         sb.append( '}' );
         return sb.toString();
     }
-
 }

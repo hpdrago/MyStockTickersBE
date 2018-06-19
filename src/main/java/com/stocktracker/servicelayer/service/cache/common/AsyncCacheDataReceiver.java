@@ -2,7 +2,6 @@ package com.stocktracker.servicelayer.service.cache.common;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * This interface is implemented by classes, probably DTO's, that receive cached data from an AsynCache.
@@ -51,7 +50,7 @@ public interface AsyncCacheDataReceiver<K extends Serializable,T>
      * Get the state of the cached data.
      * @return
      */
-    AsyncCacheEntryState getCacheDataState();
+    AsyncCacheEntryState getCachedDataState();
 
     /**
      * Set the the error message if an exception occured while fetching.

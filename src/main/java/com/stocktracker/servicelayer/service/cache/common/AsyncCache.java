@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
@@ -190,7 +189,7 @@ public abstract class AsyncCache<K extends Serializable,
      */
     protected void synchronousFetch( final K searchKey, final E cacheEntry )
     {
-        final String methodName = "synchronousFetch";
+        final String methodName = "getExternalData";
         logMethodBegin( methodName, searchKey, cacheEntry );
         T information = null;
         try
@@ -199,7 +198,7 @@ public abstract class AsyncCache<K extends Serializable,
             try
             {
                 information = this.getExecutor()
-                                  .synchronousFetch( searchKey );
+                                  .getExternalData( searchKey );
                 logDebug( methodName, "information: {0}", information );
                 cacheEntry.setCachedData( information );
                 cacheEntry.setCacheState( CURRENT );
@@ -281,6 +280,20 @@ public abstract class AsyncCache<K extends Serializable,
     }
 
     /**
+     * Adds a cache entry to the cache.
+     * @param key
+     * @param cacheEntry
+     */
+    protected void addCacheEntry( final K key, final E cacheEntry )
+    {
+        final String methodName = "createCacheEntry";
+        logMethodBegin( methodName, key, cacheEntry );
+        this.cacheMap
+            .put( key, cacheEntry );
+        logMethodEnd( methodName );
+    }
+
+    /**
      * Creates a new cache entry and adds it to the cache.
      * @param key
      * @param cachedData
@@ -319,5 +332,4 @@ public abstract class AsyncCache<K extends Serializable,
      * @return
      */
     protected abstract AsyncCacheStrategy getCacheStrategy();
-
 }
