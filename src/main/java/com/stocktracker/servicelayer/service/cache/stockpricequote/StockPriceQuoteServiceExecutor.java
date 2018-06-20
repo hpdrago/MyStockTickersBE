@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.FAILURE;
-import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.NOT_FOUND;
-
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Price: https://iextrading.com/developer/docs/#price
  * and to Yahoo as well.
@@ -56,7 +53,25 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
         final String methodName = "getExternalData";
         logMethodBegin( methodName, tickerSymbols );
         final Map<String,BigDecimal> stockPriceResults = this.iexTradingStockService.getStockPrices( tickerSymbols );
+        /*
+         * Check to see if we got different results.
+         */
+        if ( stockPriceResults.size() != tickerSymbols.size() )
+        {
+            logWarn( methodName, "Did not receive all stock prices requested: {0} received: {1}",
+                     tickerSymbols.size(), stockPriceResults.size() );
+        }
         final List<StockPriceQuote> stockPriceQuotes = new ArrayList<>( tickerSymbols.size() );
+        stockPriceResults.forEach( ( String tickerSymbol, BigDecimal stockPrice ) ->
+                                   {
+                                       final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
+                                       stockPriceQuote.setTickerSymbol( tickerSymbol );
+                                       stockPriceQuote.setCacheState( AsyncCacheEntryState.CURRENT );
+                                       stockPriceQuote.setLastPrice( stockPrice );
+                                       stockPriceQuote.setCacheError( null );
+                                       stockPriceQuotes.add( stockPriceQuote );
+                                   });
+        /*
         for (  stockPriceResult : stockPriceResults )
         {
             StockPriceQuote stockPriceQuote;
@@ -80,6 +95,7 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
             }
             stockPriceQuotes.add( stockPriceQuote );
         }
+        */
         logMethodEnd( stockPriceQuotes.size() + " stock quotes" );
         return stockPriceQuotes;
     }

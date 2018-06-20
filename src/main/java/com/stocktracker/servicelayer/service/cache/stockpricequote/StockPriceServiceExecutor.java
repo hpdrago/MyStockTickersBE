@@ -217,7 +217,8 @@ public class StockPriceServiceExecutor implements MyLogger
             }
             else
             {
-                logError( methodName, " Stock quote obtained from IEXTrading for " + tickerSymbol );
+                logDebug( methodName, " Stock price {0} obtained from IEXTrading for {1}",
+                          stockPrice, tickerSymbol );
             }
         }
         else

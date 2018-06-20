@@ -97,7 +97,7 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
         else
         {
             logDebug( methodName, "Cache entry for {0} found with cache state: {1}",
-                      receiver.getCacheKey(), receiver.getCachedDataState() );
+                      receiver.getCacheKey(), cacheEntry.getCacheState() );
             try
             {
                 updateReceiverWithCacheInformation( cacheEntry, receiver );
@@ -120,8 +120,8 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
     protected void updateReceiverWithCacheInformation( final CE cacheEntry, final DR receiver )
     {
         Objects.requireNonNull( receiver, "receiver argument cannot be null" );
-        Objects.requireNonNull( receiver.getCachedDataState(), "receiver.cachedState cannot be null" );
         Objects.requireNonNull( cacheEntry, "cacheEntry argument cannot be null" );
+        Objects.requireNonNull( cacheEntry.getCacheState(), "cacheEntry.cachedState cannot be null" );
         final String methodName = "updateReceiverWithCacheInformation";
         logMethodBegin( methodName, cacheEntry, receiver );
         switch ( cacheEntry.getCacheState() )

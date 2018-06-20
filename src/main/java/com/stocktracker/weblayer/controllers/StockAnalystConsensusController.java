@@ -80,6 +80,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
         final Page<StockAnalystConsensusDTO> stockAnalystConsensusDTOs = this.stockAnalystConsensusService
                                                                              .getStockAnalystConsensusPage( pageRequest,
                                                                                                             UUIDUtil.uuid( customerId ));
+        logDebug( methodName, "stockAnalystConsensus: {0}", stockAnalystConsensusDTOs.getContent() );
         logMethodEnd( methodName, "stockAnalystConsensus size: " + stockAnalystConsensusDTOs.getContent().size() );
         return stockAnalystConsensusDTOs;
     }

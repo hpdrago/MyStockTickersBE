@@ -1,8 +1,8 @@
 package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.stocktracker.common.JSONDateConverter;
 import com.stocktracker.common.JSONMoneySerializer;
+import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
 import com.stocktracker.weblayer.dto.common.NotesSourceIdContainer;
@@ -33,20 +33,20 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
     private Integer analystHoldCount;
     private Integer analystUnderPerformCount;
     private Integer analystSellCount;
-    private String analystSentimentDate;
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
+    private Timestamp analystSentimentDate;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal avgAnalystPriceTarget;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal lowAnalystPriceTarget;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal highAnalystPriceTarget;
-    private String analystPriceDate;
+    @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
+    private Timestamp analystPriceDate;
     private String notesSourceId;
     private String notesSourceName;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
-    private boolean stockPriceQuoteRequested;
-    private boolean stockQuoteRequested;
 
     @Override
     public String getTickerSymbol()
@@ -159,48 +159,24 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         this.analystUnderPerformCount = analystUnderPerformCount;
     }
 
-    public String getAnalystSentimentDate()
+    public Timestamp getAnalystSentimentDate()
     {
         return analystSentimentDate;
     }
 
     public void setAnalystSentimentDate( final Timestamp analystSentimentDate )
     {
-        if ( analystSentimentDate == null )
-        {
-            this.analystSentimentDate = null;
-        }
-        else
-        {
-            this.analystSentimentDate = JSONDateConverter.toY4MMDD( analystSentimentDate );
-        }
-    }
-
-    public void setAnalystSentimentDate( final String analystSentimentDate )
-    {
         this.analystSentimentDate = analystSentimentDate;
     }
 
-    public String getAnalystPriceDate()
+    public Timestamp getAnalystPriceDate()
     {
         return analystPriceDate;
     }
 
-    public void setAnalystPriceDate( final String analystPriceDate )
-    {
-        this.analystPriceDate = analystPriceDate;
-    }
-
     public void setAnalystPriceDate( final Timestamp analystPriceDate )
     {
-        if ( analystPriceDate == null )
-        {
-            this.analystPriceDate = null;
-        }
-        else
-        {
-            this.analystPriceDate = JSONDateConverter.toY4MMDD( analystPriceDate );
-        }
+        this.analystPriceDate = analystPriceDate;
     }
 
     public String getNotesSourceId()
@@ -263,7 +239,7 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         sb.append( ", avgAnalystPriceTarget=" ).append( avgAnalystPriceTarget );
         sb.append( ", lowAnalystPriceTarget=" ).append( lowAnalystPriceTarget );
         sb.append( ", highAnalystPriceTarget=" ).append( highAnalystPriceTarget );
-        sb.append( ", analystPriceDate='" ).append( analystPriceDate ).append( '\'' );
+        sb.append( ", analystPriceDate=" ).append( analystPriceDate );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
         sb.append( ", stockPriceQuoteDTO=" ).append( stockPriceQuoteDTO );

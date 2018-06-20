@@ -9,6 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -25,6 +29,21 @@ public class StockTrackerApplication implements CommandLineRunner
 
     public static void main( String[] args )
     {
+        final Path filesToDelete = Paths.get( "./logs" );
+        try
+        {
+            //System.out.print( "Current dir: " + Paths.get( "" ).toAbsolutePath().toString() );
+            //System.exit( 1 );
+            Files.walk( filesToDelete )
+                 .map( Path::toFile )
+                 .forEach( file -> file.delete() );
+                Files.deleteIfExists( filesToDelete );
+        }
+        catch( IOException e )
+        {
+            e.printStackTrace();
+            System.exit( 1 );
+        }
         SpringApplication.run( StockTrackerApplication.class, args );
     }
 
