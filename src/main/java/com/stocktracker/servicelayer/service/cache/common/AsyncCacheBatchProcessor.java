@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AsyncCacheBatchProcessor<  K extends Serializable,
                                                  T extends AsyncCacheData,
-                                                CE extends AsyncCacheEntry<T>,
+                                                CE extends AsyncCacheEntry<K,T>,
                                                 DR extends AsyncCacheDataReceiver<K,T>,
                                                 RQ extends AsyncBatchCacheRequest<K,T>,
                                                 RS extends AsyncBatchCacheResponse<K,T>,

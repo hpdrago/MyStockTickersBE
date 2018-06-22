@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.repositorylayer.entity.StockAnalystConsensusEntity;
 import com.stocktracker.repositorylayer.repository.StockAnalystConsensusRepository;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode;
 import com.stocktracker.weblayer.dto.StockAnalystConsensusDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,8 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode.ASYNCHRONOUS;
 
 @Service
 public class StockAnalystConsensusEntityService extends StockInformationEntityService<StockAnalystConsensusEntity,
@@ -118,6 +121,8 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         final StockAnalystConsensusDTO dto = super.entityToDTO( entity );
         this.stockQuoteEntityService
             .setStockQuoteInformation( dto );
+        this.stockPriceQuoteService
+            .setStockPriceQuote( dto, ASYNCHRONOUS );
         return dto;
     }
 

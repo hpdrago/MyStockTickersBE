@@ -129,6 +129,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         }
         stockQuoteDTO.setCachedDataState( receiver.getCachedDataState() );
         stockQuoteDTO.setCacheError( receiver.getCacheError() );
+        stockQuoteDTO.setTickerSymbol( tickerSymbol );
         logMethodEnd( methodName, stockQuoteDTO );
         return stockQuoteDTO;
     }

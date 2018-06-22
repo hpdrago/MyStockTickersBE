@@ -82,39 +82,6 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         logMethodEnd( methodName );
     }
 
-//    /**
-//     * Fetches the stock companies from IEXTrading. One for each ticker symbol.
-//     * @param tickerSymbols
-//     * @return
-//     */
-//    @Override
-//    protected List<StockCompanyEntity> getExternalData( final List<String> tickerSymbols )
-//    {
-//        final String methodName = "getExternalData";
-//        logMethodBegin( methodName, tickerSymbols );
-//        List<StockCompanyEntity> stockCompanyEntities = new ArrayList<>();
-//        final List<Company> companies = this.iexTradingStockService
-//                                            .getCompanies( tickerSymbols );
-//        companies.forEach( company ->
-//                           {
-//                               logDebug( methodName, "for company: {0}", company );
-//                               StockCompanyEntity stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
-//                               this.copyExternalDataToEntity( company, stockCompanyEntity );
-//                               try
-//                               {
-//                                   stockCompanyEntity = this.stockCompanyEntityService
-//                                                            .saveEntity( stockCompanyEntity );
-//                               }
-//                               catch( DuplicateEntityException e )
-//                               {
-//                                   // ignore
-//                               }
-//                               stockCompanyEntities.add( stockCompanyEntity );
-//                           } );
-//        logMethodEnd( methodName, stockCompanyEntities.size() + " companies" );
-//        return stockCompanyEntities;
-//    }
-
     @Override
     protected String getCacheKeyFromThirdPartyData( final Company company )
     {
@@ -145,7 +112,6 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
      */
     @Override
     protected Company getThirdPartyData( final String tickerSymbol )
-        throws AsyncCacheDataNotFoundException
     {
         final String methodName = "getThirdPartyData";
         logMethodBegin( methodName, tickerSymbol );

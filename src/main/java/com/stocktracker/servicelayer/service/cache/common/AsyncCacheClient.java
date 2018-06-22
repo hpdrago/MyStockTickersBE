@@ -25,7 +25,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  */
 public abstract class AsyncCacheClient< K extends Serializable,
                                         T extends AsyncCacheData,
-                                       CE extends AsyncCacheEntry<T>,
+                                       CE extends AsyncCacheEntry<K,T>,
                                        DR extends AsyncCacheDataReceiver<K,T>,
                                         X extends AsyncCacheServiceExecutor<K,T>,
                                         C extends AsyncCache<K,T,CE,X>>
@@ -182,7 +182,14 @@ public abstract class AsyncCacheClient< K extends Serializable,
                                .synchronousGet( searchKey )
                                .getCachedData();
             receiver.setCachedData( cachedData );
-            receiver.setCacheDataState( CURRENT );
+            if ( cachedData == null )
+            {
+                receiver.setCacheDataState( NOT_FOUND );
+            }
+            else
+            {
+                receiver.setCacheDataState( CURRENT );
+            }
         }
         else
         {
@@ -254,7 +261,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         receiver.setCacheDataState( CURRENT );
         receiver.setCacheError( null );
         cacheEntry.setCacheState( CURRENT );
-        cacheEntry.setCachedData( fetchedData );
+        cacheEntry.setCachedData( searchKey, fetchedData );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setFetchThrowable( null );
     }
@@ -275,7 +282,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( FAILURE );
         cacheEntry.setFetchThrowable( throwable );
-        cacheEntry.setCachedData( null );
+        cacheEntry.setCachedData( searchKey, null );
     }
 
     /**
@@ -292,7 +299,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         receiver.setCacheError( "Could not find entry for " + searchKey );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( NOT_FOUND );
-        cacheEntry.setCachedData( null );
+        cacheEntry.setCachedData( searchKey, null );
         cacheEntry.setFetchThrowable( null );
     }
 

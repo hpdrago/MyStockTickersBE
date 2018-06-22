@@ -189,8 +189,8 @@ public class StockPriceServiceExecutor implements MyLogger
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         this.discontinuedStocks.add( tickerSymbol );
-        this.stockCompanyEntityService
-            .markStockAsDiscontinued( tickerSymbol );
+        //this.stockCompanyEntityService
+        //    .markStockAsDiscontinued( tickerSymbol );
         logMethodEnd( methodName, tickerSymbol );
     }
 

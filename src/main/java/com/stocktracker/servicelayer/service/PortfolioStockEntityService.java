@@ -26,6 +26,7 @@ public class PortfolioStockEntityService extends StockInformationEntityService<P
                                                                                PortfolioStockDTO,
                                                                                PortfolioStockRepository>
 {
+    @Autowired
     private PortfolioStockRepository portfolioStockRepository;
 
     /**
@@ -119,6 +120,14 @@ public class PortfolioStockEntityService extends StockInformationEntityService<P
     }
 
     @Override
+    protected List<PortfolioStockDTO> entitiesToDTOs( final List<PortfolioStockEntity> entities )
+    {
+        List<PortfolioStockDTO> dtos = super.entitiesToDTOs( entities );
+
+        return dtos;
+    }
+
+    @Override
     protected PortfolioStockDTO createDTO()
     {
         return this.context.getBean( PortfolioStockDTO.class );
@@ -134,11 +143,5 @@ public class PortfolioStockEntityService extends StockInformationEntityService<P
     protected PortfolioStockRepository getRepository()
     {
         return this.portfolioStockRepository;
-    }
-
-    @Autowired
-    public void setPortfolioStockRepository( final PortfolioStockRepository portfolioStockRepository )
-    {
-        this.portfolioStockRepository = portfolioStockRepository;
     }
 }

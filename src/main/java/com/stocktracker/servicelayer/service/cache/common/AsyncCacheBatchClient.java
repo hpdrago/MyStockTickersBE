@@ -26,7 +26,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  */
 public abstract class AsyncCacheBatchClient< K extends Serializable,
                                              T extends AsyncCacheData,
-                                            CE extends AsyncCacheEntry<T>,
+                                            CE extends AsyncCacheEntry<K,T>,
                                             DR extends AsyncCacheDataReceiver<K,T>,
                                             RQ extends AsyncBatchCacheRequest<K,T>,
                                             RS extends AsyncBatchCacheResponse<K,T>,

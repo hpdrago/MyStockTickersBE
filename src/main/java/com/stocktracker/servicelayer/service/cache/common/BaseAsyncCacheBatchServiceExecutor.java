@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +37,7 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, requests.size() + " requests: " + requests.keySet() );
         Map<K, RQ> requestMap = new HashMap<>();
+        final List<RS> responses = new ArrayList();
         for ( final RQ entry: requests.values() )
         {
             requestMap.put( entry.getCacheKey(), entry );
@@ -43,7 +46,8 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
              */
             if ( requestMap.size() == 100 )
             {
-                this.synchronousFetch( requestMap );
+                final List<RS> batchResponse = this.synchronousFetch( requestMap );
+                responses.addAll( batchResponse );
                 requestMap = new HashMap<>();
             }
         }
@@ -53,19 +57,8 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
          */
         if ( requestMap.size() > 0 )
         {
-            this.synchronousFetch( requestMap );
-        }
-        /*
-         * Execute the batch request.
-         */
-        final List<RS> responses = this.synchronousFetch( requests );
-        /*
-         * Need to ensure that we have the same number of results as requests or something went wrong.
-         */
-        if ( requests.size() != responses.size() )
-        {
-            throw new IllegalArgumentException( String.format( "Request (%d) and results (%d) sizes do not match.",
-                                                               requests.size(), responses.size() ));
+            final List<RS> batchResponse = this.synchronousFetch( requestMap );
+            responses.addAll( batchResponse );
         }
         this.evaluateResponses( requests, responses );
         logMethodEnd( methodName );
@@ -128,12 +121,26 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
      */
     protected void evaluateResponses( final @NotNull Map<K,RQ> requests, final List<RS> responses )
     {
+        final String methodName = "evaluateResponses";
+        logMethodEnd( methodName, String.format( "requests: %d responses: %d",
+                                                 requests.size(), responses.size() ));
+        logMethodBegin( methodName, "request keys: {0}", requests.keySet() );
+        logMethodBegin( methodName, "response keys: {0}", responses.stream()
+                                                                          .map( response -> response.getCacheKey() )
+                                                                          .collect( Collectors.toList() ));
+        /*
+         * Save a lit of the request keys and remove them from the set as we step through the responses so at the end
+         * of the step process, we can identify the requests that did not receive a response.
+         */
+        final List<K> requestKeys = new ArrayList<>();
+        requestKeys.addAll( requests.keySet() );
         /*
          * Cycle through the results, find the associated request entry, and make the results notification through
          * the request's AsyncProcessor.
          */
         for ( final AsyncBatchCacheResponse<K,T> result: responses )
         {
+            requestKeys.remove( result.getCacheKey() );
             final AsyncBatchCacheRequest<K,T> request = requests.get( result.getCacheKey() );
             Objects.requireNonNull( request, "Request not found for cache key: " + result.getCacheKey() );
             if ( result.getException() == null )
@@ -149,6 +156,14 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
                        .onError( result.getException() );
             }
         }
+
+        /*
+         * For each request for which a response was not found, notify the caller of the error.
+         */
+        requestKeys.forEach( cacheKey -> requests.get( cacheKey )
+                                                 .getAsyncProcessor()
+                                                 .onError( new AsyncCacheDataNotFoundException( cacheKey ) ));
+        logMethodEnd( methodName );
     }
 
     /**

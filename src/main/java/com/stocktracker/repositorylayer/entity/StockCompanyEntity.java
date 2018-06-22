@@ -37,7 +37,11 @@ public class StockCompanyEntity extends TickerSymbolEntity
 
     public void setCompanyName( final String companyName )
     {
-        if ( companyName.length() > 70 )
+        if ( companyName == null )
+        {
+            this.companyName = null;
+        }
+        else if ( companyName.length() > 70 )
         {
             this.companyName = companyName.substring( 0, 70 );
         }

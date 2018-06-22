@@ -52,7 +52,8 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
     {
         final String methodName = "getExternalData";
         logMethodBegin( methodName, tickerSymbols );
-        final Map<String,BigDecimal> stockPriceResults = this.iexTradingStockService.getStockPrices( tickerSymbols );
+        final Map<String,BigDecimal> stockPriceResults = this.iexTradingStockService
+                                                             .getStockPrices( tickerSymbols );
         /*
          * Check to see if we got different results.
          */
@@ -71,31 +72,6 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
                                        stockPriceQuote.setCacheError( null );
                                        stockPriceQuotes.add( stockPriceQuote );
                                    });
-        /*
-        for (  stockPriceResult : stockPriceResults )
-        {
-            StockPriceQuote stockPriceQuote;
-            try
-            {
-                stockPriceQuote = processStockPriceQuoteResult( stockPriceResult );
-            }
-            catch( StockPriceNotFoundException e )
-            {
-                stockPriceQuote = this.context.getBean( StockPriceQuote.class );
-                stockPriceQuote.setTickerSymbol( stockPriceResult.getTickerSymbol() );
-                stockPriceQuote.setCacheError( e.getMessage() );
-                stockPriceQuote.setCacheState( NOT_FOUND );
-            }
-            catch( Throwable e )
-            {
-                stockPriceQuote = this.context.getBean( StockPriceQuote.class );
-                stockPriceQuote.setTickerSymbol( stockPriceResult.getTickerSymbol() );
-                stockPriceQuote.setCacheError( e.getMessage() );
-                stockPriceQuote.setCacheState( FAILURE );
-            }
-            stockPriceQuotes.add( stockPriceQuote );
-        }
-        */
         logMethodEnd( stockPriceQuotes.size() + " stock quotes" );
         return stockPriceQuotes;
     }

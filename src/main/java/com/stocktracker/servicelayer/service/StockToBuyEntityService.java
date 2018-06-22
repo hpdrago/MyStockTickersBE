@@ -73,6 +73,13 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         return stockToBuyDTOs;
     }
 
+    /**
+     * Get stocks to buy for customer id and ticker symbol.
+     * @param pageRequest
+     * @param customerUuid
+     * @param tickerSymbol
+     * @return
+     */
     public Page<StockToBuyDTO> getStockToBuyListForCustomerUuidAndTickerSymbol( @NotNull final Pageable pageRequest,
                                                                                 @NotNull final UUID customerUuid,
                                                                                 @NotNull final String tickerSymbol )
@@ -87,12 +94,6 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         Page<StockToBuyDTO> stockToBuyDTOs = this.entitiesToDTOs( pageRequest, stockToBuyEntities );
         logMethodEnd( methodName, "Found " + stockToBuyEntities.getContent().size() + " to buy" );
         return stockToBuyDTOs;
-    }
-
-    @Override
-    protected StockToBuyDTO createDTO()
-    {
-        return this.context.getBean( StockToBuyDTO.class );
     }
 
     /**
@@ -137,6 +138,12 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
         }
         stockToBuyEntity.setCompleted( stockToBuyDTO.isCompleted() ? "Y" : "N" );
         return stockToBuyEntity;
+    }
+
+    @Override
+    protected StockToBuyDTO createDTO()
+    {
+        return this.context.getBean( StockToBuyDTO.class );
     }
 
     @Override

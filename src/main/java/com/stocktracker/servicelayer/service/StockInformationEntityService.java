@@ -46,6 +46,8 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     @Autowired
     protected StockPriceQuoteService stockPriceQuoteService;
     @Autowired
+    protected StockQuoteEntityService stockQuoteEntityService;
+    @Autowired
     protected StockNoteSourceEntityService stockNoteSourceService;
 
     /**

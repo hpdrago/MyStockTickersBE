@@ -23,16 +23,7 @@ public class PortfolioEntity extends UUIDEntity
 {
     private String name;
     private UUID customerUuid;
-
-    /**
-     * Create a new instance from a PortfolioDTO
-     * @return
-     */
-    public static PortfolioEntity newInstance()
-    {
-        PortfolioEntity portfolioEntity = new PortfolioEntity();
-        return portfolioEntity;
-    }
+    private UUID linkedAccountUuid;
 
     @Basic
     @Column( name = "name", nullable = false, length = 20 )
@@ -64,6 +55,7 @@ public class PortfolioEntity extends UUIDEntity
         final StringBuilder sb = new StringBuilder( "PortfolioEntity{" );
         sb.append( "uuid=" ).append( getUuidString() );
         sb.append( ", name='" ).append( name ).append( '\'' );
+        sb.append( ", linkedAccountUuid=" ).append( linkedAccountUuid );
         sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

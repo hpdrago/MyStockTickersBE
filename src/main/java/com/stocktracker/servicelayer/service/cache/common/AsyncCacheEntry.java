@@ -2,14 +2,16 @@ package com.stocktracker.servicelayer.service.cache.common;
 
 import io.reactivex.processors.AsyncProcessor;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * This class is the base class for all objects that are cached in the AsyncCache.
  * <T> - The type of cachedData to be retrieved from the third party source.
  * @param <T>
  */
-public abstract class AsyncCacheEntry<T>
+public abstract class AsyncCacheEntry<K extends Serializable,T>
 {
     /**
      * The current state of the cached item.
@@ -48,6 +50,11 @@ public abstract class AsyncCacheEntry<T>
     private T cachedData;
 
     /**
+     * The key to the cache. Added so the key appears in the log file.
+     */
+    private K cacheKey;
+
+    /**
      * Creates a new instance.
      *   Cache State = STALE
      *   Fetch State = NOT FETCHING
@@ -64,8 +71,9 @@ public abstract class AsyncCacheEntry<T>
      * Set the cachedData object.
      * @param cachedData
      */
-    public synchronized void setCachedData( final T cachedData )
+    public synchronized void setCachedData( final K cacheKey, final T cachedData )
     {
+        Objects.requireNonNull( cacheKey, "cacheKey argument cannot be null" );
         this.cachedData = cachedData;
         if ( cachedData == null )
         {
@@ -188,12 +196,23 @@ public abstract class AsyncCacheEntry<T>
         return this.cacheState.isStale();
     }
 
+    public K getCacheKey()
+    {
+        return cacheKey;
+    }
+
+    public void setCacheKey( final K cacheKey )
+    {
+        this.cacheKey = cacheKey;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AsyncCacheEntry" );
         sb.append( "@" ).append( hashCode() ).append( "{" );
-        sb.append( "cacheState=" ).append( cacheState );
+        sb.append( "cacheKey=" ).append( cacheKey );
+        sb.append( ", cacheState=" ).append( cacheState );
         sb.append( ", lastRefreshTime=" ).append( lastRefreshTime );
         sb.append( ", expirationTime=" ).append( expirationTime );
         sb.append( ", fetchState=" ).append( fetchState );

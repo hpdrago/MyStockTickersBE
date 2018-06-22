@@ -36,7 +36,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  */
 public abstract class AsyncCache<K extends Serializable,
                                  T,
-                                 E extends AsyncCacheEntry<T>,
+                                 E extends AsyncCacheEntry<K,T>,
                                  X extends AsyncCacheServiceExecutor<K,T>>
     extends BaseService
     implements MyLogger
@@ -84,6 +84,7 @@ public abstract class AsyncCache<K extends Serializable,
         {
             logTrace( methodName, "{0} is not in the cache", searchKey );
             returnCacheEntry = this.createCacheEntry();
+            returnCacheEntry.setCacheKey( searchKey );
             /*
              * Store an "empty" cache entry for now
              */
@@ -144,6 +145,7 @@ public abstract class AsyncCache<K extends Serializable,
         {
             logTrace( methodName, "{0} is not in the map", searchKey );
             cacheEntry = this.createCacheEntry();
+            cacheEntry.setCacheKey( searchKey );
             cacheEntry.setFetchState( FETCHING );
             cacheEntry.setCacheState( STALE );
             /*
@@ -174,10 +176,6 @@ public abstract class AsyncCache<K extends Serializable,
                         break;
                 }
             }
-            else
-            {
-                cacheEntry.setCacheState( CURRENT );
-            }
         }
         logMethodEnd( methodName, cacheEntry );
         return cacheEntry;
@@ -193,6 +191,7 @@ public abstract class AsyncCache<K extends Serializable,
         final String methodName = "getExternalData";
         logMethodBegin( methodName, searchKey, cacheEntry );
         T information = null;
+        cacheEntry.setCacheKey( searchKey );
         try
         {
             cacheEntry.setFetchState( FETCHING );
@@ -201,7 +200,7 @@ public abstract class AsyncCache<K extends Serializable,
                 information = this.getExecutor()
                                   .getExternalData( searchKey );
                 logDebug( methodName, "information: {0}", information );
-                cacheEntry.setCachedData( information );
+                cacheEntry.setCachedData( searchKey, information );
                 cacheEntry.setCacheState( CURRENT );
             }
             catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
@@ -250,7 +249,7 @@ public abstract class AsyncCache<K extends Serializable,
                   .doOnError( throwable ->
                   {
                       logError( methodName, String.format( "subscribe.onError for search Key: ", searchKey ), throwable );
-                      cacheEntry.setCachedData( null );
+                      cacheEntry.setCachedData( searchKey, null );
                       /*
                        * Check for a not found exception first, that's a normal scenario
                        */
@@ -271,7 +270,7 @@ public abstract class AsyncCache<K extends Serializable,
                   {
                       logTrace( methodName, "subscribe.onNext fetch of key {0} value {1}",
                                 searchKey, cacheData );
-                      cacheEntry.setCachedData( cacheData );
+                      cacheEntry.setCachedData( searchKey, cacheData );
                       cacheEntry.setFetchState( NOT_FETCHING );
                       cacheEntry.setCacheState( CURRENT );
                       logTrace( methodName, "cacheEntry: {0}", cacheEntry );
@@ -309,7 +308,7 @@ public abstract class AsyncCache<K extends Serializable,
         E cacheEntry = this.createCacheEntry();
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( cacheState );
-        cacheEntry.setCachedData( cachedData );
+        cacheEntry.setCachedData( key, cachedData );
         /*
          * Store an "empty" cache entry for now
          */

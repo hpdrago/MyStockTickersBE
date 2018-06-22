@@ -184,6 +184,17 @@ public class StockPositionService extends StockInformationEntityService<StockPos
     }
 
     @Override
+    protected List<StockPositionDTO> entitiesToDTOs( final List<StockPositionEntity> stockPositions )
+    {
+        final List<StockPositionDTO> dtos = super.entitiesToDTOs( stockPositions );
+        this.stockPriceQuoteService
+            .setStockPriceQuotes( dtos );
+        this.stockQuoteEntityService
+            .setStockQuoteInformation( dtos );
+        return dtos;
+    }
+
+    @Override
     protected StockPositionDTO createDTO()
     {
         return this.context.getBean( StockPositionDTO.class );

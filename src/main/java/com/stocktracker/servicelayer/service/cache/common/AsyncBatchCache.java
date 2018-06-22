@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public abstract class AsyncBatchCache<K extends Serializable,
                                       T,
-                                      E extends AsyncCacheEntry<T>,
+                                      E extends AsyncCacheEntry<K,T>,
                                       RQ extends AsyncBatchCacheRequest<K,T>,
                                       RS extends AsyncBatchCacheResponse<K,T>,
                                       X extends AsyncCacheBatchServiceExecutor<K,T,RQ,RS>>
@@ -45,6 +45,7 @@ public abstract class AsyncBatchCache<K extends Serializable,
                              if ( cacheEntry == null )
                              {
                                  cacheEntry = this.createCacheEntry();
+                                 cacheEntry.setCacheKey( cacheKey );
                                  this.addCacheEntry( cacheKey, cacheEntry );
                              }
                              asyncBatchCacheRequest.setCacheKey( cacheKey );

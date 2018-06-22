@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This class defines the Stock Company Entity cache's entry types.
  */
-public class StockCompanyEntityCacheEntry extends AsyncCacheEntry<StockCompanyEntity>
+public class StockCompanyEntityCacheEntry extends AsyncCacheEntry<String,StockCompanyEntity>
 {
     /**
      * Stock companies are valid for 1 day.

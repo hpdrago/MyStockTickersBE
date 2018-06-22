@@ -89,6 +89,8 @@ public class StockCatalystEventEntityService extends StockInformationEntityServi
         final List<StockCatalystEventDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService
             .setStockQuoteInformation( dtos );
+        this.stockPriceQuoteService
+            .setStockPriceQuotes( dtos );
         return dtos;
     }
 
