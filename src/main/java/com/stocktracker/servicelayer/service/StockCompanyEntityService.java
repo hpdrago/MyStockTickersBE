@@ -88,7 +88,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             final StockCompanyDTO stockCompanyDTO = this.entityToDTO( receiver.getCachedData() );
             container.setStockCompanyDTO( stockCompanyDTO );
         }
-        container.setStockCompanyCacheEntryState( receiver.getCachedDataState() );
+        container.setStockCompanyCacheEntryState( receiver.getCacheState() );
         container.setStockCompanyCacheError( receiver.getCacheError() );
         logMethodEnd( methodName, container );
     }
@@ -115,7 +115,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
          * This maybe the first time the stock company is being fetched so we need to check to see if it is being
          * fetch and then wait for the result.
          */
-        if ( receiver.getCachedDataState().isStale() )
+        if ( receiver.getCacheState().isStale() )
         {
             logDebug( methodName, "Waiting for asynchronous fetch to complete for {0}", tickerSymbol );
             this.stockCompanyEntityCacheClient
@@ -131,7 +131,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         {
             stockCompanyDTO = this.entityToDTO( receiver.getCachedData() );
         }
-        stockCompanyDTO.setCacheState( receiver.getCachedDataState() );
+        stockCompanyDTO.setCacheState( receiver.getCacheState() );
         stockCompanyDTO.setCacheError( receiver.getCacheError() );
         logMethodEnd( methodName, stockCompanyDTO );
         return stockCompanyDTO;

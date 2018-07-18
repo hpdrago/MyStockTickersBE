@@ -88,7 +88,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         {
             stockQuoteDTO = this.context.getBean( StockQuoteDTO.class );
         }
-        stockQuoteDTO.setCachedDataState( receiver.getCachedDataState() );
+        stockQuoteDTO.setCacheState( receiver.getCacheState() );
         stockQuoteDTO.setCacheError( receiver.getCacheError() );
         container.setStockQuoteDTO( stockQuoteDTO );
         logMethodEnd( methodName, container );
@@ -127,7 +127,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         {
             stockQuoteDTO = this.context.getBean( StockQuoteDTO.class );
         }
-        stockQuoteDTO.setCachedDataState( receiver.getCachedDataState() );
+        stockQuoteDTO.setCacheState( receiver.getCacheState() );
         stockQuoteDTO.setCacheError( receiver.getCacheError() );
         stockQuoteDTO.setTickerSymbol( tickerSymbol );
         logMethodEnd( methodName, stockQuoteDTO );

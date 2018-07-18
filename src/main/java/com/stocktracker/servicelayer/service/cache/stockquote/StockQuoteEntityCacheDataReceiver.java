@@ -62,13 +62,13 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
      * @param cacheState
      */
     @Override
-    public void setCacheDataState( final AsyncCacheEntryState cacheState )
+    public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
 
     @Override
-    public AsyncCacheEntryState getCachedDataState()
+    public AsyncCacheEntryState getCacheState()
     {
         return this.cacheState;
     }

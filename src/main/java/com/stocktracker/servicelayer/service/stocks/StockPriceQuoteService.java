@@ -46,14 +46,14 @@ public class StockPriceQuoteService extends BaseService
          * Create DTO for each container.
          */
         final List<StockPriceQuoteDTO> dtos = containers.stream()
-                                                   .map( (StockPriceQuoteDTOContainer container) ->
-                                                         {
-                                                             StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
-                                                             container.setStockPriceQuote( stockPriceQuoteDTO );
-                                                             stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
-                                                             return stockPriceQuoteDTO;
-                                                         })
-                                                   .collect( Collectors.toList());
+                                                        .map( (StockPriceQuoteDTOContainer container) ->
+                                                              {
+                                                                  StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
+                                                                  container.setStockPriceQuote( stockPriceQuoteDTO );
+                                                                  stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
+                                                                  return stockPriceQuoteDTO;
+                                                              })
+                                                        .collect( Collectors.toList());
         this.stockPriceQuoteCacheBatchProcessor
             .getCachedData( dtos );
         logMethodEnd( methodName );

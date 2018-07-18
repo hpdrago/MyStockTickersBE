@@ -49,7 +49,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         /*
          * Check to see if the entity is STALE and needs to be refreshed.
          */
-        if ( receiver.getCachedDataState().isStale() )
+        if ( receiver.getCacheState().isStale() )
         {
             logDebug( methodName, "Making asynchronous fetch for {0}", receiver.getCacheKey() );
             this.getCache()
@@ -74,7 +74,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         }
         catch( VersionedEntityNotFoundException e )
         {
-            //receiver.setCacheDataState( NOT_FOUND );
+            //receiver.setCacheState( NOT_FOUND );
             //receiver.setCacheError( searchKey + " was not found" );
             logDebug( methodName, "{0} was not in the map, asynchronously fetching now", searchKey );
             this.asynchronousFetch( receiver );
@@ -109,12 +109,12 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             if ( this.isCurrent( entity ) )
             {
                 logDebug( methodName, "Entity {0} is CURRENT", receiver.getCacheKey() );
-                receiver.setCacheDataState( CURRENT );
+                receiver.setCacheState( CURRENT );
             }
             else
             {
                 logDebug( methodName, "Entity {0} is STALE", receiver.getCacheKey() );
-                receiver.setCacheDataState( STALE );
+                receiver.setCacheState( STALE );
             }
             receiver.setCachedData( entity );
             /*
@@ -124,7 +124,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             if ( cacheEntry == null )
             {
                 this.getCache()
-                    .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCachedDataState() );
+                    .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCacheState() );
             }
         }
         catch( VersionedEntityNotFoundException e )
@@ -132,9 +132,9 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             /*
              * if the database entity is not found, then we need to retrieve the data.
              */
-            receiver.setCacheDataState( STALE );
+            receiver.setCacheState( STALE );
             this.getCache()
-                .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCachedDataState() );
+                .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCacheState() );
             /*
              * Throw the exception back to the caller and let them decide what to do.
              * When requesting a single entity, there will be an async request made right away.

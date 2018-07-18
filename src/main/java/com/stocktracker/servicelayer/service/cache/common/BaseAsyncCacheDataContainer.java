@@ -16,13 +16,13 @@ public abstract class BaseAsyncCacheDataContainer<K extends Serializable,T> impl
     private Timestamp expirationTime;
 
     @Override
-    public void setCachedDataState( final AsyncCacheEntryState stockQuoteEntityCacheState )
+    public void setCacheState( final AsyncCacheEntryState stockQuoteEntityCacheState )
     {
         this.cacheState = stockQuoteEntityCacheState;
     }
 
     @Override
-    public AsyncCacheEntryState getCacheDataState()
+    public AsyncCacheEntryState getCacheState()
     {
         return this.cacheState;
     }

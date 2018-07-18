@@ -161,7 +161,7 @@ public abstract class AsyncCacheBatchProcessor<  K extends Serializable,
                                                                 this.getCacheKey( container ), receiver.getCacheKey() ));
             }
             container.setCachedData( receiver.getCachedData() );
-            container.setCachedDataState( receiver.getCachedDataState() );
+            container.setCacheState( receiver.getCacheState() );
             container.setExpirationTime( receiver.getExpirationTime() );
             container.setCacheError( receiver.getCacheError() );
         }

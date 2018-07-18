@@ -36,6 +36,8 @@ public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<Stri
         {
             dtoContainer.setCachedData( cachedDataContainer.getCachedData() );
         }
+        dtoContainer.setCacheState( cachedDataContainer.getCacheState() );
+        dtoContainer.setCacheError( cachedDataContainer.getCacheError() );
     }
 
     @Override

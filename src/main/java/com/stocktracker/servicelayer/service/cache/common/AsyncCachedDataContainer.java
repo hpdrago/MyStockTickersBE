@@ -38,13 +38,13 @@ public interface AsyncCachedDataContainer<K extends Serializable,T>
      * This method is called to set the state of the {@code StockQuoteDTO} received from the stock quote cache.
      * @param stockQuoteEntityCacheState
      */
-    void setCachedDataState( final AsyncCacheEntryState stockQuoteEntityCacheState );
+    void setCacheState( final AsyncCacheEntryState stockQuoteEntityCacheState );
 
     /**
      * Get the cache entry state.
      * @return
      */
-    AsyncCacheEntryState getCacheDataState();
+    AsyncCacheEntryState getCacheState();
 
     /**
      * This method is called to set the error encoutered while retrieving the Quote from IEXTrading.

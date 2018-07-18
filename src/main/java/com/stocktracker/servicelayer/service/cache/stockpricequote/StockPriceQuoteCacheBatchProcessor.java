@@ -29,6 +29,8 @@ public class StockPriceQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor
     protected void setDTOContainer( final StockPriceQuote cachedDataContainer, final StockPriceQuoteDTO dtoContainer )
     {
         dtoContainer.setLastPrice( cachedDataContainer.getLastPrice() );
+        dtoContainer.setCacheState( cachedDataContainer.getCacheState() );
+        dtoContainer.setCacheError( cachedDataContainer.getCacheError() );
     }
 
     @Override

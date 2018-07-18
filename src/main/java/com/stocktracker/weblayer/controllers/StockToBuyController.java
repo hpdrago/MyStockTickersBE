@@ -32,6 +32,7 @@ import javax.validation.constraints.NotNull;
 public class StockToBuyController extends AbstractController
 {
     private static final String CONTEXT_URL = "/stockToBuy";
+    @Autowired
     private StockToBuyEntityService stockToBuyService;
 
     /**
@@ -41,10 +42,10 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/page/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyDTO> getStockStockToBuyPage( final Pageable pageRequest,
-                                                       final @NotNull @PathVariable String customerId )
+    public Page<StockToBuyDTO> getStocksToBuyPage( final Pageable pageRequest,
+                                                   final @NotNull @PathVariable String customerId )
     {
-        final String methodName = "getStockStockToBuyPage";
+        final String methodName = "getStocksToBuyPage";
         logMethodBegin( methodName, pageRequest, customerId );
         Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerUuid( pageRequest,
@@ -61,11 +62,11 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/page/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public Page<StockToBuyDTO> getStockStockToBuyPage( final Pageable pageRequest,
-                                                       final @NotNull @PathVariable String customerId,
-                                                       final @NotNull @PathVariable String tickerSymbol )
+    public Page<StockToBuyDTO> getStocksToBuyPage( final Pageable pageRequest,
+                                                   final @NotNull @PathVariable String customerId,
+                                                   final @NotNull @PathVariable String tickerSymbol )
     {
-        final String methodName = "getStockStockToBuyPage";
+        final String methodName = "getStocksToBuyPage";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         Page<StockToBuyDTO> stockToBuyDTOs = this.stockToBuyService
                                                  .getStockToBuyListForCustomerUuidAndTickerSymbol( pageRequest,
@@ -83,11 +84,11 @@ public class StockToBuyController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/tickerSymbol/{tickerSymbol}/customerId/{customerId}",
                      method = RequestMethod.GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
-    public StockToBuyDTO getStockStockToBuy( @NotNull final Pageable pageRequest,
-                                             @NotNull @PathVariable String customerId,
-                                             @NotNull @PathVariable String tickerSymbol )
+    public StockToBuyDTO getStocksToBuyForTickerSymbol( @NotNull final Pageable pageRequest,
+                                                        @NotNull @PathVariable String customerId,
+                                                        @NotNull @PathVariable String tickerSymbol )
     {
-        final String methodName = "getStockStockToBuyForTickerSymbol";
+        final String methodName = "getStocksToBuyForTickerSymbol";
         logMethodBegin( methodName, pageRequest, customerId, tickerSymbol );
         final StockToBuyDTO stockToBuyDTO = this.stockToBuyService
                                                 .getByCustomerUuidAndTickerSymbol( UUIDUtil.uuid( customerId ),
@@ -206,11 +207,5 @@ public class StockToBuyController extends AbstractController
                                      .buildAndExpand( returnStockToBuyDTO ).toUri());
         logMethodEnd( methodName, returnStockToBuyDTO );
         return new ResponseEntity<>( stockToBuyDTO, httpHeaders, HttpStatus.CREATED );
-    }
-
-    @Autowired
-    public void setStockToBuyService( final StockToBuyEntityService stockToBuyService )
-    {
-        this.stockToBuyService = stockToBuyService;
     }
 }

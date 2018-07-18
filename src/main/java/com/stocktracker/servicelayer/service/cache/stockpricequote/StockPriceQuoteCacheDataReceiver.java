@@ -49,13 +49,13 @@ public class StockPriceQuoteCacheDataReceiver implements AsyncCacheDataReceiver<
     }
 
     @Override
-    public void setCacheDataState( final AsyncCacheEntryState cacheState )
+    public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.stockPriceQuote.setCacheState( cacheState );
     }
 
     @Override
-    public AsyncCacheEntryState getCachedDataState()
+    public AsyncCacheEntryState getCacheState()
     {
         return this.stockPriceQuote.getCacheState();
     }
@@ -81,16 +81,6 @@ public class StockPriceQuoteCacheDataReceiver implements AsyncCacheDataReceiver<
     public Timestamp getExpirationTime()
     {
         return this.stockPriceQuote.getExpiration();
-    }
-
-    public AsyncCacheEntryState getCacheState()
-    {
-        return this.stockPriceQuote.getCacheState();
-    }
-
-    public void setCacheState( final AsyncCacheEntryState cacheState )
-    {
-        this.stockPriceQuote.setCacheState( cacheState );
     }
 
     @Override

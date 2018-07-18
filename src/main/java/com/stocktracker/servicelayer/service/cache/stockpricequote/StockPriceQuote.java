@@ -110,25 +110,15 @@ public class StockPriceQuote implements AsyncCacheData,
     }
 
     @Override
-    public void setCachedDataState( final AsyncCacheEntryState cacheState )
+    public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
     }
 
     @Override
-    public AsyncCacheEntryState getCacheDataState()
-    {
-        return this.cacheState;
-    }
-
     public AsyncCacheEntryState getCacheState()
     {
-        return cacheState;
-    }
-
-    public void setCacheState( final AsyncCacheEntryState cacheState )
-    {
-        this.cacheState = cacheState;
+        return this.cacheState;
     }
 
     /**

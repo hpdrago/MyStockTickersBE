@@ -58,7 +58,7 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
          * and send the list of keys to the cache to perform the work.
          */
         final List<K> requestKeys = receivers.stream()
-                                             .filter( dr -> dr.getCachedDataState().isStale() )
+                                             .filter( dr -> dr.getCacheState().isStale() )
                                              .map( dr -> dr.getCacheKey() )
                                              .collect( Collectors.toList() );
         /*
@@ -92,7 +92,7 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
                             .getCacheEntry( receiver.getCacheKey() );
         if ( cacheEntry == null || cacheEntry.isStale() || cacheEntry.getCacheState() == null )
         {
-            receiver.setCacheDataState( STALE );
+            receiver.setCacheState( STALE );
         }
         else
         {
@@ -105,7 +105,7 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
             catch( Exception e )
             {
                 receiver.setCacheError( e.getMessage() );
-                receiver.setCacheDataState( FAILURE );
+                receiver.setCacheState( FAILURE );
                 logError( methodName, " error updating receiver with cache key: " + receiver.getCacheKey(), e );
             }
         }
@@ -127,23 +127,23 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
         switch ( cacheEntry.getCacheState() )
         {
             case CURRENT:
-                receiver.setCacheDataState( CURRENT );
+                receiver.setCacheState( CURRENT );
                 receiver.setCachedData( cacheEntry.getCachedData() );
                 break;
 
             case STALE:
-                receiver.setCacheDataState( STALE );
+                receiver.setCacheState( STALE );
                 receiver.setCachedData( cacheEntry.getCachedData() );
                 break;
 
             case FAILURE:
-                receiver.setCacheDataState( FAILURE );
+                receiver.setCacheState( FAILURE );
                 receiver.setCachedData( null );
                 receiver.setCacheError( receiver.getCacheError() );
                 break;
 
             case NOT_FOUND:
-                receiver.setCacheDataState( NOT_FOUND );
+                receiver.setCacheState( NOT_FOUND );
                 receiver.setCachedData( null );
                 break;
         }

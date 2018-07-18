@@ -67,7 +67,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         final CE cacheEntry = this.getCache()
                                   .asynchronousGet( receiver.getCacheKey() );
         logDebug( methodName, "cacheEntry: {0}", cacheEntry );
-        receiver.setCacheDataState( cacheEntry.getCacheState() );
+        receiver.setCacheState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
         if ( cacheEntry.getCacheState().isFailure() )
         {
@@ -87,7 +87,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
         logMethodBegin( methodName, receiver );
         final CE cacheEntry = this.getCache()
                                   .asynchronousGet( receiver.getCacheKey() );
-        receiver.setCacheDataState( cacheEntry.getCacheState() );
+        receiver.setCacheState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
         logMethodEnd( methodName, receiver );
     }
@@ -148,7 +148,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
                                   .synchronousGet( searchKey );
         receiver.setCacheKey( searchKey );
         receiver.setCachedData( cacheEntry.getCachedData() );
-        receiver.setCacheDataState( cacheEntry.getCacheState() );
+        receiver.setCacheState( cacheEntry.getCacheState() );
         if ( cacheEntry.getFetchThrowable() != null )
         {
             receiver.setCacheError( cacheEntry.getFetchThrowable().getMessage() );
@@ -184,18 +184,18 @@ public abstract class AsyncCacheClient< K extends Serializable,
             receiver.setCachedData( cachedData );
             if ( cachedData == null )
             {
-                receiver.setCacheDataState( NOT_FOUND );
+                receiver.setCacheState( NOT_FOUND );
             }
             else
             {
-                receiver.setCacheDataState( CURRENT );
+                receiver.setCacheState( CURRENT );
             }
         }
         else
         {
             logDebug( methodName, "It's current" );
             receiver.setCachedData( cacheEntry.getCachedData() );
-            receiver.setCacheDataState( CURRENT );
+            receiver.setCacheState( CURRENT );
         }
     }
 
@@ -258,7 +258,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
                                   */
         receiver.setCacheKey( searchKey );
         receiver.setCachedData( fetchedData );
-        receiver.setCacheDataState( CURRENT );
+        receiver.setCacheState( CURRENT );
         receiver.setCacheError( null );
         cacheEntry.setCacheState( CURRENT );
         cacheEntry.setCachedData( searchKey, fetchedData );
@@ -277,7 +277,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
     {
         receiver.setCacheKey( searchKey );
         receiver.setCachedData( null );
-        receiver.setCacheDataState( FAILURE );
+        receiver.setCacheState( FAILURE );
         receiver.setCacheError( throwable.getMessage() );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( FAILURE );
@@ -295,7 +295,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
     {
         receiver.setCacheKey( searchKey );
         receiver.setCachedData( null );
-        receiver.setCacheDataState( NOT_FOUND );
+        receiver.setCacheState( NOT_FOUND );
         receiver.setCacheError( "Could not find entry for " + searchKey );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( NOT_FOUND );

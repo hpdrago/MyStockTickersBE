@@ -44,13 +44,13 @@ public interface AsyncCacheDataReceiver<K extends Serializable,T>
      * Set the state of the cached data (STALE, CURRENT, ERROR).
      * @param cacheState
      */
-    void setCacheDataState( final AsyncCacheEntryState cacheState );
+    void setCacheState( final AsyncCacheEntryState cacheState );
 
     /**
      * Get the state of the cached data.
      * @return
      */
-    AsyncCacheEntryState getCachedDataState();
+    AsyncCacheEntryState getCacheState();
 
     /**
      * Set the the error message if an exception occured while fetching.

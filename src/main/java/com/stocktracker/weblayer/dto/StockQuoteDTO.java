@@ -58,22 +58,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     @JsonSerialize( using = JSONTimestampDateTimeSerializer.class )
     private Timestamp expirationTime;
 
-    public void setCachedDataState( final AsyncCacheEntryState cacheState )
-    {
-        this.cacheState = cacheState;
-    }
-
-    public AsyncCacheEntryState getCacheDataState()
-    {
-        return this.cacheState;
-    }
-
     public AsyncCacheEntryState getCacheState()
-    {
-        return this.cacheState;
-    }
-
-    public AsyncCacheEntryState getCacheEntryState()
     {
         return this.cacheState;
     }
@@ -103,15 +88,9 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     }
 
     @Override
-    public void setCacheDataState( final AsyncCacheEntryState cacheState )
+    public void setCacheState( final AsyncCacheEntryState cacheState )
     {
         this.cacheState = cacheState;
-    }
-
-    @Override
-    public AsyncCacheEntryState getCachedDataState()
-    {
-        return this.cacheState;
     }
 
     @Override
