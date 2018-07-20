@@ -45,6 +45,8 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
     private Timestamp analystPriceDate;
     private String notesSourceId;
     private String notesSourceName;
+
+    private BigDecimal stockPriceWhenCreated;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
 
@@ -199,6 +201,16 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         this.notesSourceName = notesSourceName;
     }
 
+    public BigDecimal getStockPriceWhenCreated()
+    {
+        return stockPriceWhenCreated;
+    }
+
+    public void setStockPriceWhenCreated( final BigDecimal stockPriceWhenCreated )
+    {
+        this.stockPriceWhenCreated = stockPriceWhenCreated;
+    }
+
     @Override
     public void setStockPriceQuote( final StockPriceQuoteDTO stockPriceQuoteDTO )
     {
@@ -223,6 +235,18 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         return this.stockQuoteDTO;
     }
 
+    @Override
+    public String getCacheKey()
+    {
+        return tickerSymbol;
+    }
+
+    @Override
+    public void setCacheKey( final String tickerSymbol )
+    {
+        this.tickerSymbol = tickerSymbol;
+    }
+
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );
@@ -242,22 +266,11 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         sb.append( ", analystPriceDate=" ).append( analystPriceDate );
         sb.append( ", notesSourceId=" ).append( notesSourceId );
         sb.append( ", notesSourceName='" ).append( notesSourceName ).append( '\'' );
+        sb.append( ", stockPriceWhenCreated='" ).append( stockPriceWhenCreated ).append( '\'' );
         sb.append( ", stockPriceQuoteDTO=" ).append( stockPriceQuoteDTO );
         sb.append( ", stockQuoteDTO=" ).append( stockQuoteDTO );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();
-    }
-
-    @Override
-    public String getCacheKey()
-    {
-        return tickerSymbol;
-    }
-
-    @Override
-    public void setCacheKey( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
     }
 }
