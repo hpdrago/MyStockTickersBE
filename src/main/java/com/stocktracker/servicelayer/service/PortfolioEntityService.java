@@ -1,5 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
+import com.stocktracker.common.UUIDUtil;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.PortfolioNotFoundException;
 import com.stocktracker.common.exceptions.StockNotFoundException;
@@ -28,7 +29,9 @@ public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
                                                               PortfolioDTO,
                                                               PortfolioRepository>
 {
+    @Autowired
     private PortfolioRepository portfolioRepository;
+    @Autowired
     private PortfolioCalculator portfolioCalculator;
 
     /**
@@ -93,6 +96,15 @@ public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
     }
 
     @Override
+    protected PortfolioEntity dtoToEntity( final PortfolioDTO dto )
+    {
+        final PortfolioEntity portfolioEntity = super.dtoToEntity( dto );
+        portfolioEntity.setCustomerUuid( UUIDUtil.uuid( dto.getCustomerId() ) );
+        portfolioEntity.setLinkedAccountUuid( UUIDUtil.uuid( dto.getLinkedAccountId() ) );
+        return portfolioEntity;
+    }
+
+    @Override
     protected PortfolioDTO createDTO()
     {
         return this.context.getBean( PortfolioDTO.class );
@@ -108,17 +120,5 @@ public class PortfolioEntityService extends UuidEntityService<PortfolioEntity,
     protected PortfolioRepository getRepository()
     {
         return this.portfolioRepository;
-    }
-
-    @Autowired
-    public void setPortfolioCalculator( final PortfolioCalculator portfolioCalculator )
-    {
-        this.portfolioCalculator = portfolioCalculator;
-    }
-
-    @Autowired
-    public void setPortfolioRepository( final PortfolioRepository portfolioRepository )
-    {
-        this.portfolioRepository = portfolioRepository;
     }
 }

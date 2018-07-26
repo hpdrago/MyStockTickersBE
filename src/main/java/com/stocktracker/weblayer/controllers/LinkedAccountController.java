@@ -130,7 +130,6 @@ public class LinkedAccountController extends AbstractController
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public List<LinkedAccountDTO> getLinkedAccounts( final @PathVariable String customerId )
-        throws TradeItAccountNotFoundException
     {
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, customerId );

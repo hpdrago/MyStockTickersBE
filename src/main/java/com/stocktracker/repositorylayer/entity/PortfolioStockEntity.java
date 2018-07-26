@@ -28,7 +28,6 @@ public class PortfolioStockEntity extends UUIDEntity
     private UUID customerUuid;
     private UUID portfolioUuid;
     private String tickerSymbol;
-    private Integer numberOfShares;
     private BigDecimal stopLossPrice;
     private Integer stopLossShares;
     private BigDecimal profitTakingPrice;
@@ -76,18 +75,6 @@ public class PortfolioStockEntity extends UUIDEntity
     public void setTickerSymbol( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;
-    }
-
-    @Basic
-    @Column( name = "number_of_shares", nullable = true )
-    public Integer getNumberOfShares()
-    {
-        return numberOfShares;
-    }
-
-    public void setNumberOfShares( final Integer numberOfShares )
-    {
-        this.numberOfShares = numberOfShares;
     }
 
     @Basic
@@ -151,7 +138,6 @@ public class PortfolioStockEntity extends UUIDEntity
         sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", portfolioUuid=" ).append( portfolioUuid );
         sb.append( ", tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
-        sb.append( ", numberOfShares=" ).append( numberOfShares );
         sb.append( ", stopLossPrice=" ).append( stopLossPrice );
         sb.append( ", stopLossShares=" ).append( stopLossShares );
         sb.append( ", profitTakingPrice=" ).append( profitTakingPrice );

@@ -49,6 +49,18 @@ public class PortfolioEntity extends UUIDEntity
         this.customerUuid = customerId;
     }
 
+    @Basic
+    @Column( name = "linked_account_uuid", nullable = false )
+    public UUID getLinkedAccountUuid()
+    {
+        return this.linkedAccountUuid;
+    }
+
+    public void setLinkedAccountUuid( final UUID linkedAccountUuid )
+    {
+        this.linkedAccountUuid = linkedAccountUuid;
+    }
+
     @Override
     public String toString()
     {

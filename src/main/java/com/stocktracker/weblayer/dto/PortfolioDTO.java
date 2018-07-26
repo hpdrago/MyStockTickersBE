@@ -16,17 +16,10 @@ import java.util.Objects;
 public class PortfolioDTO implements UuidDTO,
                                      CustomerIdContainer
 {
-    /**
-     * The portfolio id
-     */
     private String id;
     private String customerId;
-
-    /**
-     * The portfolio name
-     */
+    private String linkedAccountId;
     private String name;
-
     private Integer realizedGL;
     private Integer marketValue;
     private Integer costBasis;
@@ -132,6 +125,16 @@ public class PortfolioDTO implements UuidDTO,
         this.version = version;
     }
 
+    public String getLinkedAccountId()
+    {
+        return linkedAccountId;
+    }
+
+    public void setLinkedAccountId( final String linkedAccountId )
+    {
+        this.linkedAccountId = linkedAccountId;
+    }
+
     @Override
     public boolean equals( final Object o )
     {
@@ -159,6 +162,7 @@ public class PortfolioDTO implements UuidDTO,
         final StringBuilder sb = new StringBuilder( "PortfolioDTO{" );
         sb.append( "id=" ).append( id );
         sb.append( ", customerId=" ).append( customerId );
+        sb.append( ", linkedAccountId=" ).append( linkedAccountId );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", realizedGL=" ).append( realizedGL );
         sb.append( ", marketValue=" ).append( marketValue );
