@@ -103,7 +103,7 @@ public class TradeItAccountEntity extends UUIDEntity
 
     @Override
     @Basic
-    @Column( name = "customer_uuid", insertable = false, updatable = false)
+    @Column( name = "customer_uuid" )
     public UUID getCustomerUuid()
     {
         return this.customerUuid;

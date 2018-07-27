@@ -71,6 +71,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     {
         final String methodName = "createAccount";
         logMethodBegin( methodName, customerUuid, broker, accountName, userId, userToken );
+        Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         Objects.requireNonNull( broker, "broker cannot be null" );
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( userId, "userId cannot be null" );
