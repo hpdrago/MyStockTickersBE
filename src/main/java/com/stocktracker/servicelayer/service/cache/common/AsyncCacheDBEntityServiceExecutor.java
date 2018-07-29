@@ -46,60 +46,52 @@ public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
          * Update existing companies and insert new companies.
          */
         thirdPartyDataList.forEach( ( D thirdPartyData ) ->
-                        {
-                            /*
-                             * Need to get the existing entity
-                             */
-                            T entity = null;
-                            try
-                            {
-                                entity = this.getEntityService()
-                                             .getEntity( this.getCacheKeyFromThirdPartyData( thirdPartyData ));
-                                this.copyThirdPartyData( thirdPartyData, entity );
-                            }
-                            catch( VersionedEntityNotFoundException e )
-                            {
-                                /*
-                                 * Not found so, create it
-                                 */
-                                entity = this.createEntity();
-                                this.copyThirdPartyData( thirdPartyData, entity );
-                            }
-                            try
-                            {
-                                entity = this.getEntityService()
-                                             .saveEntity( entity );
-                            }
-                            catch( DuplicateEntityException e )
-                            {
-                                logDebug( methodName, "DuplicateEntityException encountered saving {0}",
-                                          entity );
-                                /*
-                                 * Retrieve and resave information.
-                                 */
-                                try
-                                {
-                                    entity = this.getEntityService()
-                                                 .getEntity( this.getCacheKeyFromThirdPartyData( thirdPartyData ));
-                                    this.copyThirdPartyData( thirdPartyData, entity );
-                                    entity = this.getEntityService()
-                                                 .saveEntity( entity );
-                                }
-                                catch( VersionedEntityNotFoundException ex )
-                                {
-                                    logError( methodName, ex );
-                                }
-                                catch( DuplicateEntityException ex )
-                                {
-                                    logError( methodName, ex );
-                                }
-                                catch( Exception ex )
-                                {
-                                    logError( methodName, ex );
-                                }
-                            }
-                            returnCacheDataList.add( entity );
-                        });
+                                    {
+                                        /*
+                                         * Need to get the existing entity
+                                         */
+                                        T entity = null;
+                                        try
+                                        {
+                                            entity = this.getEntityService()
+                                                         .getEntity( this.getCacheKeyFromThirdPartyData( thirdPartyData ));
+                                            this.copyThirdPartyData( thirdPartyData, entity );
+                                        }
+                                        catch( VersionedEntityNotFoundException e )
+                                        {
+                                            /*
+                                             * Not found so, create it
+                                             */
+                                            entity = this.createEntity();
+                                            this.copyThirdPartyData( thirdPartyData, entity );
+                                        }
+                                        try
+                                        {
+                                            entity = this.getEntityService()
+                                                         .saveEntity( entity );
+                                        }
+                                        catch( DuplicateEntityException | EntityVersionMismatchException e )
+                                        {
+                                            logDebug( methodName, "DuplicateEntityException encountered saving {0}",
+                                                      entity );
+                                            /*
+                                             * Retrieve and resave information.
+                                             */
+                                            try
+                                            {
+                                                entity = this.getEntityService()
+                                                             .getEntity( this.getCacheKeyFromThirdPartyData( thirdPartyData ));
+                                                this.copyThirdPartyData( thirdPartyData, entity );
+                                                entity = this.getEntityService()
+                                                             .saveEntity( entity );
+                                            }
+                                            catch( Exception ex )
+                                            {
+                                                logError( methodName, ex );
+                                            }
+                                        }
+                                        returnCacheDataList.add( entity );
+                                    });
         logDebug( methodName, "cached items: {0}", returnCacheDataList );
         logMethodEnd( methodName, returnCacheDataList.size() + " cached items" );
         return returnCacheDataList;

@@ -248,7 +248,6 @@ public abstract class AsyncCache<K extends Serializable,
                   .share()
                   .doOnError( throwable ->
                   {
-                      logError( methodName, String.format( "subscribe.onError for search Key: ", searchKey ), throwable );
                       cacheEntry.setCachedData( searchKey, null );
                       /*
                        * Check for a not found exception first, that's a normal scenario
@@ -261,6 +260,7 @@ public abstract class AsyncCache<K extends Serializable,
                       {
                           cacheEntry.setFetchThrowable( throwable );
                           cacheEntry.setCacheState( FAILURE );
+                          logError( methodName, String.format( "subscribe.onError for search Key: ", searchKey ), throwable );
                           cacheEntry.getAsyncProcessor().onError( throwable );
                       }
                       cacheEntry.setFetchState( NOT_FETCHING );
