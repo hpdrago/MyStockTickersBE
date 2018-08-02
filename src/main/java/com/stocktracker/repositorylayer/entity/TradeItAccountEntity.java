@@ -41,6 +41,7 @@ public class TradeItAccountEntity extends UUIDEntity
     private String authUuid;
     private UUID customerUuid;
     private Timestamp authTimestamp;
+    private boolean tradeItAccountFlag;
     //private CustomerEntity customerByCustomerUuid;
     private Collection<LinkedAccountEntity> linkedAccountsByUuid;
 
@@ -243,6 +244,24 @@ public class TradeItAccountEntity extends UUIDEntity
         this.authTimestamp = authTimestamp;
     }
 
+    @Transient
+    public boolean isTradeItAccount()
+    {
+        return tradeItAccountFlag;
+    }
+
+    @Basic
+    @Column( name = "tradeit_account_flag" )
+    public boolean getTradeItAccountFlag()
+    {
+        return tradeItAccountFlag;
+    }
+
+    public void setTradeItAccountFlag( final boolean tradeItAccountFlag )
+    {
+        this.tradeItAccountFlag = tradeItAccountFlag;
+    }
+
     @Override
     public String toString()
     {
@@ -257,6 +276,7 @@ public class TradeItAccountEntity extends UUIDEntity
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", linkedAccountsByUuid=" ).append( linkedAccountsByUuid );
+        sb.append( ", tradeItAccountFlag=" ).append( tradeItAccountFlag );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

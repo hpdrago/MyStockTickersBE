@@ -83,18 +83,6 @@ public class LinkedAccountEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "get_account_overview_status", nullable = true, length = 10 )
-    public String getGetAccountOverviewStatus()
-    {
-        return getAccountOverviewStatus;
-    }
-
-    public void setGetAccountOverviewStatus( final String getAccountOverviewStatus )
-    {
-        this.getAccountOverviewStatus = getAccountOverviewStatus;
-    }
-
-    @Basic
     @Column( name = "account_number", nullable = false, length = 20 )
     public String getAccountNumber()
     {

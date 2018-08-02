@@ -76,7 +76,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         Objects.requireNonNull( accountName, "accountName cannot be null" );
         Objects.requireNonNull( userId, "userId cannot be null" );
         Objects.requireNonNull( userToken, "userToken cannot be null" );
-        TradeItAccountEntity tradeItAccountEntity = TradeItAccountEntity.newInstance();
+        TradeItAccountEntity tradeItAccountEntity = this.context.getBean( TradeItAccountEntity.class );
         tradeItAccountEntity.setBrokerage( broker );
         tradeItAccountEntity.setName( accountName );
         tradeItAccountEntity.setUserId( userId );

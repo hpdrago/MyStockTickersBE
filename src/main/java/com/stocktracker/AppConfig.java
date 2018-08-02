@@ -72,13 +72,13 @@ public class AppConfig
         return pool;
     }
 
-    private ThreadPoolTaskExecutor getThreadPoolTaskExecutor( final String s )
+    private ThreadPoolTaskExecutor getThreadPoolTaskExecutor( final String threadPoolPrefix )
     {
         ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
         pool.setCorePoolSize( 5 );
         pool.setMaxPoolSize( 30 );
         pool.setWaitForTasksToCompleteOnShutdown( true );
-        pool.setThreadNamePrefix( s );
+        pool.setThreadNamePrefix( threadPoolPrefix );
         return pool;
     }
 }

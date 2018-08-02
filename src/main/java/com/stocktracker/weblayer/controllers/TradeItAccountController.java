@@ -37,13 +37,9 @@ import java.util.UUID;
 public class TradeItAccountController extends AbstractController implements MyLogger
 {
     private static final String CONTEXT_URL = "/tradeItAccount";
-    private TradeItAccountEntityService tradeItAccountService;
 
     @Autowired
-    public void setTradeItAccountService( final TradeItAccountEntityService tradeItAccountService )
-    {
-        this.tradeItAccountService = tradeItAccountService;
-    }
+    private TradeItAccountEntityService tradeItAccountService;
 
     /**
      * Get the account by the account id

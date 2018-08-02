@@ -64,6 +64,7 @@ public class TradeItService implements MyLogger
 
     @Autowired
     private ApplicationContext context;
+    @Autowired
     private TradeItAccountEntityService tradeItAccountEntityService;
 
     /**
@@ -191,6 +192,7 @@ public class TradeItService implements MyLogger
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
                                        .getEntity( accountUuid );
+            this.checkTradeItAccount( tradeItAccountEntity );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -243,7 +245,8 @@ public class TradeItService implements MyLogger
         try
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
-                                                            .getEntity( tradeItAccountUuid );
+                                       .getEntity( tradeItAccountUuid );
+            this.checkTradeItAccount( tradeItAccountEntity );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -361,7 +364,7 @@ public class TradeItService implements MyLogger
         try
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
-                                                                  .getEntity( accountUuid );
+                                       .getEntity( accountUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -425,7 +428,8 @@ public class TradeItService implements MyLogger
         try
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
-                                                                  .getEntity( tradeItAccountUuid );
+                                       .getEntity( tradeItAccountUuid );
+            this.checkTradeItAccount( tradeItAccountEntity );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -480,7 +484,7 @@ public class TradeItService implements MyLogger
         try
         {
             tradeItAccountEntity = this.tradeItAccountEntityService
-                                                                  .getEntity( accountUuid );
+                                       .getEntity( accountUuid );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -556,6 +560,7 @@ public class TradeItService implements MyLogger
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getId() );
+        this.checkTradeItAccount( tradeItAccountEntity );
         final GetPositionsAPICall getPositionsAPICall = this.context.getBean( GetPositionsAPICall.class );
         /*
          * Create the get positions parameters.
@@ -594,6 +599,7 @@ public class TradeItService implements MyLogger
         final String methodName = "getAccountOverview";
         logMethodBegin( methodName, tradeItAccountEntity.getUuid(), accountNumber  );
         Objects.requireNonNull( accountNumber, "accountNumber cannot be null" );
+        this.checkTradeItAccount( tradeItAccountEntity );
         final GetAccountOverviewAPICall getAccountOverviewAPICall = this.context.getBean( GetAccountOverviewAPICall.class );
         /*
          * Create the parameter map for the get account overview call.
@@ -639,6 +645,7 @@ public class TradeItService implements MyLogger
         logMethodBegin( methodName, tradeItAccountEntity.getUuid(),
                                     tradeItAPIRestCall.getClass().getName(),
                                     tradeItAPICallParameterMap );
+        this.checkTradeItAccount( tradeItAccountEntity );
         T tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
         logDebug( methodName, "tradeItAPIResult: {0}", tradeItAPIResult );
         if ( !tradeItAPIResult.isSuccessful() )
@@ -684,6 +691,7 @@ public class TradeItService implements MyLogger
     {
         final String methodName = "handleSessionExpired";
         logMethodBegin( methodName, tradeItAccountEntity );
+        this.checkTradeItAccount( tradeItAccountEntity );
         final AuthenticateAPICall authenticateAPICall = this.context.getBean( AuthenticateAPICall.class );
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
             .addParameter( TradeItParameter.USER_ID_PARAM, tradeItAccountEntity.getUserId() )
@@ -709,10 +717,18 @@ public class TradeItService implements MyLogger
         return authenticateAPIResult;
     }
 
-    @Autowired
-    public void setTradeItAccountEntityService( final TradeItAccountEntityService tradeItAccountEntityService )
+    /**
+     * Checks to see if the trade it account has the TradeIt account flag set.
+     * @param tradeItAccountEntity
+     * @throws IllegalArgumentException if the account is not a TradeIt account.
+     */
+    private void checkTradeItAccount( final TradeItAccountEntity tradeItAccountEntity )
     {
-        logInfo( "setAccountService", "Dependency Injection of " + tradeItAccountEntityService );
-        this.tradeItAccountEntityService = tradeItAccountEntityService;
+        if ( !tradeItAccountEntity.isTradeItAccount() )
+        {
+            throw new IllegalArgumentException( tradeItAccountEntity.getId() == null ? tradeItAccountEntity.getName()
+                                                                                     : tradeItAccountEntity.getId()
+                                                                                     + " is not a TradeIt account" );
+        }
     }
 }

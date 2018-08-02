@@ -68,7 +68,9 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Objects.requireNonNull( customerUuid, "customerUuid cannot be null" );
         final Page<StockNoteEntity> stockNoteEntities = this.stockNoteRepository
-                                                            .findByCustomerUuidAndTickerSymbol( pageRequest, customerUuid, tickerSymbol );
+                                                            .findByCustomerUuidAndTickerSymbol( pageRequest,
+                                                                                                customerUuid,
+                                                                                                tickerSymbol );
         final Page<StockNoteDTO> stockNoteDTOs = this.entitiesToDTOs( pageRequest, stockNoteEntities );
         logMethodEnd( methodName, stockNoteDTOs );
         return stockNoteDTOs;
