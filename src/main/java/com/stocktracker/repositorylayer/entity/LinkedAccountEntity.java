@@ -33,7 +33,6 @@ public class LinkedAccountEntity extends UUIDEntity
     private String accountName;
     private String accountIndex;
     private TradeItAccountEntity accountByTradeItAccountUuid;
-    private String getAccountOverviewStatus;
     private BigDecimal availableCash;
     private BigDecimal buyingPower;
     private BigDecimal totalValue;
@@ -107,7 +106,7 @@ public class LinkedAccountEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "account_index", nullable = false, length = 30 )
+    @Column( name = "account_index", nullable = true, length = 30 )
     public String getAccountIndex()
     {
         return accountIndex;

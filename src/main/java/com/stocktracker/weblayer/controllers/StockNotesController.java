@@ -68,7 +68,8 @@ public class StockNotesController extends AbstractController implements MyLogger
         logMethodBegin( methodName, customerId, stockNotesDTO );
         this.validateCustomerId( customerId );
         validateStockNoteDTOPostArgument( stockNotesDTO );
-        StockNoteDTO returnStockDTO = this.stockNoteService.addDTO( stockNotesDTO );
+        StockNoteDTO returnStockDTO = this.stockNoteService
+                                          .addDTO( stockNotesDTO );
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation( ServletUriComponentsBuilder
                                      .fromCurrentRequest().path( "" )

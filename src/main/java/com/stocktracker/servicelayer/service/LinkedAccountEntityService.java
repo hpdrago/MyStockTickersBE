@@ -170,7 +170,10 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     public LinkedAccountEntity dtoToEntity( final LinkedAccountDTO dto )
     {
         final LinkedAccountEntity linkedAccountEntity = super.dtoToEntity( dto );
-        linkedAccountEntity.setTradeItAccountUuid( UUIDUtil.uuid( dto.getTradeItAccountId() ) );
+        if ( dto.getTradeItAccountId() != null )
+        {
+            linkedAccountEntity.setTradeItAccountUuid( UUIDUtil.uuid( dto.getTradeItAccountId() ) );
+        }
         return linkedAccountEntity;
     }
 

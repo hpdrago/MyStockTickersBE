@@ -1,9 +1,11 @@
 package com.stocktracker.weblayer.controllers;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
+import com.stocktracker.common.exceptions.CustomerNotFoundException;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
+import com.stocktracker.common.exceptions.NotAuthorizedException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
@@ -40,6 +42,39 @@ public class LinkedAccountController extends AbstractController
 {
     private static final String CONTEXT_URL = "/linkedAccount";
     private LinkedAccountEntityService linkedAccountEntityService;
+
+    /**
+     * Create a new linked account.
+     * @param linkedAccountDTO
+     * @param customerId
+     * @return
+     * @throws EntityVersionMismatchException
+     * @throws CustomerNotFoundException
+     * @throws NotAuthorizedException
+     * @throws DuplicateEntityException
+     */
+    @CrossOrigin
+    @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
+                     method = RequestMethod.POST )
+    public ResponseEntity<LinkedAccountDTO> addLinkedAccount( @RequestBody final LinkedAccountDTO linkedAccountDTO,
+                                                              @PathVariable( "customerId") final String customerId )
+        throws EntityVersionMismatchException,
+               CustomerNotFoundException,
+               NotAuthorizedException,
+               DuplicateEntityException
+    {
+        final String methodName = "addLinkedAccount";
+        logMethodBegin( methodName, customerId, linkedAccountDTO );
+        this.validateCustomerId( customerId );
+        final LinkedAccountDTO savedDTO  = this.linkedAccountEntityService
+                                               .addDTO( linkedAccountDTO );
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation( ServletUriComponentsBuilder
+                                     .fromCurrentRequest().path( "" )
+                                     .buildAndExpand( savedDTO ).toUri());
+        logMethodEnd( methodName, savedDTO );
+        return new ResponseEntity<>( savedDTO, httpHeaders, HttpStatus.CREATED );
+    }
 
     /**
      * Delete the linked account
