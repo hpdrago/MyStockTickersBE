@@ -101,8 +101,10 @@ public abstract class AsyncCache<K extends Serializable,
                 switch ( cacheEntry.getFetchState() )
                 {
                     case FETCHING:
-                        logTrace( methodName, "{0} already fetching", searchKey );
+                        logTrace( methodName, "{0} already fetching, blocking and waiting now...", searchKey );
                         returnCacheEntry = cacheEntry;
+                        cacheEntry.getAsyncProcessor()
+                                  .subscribe();
                         break;
 
                     case NOT_FETCHING:

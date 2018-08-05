@@ -71,14 +71,23 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         try
         {
             this.getDBEntity( receiver, null );
+            if ( receiver.getCacheState().isStale() )
+            {
+                logDebug( methodName, "{0} is stale, synchronously fetching now", searchKey );
+                this.synchronousFetch( receiver );
+            }
+            else if ( receiver.getCacheState().isNotFound() )
+            {
+                logDebug( methodName, "{0} was not found, synchronously fetching now", searchKey );
+                this.synchronousFetch( receiver );
+            }
         }
         catch( VersionedEntityNotFoundException e )
         {
-            //receiver.setCacheState( NOT_FOUND );
-            //receiver.setCacheError( searchKey + " was not found" );
-            logDebug( methodName, "{0} was not in the map, asynchronously fetching now", searchKey );
-            this.asynchronousFetch( receiver );
+            logDebug( methodName, "{0} was not in the database, synchronously fetching now", searchKey );
+            this.synchronousFetch( receiver );
         }
+
         logMethodEnd( methodName, searchKey );
     }
 

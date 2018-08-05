@@ -22,7 +22,7 @@ public enum AsyncCacheFetchMode
      * Is Asynchronous.
      * @return
      */
-    public boolean isASynchronous()
+    public boolean isAsynchronous()
     {
         return this == ASYNCHRONOUS;
     }

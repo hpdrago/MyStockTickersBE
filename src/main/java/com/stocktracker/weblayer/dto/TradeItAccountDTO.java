@@ -85,12 +85,12 @@ public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
         return tradeItAccountFlag;
     }
 
-    public boolean getTradeItAccountFlag()
+    public boolean getTradeItAccount()
     {
         return tradeItAccountFlag;
     }
 
-    public void setTradeItAccountFlag( final boolean tradeItAccountFlag )
+    public void setTradeItAccount( final boolean tradeItAccountFlag )
     {
         this.tradeItAccountFlag = tradeItAccountFlag;
     }

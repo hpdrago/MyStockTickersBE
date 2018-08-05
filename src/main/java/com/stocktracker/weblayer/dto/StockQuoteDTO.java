@@ -78,7 +78,10 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     @Override
     public void setCachedData( final StockQuoteEntity stockQuoteEntity )
     {
-        BeanUtils.copyProperties( stockQuoteEntity, this );
+        if ( stockQuoteEntity != null )
+        {
+            BeanUtils.copyProperties( stockQuoteEntity, this );
+        }
     }
 
     @Override

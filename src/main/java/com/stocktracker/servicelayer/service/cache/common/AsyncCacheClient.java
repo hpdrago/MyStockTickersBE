@@ -93,6 +93,25 @@ public abstract class AsyncCacheClient< K extends Serializable,
     }
 
     /**
+     * Get the cache data and block and wait if it is not available.
+     * @param receiver
+     * @return
+     */
+    protected void synchronousFetch( final DR receiver )
+    {
+        final String methodName = "synchronousFetch";
+        logMethodBegin( methodName, receiver );
+        /*
+         * Now block and wait if needed.
+         */
+        final CE cacheEntry = this.getCache()
+                                  .synchronousGet( receiver.getCacheKey() );
+        receiver.setCacheState( cacheEntry.getCacheState() );
+        receiver.setCachedData( cacheEntry.getCachedData() );
+        logMethodEnd( methodName, receiver );
+    }
+
+    /**
      * Determines if the entity is current ie. not stale.
      * @param entity
      * @return
@@ -104,7 +123,7 @@ public abstract class AsyncCacheClient< K extends Serializable,
 
     /**
      * Get the cached data for a search key.  It is assumed that an attempt has been made to determine if the cached
-     * entry exists first and if the data is stale, the data will be retrieved.
+     * entry exists first and if the data is stale, the data will be retrieved synchronously.
      * @param searchKey
      * @return
      */
