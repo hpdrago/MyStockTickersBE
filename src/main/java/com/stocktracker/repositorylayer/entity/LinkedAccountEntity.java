@@ -70,7 +70,7 @@ public class LinkedAccountEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "tradeit_account_uuid", nullable = false, insertable = false, updatable = false)
+    @Column( name = "tradeit_account_uuid", nullable = false, insertable = true, updatable = false)
     public UUID getTradeItAccountUuid()
     {
         return tradeItAccountUuid;

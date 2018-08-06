@@ -41,6 +41,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class LinkedAccountController extends AbstractController
 {
     private static final String CONTEXT_URL = "/linkedAccount";
+
+    @Autowired
     private LinkedAccountEntityService linkedAccountEntityService;
 
     /**
@@ -208,9 +210,4 @@ public class LinkedAccountController extends AbstractController
         return linkedAccountDTO;
     }
 
-    @Autowired
-    public void setTradeItAccountService( final LinkedAccountEntityService linkedAccountEntityService )
-    {
-        this.linkedAccountEntityService = linkedAccountEntityService;
-    }
 }
