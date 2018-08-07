@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service;
 import com.stocktracker.common.UUIDUtil;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
+import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import com.stocktracker.repositorylayer.common.NotesSourceUuidContainer;
 import com.stocktracker.repositorylayer.entity.StockNoteSourceEntity;
@@ -79,10 +80,13 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
      * @return
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     @Override
     public D addDTO( final D dto )
-        throws EntityVersionMismatchException, DuplicateEntityException
+        throws EntityVersionMismatchException,
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addDTO";
         logMethodBegin( methodName, dto );
@@ -326,9 +330,11 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
     /**
      * Before the entity is added, need to set the stock price when created field if the entity contains one.
      * @param entity
+     * @throws VersionedEntityNotFoundException
      */
     @Override
     protected void preAddEntity( final E entity )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "preAddEntity";
         logMethodBegin( methodName, entity );

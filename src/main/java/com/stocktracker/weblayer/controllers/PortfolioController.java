@@ -88,8 +88,12 @@ public class PortfolioController extends AbstractController implements MyLogger
 
     /**
      * Get a list of stocks in a customer's portfolio
-     *
+     * @param customerId
+     * @param portfolioDTO
      * @return
+     * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
@@ -97,7 +101,8 @@ public class PortfolioController extends AbstractController implements MyLogger
     public ResponseEntity<PortfolioDTO> addPortfolio( @PathVariable String customerId,
                                                       @RequestBody PortfolioDTO portfolioDTO )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addPortfolio";
         logMethodBegin( methodName, customerId, portfolioDTO );

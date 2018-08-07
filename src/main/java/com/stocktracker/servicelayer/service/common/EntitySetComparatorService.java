@@ -96,11 +96,13 @@ public class EntitySetComparatorService<K extends Serializable,
      * @param newEntities
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     private void addEntities( final VersionedEntityService<K,E,?,?,?> service,
                               final Set<E> newEntities )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addEntities";
         logMethodBegin( methodName );

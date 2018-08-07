@@ -248,13 +248,15 @@ public class GainsLossesController extends AbstractController
      * @return
      * @throws DuplicateEntityException
      * @throws EntityVersionMismatchException
+     * @throws VersionedEntityNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<GainsLossesDTO> addGainsLosses( @PathVariable String customerId,
                                                           @RequestBody GainsLossesDTO gainsLossesDTO )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addGainsLosses";
         logMethodBegin( methodName, customerId, gainsLossesDTO );

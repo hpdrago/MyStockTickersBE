@@ -178,6 +178,11 @@ public abstract class AsyncCacheDBEntityServiceExecutor<K extends Serializable,
                     logError( methodName, "Should not get a duplicate after checking for existence: " +
                                           entity, e );
                 }
+                catch( VersionedEntityNotFoundException e1 )
+                {
+                    logError( methodName, "Should not get a not found after checking for existence: " +
+                                          entity, e );
+                }
             }
         }
         while ( mismatch );

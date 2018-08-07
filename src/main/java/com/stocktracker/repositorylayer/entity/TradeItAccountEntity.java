@@ -32,7 +32,6 @@ import java.util.UUID;
 public class TradeItAccountEntity extends UUIDEntity
                                   implements CustomerUuidContainer
 {
-    private UUID uuid;
     private String name;
     private String userId;
     private String userToken;
@@ -52,18 +51,6 @@ public class TradeItAccountEntity extends UUIDEntity
     public static TradeItAccountEntity newInstance()
     {
         return new TradeItAccountEntity();
-    }
-
-    @Id
-    @Column( name = "uuid")
-    public UUID getUuid()
-    {
-        return uuid;
-    }
-
-    public void setUuid( final UUID uuid )
-    {
-        this.uuid = uuid;
     }
 
     @Basic
@@ -266,7 +253,7 @@ public class TradeItAccountEntity extends UUIDEntity
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "TradeItAccountEntity{" );
-        sb.append( "uuid=" ).append( uuid );
+        sb.append( "uuid=" ).append( this.getUuid() );
         sb.append( ", customerUuid=" ).append( customerUuid );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", userId='" ).append( userId ).append( '\'' );
@@ -275,7 +262,7 @@ public class TradeItAccountEntity extends UUIDEntity
         sb.append( ", authToken='" ).append( authToken ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
-        sb.append( ", linkedAccountsByUuid=" ).append( linkedAccountsByUuid );
+        //sb.append( ", linkedAccountsByUuid=" ).append( linkedAccountsByUuid );
         sb.append( ", tradeItAccountFlag=" ).append( tradeItAccountFlag );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

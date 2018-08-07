@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 import javax.persistence.Version;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class BaseEntity<K extends Serializable> implements VersionedEntity<K>,
@@ -77,6 +78,7 @@ public abstract class BaseEntity<K extends Serializable> implements VersionedEnt
     void preUpdate()
     {
         logDebug( "preUpdate", "id: {0}", this.getId() );
+        Objects.requireNonNull( this.getId(), "entity id is null, cannot save entity." );
         this.updateDate = new Timestamp( System.currentTimeMillis() );
     }
 

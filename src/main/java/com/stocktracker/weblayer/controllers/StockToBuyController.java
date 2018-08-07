@@ -154,14 +154,16 @@ public class StockToBuyController extends AbstractController
      * Create a stock to buy entity.
      * @param stockToBuyDTO
      * @return
-     * @throws DuplicateEntityException
      * @throws EntityVersionMismatchException
+     * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
     public ResponseEntity<StockToBuyDTO> addStockToBuy( @PathVariable String customerId,
                                                         @RequestBody StockToBuyDTO stockToBuyDTO )
         throws EntityVersionMismatchException,
+               VersionedEntityNotFoundException,
                DuplicateEntityException
     {
         final String methodName = "addStockToBuy";

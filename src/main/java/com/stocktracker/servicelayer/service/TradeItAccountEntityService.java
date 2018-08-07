@@ -32,7 +32,6 @@ import java.util.UUID;
  * Created by mike on 12/4/2017.
  */
 @Service
-@Transactional
 @EnableCaching(proxyTargetClass = true)
 public class TradeItAccountEntityService extends UuidEntityService<TradeItAccountEntity,
                                                                    TradeItAccountDTO,
@@ -45,6 +44,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
 
     @Override
     protected void preAddEntity( final TradeItAccountEntity entity )
+        throws VersionedEntityNotFoundException
     {
         super.preAddEntity( entity );
         /*
@@ -82,6 +82,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
         tradeItAccountEntity.setCustomerUuid( customerUuid );
+        tradeItAccountEntity.setTradeItAccountFlag( true );
         tradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );

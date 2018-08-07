@@ -16,6 +16,8 @@ public class AsyncBatchCacheRequest<K,T>
 {
     private K cacheKey;
     private AsyncProcessor<T> asyncProcessor;
+    private AsyncBatchCacheRequestResult requestResult;
+    private Throwable exception;
 
     public K getCacheKey()
     {
@@ -25,13 +27,35 @@ public class AsyncBatchCacheRequest<K,T>
     {
         this.cacheKey = cacheKey;
     }
+
     public AsyncProcessor<T> getAsyncProcessor()
     {
         return asyncProcessor;
     }
+
     public void setAsyncProcessor( final AsyncProcessor<T> asyncProcessor )
     {
         this.asyncProcessor = asyncProcessor;
+    }
+
+    public AsyncBatchCacheRequestResult getRequestResult()
+    {
+        return requestResult;
+    }
+
+    public void setRequestResult( final AsyncBatchCacheRequestResult requestResult )
+    {
+        this.requestResult = requestResult;
+    }
+
+    public Throwable getException()
+    {
+        return exception;
+    }
+
+    public void setException( final Throwable exception )
+    {
+        this.exception = exception;
     }
 
     @Override
@@ -39,6 +63,8 @@ public class AsyncBatchCacheRequest<K,T>
     {
         final StringBuilder sb = new StringBuilder( "AsyncBatchCacheRequest{" );
         sb.append( "cacheKey=" ).append( cacheKey );
+        sb.append( ", requestResult=" ).append( requestResult );
+        sb.append( ", exception=" ).append( exception );
         sb.append( '}' );
         return sb.toString();
     }

@@ -177,6 +177,21 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         return linkedAccountEntity;
     }
 
+    /**
+     * Need to lookup the TradeItAccount entity before adding.
+     * @param linkedAccountEntity
+     * @throws VersionedEntityNotFoundException if the parent TradeIt account entity cannot be found.
+     */
+    @Override
+    protected void preAddEntity( final LinkedAccountEntity linkedAccountEntity )
+        throws VersionedEntityNotFoundException
+    {
+        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
+                                                              .getEntity( linkedAccountEntity.getTradeItAccountUuid() );
+        linkedAccountEntity.setAccountByTradeItAccountId( tradeItAccountEntity );
+        super.preAddEntity( linkedAccountEntity );
+    }
+
     @Override
     protected LinkedAccountDTO createDTO()
     {

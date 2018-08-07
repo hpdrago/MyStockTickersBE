@@ -136,7 +136,9 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "AuthenticateAPIResult{" );
+        final StringBuilder sb = new StringBuilder();
+        sb.append( super.toString() );
+        sb.append( ", AuthenticateAPIResult{" );
         sb.append( ", accounts=" ).append( Arrays.toString( accounts ) );
         sb.append( ", informationType='" ).append( informationType ).append( '\'' );
         sb.append( ", securityQuestion='" ).append( securityQuestion ).append( '\'' );

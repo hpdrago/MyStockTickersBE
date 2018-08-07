@@ -135,6 +135,7 @@ public class StockCatalystEventController extends AbstractController implements 
      * @throws NotAuthorizedException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
@@ -143,7 +144,8 @@ public class StockCatalystEventController extends AbstractController implements 
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addStockCatalystEvent";
         logMethodBegin( methodName, customerId, stockCatalystEventDTO );

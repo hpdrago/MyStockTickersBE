@@ -213,13 +213,9 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             {
                 stockCompanyEntity = this.addEntity( stockCompanyEntity );
             }
-            catch( EntityVersionMismatchException e1 )
+            catch( EntityVersionMismatchException | DuplicateEntityException | VersionedEntityNotFoundException e1 )
             {
                 // ignore, it means another thread already added the company.
-            }
-            catch( DuplicateEntityException e1 )
-            {
-                // ignore, another must have added it.
             }
         }
         catch( VersionedEntityNotFoundException e )

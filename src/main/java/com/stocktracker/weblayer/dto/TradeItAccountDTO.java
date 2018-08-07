@@ -113,6 +113,7 @@ public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", customerId='" ).append( customerId ).append( '\'' );
+        sb.append( ", isTradeItAccount=" ).append( tradeItAccountFlag );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", version=" ).append( version );
         sb.append( '}' );

@@ -85,10 +85,12 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @return DTO
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     public D addDTO( final D dto )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addDTO";
         logMethodBegin( methodName, dto );
@@ -225,10 +227,12 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param entity
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     public E mergeEntity( final E entity )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         if ( entity.getId() == null || !this.isExists( entity ) )
         {
@@ -245,10 +249,12 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param entities
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     public void addEntities( final Collection<E> entities )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addEntities";
         Objects.requireNonNull( entities, "entities cannot be null" );
@@ -266,10 +272,13 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param entity
      * @return
      * @throws EntityVersionMismatchException When the entity already exists.
+     * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     public E addEntity( final E entity )
         throws EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addDTO";
         logMethodBegin( methodName, entity );
@@ -301,6 +310,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @param entity
      */
     protected void preAddEntity( final E entity )
+        throws VersionedEntityNotFoundException
     {
     }
 

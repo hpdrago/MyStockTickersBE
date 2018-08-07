@@ -54,6 +54,7 @@ public class LinkedAccountController extends AbstractController
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
      * @throws DuplicateEntityException
+     * @throws VersionedEntityNotFoundException
      */
     @CrossOrigin
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
@@ -63,7 +64,8 @@ public class LinkedAccountController extends AbstractController
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addLinkedAccount";
         logMethodBegin( methodName, customerId, linkedAccountDTO );

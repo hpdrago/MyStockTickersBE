@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -138,22 +136,23 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
          * Cycle through the results, find the associated request entry, and make the results notification through
          * the request's AsyncProcessor.
          */
-        for ( final AsyncBatchCacheResponse<K,T> result: responses )
+        for ( final AsyncBatchCacheResponse<K,T> response: responses )
         {
-            requestKeys.remove( result.getCacheKey() );
-            final AsyncBatchCacheRequest<K,T> request = requests.get( result.getCacheKey() );
-            Objects.requireNonNull( request, "Request not found for cache key: " + result.getCacheKey() );
-            if ( result.getException() == null )
+            requestKeys.remove( response.getCacheKey() );
+            final AsyncBatchCacheRequest<K,T> request = requests.get( response.getCacheKey() );
+            Objects.requireNonNull( request, "Request not found for cache key: " + response.getCacheKey() );
+            if ( response.getException() == null )
             {
+                request.setRequestResult( AsyncBatchCacheRequestResult.FOUND );
                 request.getAsyncProcessor()
-                       .onNext( result.getData() );
+                       .onNext( response.getData() );
                 request.getAsyncProcessor()
                        .onComplete();
             }
             else
             {
-                request.getAsyncProcessor()
-                       .onError( result.getException() );
+                request.setRequestResult( AsyncBatchCacheRequestResult.ERROR );
+                request.setException( response.getException() );
             }
         }
 
@@ -161,8 +160,7 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<K,
          * For each request for which a response was not found, notify the caller of the error.
          */
         requestKeys.forEach( cacheKey -> requests.get( cacheKey )
-                                                 .getAsyncProcessor()
-                                                 .onError( new AsyncCacheDataNotFoundException( cacheKey ) ));
+                                                 .setRequestResult( AsyncBatchCacheRequestResult.NOT_FOUND ));
         logMethodEnd( methodName );
     }
 

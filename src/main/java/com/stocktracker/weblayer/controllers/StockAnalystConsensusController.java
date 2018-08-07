@@ -197,6 +197,7 @@ public class StockAnalystConsensusController extends AbstractController implemen
      * @throws DuplicateEntityException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws VersionedEntityNotFoundException
      */
     @RequestMapping( value = CONTEXT_URL + "/customerId/{customerId}",
                      method = RequestMethod.POST )
@@ -206,7 +207,8 @@ public class StockAnalystConsensusController extends AbstractController implemen
                EntityVersionMismatchException,
                DuplicateEntityException,
                CustomerNotFoundException,
-               NotAuthorizedException
+               NotAuthorizedException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addStockAnalystConsensus";
         logMethodBegin( methodName, customerId, stockAnalystConsensusDTO );

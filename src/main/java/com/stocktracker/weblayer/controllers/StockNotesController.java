@@ -52,6 +52,7 @@ public class StockNotesController extends AbstractController implements MyLogger
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
+     * @throws VersionedEntityNotFoundException
      */
     @CrossOrigin
     @RequestMapping( value = URL_CONTEXT + "/customerId/{customerId}",
@@ -62,7 +63,8 @@ public class StockNotesController extends AbstractController implements MyLogger
                EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               VersionedEntityNotFoundException
     {
         final String methodName = "addStockNote";
         logMethodBegin( methodName, customerId, stockNotesDTO );
