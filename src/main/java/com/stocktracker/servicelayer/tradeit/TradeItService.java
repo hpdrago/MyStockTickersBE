@@ -439,6 +439,8 @@ public class TradeItService implements MyLogger
             tradeItAccountEntity = this.tradeItAccountEntityService
                                        .getEntity( tradeItAccountUuid );
             this.checkTradeItAccount( tradeItAccountEntity );
+            Objects.requireNonNull( tradeItAccountEntity.getAuthToken(), "Auth token is null for account: " +
+                                                                         tradeItAccountEntity.getId() );
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -529,13 +531,6 @@ public class TradeItService implements MyLogger
              * Save the results.
              */
             closeSessionDTO.setResults( closeSessionAPIResult );
-        }
-        catch( TradeItAuthenticationException e )
-        {
-            /*
-             * Don't care if this fails.
-             */
-            logError( methodName, e );
         }
         catch( EntityVersionMismatchException e )
         {
@@ -646,7 +641,6 @@ public class TradeItService implements MyLogger
      * @param tradeItAPIRestCall
      * @param <T>
      * @return The result of the TradeIt API call.
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
@@ -654,8 +648,7 @@ public class TradeItService implements MyLogger
     private <T extends TradeItAPIResult> T callTradeIt( final TradeItAccountEntity tradeItAccountEntity,
                                                         final TradeItAPIRestCall<T> tradeItAPIRestCall,
                                                         final TradeItAPICallParameters tradeItAPICallParameterMap )
-        throws TradeItAuthenticationException,
-               EntityVersionMismatchException,
+        throws EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
     {
@@ -679,11 +672,18 @@ public class TradeItService implements MyLogger
                      * Update the token as that has changed on a successful re-authenticate.
                      */
                     final AuthenticateAPIResult authenticateAPIResult = this.handleSessionExpired( tradeItAccountEntity );
-                    tradeItAPICallParameterMap.addParameter( TradeItParameter.TOKEN_PARAM,
-                                                             authenticateAPIResult.getToken() );
-                    logDebug( methodName, "re-executing " + tradeItAPIRestCall.getClass().getSimpleName() );
-                    tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
-                    logDebug( methodName, "re-execute result: {0}", tradeItAPIResult );
+                    if ( authenticateAPIResult.isSuccessful() )
+                    {
+                        tradeItAPICallParameterMap.addParameter( TradeItParameter.TOKEN_PARAM,
+                                                                 authenticateAPIResult.getToken() );
+                        logDebug( methodName, "re-executing " + tradeItAPIRestCall.getClass().getSimpleName() );
+                        tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
+                        logDebug( methodName, "re-execute result: {0}", tradeItAPIResult );
+                    }
+                    else
+                    {
+                        tradeItAPIResult.setResults( authenticateAPIResult );
+                    }
                     break;
             }
         }
@@ -698,14 +698,12 @@ public class TradeItService implements MyLogger
      * simple authentication call did not succeed as was expected.
      * @param tradeItAccountEntity The auth token is needed to authenticate and on successful authentication the
      *                             auth token and auth timestamp will be persisted.
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
     private AuthenticateAPIResult handleSessionExpired( final TradeItAccountEntity tradeItAccountEntity )
-        throws TradeItAuthenticationException,
-               EntityVersionMismatchException,
+        throws EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
     {

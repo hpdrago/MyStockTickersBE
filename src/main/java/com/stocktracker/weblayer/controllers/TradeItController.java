@@ -138,7 +138,7 @@ public class TradeItController extends AbstractController
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
-    @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdateURL"
+    @RequestMapping( value = CONTEXT_URL + "/getOAuthTokenUpdate"
                              + "/accountId/{accountId}"
                              + "/customerId/{customerId}",
                      method = GET,
