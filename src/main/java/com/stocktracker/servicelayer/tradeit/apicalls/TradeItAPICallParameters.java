@@ -1,6 +1,10 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
+import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.tradeit.TradeItParameter;
+import com.stocktracker.servicelayer.tradeit.TradeItService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -11,7 +15,7 @@ import java.util.Set;
  * This class encapsualtes the TradeIt API call parameters to include validation checks and maintenance of the
  * parameter map that is use with the Spring Rest Template to send the parameters as HTTP Post parameters.
  */
-public class TradeItAPICallParameters
+public class TradeItAPICallParameters implements MyLogger
 {
     private MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<>();
 
@@ -92,5 +96,14 @@ public class TradeItAPICallParameters
         sb.append( "parameterMap=" ).append( parameterMap );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    /**
+     * Dumps the contents of the parameter map to the log.
+     */
+    public void dumpToLog()
+    {
+        this.parameterMap
+            .forEach( ( key, value ) -> logDebug( "dumpToLog", "{0} = {1}", key, value  ));
     }
 }

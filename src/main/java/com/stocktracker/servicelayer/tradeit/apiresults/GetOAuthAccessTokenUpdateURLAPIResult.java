@@ -11,4 +11,12 @@ import org.springframework.stereotype.Component;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class GetOAuthAccessTokenUpdateURLAPIResult extends RequestOAuthPopUpURLAPIResult
 {
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "GetOAuthAccessTokenUpdateURLAPIResult{" );
+        sb.append( "super=" ).append( super.toString() );
+        sb.append( "}" );
+        return sb.toString();
+    }
 }

@@ -12,4 +12,13 @@ import org.springframework.stereotype.Component;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class CloseSessionAPIResult extends TradeItAPIResult
 {
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "CloseSessionAPIResult{" );
+        sb.append( "super=" );
+        sb.append( super.toString() );
+        sb.append( "}" );
+        return sb.toString();
+    }
 }

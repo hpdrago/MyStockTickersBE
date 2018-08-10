@@ -99,7 +99,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     {
         for ( final String parameter: parameterMap.keySet() )
         {
-            this.parameterMap.set( parameter, parameterMap.getParameterValue( parameter ) );
+            this.addPostParameter( parameter, parameterMap.getParameterValue( parameter ) );
         }
     }
 
@@ -152,6 +152,16 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
     public void setTradeItURLs( final TradeItURLs tradeItURLs )
     {
         this.tradeItURLs = tradeItURLs;
+    }
+
+    /**
+     * When true, when a TradeIt API call results in a 600 error which means that the account has expired, a call to
+     * the TradeIt authenicate account method will be called automatically to resolve this issue.
+     * @return
+     */
+    public boolean isAuthenticateOnAccountExpired()
+    {
+        return true;
     }
 }
 

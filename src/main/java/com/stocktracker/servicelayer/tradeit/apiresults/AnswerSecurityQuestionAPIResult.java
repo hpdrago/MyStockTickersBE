@@ -20,4 +20,14 @@ public class AnswerSecurityQuestionAPIResult extends AuthenticateAPIResult
     {
     }
 
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "AnswerSecurityQuestionAPIResult{" );
+        sb.append( "super=" ).append( super.toString() );
+        sb.append( "}" );
+        return sb.toString();
+    }
+
 }

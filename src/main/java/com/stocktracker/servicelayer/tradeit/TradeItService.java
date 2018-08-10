@@ -5,7 +5,6 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
-import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
@@ -175,14 +174,12 @@ public class TradeItService implements MyLogger
      * @param accountUuid
      * @return
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( final UUID accountUuid )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
@@ -206,9 +203,10 @@ public class TradeItService implements MyLogger
          * Create the method parameter map
          */
         final TradeItAPICallParameters parameters = TradeItAPICallParameters.newMap()
-                                                                              .addParameter( TradeItParameter.USER_ID_PARAM, tradeItAccountEntity.getUserId() )
-                                                                              .addParameter( TradeItParameter.USER_TOKEN_PARAM, tradeItAccountEntity.getUserToken() )
-                                                                              .addParameter( TradeItParameter.BROKER_PARAM, tradeItAccountEntity.getBrokerage() );
+                                                                            .addParameter( TradeItParameter.USER_ID_PARAM,
+                                                                                           tradeItAccountEntity.getUserId() )
+                                                                            .addParameter( TradeItParameter.BROKER_PARAM,
+                                                                                           tradeItAccountEntity.getBrokerage() );
         /*
          * Make the call to TradeIt
          */
@@ -231,14 +229,12 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
     public AuthenticateDTO authenticate( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
@@ -300,14 +296,12 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountEntity
      * @param authenticateAPIResult
      * @return Updated account entity.
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      */
     private TradeItAccountEntity handleAuthenticationResults( final TradeItAccountEntity tradeItAccountEntity,
                                                               final AuthenticateAPIResult authenticateAPIResult )
-        throws TradeItAuthenticationException,
-               EntityVersionMismatchException,
+        throws EntityVersionMismatchException,
                DuplicateEntityException
     {
         final String methodName = "handleAuthenticationResults";
@@ -328,6 +322,7 @@ public class TradeItService implements MyLogger
 
             case ERROR:
                 //throw new TradeItAuthenticationException( authenticateAPIResult );
+                // nothing to do on error.
                 break;
 
             case INFORMATION_NEEDED:
@@ -348,7 +343,6 @@ public class TradeItService implements MyLogger
      * @param questionResponse The user's text response
      * @return
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws LinkedAccountNotFoundException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
@@ -358,7 +352,6 @@ public class TradeItService implements MyLogger
                                                              final String questionResponse )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
@@ -419,14 +412,12 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
     public KeepSessionAliveDTO keepSessionAlive( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
@@ -555,15 +546,13 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountEntity
      * @param linkedAccountEntity
      * @return
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
     public GetPositionsAPIResult getPositions( final TradeItAccountEntity tradeItAccountEntity,
                                                final LinkedAccountEntity linkedAccountEntity )
-        throws TradeItAuthenticationException,
-               EntityVersionMismatchException,
+        throws EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
     {
@@ -595,15 +584,13 @@ public class TradeItService implements MyLogger
      * @param tradeItAccountEntity
      * @param accountNumber The brokerage account number.
      * @return
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
     public GetAccountOverviewDTO getAccountOverview( final TradeItAccountEntity tradeItAccountEntity,
                                                      final String accountNumber )
-        throws TradeItAuthenticationException,
-               EntityVersionMismatchException,
+        throws EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
     {
@@ -668,23 +655,32 @@ public class TradeItService implements MyLogger
                  * will be made again.
                  */
                 case SESSION_EXPIRED_ERROR:
-                    /*
-                     * Update the token as that has changed on a successful re-authenticate.
-                     */
-                    final AuthenticateAPIResult authenticateAPIResult = this.handleSessionExpired( tradeItAccountEntity );
-                    if ( authenticateAPIResult.isSuccessful() )
+                    if ( tradeItAPIRestCall.isAuthenticateOnAccountExpired() )
                     {
-                        tradeItAPICallParameterMap.addParameter( TradeItParameter.TOKEN_PARAM,
-                                                                 authenticateAPIResult.getToken() );
-                        logDebug( methodName, "re-executing " + tradeItAPIRestCall.getClass().getSimpleName() );
-                        tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
-                        logDebug( methodName, "re-execute result: {0}", tradeItAPIResult );
+                        /*
+                         * Update the token as that has changed on a successful re-authenticate.
+                         */
+                        final AuthenticateAPIResult authenticateAPIResult = this
+                            .handleSessionExpired( tradeItAccountEntity );
+                        if ( authenticateAPIResult.isSuccessful() )
+                        {
+                            tradeItAPICallParameterMap.addParameter( TradeItParameter.TOKEN_PARAM,
+                                                                     authenticateAPIResult.getToken() );
+                            logDebug( methodName, "re-executing " + tradeItAPIRestCall.getClass().getSimpleName() );
+                            tradeItAPIResult = tradeItAPIRestCall.execute( tradeItAPICallParameterMap );
+                            logDebug( methodName, "re-execute result: {0}", tradeItAPIResult );
+                        }
+                        else
+                        {
+                            tradeItAPIResult.setResults( authenticateAPIResult );
+                        }
+                        break;
                     }
                     else
                     {
-                        tradeItAPIResult.setResults( authenticateAPIResult );
+                        logDebug( methodName, "API Call {0} is set to not authenticate on account expired.",
+                                  tradeItAPIRestCall.getClass().getSimpleName() );
                     }
-                    break;
             }
         }
         logMethodEnd( methodName, tradeItAPIResult );

@@ -131,7 +131,6 @@ public class TradeItController extends AbstractController
      * token returned from that process is then used to get the user id and user token to be used for later authentication.
      * @return GetOAuthAccessTokenDTO that contains the newly created account
      * @throws TradeItAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
@@ -146,7 +145,6 @@ public class TradeItController extends AbstractController
     public GetOAuthAccessTokenUpdateURLDTO getOAuthTokenUpdateURL( @PathVariable final String customerId,
                                                                    @PathVariable final String accountId )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,

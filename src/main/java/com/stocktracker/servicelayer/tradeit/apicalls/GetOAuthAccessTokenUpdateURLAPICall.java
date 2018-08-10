@@ -21,14 +21,13 @@ public class GetOAuthAccessTokenUpdateURLAPICall extends TradeItAPIRestCall<GetO
      */
     public GetOAuthAccessTokenUpdateURLAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
-        final String methodName = "execute ";
+        final String methodName = "execute";
         logMethodBegin( methodName, parameterMap );
         parameterMap.parameterCheck( TradeItParameter.USER_ID_PARAM,
-                                     TradeItParameter.TOKEN_PARAM,
                                      TradeItParameter.BROKER_PARAM );
-        GetOAuthAccessTokenUpdateURLAPIResult GetOAuthAccessTokenUpdateURLAPIResult = this.callTradeIt( parameterMap );
-        logMethodEnd( methodName, GetOAuthAccessTokenUpdateURLAPIResult );
-        return GetOAuthAccessTokenUpdateURLAPIResult;
+        GetOAuthAccessTokenUpdateURLAPIResult getOAuthAccessTokenUpdateURLAPIResult = this.callTradeIt( parameterMap );
+        logMethodEnd( methodName, getOAuthAccessTokenUpdateURLAPIResult );
+        return getOAuthAccessTokenUpdateURLAPIResult;
     }
 
     @Override
@@ -41,5 +40,15 @@ public class GetOAuthAccessTokenUpdateURLAPICall extends TradeItAPIRestCall<GetO
     protected Class<GetOAuthAccessTokenUpdateURLAPIResult> getAPIResultsClass()
     {
         return GetOAuthAccessTokenUpdateURLAPIResult.class;
+    }
+
+    /**
+     * We don't want to retry on account expired since that was already detected and the reason the get update URL
+     * is being called.
+     * @return
+     */
+    public boolean isAuthenticateOnAccountExpired()
+    {
+        return false;
     }
 }

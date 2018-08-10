@@ -143,6 +143,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
         sb.append( ", informationType='" ).append( informationType ).append( '\'' );
         sb.append( ", securityQuestion='" ).append( securityQuestion ).append( '\'' );
         sb.append( ", securityQuestionOptions=" ).append( Arrays.toString( securityQuestionOptions ) );
+        sb.append( ", super= ").append( super.toString() );
         sb.append( '}' );
         return sb.toString();
     }

@@ -18,4 +18,13 @@ public class KeepSessionAliveAPIResult extends TradeItAPIResult
     public KeepSessionAliveAPIResult()
     {
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "RequestOAuthPopUpURLAPIResult{" );
+        sb.append( "super=" ).append( super.toString() );
+        sb.append( "}" );
+        return sb.toString();
+    }
 }

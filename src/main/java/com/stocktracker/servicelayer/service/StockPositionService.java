@@ -14,6 +14,7 @@ import com.stocktracker.repositorylayer.repository.StockPositionRepository;
 import com.stocktracker.servicelayer.service.common.StockPositionComparator;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
+import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,25 @@ public class StockPositionService extends StockInformationEntityService<StockPos
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
-        this.synchronizePositions( customerUuid, tradeItAccountUuid, linkedAccountUuid ) ;
+        TradeItAccountEntity tradeItAccountEntity = null;
+        try
+        {
+            tradeItAccountEntity = this.tradeItAccountEntityService
+                .getEntity( tradeItAccountUuid );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
+        }
+
+        /*
+         * For TradeIt account, we need to synchronize the database with TradeIt to get any changes that may have been
+         * made.  For manual accounts, we just return what's in the database.
+         */
+        if ( tradeItAccountEntity.isTradeItAccount() )
+        {
+            this.synchronizePositions( customerUuid, tradeItAccountEntity, linkedAccountUuid );
+        }
         final List<StockPositionEntity> stockPositionEntities = this.stockPositionRepository
                                                                     .findByLinkedAccountUuid( linkedAccountUuid );
         final List<StockPositionDTO> stockPositionDTOs = this.entitiesToDTOs( stockPositionEntities );
@@ -85,10 +104,9 @@ public class StockPositionService extends StockInformationEntityService<StockPos
      * Calls TradeIt to retrieve the positions for the linked account and synchronized the TradeIt position with the
      * positions in the database.
      * @param customerUuid
-     * @param tradeItAccountUuid
+     * @param tradeItAccountEntity
      * @param linkedAccountUuid
      * @return
-     * @throws TradeItAccountNotFoundException
      * @throws LinkedAccountNotFoundException
      * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
@@ -97,27 +115,16 @@ public class StockPositionService extends StockInformationEntityService<StockPos
      * @throws DuplicateEntityException
      */
     private List<StockPositionDTO> synchronizePositions( final UUID customerUuid,
-                                                         final UUID tradeItAccountUuid,
+                                                         final TradeItAccountEntity tradeItAccountEntity,
                                                          final UUID linkedAccountUuid )
-        throws TradeItAccountNotFoundException,
-               LinkedAccountNotFoundException,
+        throws LinkedAccountNotFoundException,
                TradeItAPIException,
                EntityVersionMismatchException,
                VersionedEntityNotFoundException,
                DuplicateEntityException
     {
         final String methodName = "synchronizePositions";
-        logMethodBegin( methodName, customerUuid, tradeItAccountUuid, linkedAccountUuid );
-        TradeItAccountEntity tradeItAccountEntity = null;
-        try
-        {
-            tradeItAccountEntity = this.tradeItAccountEntityService
-                                       .getEntity( tradeItAccountUuid );
-        }
-        catch( VersionedEntityNotFoundException e )
-        {
-            throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
-        }
+        logMethodBegin( methodName, customerUuid, tradeItAccountEntity.getUuid(), linkedAccountUuid );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
                                                             .getLinkedAccountEntity( linkedAccountUuid );
         /*
@@ -146,7 +153,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
             /*
              * need to update/insert into the database and get a list of entities back and then convert them to DTOs.
              */
-            this.createPositionDTOList( customerUuid, tradeItAccountUuid, linkedAccountUuid, getPositionsAPIResult );
+            this.createPositionDTOList( customerUuid, tradeItAccountEntity.getUuid(), linkedAccountUuid, getPositionsAPIResult );
             this.stockQuoteEntityService
                 .setStockQuoteInformation( stockPositionList );
         }
