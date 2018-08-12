@@ -107,7 +107,7 @@ public abstract class BaseEntityService<EK extends Serializable,
      * @param entities
      * @return
      */
-    protected List<D> entitiesToDTOs( final List<E> entities )
+    public List<D> entitiesToDTOs( final List<E> entities )
     {
         final List<D> dtos = new ArrayList<>();
         for ( final E entity : entities )

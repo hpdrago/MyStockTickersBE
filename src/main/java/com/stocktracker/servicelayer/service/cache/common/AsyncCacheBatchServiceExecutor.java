@@ -2,21 +2,26 @@ package com.stocktracker.servicelayer.service.cache.common;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Extends the {@code AsyncCacheServiceExecutor} to add batch updates for multiple keys.
  *
- * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
- * @param <T> - The type of information to obtain from the third party.
+ * @param <CK> - The key type to the cache
+ * @param <CD> - The cached data type.
+ * @param <TPK> - The third party key type.
+ * @param <TPD> - The third party data type.
+ * @param <RK> - The request key that contains the cache key and the third party key.
  * @param <RQ> - The Async Request Type.
  * @param <RS> - The Async Response Type.
  */
-public interface AsyncCacheBatchServiceExecutor<K,
-                                                T,
-                                                RQ extends AsyncBatchCacheRequest<K,T>,
-                                                RS extends AsyncBatchCacheResponse<K,T>>
-    extends AsyncCacheServiceExecutor<K,T>
+public interface AsyncCacheBatchServiceExecutor<CK,
+                                                CD,
+                                                TPK,
+                                                TPD,
+                                                RK extends AsyncBatchCacheRequestKey<CK,TPK>,
+                                                RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
+                                                RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>>
+    extends AsyncCacheServiceExecutor<CK,CD,TPK,TPD>
 {
     /**
      * Asynchronous fetching of the information for the keys contained in {@code requests}.
@@ -24,12 +29,12 @@ public interface AsyncCacheBatchServiceExecutor<K,
      * @param requests Contains a list of {@code AsyncBatchCacheRequest} instances each of which contains the request
      *                 key and the RxJava async processor instance.
      */
-    void asynchronousFetch( @NotNull final Map<K,RQ> requests );
+    void asynchronousFetch( @NotNull final List<RQ> requests );
 
     /**
      * Fetches the information for all of the keys in {@code searchKeys} as a batch.
      * @param requests Contains the information to make the batch request.
      * @return List of results.
      */
-    List<RS> synchronousFetch( @NotNull final Map<K,RQ> requests );
+    List<RS> synchronousFetch( @NotNull final List<RQ> requests );
 }

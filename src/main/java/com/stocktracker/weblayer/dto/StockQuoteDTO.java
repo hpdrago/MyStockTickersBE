@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDTOContainer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.weblayer.dto.common.DatabaseEntityDTO;
@@ -23,8 +22,7 @@ import java.sql.Timestamp;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Qualifier( "stockQuoteDTO")
 public class StockQuoteDTO extends DatabaseEntityDTO<String>
-                           implements AsyncCacheDataReceiver<String,StockQuoteEntity>,
-                                      AsyncCacheDTOContainer<String,StockQuoteDTO>
+                           implements AsyncCacheDataReceiver<String,String,StockQuoteEntity>
 
 {
     private String tickerSymbol;
@@ -71,6 +69,12 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
 
     @Override
     public String getCacheKey()
+    {
+        return this.tickerSymbol;
+    }
+
+    @Override
+    public String getThirdPartyKey()
     {
         return this.tickerSymbol;
     }

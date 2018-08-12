@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<String,
+                                                                            String,
                                                                             StockCompanyEntity,
                                                                             StockCompanyEntityCacheEntry,
                                                                             StockCompanyEntityCacheDataReceiver,
                                                                             StockCompanyEntityCacheRequest,
                                                                             StockCompanyEntityCacheResponse,
+                                                                            StockCompanyEntityCacheRequestKey,
                                                                             StockCompanyEntityServiceExecutor,
                                                                             StockCompanyEntityCache,
                                                                             StockCompanyEntityService>
@@ -49,4 +51,9 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
         return this.stockCompanyEntityService;
     }
 
+    @Override
+    protected StockCompanyEntityCacheRequestKey createRequestKey( final String cacheKey, final String thirdPartyKey )
+    {
+        return new StockCompanyEntityCacheRequestKey( cacheKey, thirdPartyKey );
+    }
 }

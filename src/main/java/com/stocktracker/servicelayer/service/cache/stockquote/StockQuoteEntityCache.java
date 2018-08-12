@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEntityCacheRequestKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,12 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  */
 @Service
 public class StockQuoteEntityCache extends AsyncBatchCache<String,
+                                                           String,
                                                            StockQuoteEntity,
                                                            StockQuoteEntityCacheEntry,
                                                            StockQuoteEntityCacheRequest,
                                                            StockQuoteEntityCacheResponse,
+    StockQuoteEntityCacheRequestKey,
                                                            StockQuoteEntityServiceExecutor>
 {
     @Autowired

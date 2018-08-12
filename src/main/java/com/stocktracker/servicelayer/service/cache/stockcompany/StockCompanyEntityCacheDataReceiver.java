@@ -15,7 +15,9 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiver<String,StockCompanyEntity>
+public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiver<String,
+                                                                                   String,
+                                                                                   StockCompanyEntity>
 {
     private String tickerSymbol;
     private StockCompanyEntity stockCompanyEntity;
@@ -31,6 +33,12 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
 
     @Override
     public String getCacheKey()
+    {
+        return this.tickerSymbol;
+    }
+
+    @Override
+    public String getThirdPartyKey()
     {
         return this.tickerSymbol;
     }

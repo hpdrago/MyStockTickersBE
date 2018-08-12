@@ -5,7 +5,7 @@ import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 /**
  * This class defines the account fields that are returned in TradeIt authenticate call.
  */
-public class TradeItAccount implements CustomerIdContainer
+public class LinkedAccount implements CustomerIdContainer
 {
     private String accountNumber;
     private String customerId;

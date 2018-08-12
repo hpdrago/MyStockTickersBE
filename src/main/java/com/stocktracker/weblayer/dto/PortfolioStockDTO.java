@@ -24,6 +24,7 @@ public class PortfolioStockDTO extends DatabaseEntityDTO<String>
                                           StockPriceQuoteDTOContainer,
                                           StockQuoteDTOContainer
 {
+    private String id;
     private String tickerSymbol;
     private String customerId;
     private String portfolioId;
@@ -50,15 +51,8 @@ public class PortfolioStockDTO extends DatabaseEntityDTO<String>
 
 
     @Override
-    public String getCacheKey()
+    public void setId( final String id )
     {
-        return this.tickerSymbol;
-    }
-
-    @Override
-    public void setCacheKey( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
     }
 
     @Override

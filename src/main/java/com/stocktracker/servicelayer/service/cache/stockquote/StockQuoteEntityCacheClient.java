@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEntityCacheRequestKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +12,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String,
+                                                                          String,
                                                                           StockQuoteEntity,
                                                                           StockQuoteEntityCacheEntry,
                                                                           StockQuoteEntityCacheDataReceiver,
                                                                           StockQuoteEntityCacheRequest,
                                                                           StockQuoteEntityCacheResponse,
+    StockQuoteEntityCacheRequestKey,
                                                                           StockQuoteEntityServiceExecutor,
                                                                           StockQuoteEntityCache,
                                                                           StockQuoteEntityService>
@@ -41,5 +44,11 @@ public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String
     protected StockQuoteEntityService getEntityService()
     {
         return this.stockQuoteEntityService;
+    }
+
+    @Override
+    protected StockQuoteEntityCacheRequestKey createRequestKey( final String cacheKey, final String thirdPartyKey )
+    {
+        return new StockQuoteEntityCacheRequestKey( cacheKey, thirdPartyKey );
     }
 }

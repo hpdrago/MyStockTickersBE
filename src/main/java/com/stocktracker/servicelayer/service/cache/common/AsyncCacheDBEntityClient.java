@@ -11,8 +11,10 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
 
 /**
  * Abstract class that implements the common pattern of obtaining a value from a AsyncCache.
- * @param  <K> Key type for cached data.
- * @param  <T> Cached data type.
+ * @param <CK> Key type for cached data.
+ * @param  <CD> Cached data type.
+ * @param <TPK> The key to the third party key.
+ * @param <TPD> The third party data.
  * @param <CE> Cache Entry Type.
  * @param <RQ> Cache request type.
  * @param <RS> Cache response type.
@@ -21,16 +23,19 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * @param <DR> Data Receiver.  The type that will receive the cached data
  * @param  <S> The entity service.
  */
-public abstract class AsyncCacheDBEntityClient< K extends Serializable,
-                                                T extends AsyncCacheDBEntity<K>,
-                                               CE extends AsyncCacheEntry<K,T>,
-                                               DR extends AsyncCacheDataReceiver<K,T>,
-                                               RQ extends AsyncBatchCacheRequest<K,T>,
-                                               RS extends AsyncBatchCacheResponse<K,T>,
-                                                X extends AsyncCacheBatchServiceExecutor<K,T,RQ,RS>,
-                                                C extends AsyncBatchCache<K,T,CE,RQ,RS,X>,
-                                                S extends VersionedEntityService<K,T,?,?,?>>
-    extends AsyncCacheBatchClient<K,T,CE,DR,RQ,RS,X,C>
+public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
+                                               CD extends AsyncCacheDBEntity<CK>,
+                                              TPK,
+                                              TPD,
+                                               CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
+                                               DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
+                                               RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
+                                               RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
+                                               RK extends AsyncBatchCacheRequestKey<CK,TPK>,
+                                                X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>,
+                                                C extends AsyncBatchCache<CK,CD,TPK,TPD,CE,RK,RQ,RS,X>,
+                                                S extends VersionedEntityService<CK,CD,?,?,?>>
+    extends AsyncCacheBatchClient<CK,CD,TPK,TPD,CE,DR,RQ,RS,RK,X,C>
 {
     /**
      * Working with the cache, and the entity service, attempts to retrieve the data from the database.  If it is not
@@ -53,7 +58,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         {
             logDebug( methodName, "Making asynchronous fetch for {0}", receiver.getCacheKey() );
             this.getCache()
-                .asynchronousGet( receiver.getCacheKey() );
+                .asynchronousGet( receiver.getCacheKey(), receiver.getThirdPartyKey() );
         }
         logMethodEnd( methodName, receiver );
     }
@@ -64,7 +69,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
      * @param receiver
      */
     @Override
-    protected void handleNotInCache( final K searchKey, final DR receiver )
+    protected void handleNotInCache( final CK searchKey, final DR receiver )
     {
         final String methodName = "handleNotInCache";
         logMethodBegin( methodName, searchKey );
@@ -105,7 +110,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
         /*
          * Retrieve the entity from the database, it might not exist.
          */
-        final T entity;
+        final CD entity;
         try
         {
             entity = this.getEntityService()
@@ -133,7 +138,10 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
             if ( cacheEntry == null )
             {
                 this.getCache()
-                    .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCacheState() );
+                    .createCacheEntry( receiver.getCacheKey(),
+                                       receiver.getCachedData(),
+                                       receiver.getThirdPartyKey(),
+                                       receiver.getCacheState() );
             }
         }
         catch( VersionedEntityNotFoundException e )
@@ -143,7 +151,10 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
              */
             receiver.setCacheState( STALE );
             this.getCache()
-                .createCacheEntry( receiver.getCacheKey(), receiver.getCachedData(), receiver.getCacheState() );
+                .createCacheEntry( receiver.getCacheKey(),
+                                   receiver.getCachedData(),
+                                   receiver.getThirdPartyKey(),
+                                   receiver.getCacheState() );
             /*
              * Throw the exception back to the caller and let them decide what to do.
              * When requesting a single entity, there will be an async request made right away.
@@ -159,7 +170,7 @@ public abstract class AsyncCacheDBEntityClient< K extends Serializable,
      * @param entity
      * @return
      */
-    protected boolean isCurrent( final T entity )
+    protected boolean isCurrent( final CD entity )
     {
         return entity.getExpiration().getTime() > System.currentTimeMillis();
     }

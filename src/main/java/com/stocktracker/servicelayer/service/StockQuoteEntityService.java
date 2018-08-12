@@ -42,6 +42,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
         /*
          * Create DTO for each container.
          */
+        /*
         final List<StockQuoteDTO> dtos = containers.stream()
                                                    .map( (StockQuoteDTOContainer container) ->
                                                          {
@@ -51,9 +52,22 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
                                                              stockQuoteDTO.setCacheKey( container.getTickerSymbol() );
                                                              return stockQuoteDTO;
                                                          })
-                                                   .collect(Collectors.toList());
+                                                   .collect(Collectors.toList());*/
+        final List<StockQuoteEntityCacheDataReceiver> receivers =
+            containers.stream()
+                      .map( (StockQuoteDTOContainer container) ->
+                            {
+                                StockQuoteEntityCacheDataReceiver receiver = this.context
+                                                                                .getBean( StockQuoteEntityCacheDataReceiver.class );
+                                StockQuoteDTO stockQuoteDTO = this.context
+                                                                  .getBean( StockQuoteDTO.class );
+                                container.setStockQuoteDTO( stockQuoteDTO );
+                                stockQuoteDTO.setCacheKey( container.getTickerSymbol() );
+                                return receiver;
+                            })
+                      .collect(Collectors.toList());
         this.stockQuoteCacheBatchProcessor
-            .getCachedData( dtos );
+            .getCachedData( receivers );
         logMethodEnd( methodName );
     }
 

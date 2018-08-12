@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 /**
  * Defines the necessary methods for an entity that maintains a version for each table entity row.
- * @param <K>
+ * @param <K> The database key.
  */
 public interface VersionedEntity<K>
 {

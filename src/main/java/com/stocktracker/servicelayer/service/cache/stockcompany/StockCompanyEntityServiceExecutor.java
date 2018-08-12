@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.AppConfig;
-import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.IEXTradingStockService;
@@ -16,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,12 +25,14 @@ import java.util.Map;
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
 public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityServiceExecutor<String,
+                                                                                         String,
                                                                                          StockCompanyEntity,
                                                                                          Company,
                                                                                          StockCompanyEntityService,
                                                                                          StockCompanyNotFoundException,
                                                                                          StockCompanyEntityCacheRequest,
-                                                                                         StockCompanyEntityCacheResponse>
+                                                                                         StockCompanyEntityCacheResponse,
+                                                                                         StockCompanyEntityCacheRequestKey>
 {
     /**
      * Service for the stock company entities.
@@ -46,29 +46,31 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     @Autowired
     private IEXTradingStockService iexTradingStockService;
 
-
     /**
      * This method, when call is called on a new thread launched and managed by the Spring container.
      * In the new thread, the stock company will be retrieved and the caller will be notified through the {@code observable}
      * @param tickerSymbol
+     * @param thirdPartyKey The ticker symbol is both the cache key and the third party key.
      * @param asyncProcessor Behaviour subject to use to notify the caller that the request has been completed.
      */
     @Async( AppConfig.STOCK_COMPANY_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final String tickerSymbol, final AsyncProcessor<StockCompanyEntity> asyncProcessor )
+    public void asynchronousFetch( final String tickerSymbol,
+                                   final String thirdPartyKey,
+                                   final AsyncProcessor<StockCompanyEntity> asyncProcessor )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
         /*
-         * The super class calls this.getExternalData and takes care of the subject notification.
+         * The super class calls this.getThirdPartyData and takes care of the subject notification.
          */
-        super.asynchronousFetch( tickerSymbol, asyncProcessor );
+        super.asynchronousFetch( tickerSymbol, tickerSymbol, asyncProcessor );
         logMethodEnd( methodName );
     }
 
     /**
      * This method, when called, is run a new thread and makes a call to the super class to make perform the asynchronous
-     * fetch logic which, in part, ends up calling the {@code getExternalData} method below to perform the batch
+     * fetch logic which, in part, ends up calling the {@code getThirdPartyData} method below to perform the batch
      * stock company fetch.
      * @param asyncBatchCacheRequests
      */
@@ -83,9 +85,9 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     }
 
     @Override
-    protected String getCacheKeyFromThirdPartyData( final Company company )
+    protected StockCompanyEntityCacheRequestKey createRequestKey( final String cacheKey, final String thirdPartyKey )
     {
-        return company.getSymbol();
+        return new StockCompanyEntityCacheRequestKey( cacheKey, thirdPartyKey );
     }
 
     /**
@@ -103,6 +105,15 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         logMethodEnd( methodName, "Received " + companies.size() + " stock companies" );
         return companies;
     }
+
+
+    @Override
+    public StockCompanyEntity getThirdPartyData( final String cacheKey, final String thirdPartyKey )
+        throws AsyncCacheDataNotFoundException
+    {
+        return null;
+    }
+
 
     /**
      * Get the stock company.

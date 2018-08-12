@@ -15,8 +15,9 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * request containing multiple ticker symbols can be sent to IEXTrading to reduce the amount of calls made to IEXTrading
  * as that service does have volume restrictions.  We also get performance improvements by batching the requests.
  *
- * @param  <K> Key type for cached data.
- * @param  <T> Cached data type.
+ * @param <CK> Key type for cached data.
+ * @param <TPK> The key to the third party data.
+ * @param  <CD> Cached data type.
  * @param <CE> Cache Entry Type.
  * @param <RQ> Cache request type.
  * @param <RS> Cache response type.
@@ -24,15 +25,18 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * @param  <C> Cache type.
  * @param <DR> Data Receiver.  The type that will receive the cached data
  */
-public abstract class AsyncCacheBatchClient< K extends Serializable,
-                                             T extends AsyncCacheData,
-                                            CE extends AsyncCacheEntry<K,T>,
-                                            DR extends AsyncCacheDataReceiver<K,T>,
-                                            RQ extends AsyncBatchCacheRequest<K,T>,
-                                            RS extends AsyncBatchCacheResponse<K,T>,
-                                             X extends AsyncCacheBatchServiceExecutor<K,T,RQ,RS>,
-                                             C extends AsyncBatchCache<K,T,CE,RQ,RS,X>>
-    extends AsyncCacheClient<K,T,CE,DR,X,C>
+public abstract class AsyncCacheBatchClient<CK extends Serializable,
+                                            CD extends AsyncCacheData,
+                                           TPK,
+                                           TPD,
+                                            CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
+                                            DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
+                                            RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
+                                            RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
+                                            RK extends AsyncBatchCacheRequestKey<CK,TPK>,
+                                             X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>,
+                                             C extends AsyncBatchCache<CK,CD,TPK,TPD,CE,RK,RQ,RS,X>>
+    extends AsyncCacheClient<CK,CD,TPK,TPD,CE,DR,X,C>
 {
     /**
      * Updates the {@code receivers} with the any current information in the cache and performs an asynchronous fetch
@@ -57,10 +61,11 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
          * Need to go through the updated receivers to find any that need to be fetched (are stale)
          * and send the list of keys to the cache to perform the work.
          */
-        final List<K> requestKeys = receivers.stream()
-                                             .filter( dr -> dr.getCacheState().isStale() )
-                                             .map( dr -> dr.getCacheKey() )
-                                             .collect( Collectors.toList() );
+        final List<RK> requestKeys = receivers.stream()
+                                              .filter( dr -> dr.getCacheState().isStale() )
+                                              .map( dr -> this.createRequestKey( dr.getCacheKey(),
+                                                                                 dr.getThirdPartyKey() ))
+                                              .collect( Collectors.toList() );
         /*
          * Request batch updates for the request keys.
          */
@@ -78,6 +83,14 @@ public abstract class AsyncCacheBatchClient< K extends Serializable,
         }
         logMethodEnd( methodName );
     }
+
+    /**
+     * Subclasses must create a new instance of the request key that contains the cache key and the third party key.
+     * @param cacheKey
+     * @param thirdPartyKey
+     * @return
+     */
+    protected abstract RK createRequestKey( final CK cacheKey, final TPK thirdPartyKey );
 
     /**
      * Sets the cached data (if present) and the cache data state on the {@code receiver}.

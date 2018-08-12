@@ -1,8 +1,10 @@
 package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
-import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheData;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
+import com.stocktracker.servicelayer.tradeit.types.LinkedAccount;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,29 +12,29 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Entity
 @Table( name = "linked_account", schema = "stocktracker", catalog = "" )
 public class LinkedAccountEntity extends UUIDEntity
-                                 implements CustomerUuidContainer
+                                 implements CustomerUuidContainer,
+                                            AsyncCacheData,
+                                            AsyncCacheDBEntity<UUID>
 {
     private UUID customerUuid;
     private UUID tradeItAccountUuid;
     private String accountNumber;
     private String accountName;
     private String accountIndex;
-    private TradeItAccountEntity accountByTradeItAccountUuid;
+    //private TradeItAccountEntity accountByTradeItAccountUuid;
     private BigDecimal availableCash;
     private BigDecimal buyingPower;
     private BigDecimal totalValue;
@@ -41,19 +43,19 @@ public class LinkedAccountEntity extends UUIDEntity
     private BigDecimal totalAbsoluteReturn;
     private BigDecimal totalPercentReturn;
     private BigDecimal marginCash;
-    private Collection<StockPositionEntity> linkedAccountPositionsByUuid;
+    //private Collection<StockPositionEntity> linkedAccountPositionsByUuid;
 
     /**
      * Creates a new instance from the information contained within {@code TradeItAccountDTO}.
-     * @param tradeItAccount
+     * @param linkedAccount
      * @return
      */
-    public static LinkedAccountEntity newInstance( final TradeItAccount tradeItAccount )
+    public static LinkedAccountEntity newInstance( final LinkedAccount linkedAccount )
     {
         LinkedAccountEntity linkedAccountEntity = new LinkedAccountEntity();
-        linkedAccountEntity.accountName = tradeItAccount.getName();
-        linkedAccountEntity.accountIndex = tradeItAccount.getAccountIndex();
-        linkedAccountEntity.accountNumber = tradeItAccount.getAccountNumber();
+        linkedAccountEntity.accountName = linkedAccount.getName();
+        linkedAccountEntity.accountIndex = linkedAccount.getAccountIndex();
+        linkedAccountEntity.accountNumber = linkedAccount.getAccountNumber();
         return linkedAccountEntity;
     }
 
@@ -70,7 +72,7 @@ public class LinkedAccountEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "tradeit_account_uuid", nullable = false, insertable = false, updatable = false)
+    @Column( name = "tradeit_account_uuid", nullable = false )
     public UUID getTradeItAccountUuid()
     {
         return tradeItAccountUuid;
@@ -117,11 +119,13 @@ public class LinkedAccountEntity extends UUIDEntity
         this.accountIndex = accountIndex;
     }
 
+    /*
     public void setAccountByTradeItAccountId( final TradeItAccountEntity tradeItAccountEntity )
     {
         this.accountByTradeItAccountUuid = tradeItAccountEntity;
         this.tradeItAccountUuid = tradeItAccountEntity.getUuid();
     }
+    */
 
     /**
      * Determines if the the account name and account number are the same
@@ -231,6 +235,7 @@ public class LinkedAccountEntity extends UUIDEntity
         this.marginCash = marginCash;
     }
 
+    /*
     @OneToMany( mappedBy = "linkedAccountByLinkedAccountUuid" )
     public Collection<StockPositionEntity> getLinkedAccountPositionsByUuid()
     {
@@ -253,13 +258,14 @@ public class LinkedAccountEntity extends UUIDEntity
     {
         this.accountByTradeItAccountUuid = accountByTradeItAccountUuid;
     }
+    */
 
     /**
      * Copy the values form the result of the TradeIt getAccountOverview call.
      * @param accountOverviewDTO
      */
     @Transient
-    public void setGetAccountOverviewValues( final GetAccountOverviewDTO accountOverviewDTO )
+    public void setGetAccountOverviewValues( final GetAccountOverviewAPIResult accountOverviewDTO )
     {
         this.availableCash = new BigDecimal( accountOverviewDTO.getAvailableCash() );
         this.buyingPower = new BigDecimal( accountOverviewDTO.getBuyingPower() );
@@ -269,6 +275,13 @@ public class LinkedAccountEntity extends UUIDEntity
         this.totalAbsoluteReturn = new BigDecimal( accountOverviewDTO.getTotalAbsoluteReturn() );
         this.totalPercentReturn = new BigDecimal( accountOverviewDTO.getTotalPercentReturn() );
         this.marginCash = new BigDecimal( accountOverviewDTO.getMarginCash() );
+    }
+
+    @Transient
+    @Override
+    public Timestamp getExpiration()
+    {
+        return new Timestamp( System.currentTimeMillis() + TimeUnit.MINUTES.toMillis( 5 ) );
     }
 
     @Override

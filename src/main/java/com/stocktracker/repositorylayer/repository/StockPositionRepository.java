@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * TradeItAccount entity repository
+ * LinkedAccount entity repository
  * <p>
  * Created by mike on 12/4/2017.
  */

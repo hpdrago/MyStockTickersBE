@@ -10,7 +10,7 @@ import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.TradeItAccountRepository;
 import com.stocktracker.servicelayer.service.common.TradeItAccountComparisonService;
 import com.stocktracker.servicelayer.tradeit.apiresults.KeepSessionAliveAPIResult;
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
+import com.stocktracker.servicelayer.tradeit.types.LinkedAccount;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
@@ -18,7 +18,6 @@ import com.stocktracker.weblayer.dto.tradeit.KeepSessionAliveDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -37,11 +36,18 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
                                                                    TradeItAccountDTO,
                                                                    TradeItAccountRepository>
 {
+    @Autowired
     private TradeItAccountRepository tradeItAccountRepository;
+    @Autowired
     private LinkedAccountEntityService linkedAccountEntityService;
-    private CustomerEntityService customerService;
+    @Autowired
     private TradeItAccountComparisonService tradeItAccountComparisonService;
 
+    /**
+     * This method is called prior to inserting the {@code entity} into the table.
+     * @param entity
+     * @throws VersionedEntityNotFoundException
+     */
     @Override
     protected void preAddEntity( final TradeItAccountEntity entity )
         throws VersionedEntityNotFoundException
@@ -106,6 +112,22 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     }
 
     /**
+     * Get the TradeIt account by customer uuid and account name.
+     * @param customerUuid
+     * @param accountName
+     * @return
+     */
+    public TradeItAccountEntity getEntity( final UUID customerUuid, final String accountName )
+    {
+        final String methodName = "getAccount";
+        logMethodBegin( methodName, customerUuid, accountName );
+        final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountRepository
+                                                              .findByCustomerUuidAndName( customerUuid, accountName );
+        logMethodEnd( methodName, tradeItAccountEntity );
+        return tradeItAccountEntity;
+    }
+
+    /**
      * This method is called after a successful authentication call.  This is a wrapper method for the follow method
      * with the same name.
      * @param tradeItAccountUuid
@@ -140,7 +162,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     /**
      * This method is called when the user has been authenticated.
      *
-     * Also, the LINKED_ACCOUNT table is updated (added/updated -- not deleted) to reflect the {@code TradeItAccount}
+     * Also, the LINKED_ACCOUNT table is updated (added/updated -- not deleted) to reflect the {@code LinkedAccount}
      * accounts returned from the authentication call.
      * @param tradeItAccountEntity
      * @param authenticateDTO The linked accounts will be set in this DTO from the linked accounts.
@@ -205,25 +227,25 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     /**
      * Adds a new linked account to the {@code tradeItAccountEntity} and the database.
      * @param tradeItAccountEntity
-     * @param tradeItAccount The account information from TradeIt.
+     * @param linkedAccount The account information from TradeIt.
      * @throws EntityVersionMismatchException
      * @throws DuplicateEntityException
      */
     public LinkedAccountEntity addLinkedAccount( final TradeItAccountEntity tradeItAccountEntity,
-                                                 final TradeItAccount tradeItAccount )
+                                                 final LinkedAccount linkedAccount )
         throws EntityVersionMismatchException,
                DuplicateEntityException
     {
         final String methodName = "addLinkedAccount";
-        logMethodBegin( methodName, tradeItAccountEntity, tradeItAccount );
+        logMethodBegin( methodName, tradeItAccountEntity, linkedAccount );
         /*
          * Convert the account information return from TradeIt to a LinkedEntityAccount instance.
          */
-        LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( tradeItAccount );
+        LinkedAccountEntity linkedAccountEntity = LinkedAccountEntity.newInstance( linkedAccount );
         /*
          * Set the bidirectional relationship
          */
-        linkedAccountEntity.setAccountByTradeItAccountId( tradeItAccountEntity );
+        linkedAccountEntity.setTradeItAccountUuid( tradeItAccountEntity.getUuid() );
         tradeItAccountEntity.addLinkedAccount( linkedAccountEntity );
         /*
          * Save the linked account
@@ -252,27 +274,4 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         return this.tradeItAccountRepository;
     }
 
-    @Autowired
-    public void setTradeItAccountRepository( final TradeItAccountRepository tradeItAccountRepository )
-    {
-        this.tradeItAccountRepository = tradeItAccountRepository;
-    }
-
-    @Autowired
-    public void setLinkedAccountEntityService( final LinkedAccountEntityService linkedAccountEntityService )
-    {
-        this.linkedAccountEntityService = linkedAccountEntityService;
-    }
-
-    @Autowired
-    public void setCustomerService( final CustomerEntityService customerService )
-    {
-        this.customerService = customerService;
-    }
-
-    @Autowired
-    public void setTradeItAccountComparisonService( final TradeItAccountComparisonService tradeItAccountComparisonService )
-    {
-        this.tradeItAccountComparisonService = tradeItAccountComparisonService;
-    }
 }

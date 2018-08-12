@@ -10,10 +10,11 @@ import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.servicelayer.tradeit.apiresults.AuthenticateAPIResult;
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
+import com.stocktracker.servicelayer.tradeit.types.LinkedAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,7 +28,9 @@ import java.util.TreeSet;
 @Service
 public class TradeItAccountComparisonService implements MyLogger
 {
+    @Autowired
     private TradeItAccountEntityService tradeItAccountEntityService;
+    @Autowired
     private LinkedAccountEntityService linkedAccountEntityService;
 
     /**
@@ -107,19 +110,21 @@ public class TradeItAccountComparisonService implements MyLogger
     {
         final String methodName = "compareAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult, accountNumber );
-        Optional<TradeItAccount> tradeItAccount = authenticateAPIResult
-            .getTradeItAccount( accountNumber );
+        Optional<LinkedAccount> tradeItAccount = authenticateAPIResult.getTradeItAccount( accountNumber );
         if ( tradeItAccount.isPresent() )
         {
-            LinkedAccountEntity linkedAccountEntity = tradeItAccountEntity
-                .getLinkedAccount( accountNumber, tradeItAccountEntity );
-            if ( !linkedAccountEntity.isAccountDetailsEqual(
-                 tradeItAccount.get().getName(),
-                 tradeItAccount.get().getAccountNumber() ))
+            Optional<LinkedAccountEntity> linkedAccountEntity = this.linkedAccountEntityService.getLinkedAccount(
+                tradeItAccountEntity.getUuid(), accountNumber );
+            if ( !linkedAccountEntity.isPresent() )
             {
-                linkedAccountEntity.setAccountName( tradeItAccount.get().getName() );
-                linkedAccountEntity = this.linkedAccountEntityService
-                                          .saveEntity( linkedAccountEntity );
+                throw new LinkedAccountNotFoundException( accountNumber, tradeItAccountEntity );
+            }
+            if ( !linkedAccountEntity.get().isAccountDetailsEqual( tradeItAccount.get().getName(),
+                                                                   tradeItAccount.get().getAccountNumber() ))
+            {
+                linkedAccountEntity.get().setAccountName( tradeItAccount.get().getName() );
+                this.linkedAccountEntityService
+                    .saveEntity( linkedAccountEntity.get() );
             }
         }
         else
@@ -180,7 +185,7 @@ public class TradeItAccountComparisonService implements MyLogger
         {
             for ( final String accountNumber : validateLinkedAccountsResult.getNewItems() )
             {
-                Optional<TradeItAccount> tradeItAccount = authenticateAPIResult
+                Optional<LinkedAccount> tradeItAccount = authenticateAPIResult
                     .getTradeItAccount( accountNumber );
                 if ( tradeItAccount.isPresent() )
                 {
@@ -209,31 +214,20 @@ public class TradeItAccountComparisonService implements MyLogger
         final String methodName = "validateLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
         Set<String> currentAccounts = new TreeSet();
-        tradeItAccountEntity.getLinkedAccountsByUuid()
-                            .forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
+        final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountEntityService
+                                                                    .getLinkedAccountEntities( tradeItAccountEntity.getUuid() );
+        linkedAccountEntities.forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
         Set<String> tradeItAccounts = new TreeSet<>();
         if ( authenticateAPIResult.getAccounts().isPresent() )
         {
-            for ( TradeItAccount tradeItAccount : authenticateAPIResult.getAccounts().get() )
+            for ( LinkedAccount linkedAccount : authenticateAPIResult.getAccounts().get() )
             {
-                tradeItAccounts.add( tradeItAccount.getAccountNumber() );
+                tradeItAccounts.add( linkedAccount.getAccountNumber() );
             }
         }
         SetComparator<String> accountComparator = new SetComparator<>();
         SetComparator<String>.SetComparatorResults results = accountComparator.compareSets( tradeItAccounts, currentAccounts );
         logMethodEnd( methodName, results );
         return results;
-    }
-
-    @Autowired
-    public void setTradeItAccountService( final TradeItAccountEntityService tradeItAccountEntityService )
-    {
-        this.tradeItAccountEntityService = tradeItAccountEntityService;
-    }
-
-    @Autowired
-    public void setLinkedAccountEntityService( final LinkedAccountEntityService linkedAccountEntityService )
-    {
-        this.linkedAccountEntityService = linkedAccountEntityService;
     }
 }

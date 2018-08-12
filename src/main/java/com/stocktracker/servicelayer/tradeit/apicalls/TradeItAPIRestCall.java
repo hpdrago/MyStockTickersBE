@@ -156,7 +156,7 @@ public abstract class TradeItAPIRestCall<T extends TradeItAPIResult> implements 
 
     /**
      * When true, when a TradeIt API call results in a 600 error which means that the account has expired, a call to
-     * the TradeIt authenicate account method will be called automatically to resolve this issue.
+     * the TradeIt authenticate account method will be called automatically to resolve this issue.
      * @return
      */
     public boolean isAuthenticateOnAccountExpired()

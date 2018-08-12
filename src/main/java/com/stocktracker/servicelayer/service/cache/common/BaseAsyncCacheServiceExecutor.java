@@ -8,11 +8,12 @@ import javax.validation.constraints.NotNull;
 /**
  * Base class for all Cache Service Executors.
  *
- * @param <T> - The type of information to obtain from the third party.
- * @param <K> - The key type to the cache -- this is key used to query the information from the third party.
+ * @param <CK> - The key used to get the cache entry.
+ * @param <TPK> - The third party key used to fetch the third party data.
+ * @param <TPD> - The type of information to obtain from the third party.
  */
-public abstract class BaseAsyncCacheServiceExecutor<K,T> extends BaseService
-    implements AsyncCacheServiceExecutor<K,T>
+public abstract class BaseAsyncCacheServiceExecutor<CK,CD,TPK,TPD> extends BaseService
+    implements AsyncCacheServiceExecutor<CK,CD,TPK,TPD>
 {
     /**
      * Asynchronous fetching of the information for {@code searchKey}.
@@ -21,19 +22,22 @@ public abstract class BaseAsyncCacheServiceExecutor<K,T> extends BaseService
      * Subclasses should override this method and declare it as @Async so that a call to this method results
      * in a new thread being created.
      *
-     * @param searchKey
+     * @param cacheKey
      */
-    public void asynchronousFetch( @NotNull final K searchKey, @NotNull final AsyncProcessor<T> subject )
+    public void asynchronousFetch( @NotNull final CK cacheKey,
+                                   @NotNull final TPK thirdPartyKey,
+                                   @NotNull final AsyncProcessor<CD> subject )
     {
         final String methodName = "asynchronousFetch";
-        logMethodBegin( methodName, searchKey );
-        final T fetchResult;
+        logMethodBegin( methodName, cacheKey );
+        final TPD thirdPartyData;
         try
         {
-            fetchResult = this.getExternalData( searchKey );
-            logTrace( methodName, "fetchResult: {0}", fetchResult );
+            thirdPartyData = this.getThirdPartyData( cacheKey, thirdPartyKey );
+            logTrace( methodName, "fetchResult: {0}", thirdPartyData );
+            CD cacheData = this.convertThirdPartyData( thirdPartyKey, thirdPartyData );
             logTrace( methodName, "onNext();onComplete();" );
-            subject.onNext( fetchResult );
+            subject.onNext( cacheData );
             subject.onComplete();
         }
         catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
@@ -41,6 +45,6 @@ public abstract class BaseAsyncCacheServiceExecutor<K,T> extends BaseService
             subject.onError( asyncCacheDataNotFoundException );
             logTrace( methodName, "onError();" );
         }
-        logMethodEnd( methodName, searchKey );
+        logMethodEnd( methodName, cacheKey );
     }
 }

@@ -11,22 +11,31 @@ import java.sql.Timestamp;
  * 3. Error - A string value of any errors that occurred during the fetching of the data.
  * --4. Exception - Any exceptions that occurred during the fetching of the cached data.
  *
- * <K> The cache key type.
+ * <CK> The cache key type.
+ * <TPK> The third party key type used to fetch the third party data.
  * <T> The cached data type.
  */
-public interface AsyncCacheDataReceiver<K extends Serializable,T>
+public interface AsyncCacheDataReceiver<CK extends Serializable,
+                                       TPK,
+                                         T>
 {
     /**
      * Set the cache key.
      * @param cacheKey
      */
-    void setCacheKey( final K cacheKey );
+    void setCacheKey( final CK cacheKey );
 
     /**
      * Get the cache key value.
      * @return
      */
-    K getCacheKey();
+    CK getCacheKey();
+
+    /**
+     * Get the third party key.
+     * @return
+     */
+    TPK getThirdPartyKey();
 
     /**
      * Set the cached data on the receiver.

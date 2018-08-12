@@ -14,10 +14,12 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  */
 @Service
 public class StockCompanyEntityCache extends AsyncBatchCache<String,
+                                                             String,
                                                              StockCompanyEntity,
                                                              StockCompanyEntityCacheEntry,
                                                              StockCompanyEntityCacheRequest,
                                                              StockCompanyEntityCacheResponse,
+    StockCompanyEntityCacheRequestKey,
                                                              StockCompanyEntityServiceExecutor>
 {
     @Autowired

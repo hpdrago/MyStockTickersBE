@@ -7,7 +7,7 @@ import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
-import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 import io.reactivex.Observable;
 import io.reactivex.subjects.AsyncSubject;
 import org.slf4j.Logger;
@@ -111,7 +111,7 @@ public class TradeItAsyncUpdateService
         log.debug( String.format( "%s.begin %s %s", methodName, tradeItAccountEntity.getUuid(), linkedAccountEntity.getUuid() ));
         try
         {
-            final GetAccountOverviewDTO getAccountOverviewDTO = this.tradeItService
+            final GetAccountOverviewAPIResult getAccountOverviewDTO = this.tradeItService
                                                                     .getAccountOverview( tradeItAccountEntity,
                                                                                          linkedAccountEntity.getAccountNumber() );
             if ( getAccountOverviewDTO.isSuccessful() )
@@ -153,7 +153,7 @@ public class TradeItAsyncUpdateService
      * @throws LinkedAccountNotFoundException
      */
     private void handleEntityMismatchException( final LinkedAccountEntity linkedAccountEntity,
-                                                final GetAccountOverviewDTO getAccountOverviewDTO )
+                                                final GetAccountOverviewAPIResult getAccountOverviewDTO )
         throws LinkedAccountNotFoundException
     {
         final String methodName = "handleEntityMismatchException";

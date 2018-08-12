@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchProcessor;
-import com.stocktracker.weblayer.dto.StockQuoteDTO;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEntityCacheRequestKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +12,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<String,
+                                                                            String,
                                                                             StockQuoteEntity,
                                                                             StockQuoteEntityCacheEntry,
                                                                             StockQuoteEntityCacheDataReceiver,
                                                                             StockQuoteEntityCacheRequest,
                                                                             StockQuoteEntityCacheResponse,
+                                                                            StockQuoteEntityCacheRequestKey,
                                                                             StockQuoteEntityContainer,
-                                                                            StockQuoteDTO,
                                                                             StockQuoteEntityServiceExecutor,
                                                                             StockQuoteEntityCache,
                                                                             StockQuoteEntityCacheClient>
@@ -27,17 +28,18 @@ public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<Stri
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
 
     @Override
-    protected void setDTOContainer( final StockQuoteEntityContainer cachedDataContainer, final StockQuoteDTO dtoContainer )
+    protected void setDataReceiver( final StockQuoteEntityContainer cachedDataContainer,
+                                    final StockQuoteEntityCacheDataReceiver dataReceiver )
     {
         /*
          * The cached data will be null if the data is not found, needs to be fetched, or there was an error.
          */
         if ( cachedDataContainer.getCachedData() != null )
         {
-            dtoContainer.setCachedData( cachedDataContainer.getCachedData() );
+            dataReceiver.setCachedData( cachedDataContainer.getCachedData() );
         }
-        dtoContainer.setCacheState( cachedDataContainer.getCacheState() );
-        dtoContainer.setCacheError( cachedDataContainer.getCacheError() );
+        dataReceiver.setCacheState( cachedDataContainer.getCacheState() );
+        dataReceiver.setCacheError( cachedDataContainer.getCacheError() );
     }
 
     @Override

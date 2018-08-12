@@ -3,7 +3,6 @@ package com.stocktracker.weblayer.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDTOContainer;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -21,7 +20,7 @@ import java.util.Objects;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuoteDTO implements AsyncCacheDTOContainer<String,StockPriceQuoteDTO>
+public class StockPriceQuoteDTO
 {
     private String tickerSymbol;
     @JsonSerialize( using = JSONMoneySerializer.class )
@@ -33,13 +32,11 @@ public class StockPriceQuoteDTO implements AsyncCacheDTOContainer<String,StockPr
     private AsyncCacheEntryState cacheState;
     private String cacheError;
 
-    @Override
     public String getCacheKey()
     {
         return this.tickerSymbol;
     }
 
-    @Override
     public void setCacheKey( final String tickerSymbol )
     {
         this.tickerSymbol = tickerSymbol;

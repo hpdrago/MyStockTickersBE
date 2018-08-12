@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * The DTO returned when calling TradeIt to keep the session alive.
- * The contents are the same as with authentication as we need the TradeItAccount and LinkedAccounts.
+ * The contents are the same as with authentication as we need the LinkedAccount and LinkedAccounts.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )

@@ -271,7 +271,7 @@ public class GainsLossesImportService extends BaseService
             tickerSymbol = this.extractTickerFromParents( tickerSymbol );
         }
         final StockCompanyEntityCacheEntry cacheEntry = this.stockCompanyEntityCache
-                                                            .synchronousGet( tickerSymbol );
+                                                            .synchronousGet( tickerSymbol, tickerSymbol );
         switch ( cacheEntry.getCacheState() )
         {
             case NOT_FOUND:

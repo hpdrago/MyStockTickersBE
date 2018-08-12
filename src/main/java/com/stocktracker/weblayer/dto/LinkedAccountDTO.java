@@ -1,12 +1,12 @@
 package com.stocktracker.weblayer.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.stocktracker.common.EntityLoadingStatus;
 import com.stocktracker.common.JSONMoneySerializer;
 import com.stocktracker.common.JSONTimestampDateTimeSerializer;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 import com.stocktracker.weblayer.dto.common.CustomerIdContainer;
 import com.stocktracker.weblayer.dto.common.UuidDTO;
-import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -49,7 +49,8 @@ public class LinkedAccountDTO implements UuidDTO,
     private BigDecimal totalPercentReturn;
     @JsonSerialize( using = JSONMoneySerializer.class )
     private BigDecimal marginCash;
-    private String loadingStatus;
+    private AsyncCacheEntryState cacheState;
+    private String cacheError;
 
     public String getId()
     {
@@ -222,26 +223,11 @@ public class LinkedAccountDTO implements UuidDTO,
         this.version = version;
     }
 
-    public void setLoadingStatus( final EntityLoadingStatus entityLoadingStatus )
-    {
-        this.loadingStatus = entityLoadingStatus.name();
-    }
-
-    public String getLoadingStatus()
-    {
-        return loadingStatus;
-    }
-
-    public void setLoadingStatus( final String loadingStatus )
-    {
-        this.loadingStatus = loadingStatus;
-    }
-
     /**
      * Copy account summary info.
      * @param getAccountOverviewDTO
      */
-    public void copyAccountSummary( final GetAccountOverviewDTO getAccountOverviewDTO )
+    public void copyAccountSummary( final GetAccountOverviewAPIResult getAccountOverviewDTO )
     {
         this.availableCash = new BigDecimal( getAccountOverviewDTO.getAvailableCash() );
         this.marginCash = new BigDecimal( getAccountOverviewDTO.getMarginCash() );
@@ -274,7 +260,8 @@ public class LinkedAccountDTO implements UuidDTO,
         sb.append( ", totalAbsoluteReturn=" ).append( totalAbsoluteReturn );
         sb.append( ", totalPercentReturn=" ).append( totalPercentReturn );
         sb.append( ", marginCash=" ).append( marginCash );
-        sb.append( ", loadingStatus=" ).append( loadingStatus );
+        sb.append( ", cacheState=" ).append( cacheState );
+        sb.append( ", cacheError=" ).append( cacheError );
         sb.append( '}' );
         return sb.toString();
     }

@@ -25,10 +25,11 @@ import java.util.Map;
 // Proxy target class to get past implementation of the interface and getting a runtime proxy error.
 @EnableAsync(proxyTargetClass = true)
 public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceExecutor<String,
+                                                                                       String,
                                                                                        StockPriceQuote,
                                                                                        StockPriceQuoteCacheRequest,
                                                                                        StockPriceQuoteCacheResponse>
-    implements AsyncCacheServiceExecutor<String,StockPriceQuote>
+    implements AsyncCacheServiceExecutor<String,String,StockPriceQuote>
 {
     @Autowired
     private StockPriceServiceExecutor stockPriceServiceExecutor;
@@ -50,7 +51,7 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
     @Override
     protected List<StockPriceQuote> getExternalData( final List<String> tickerSymbols )
     {
-        final String methodName = "getExternalData";
+        final String methodName = "getThirdPartyData";
         logMethodBegin( methodName, tickerSymbols );
         final Map<String,BigDecimal> stockPriceResults = this.iexTradingStockService
                                                              .getStockPrices( tickerSymbols );
@@ -78,16 +79,17 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
 
     /**
      * Fetches the StockQuote synchronously.
-     * @param tickerSymbol The ticker symbol to search for.
+     * @param cacheKey The ticker symbol to search for.
+     * @param thirdPartyKey Not used since the ticker symbol contained in cacheKey are the same.
      * @return
      */
     @Override
-    public StockPriceQuote getExternalData( final String tickerSymbol )
+    public StockPriceQuote getExternalData( final String cacheKey, final String thirdPartyKey )
         throws StockPriceNotFoundException
     {
-        final String methodName = "getExternalData";
-        logMethodBegin( methodName, tickerSymbol );
-        final GetStockPriceResult stockPriceResult = stockPriceServiceExecutor.synchronousGetStockPrice( tickerSymbol );
+        final String methodName = "getThirdPartyData";
+        logMethodBegin( methodName, cacheKey );
+        final GetStockPriceResult stockPriceResult = stockPriceServiceExecutor.synchronousGetStockPrice( cacheKey );
         final StockPriceQuote stockPriceQuote = processStockPriceQuoteResult( stockPriceResult );
         logMethodEnd( methodName, stockPriceQuote );
         return stockPriceQuote;
@@ -137,15 +139,18 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
      * This method, when called, starts on a new thread launched and managed by the Spring container.
      * In the new thread, the stock quote will be retrieved and the caller will be notified through the {@code observable}
      * @param tickerSymbol
+     * @param thirdPartyKey The cache key and third party key are both ticker symbols.
      * @param subject Behaviour subject to use to notify the caller that the request has been completed.
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final String tickerSymbol, final AsyncProcessor<StockPriceQuote> subject )
+    public void asynchronousFetch( final String tickerSymbol,
+                                   final String thirdPartyKey,
+                                   final AsyncProcessor<StockPriceQuote> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
-        super.asynchronousFetch( tickerSymbol, subject );
+        super.asynchronousFetch( tickerSymbol, thirdPartyKey, subject );
         logMethodEnd( methodName );
     }
 

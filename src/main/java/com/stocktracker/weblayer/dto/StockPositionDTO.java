@@ -48,18 +48,6 @@ public class StockPositionDTO extends DatabaseEntityDTO<String>
     private StockQuoteDTO stockQuoteDTO;
     private StockPriceQuoteDTO stockPriceQuoteDTO;
 
-    @Override
-    public String getCacheKey()
-    {
-        return this.tickerSymbol;
-    }
-
-    @Override
-    public void setCacheKey( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
     /**
      * Copies the TradeIt position information.
      * @param tradeItPosition

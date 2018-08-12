@@ -1,6 +1,6 @@
 package com.stocktracker.servicelayer.tradeit.apiresults;
 
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
+import com.stocktracker.servicelayer.tradeit.types.LinkedAccount;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
     /*
      * status == SUCCESS
      */
-    private TradeItAccount[] accounts;
+    private LinkedAccount[] accounts;
 
     /*
      * status = INFORMATION_NEEDED
@@ -55,7 +55,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
         }
         else
         {
-            this.accounts = new TradeItAccount[0];
+            this.accounts = new LinkedAccount[0];
         }
         this.informationType = results.getInformationType();
         this.securityQuestionOptions = results.getSecurityQuestionOptions();
@@ -110,12 +110,12 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      * Get the user's account.
      * @return
      */
-    public Optional<TradeItAccount[]> getAccounts()
+    public Optional<LinkedAccount[]> getAccounts()
     {
         return Optional.ofNullable( accounts );
     }
 
-    public void setAccounts( TradeItAccount[] accounts )
+    public void setAccounts( LinkedAccount[] accounts )
     {
         this.accounts = accounts;
     }
@@ -125,7 +125,7 @@ public class AuthenticateAPIResult extends TradeItAPIResult
      * @param accountNumber
      * @return
      */
-    public Optional<TradeItAccount> getTradeItAccount( final String accountNumber )
+    public Optional<LinkedAccount> getTradeItAccount( final String accountNumber )
     {
         return Arrays.stream( this.accounts )
                      .filter( tradeItAccount -> tradeItAccount.getAccountNumber()

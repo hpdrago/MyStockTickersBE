@@ -235,18 +235,6 @@ public class StockAnalystConsensusDTO extends DatabaseEntityDTO<String>
         return this.stockQuoteDTO;
     }
 
-    @Override
-    public String getCacheKey()
-    {
-        return tickerSymbol;
-    }
-
-    @Override
-    public void setCacheKey( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "StockAnalystConsensusDTO{" );

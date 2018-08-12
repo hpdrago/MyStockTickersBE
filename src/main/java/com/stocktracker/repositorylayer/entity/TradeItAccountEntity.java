@@ -9,14 +9,12 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,8 +39,9 @@ public class TradeItAccountEntity extends UUIDEntity
     private UUID customerUuid;
     private Timestamp authTimestamp;
     private boolean tradeItAccountFlag;
+
     //private CustomerEntity customerByCustomerUuid;
-    private Collection<LinkedAccountEntity> linkedAccountsByUuid;
+    private List<LinkedAccountEntity> linkedAccounts;
 
     public TradeItAccountEntity()
     {
@@ -145,6 +144,7 @@ public class TradeItAccountEntity extends UUIDEntity
         this.authUuid = authUuid;
     }
 
+    /*
     @OneToMany( mappedBy = "accountByTradeItAccountUuid" )
     public Collection<LinkedAccountEntity> getLinkedAccountsByUuid()
     {
@@ -167,6 +167,7 @@ public class TradeItAccountEntity extends UUIDEntity
         linkedAccountEntity.setCustomerUuid( this.getCustomerUuid() );
         this.linkedAccountsByUuid.add( linkedAccountEntity );
     }
+    */
 
     /**
      * Gets the linked account for the {@code accountNumber}.  If the account is not found, then the
@@ -177,6 +178,7 @@ public class TradeItAccountEntity extends UUIDEntity
      * @return
      * @throws LinkedAccountNotFoundException
      */
+    /*
     @Transient
     public LinkedAccountEntity getLinkedAccount( final String accountNumber, final TradeItAccountEntity tradeItAccountEntity )
         throws LinkedAccountNotFoundException
@@ -188,12 +190,14 @@ public class TradeItAccountEntity extends UUIDEntity
         }
         return linkedAccountEntity.get();
     }
+    */
 
     /**
      * Searches the linked accounts for the account number matching {@code accountNumber}.
      * @param accountNumber
      * @return
      */
+    /*
     @Transient
     public Optional<LinkedAccountEntity> getLinkedAccount( final String accountNumber )
     {
@@ -206,6 +210,7 @@ public class TradeItAccountEntity extends UUIDEntity
                                                                                            .equals( accountNumber ) )
                                         .findFirst();
     }
+    */
 
     @Basic
     @Column( name = "auth_token" )
@@ -249,6 +254,28 @@ public class TradeItAccountEntity extends UUIDEntity
         this.tradeItAccountFlag = tradeItAccountFlag;
     }
 
+    @Transient
+    public List<LinkedAccountEntity> getLinkedAccounts()
+    {
+        return linkedAccounts;
+    }
+
+    @Transient
+    public void setLinkedAccounts( final List<LinkedAccountEntity> linkedAccounts )
+    {
+        this.linkedAccounts = linkedAccounts;
+    }
+
+    @Transient
+    public void addLinkedAccount( final LinkedAccountEntity linkedAccountEntity )
+    {
+        if ( this.linkedAccounts == null )
+        {
+            this.linkedAccounts = new ArrayList<>();
+        }
+        this.linkedAccounts.add( linkedAccountEntity );
+    }
+
     @Override
     public String toString()
     {
@@ -262,7 +289,7 @@ public class TradeItAccountEntity extends UUIDEntity
         sb.append( ", authToken='" ).append( authToken ).append( '\'' );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
-        //sb.append( ", linkedAccountsByUuid=" ).append( linkedAccountsByUuid );
+        sb.append( ", linkedAccounts=" ).append( this.linkedAccounts );
         sb.append( ", tradeItAccountFlag=" ).append( tradeItAccountFlag );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );

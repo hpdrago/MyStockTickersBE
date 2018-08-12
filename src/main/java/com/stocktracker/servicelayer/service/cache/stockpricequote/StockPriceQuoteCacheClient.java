@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockPriceQuoteCacheClient extends AsyncCacheBatchClient<String,
+                                                                      String,
                                                                       StockPriceQuote,
                                                                       StockPriceQuoteCacheEntry,
                                                                       StockPriceQuoteCacheDataReceiver,
                                                                       StockPriceQuoteCacheRequest,
                                                                       StockPriceQuoteCacheResponse,
+                                                                      StockPriceQuoteCacheRequestKey,
                                                                       StockPriceQuoteServiceExecutor,
                                                                       StockPriceQuoteCache>
 {
@@ -37,4 +39,9 @@ public class StockPriceQuoteCacheClient extends AsyncCacheBatchClient<String,
         this.stockPriceQuoteCache = stockPriceQuoteCache;
     }
 
+    @Override
+    protected StockPriceQuoteCacheRequestKey createRequestKey( final String cacheKey, final String thirdPartyKey )
+    {
+        return new StockPriceQuoteCacheRequestKey( cacheKey, thirdPartyKey );
+    }
 }

@@ -9,23 +9,28 @@ import org.springframework.stereotype.Component;
  * Contains the results of a batch request which includes the requested data and an exception to identify errors
  * encountered for the request.
  *
- * @param <K> Type of data that is used for the cache key.
- * @param <T> Type of data returned from the third party.
+ * @param <CK> Type of data that is used for the cache key.
+ * @param <TPK> Type of data for the Third party key.
+ * @param <TPD> Type of data returned from the third party.
+ * @param <RK> Type of data for the request key type that contains the cache key and third party key.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class AsyncBatchCacheResponse<K,T>
+public class AsyncBatchCacheResponse<CK,
+                                    TPK,
+                                    TPD,
+                                     RK extends AsyncBatchCacheRequestKey<CK,TPK>>
 {
-    private K cacheKey;
-    private T data;
+    private RK requestKey;
+    private TPD data;
     private Exception exception;
 
-    public T getData()
+    public TPD getData()
     {
         return data;
     }
 
-    public void setData( final T data )
+    public void setData( final TPD data )
     {
         this.data = data;
     }
@@ -40,21 +45,42 @@ public class AsyncBatchCacheResponse<K,T>
         this.exception = exception;
     }
 
-    public K getCacheKey()
+    public CK getCacheKey()
     {
-        return cacheKey;
+        return this.requestKey.getCacheKey();
     }
 
-    public void setCacheKey( final K cacheKey )
+    public void setCacheKey( final CK cacheKey )
     {
-        this.cacheKey = cacheKey;
+        this.requestKey.setCacheKey( cacheKey );
+    }
+
+    public TPK getThirdPartyKey()
+    {
+        return this.requestKey.getThirdPartyKey();
+    }
+
+    public void setThirdPartyKey( final TPK thirdPartyKey )
+    {
+        this.requestKey.setThirdPartyKey( thirdPartyKey );
+    }
+
+    public RK getRequestKey()
+    {
+        return requestKey;
+    }
+
+    public void setRequestKey( final RK requestKey )
+    {
+        this.requestKey = requestKey;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AsyncBatchCacheResult{" );
-        sb.append( "cacheKey=" ).append( cacheKey );
+        sb.append( "cacheKey=" ).append( this.requestKey.getCacheKey() );
+        sb.append( ", thirdPartyKey=" ).append( this.requestKey.getThirdPartyKey() );
         sb.append( ", data=" ).append( data );
         sb.append( ", exception=" ).append( exception );
         sb.append( '}' );

@@ -99,7 +99,7 @@ public class StockNoteEntityService extends StockInformationEntityService<StockN
     }
 
     @Override
-    protected List<StockNoteDTO> entitiesToDTOs( final List<StockNoteEntity> entities )
+    public List<StockNoteDTO> entitiesToDTOs( final List<StockNoteEntity> entities )
     {
         final List<StockNoteDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService

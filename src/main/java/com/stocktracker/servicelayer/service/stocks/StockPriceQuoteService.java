@@ -45,6 +45,7 @@ public class StockPriceQuoteService extends BaseService
         /*
          * Create DTO for each container.
          */
+        /*
         final List<StockPriceQuoteDTO> dtos = containers.stream()
                                                         .map( (StockPriceQuoteDTOContainer container) ->
                                                               {
@@ -53,9 +54,24 @@ public class StockPriceQuoteService extends BaseService
                                                                   stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
                                                                   return stockPriceQuoteDTO;
                                                               })
-                                                        .collect( Collectors.toList());
+                                                        .collect( Collectors.toList() );
+                                                        */
+        /*
+         * Create the stock price quote data receivers
+         */
+        final List<StockPriceQuoteCacheDataReceiver> receivers =
+            containers.stream()
+                      .map( (StockPriceQuoteDTOContainer container) ->
+                            {
+                                StockPriceQuoteCacheDataReceiver receiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
+                                StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
+                                container.setStockPriceQuote( stockPriceQuoteDTO );
+                                stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
+                                return receiver;
+                           })
+                      .collect( Collectors.toList() );
         this.stockPriceQuoteCacheBatchProcessor
-            .getCachedData( dtos );
+            .getCachedData( receivers );
         logMethodEnd( methodName );
     }
 
@@ -142,7 +158,7 @@ public class StockPriceQuoteService extends BaseService
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-            .synchronousGet( tickerSymbol );
+            .synchronousGet( tickerSymbol, tickerSymbol );
         BigDecimal stockPrice = stockPriceQuoteCacheEntry.getCachedData().getLastPrice();
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
@@ -166,7 +182,7 @@ public class StockPriceQuoteService extends BaseService
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'" );
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-                                                                         .asynchronousGet( tickerSymbol );
+                                                                         .asynchronousGet( tickerSymbol, tickerSymbol );
         final StockPriceQuoteDTO stockPriceQuoteDTO = handleStockPriceQuoteCacheEntry( tickerSymbol, stockPriceQuoteCacheEntry );
         logMethodEnd( methodName, stockPriceQuoteDTO );
         return stockPriceQuoteDTO;

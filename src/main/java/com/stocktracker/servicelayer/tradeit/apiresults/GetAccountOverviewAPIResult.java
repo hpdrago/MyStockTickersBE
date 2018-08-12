@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class GetAccountOverViewAPIResult extends TradeItAPIResult
+public class GetAccountOverviewAPIResult extends TradeItAPIResult
 {
     private double availableCash;
     private double buyingPower;
@@ -23,25 +23,25 @@ public class GetAccountOverViewAPIResult extends TradeItAPIResult
     private double totalPercentReturn;
     private double marginCash;
 
-    public GetAccountOverViewAPIResult()
+    public GetAccountOverviewAPIResult()
     {
     }
 
     /**
      * Sets the results
-     * @param getAccountOverViewAPIResult
+     * @param getAccountOverviewAPIResult
      */
-    public void setResults( final GetAccountOverViewAPIResult getAccountOverViewAPIResult )
+    public void setResults( final GetAccountOverviewAPIResult getAccountOverviewAPIResult )
     {
-        super.setResults( getAccountOverViewAPIResult );
-        this.availableCash = getAccountOverViewAPIResult.availableCash;
-        this.buyingPower = getAccountOverViewAPIResult.buyingPower;
-        this.totalValue = getAccountOverViewAPIResult.totalValue;
-        this.dayAbsoluteReturn = getAccountOverViewAPIResult.dayAbsoluteReturn;
-        this.dayPercentReturn = getAccountOverViewAPIResult.dayPercentReturn;
-        this.totalAbsoluteReturn = getAccountOverViewAPIResult.totalAbsoluteReturn;
-        this.totalPercentReturn = getAccountOverViewAPIResult.totalPercentReturn;
-        this.marginCash = getAccountOverViewAPIResult.marginCash;
+        super.setResults( getAccountOverviewAPIResult );
+        this.availableCash = getAccountOverviewAPIResult.availableCash;
+        this.buyingPower = getAccountOverviewAPIResult.buyingPower;
+        this.totalValue = getAccountOverviewAPIResult.totalValue;
+        this.dayAbsoluteReturn = getAccountOverviewAPIResult.dayAbsoluteReturn;
+        this.dayPercentReturn = getAccountOverviewAPIResult.dayPercentReturn;
+        this.totalAbsoluteReturn = getAccountOverviewAPIResult.totalAbsoluteReturn;
+        this.totalPercentReturn = getAccountOverviewAPIResult.totalPercentReturn;
+        this.marginCash = getAccountOverviewAPIResult.marginCash;
     }
 
     /**

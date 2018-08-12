@@ -2,16 +2,20 @@ package com.stocktracker.servicelayer.service.cache.common;
 
 import io.reactivex.processors.AsyncProcessor;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
  * This class is the base class for all objects that are cached in the AsyncCache.
- * <T> - The type of cachedData to be retrieved from the third party source.
- * @param <T>
+ * @param <CK> - The type of the cache key.
+ * @param <CD> - The type of cachedData to be retrieved from the third party source.
+ * @param <TPK> - The type of the third party key.
+ * @param <TPD> - The type of the third party data.
  */
-public abstract class AsyncCacheEntry<K extends Serializable,T>
+public abstract class AsyncCacheEntry<CK,
+                                      CD,
+                                     TPK,
+                                     TPD>
 {
     /**
      * The current state of the cached item.
@@ -34,10 +38,16 @@ public abstract class AsyncCacheEntry<K extends Serializable,T>
     private AsyncCacheFetchState fetchState = AsyncCacheFetchState.NOT_FETCHING;
 
     /**
-     * The RxJava subject which is used to register to be notified when the asynchronous process completes.
-     * It is also used internally to notify all of the subscribers.
+     * This async process is used to synchronize the entire background processing of fetching the external data and
+     * whatever additional processing the cache needs to perform before sending the results to the requester.
      */
-    private AsyncProcessor<T> asyncProcessor;
+    private AsyncProcessor<CD> cachedDataSyncProcessor;
+
+    /**
+     * This async processor is used to synchronize with the retrieval of the third party data.  It is only used internally
+     * within the cache itself to synchronize the retrieving of the background fetching of of the third party data.
+     */
+    //private AsyncProcessor<TPD> thirdPartyDataSyncProcessor;
 
     /**
      * The exception if the asynchronous request failed.
@@ -47,12 +57,17 @@ public abstract class AsyncCacheEntry<K extends Serializable,T>
     /**
      * The cachedData being cached.
      */
-    private T cachedData;
+    private CD cachedData;
 
     /**
      * The key to the cache. Added so the key appears in the log file.
      */
-    private K cacheKey;
+    private CK cacheKey;
+
+    /**
+     * The key used to retrieve the information from the third party.
+     */
+    private TPK thirdPartyKey;
 
     /**
      * Creates a new instance.
@@ -63,21 +78,24 @@ public abstract class AsyncCacheEntry<K extends Serializable,T>
     public AsyncCacheEntry()
     {
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
-        this.asyncProcessor = AsyncProcessor.create();
-        this.asyncProcessor.serialize();
+        this.cachedDataSyncProcessor = AsyncProcessor.create();
+        this.cachedDataSyncProcessor.serialize();
     }
 
     /**
      * Set the cachedData object.
      * @param cachedData
      */
-    public synchronized void setCachedData( final K cacheKey, final T cachedData )
+    public synchronized void setCachedData( final CK cacheKey,
+                                            final TPK thirdPartyKey,
+                                            final CD cachedData )
     {
         Objects.requireNonNull( cacheKey, "cacheKey argument cannot be null" );
         this.cachedData = cachedData;
+        this.thirdPartyKey = thirdPartyKey;
         if ( cachedData == null )
         {
-            T newCacheData = null;
+            CD newCacheData = null;
         }
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
     }
@@ -86,7 +104,7 @@ public abstract class AsyncCacheEntry<K extends Serializable,T>
      * Get the cachedData.
      * @return
      */
-    public synchronized T getCachedData()
+    public synchronized CD getCachedData()
     {
         return this.cachedData;
     }
@@ -165,9 +183,9 @@ public abstract class AsyncCacheEntry<K extends Serializable,T>
     /**
      * The RxJava subject to contain any requests waiting for the stock price while it's being fetched.
      */
-    public synchronized AsyncProcessor<T> getAsyncProcessor()
+    public synchronized AsyncProcessor<CD> getCachedDataSyncProcessor()
     {
-        return asyncProcessor;
+        return cachedDataSyncProcessor;
     }
 
     /**
@@ -196,15 +214,48 @@ public abstract class AsyncCacheEntry<K extends Serializable,T>
         return this.cacheState.isStale();
     }
 
-    public K getCacheKey()
+    public CK getCacheKey()
     {
         return cacheKey;
     }
 
-    public void setCacheKey( final K cacheKey )
+    public void setCacheKey( final CK cacheKey )
     {
         this.cacheKey = cacheKey;
     }
+
+    public TPK getThirdPartyKey()
+    {
+        return thirdPartyKey;
+    }
+
+    public void setThirdPartyKey( final TPK thirdPartyKey )
+    {
+        this.thirdPartyKey = thirdPartyKey;
+    }
+
+    public void setCachedDataSyncProcessor( final AsyncProcessor<CD> cachedDataSyncProcessor )
+    {
+        this.cachedDataSyncProcessor = cachedDataSyncProcessor;
+    }
+
+    /*
+    public AsyncProcessor<TPD> getThirdPartyDataSyncProcessor()
+    {
+        return thirdPartyDataSyncProcessor;
+    }
+
+    public void setThirdPartyDataSyncProcessor( final AsyncProcessor<TPD> thirdPartyDataSyncProcessor )
+    {
+        this.thirdPartyDataSyncProcessor = thirdPartyDataSyncProcessor;
+    }
+    */
+
+    public void setCachedData( final CD cachedData )
+    {
+        this.cachedData = cachedData;
+    }
+
 
     @Override
     public String toString()

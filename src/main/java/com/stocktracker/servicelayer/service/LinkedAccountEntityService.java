@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service;
 
 import com.fasterxml.uuid.impl.UUIDUtil;
-import com.stocktracker.common.EntityLoadingStatus;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -27,10 +27,12 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
                                                                   LinkedAccountDTO,
                                                                   LinkedAccountRepository>
 {
+    @Autowired
     private LinkedAccountRepository linkedAccountRepository;
+    @Autowired
     private TradeItAsyncUpdateService tradeItAsyncUpdateService;
+    @Autowired
     private TradeItAccountEntityService tradeItAccountEntityService;
-
 
     /**
      * Get all of the linked account for a customer.
@@ -49,7 +51,22 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     }
 
     /**
+     * Loads all of the linked accounts for the LinkedAccount entity.
+     * @param tradeItAccountEntity
+     */
+    public void loadLinkedAccounts( final TradeItAccountEntity tradeItAccountEntity )
+    {
+        final String methodName = "getLinkedAccounts";
+        logMethodBegin( methodName, tradeItAccountEntity );
+        final List<LinkedAccountEntity> linkedAccountEntities = this.getLinkedAccountEntities( tradeItAccountEntity.getUuid() );
+        tradeItAccountEntity.setLinkedAccounts( linkedAccountEntities );
+        logMethodEnd( methodName );
+    }
+
+    /**
      * This method will retrieve all of the linked accounts (child to the tradeit_account table) for the TradeIt account.
+     * If the TradeIt account is not a manual account, the TradeIt account will be synchronized between TradeIt and
+     * the database.
      * @param tradeItAccountUuid
      * @return
      * @throws TradeItAccountNotFoundException
@@ -69,31 +86,72 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         {
             throw new TradeItAccountNotFoundException( tradeItAccountUuid, e );
         }
-        List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
-                                                              .findAllByTradeItAccountUuid( tradeItAccountUuid );
-        /*
-         * Getting the account overview information is a two step process because it is asynchronous in nature.
-         * The first step is to set the linked accounts to be updated in the {@code TradeitAsyncUpdateService} this is
-         * done first so that the service knows about the accounts that need to be updated in case the front end calls
-         * to get the updated information before the second stop starts.
-         * The next is to make the asynchronous calls to update the account overview status.
-         *
-         * These are asynchronous calls to refresh the account overview information
-         */
-        linkedAccountEntities
-            .forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
-                                                 .prepareToUpdateLinkedAccount( linkedAccountEntity ));
-        linkedAccountEntities
-            .forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
-                                                 .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ));
+        final List<LinkedAccountEntity> linkedAccountEntities = this.getLinkedAccountEntities( tradeItAccountUuid );
+        if ( tradeItAccountEntity.isTradeItAccount() )
+        {
+            /*
+             * Getting the account overview information is a two step process because it is asynchronous in nature.
+             * The first step is to set the linked accounts to be updated in the {@code TradeitAsyncUpdateService} this is
+             * done first so that the service knows about the accounts that need to be updated in case the front end calls
+             * to get the updated information before the second stop starts.
+             * The next is to make the asynchronous calls to update the account overview status.
+             *
+             * These are asynchronous calls to refresh the account overview information
+             */
+            linkedAccountEntities
+                .forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
+                    .prepareToUpdateLinkedAccount( linkedAccountEntity ) );
+            linkedAccountEntities
+                .forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
+                    .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ) );
+        }
+        else
+        {
+            tradeItAccountEntity.setLinkedAccounts( linkedAccountEntities );
+        }
+
         /*
          * Return the values that are currently in the database, the front ent will load those values first and
          * then make another call to get the updated information for each account.
          */
         final List<LinkedAccountDTO> linkedAccountDTOs = this.entitiesToDTOs( linkedAccountEntities );
-        linkedAccountDTOs.forEach( linkedAccountDTO -> linkedAccountDTO.setLoadingStatus( EntityLoadingStatus.LOADING ));
         logMethodEnd( methodName, String.format( "returning %d linked account", linkedAccountDTOs.size() ));
         return linkedAccountDTOs;
+    }
+
+    /**
+     * Gets the linked account for the {@code tradeItAccountUuid} and the {@code accountNumber}
+     * @param tradeItAccountUuid
+     * @param accountNumber
+     * @return Optional {@code LinkedAccountEntity}
+     */
+    public Optional<LinkedAccountEntity> getLinkedAccount( final UUID tradeItAccountUuid, final String accountNumber )
+    {
+        final String methodName = "getLinkedAccountEntities";
+        logMethodBegin( methodName, tradeItAccountUuid, accountNumber );
+        final List<LinkedAccountEntity>  linkedAccountEntities = this.getLinkedAccountEntities( tradeItAccountUuid );
+        final Optional<LinkedAccountEntity> linkedAccountEntity = linkedAccountEntities.stream()
+                                                                                       .filter( linkedAccount ->
+                                                                                                    linkedAccount.getAccountNumber()
+                                                                                                                 .equals( accountNumber ) )
+                                                                                      .findFirst();
+        logMethodEnd( methodName, linkedAccountEntity );
+        return linkedAccountEntity;
+    }
+
+    /**
+     * Get all of the LinkedAccountEntity instances for the {@code tradeItAccountId}.
+     * @param tradeItAccountUuid
+     * @return
+     */
+    public List<LinkedAccountEntity> getLinkedAccountEntities( final UUID tradeItAccountUuid )
+    {
+        final String methodName = "getLinkedAccountEntities";
+        logMethodBegin( methodName, tradeItAccountUuid );
+        final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
+                                                                    .findAllByTradeItAccountUuid( tradeItAccountUuid );
+        logMethodEnd( methodName, linkedAccountEntities );
+        return linkedAccountEntities;
     }
 
     /**
@@ -143,7 +201,6 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         this.tradeItAsyncUpdateService
             .removeGetAccountOverviewRequest( linkedAccountUuid );
         final LinkedAccountDTO linkedAccountDTO = this.entityToDTO( linkedAccountEntity );
-        linkedAccountDTO.setLoadingStatus( EntityLoadingStatus.LOADED );
         logMethodEnd( methodName, linkedAccountDTO );
         return linkedAccountDTO;
     }
@@ -178,7 +235,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     }
 
     /**
-     * Need to lookup the TradeItAccount entity before adding.
+     * Need to lookup the LinkedAccount entity before adding.
      * @param linkedAccountEntity
      * @throws VersionedEntityNotFoundException if the parent TradeIt account entity cannot be found.
      */
@@ -188,7 +245,7 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     {
         final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                               .getEntity( linkedAccountEntity.getTradeItAccountUuid() );
-        linkedAccountEntity.setAccountByTradeItAccountId( tradeItAccountEntity );
+        linkedAccountEntity.setTradeItAccountUuid( tradeItAccountEntity.getUuid() );
         super.preAddEntity( linkedAccountEntity );
     }
 
@@ -210,22 +267,4 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         return this.linkedAccountRepository;
     }
 
-    @Autowired
-    public void setLinkedAccountRepository( final LinkedAccountRepository linkedAccountRepository )
-    {
-        this.linkedAccountRepository = linkedAccountRepository;
-    }
-
-    @Autowired
-    public void setTradeItAccountEntityService( final TradeItAccountEntityService tradeItAccountEntityService )
-    {
-        this.tradeItAccountEntityService = tradeItAccountEntityService;
-    }
-
-    @Autowired
-    public void setTradeItAsyncUpdateService( final TradeItAsyncUpdateService tradeItAsyncUpdateService )
-    {
-        this.tradeItAsyncUpdateService = tradeItAsyncUpdateService;
-        logInfo( "setTradeItAsyncUpdateService", "Injection of " + tradeItAsyncUpdateService );
-    }
 }

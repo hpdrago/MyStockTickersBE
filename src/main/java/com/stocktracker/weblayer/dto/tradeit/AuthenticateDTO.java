@@ -15,7 +15,7 @@ import java.util.List;
  * Result that was received from TradeIt and the UUID to be used if the user needs to answer a security question.
  *
  * NOTE: this does not inherit from {@code AuthenticateAPIResult} because we want to return the {@code LinkedAccountEntity}
- * instances not {@code TradeItAccount} instances that were returned from the TradeIt authentication call.
+ * instances not {@code LinkedAccount} instances that were returned from the TradeIt authentication call.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE)
@@ -39,6 +39,8 @@ public class AuthenticateDTO extends AuthenticateAPIResult
     public AuthenticateDTO( final AuthenticateDTO authenticateDTO )
     {
         super( authenticateDTO );
+        this.tradeItAccount = authenticateDTO.tradeItAccount;
+        this.linkedAccounts = authenticateDTO.linkedAccounts;
     }
 
     /**

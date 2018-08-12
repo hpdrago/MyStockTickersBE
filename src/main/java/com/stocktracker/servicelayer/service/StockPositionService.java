@@ -14,7 +14,6 @@ import com.stocktracker.repositorylayer.repository.StockPositionRepository;
 import com.stocktracker.servicelayer.service.common.StockPositionComparator;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
-import com.stocktracker.servicelayer.tradeit.types.TradeItAccount;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,7 +190,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
     }
 
     @Override
-    protected List<StockPositionDTO> entitiesToDTOs( final List<StockPositionEntity> stockPositions )
+    public List<StockPositionDTO> entitiesToDTOs( final List<StockPositionEntity> stockPositions )
     {
         final List<StockPositionDTO> dtos = super.entitiesToDTOs( stockPositions );
         this.stockPriceQuoteService

@@ -34,6 +34,11 @@ public class TradeItAccountNotFoundException extends Exception
         super( getMessage( tradeItAccountUuid ), e);
     }
 
+    public TradeItAccountNotFoundException( final UUID customerUuid, final String accountName )
+    {
+        super( "TradeIt account not found for customer UUID: " + customerUuid + " and account name: " + accountName );
+    }
+
     private static String getMessage( final Object tradeItAccountUuid )
     {
         return "TradeItAccountDTO uuid: " + tradeItAccountUuid + " was not found";

@@ -9,41 +9,45 @@ import java.util.stream.Collectors;
 /**
  * This class provides the ability to process a batch of containers (<C>) to obtain the async cache data for each container
  * and then update the containers with the DTO information for the cache data.
- * @param <K>  - Key type.
- * @param <T>  - Cache data type.
+ * @param <CK>  - Key type.
+ * @param <CD>  - Cache data type.
+ * @param <TPK> - Third party key type.  Used to query the information from the third party.
+ * @param <TPD> - Third party data type.
  * @param <CE> - Cache entry type.
  * @param <DR> - Data receiver type.
  * @param <RQ> - Asynchronous request data type.
  * @param <RS> - Asynchronous response data type.
+ * @param <RK> - The request key that contains the cache key and the third party key.
  * @param <CDC> - Container type.
- * @param <DC> - DTO container type.
  * @param <X>  - Async executor type.
  * @param <C>  - Cache type.
  * @param <CL> - Batch client type.
  */
-public abstract class AsyncCacheBatchProcessor<  K extends Serializable,
-                                                 T extends AsyncCacheData,
-                                                CE extends AsyncCacheEntry<K,T>,
-                                                DR extends AsyncCacheDataReceiver<K,T>,
-                                                RQ extends AsyncBatchCacheRequest<K,T>,
-                                                RS extends AsyncBatchCacheResponse<K,T>,
-                                               CDC extends AsyncCachedDataContainer<K,T>,
-                                                DC extends AsyncCacheDTOContainer<K,DC>,
-                                                 X extends AsyncCacheBatchServiceExecutor<K,T,RQ,RS>,
-                                                 C extends AsyncBatchCache<K,T,CE,RQ,RS,X>,
-                                                CL extends AsyncCacheBatchClient<K,T,CE,DR,RQ,RS,X,C>>
+public abstract class AsyncCacheBatchProcessor< CK extends Serializable,
+                                                CD extends AsyncCacheData,
+                                               TPK,
+                                               TPD,
+                                                CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
+                                                DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
+                                                RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
+                                                RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
+                                                RK extends AsyncBatchCacheRequestKey<CK,TPK>,
+                                               CDC extends AsyncCachedDataContainer<CK,CD>,
+                                                 X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>,
+                                                 C extends AsyncBatchCache<CK,CD,TPK,TPD,CE,RK,RQ,RS,X>,
+                                                CL extends AsyncCacheBatchClient<CK,CD,TPK,TPD,CE,DR,RQ,RS,RK,X,C>>
     extends BaseService
 {
     /**
-     * Populates the {@code dtoContainers} with the cached data.
-     * @param dtoContainers
+     * Populates the {@code dataReceivers} with the cached data.
+     * @param dataReceivers
      */
-    public void getCachedData( final List<? extends DC> dtoContainers )
+    public void getCachedData( final List<? extends DR> dataReceivers )
     {
         /*
          * Create the cached data containers.
          */
-        final List<? extends CDC> cachedDataContainers = this.createContainers( dtoContainers );
+        final List<? extends CDC> cachedDataContainers = this.createContainers( dataReceivers );
         /*
          * Make the batch request, the cachedDataContainers contain the request key and will be populated with the
          * cached information.
@@ -52,29 +56,30 @@ public abstract class AsyncCacheBatchProcessor<  K extends Serializable,
         /*
          * The cachedDataContainers have been updated with the cache information including if the data is currently
          * being fetch asynchronously.  We need to copy that data and cache state information to the DTOs in the
-         * dtoContainers.
+         * dataReceivers.
          */
-        this.updateDTOContainers( dtoContainers, cachedDataContainers );
+        this.updateDTOContainers( dataReceivers, cachedDataContainers );
     }
 
     /**
      * Copies the information from the cachedDataContainers, which contains the cache information and state, to the
      * source DTO containers.
-     * @param dtoContainers
+     * @param dataReceivers
      * @param cachedDataContainers
      */
-    protected void updateDTOContainers( final List<? extends DC> dtoContainers, final List<? extends CDC> cachedDataContainers )
+    protected void updateDTOContainers( final List<? extends DR> dataReceivers,
+                                        final List<? extends CDC> cachedDataContainers )
     {
         for ( int i = 0; i < cachedDataContainers.size(); i++ )
         {
             CDC cachedDataContainer = cachedDataContainers.get( i );
-            DC dtoContainer = dtoContainers.get( i );
+            DR dtoContainer = dataReceivers.get( i );
             if ( !cachedDataContainer.getCacheKey().equals( dtoContainer.getCacheKey() ))
             {
                 throw new IllegalArgumentException( String.format( "dto/cached data key mismatch error.  DTO: %s CachedData %s",
                                                                    dtoContainer.getCacheKey(), cachedDataContainer.getCacheKey() ));
             }
-            this.setDTOContainer( cachedDataContainer, dtoContainer );
+            this.setDataReceiver( cachedDataContainer, dtoContainer );
         }
     }
 
@@ -82,23 +87,23 @@ public abstract class AsyncCacheBatchProcessor<  K extends Serializable,
      * Subclasses must override this method to take the cached data from the {@code cachedDataContainer} and copy it
      * and the cache results to the {@code dtoContainer}.
      * @param cachedDataContainer
-     * @param dtoContainer
+     * @param dataReceiver
      */
-    protected abstract void setDTOContainer( final CDC cachedDataContainer, final DC dtoContainer );
+    protected abstract void setDataReceiver( final CDC cachedDataContainer, final DR dataReceiver );
 
     /**
      * Creates a matching list of containers from the DTOs.  The containers will contain all of the cache
-     * information which can then be extracted and copied to the dtoContainers.
-     * @param dtoContainers
+     * information which can then be extracted and copied to the dataReceivers.
+     * @param dataReceivers
      * @return
      */
-    protected List<? extends CDC> createContainers( final List<? extends DC> dtoContainers )
+    protected List<? extends CDC> createContainers( final List<? extends DR> dataReceivers )
     {
-        final List<? extends CDC> containers = dtoContainers.stream()
-                                                            .map( (DC dtoContainer) ->
+        final List<? extends CDC> containers = dataReceivers.stream()
+                                                            .map( (DR dataReceiver ) ->
                                                             {
                                                                  final CDC container = this.newContainer();
-                                                                 container.setCacheKey( dtoContainer.getCacheKey() );
+                                                                 container.setCacheKey( dataReceiver.getCacheKey() );
                                                                  return container;
                                                             })
                                                             .collect(Collectors.toList());
@@ -172,7 +177,7 @@ public abstract class AsyncCacheBatchProcessor<  K extends Serializable,
      * @param container
      * @return
      */
-    protected abstract K getCacheKey( final CDC container );
+    protected abstract CK getCacheKey( final CDC container );
 
     /**
      * Subclasses must specify the receiver type.

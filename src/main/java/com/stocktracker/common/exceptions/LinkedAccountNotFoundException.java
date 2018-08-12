@@ -1,6 +1,7 @@
 package com.stocktracker.common.exceptions;
 
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -10,7 +11,7 @@ import java.util.UUID;
  * This exception is thrown when a linked account cannot be found.
  */
 @ResponseStatus( value= HttpStatus.NOT_FOUND)  // 404
-public class LinkedAccountNotFoundException extends Exception
+public class LinkedAccountNotFoundException extends AsyncCacheDataNotFoundException
 {
     /**
      * Creates a new exception with an informational message.

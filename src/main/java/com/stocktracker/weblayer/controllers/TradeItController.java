@@ -101,26 +101,30 @@ public class TradeItController extends AbstractController
                                          + "/customerId/{customerId}"
                                          + "/broker/{broker}"
                                          + "/accountName/{accountName}"
+                                         + "/tokenUpdate/{tokenUpdate}"
                                          + "/oAuthVerifier/{oAuthVerifier}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public GetOAuthAccessTokenDTO getOAuthAccessToken( @PathVariable final String customerId,
                                                        @PathVariable final String broker,
                                                        @PathVariable final String accountName,
+                                                       @PathVariable final boolean tokenUpdate,
                                                        @PathVariable final String oAuthVerifier )
         throws EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "getOAuthAccessToken";
-        logMethodBegin( methodName, customerId, oAuthVerifier );
+        logMethodBegin( methodName, customerId, broker, accountName, tokenUpdate, oAuthVerifier );
         final UUID customerUuid = this.validateCustomerId( customerId );
         this.customerEntityService.getCustomerEntity( customerUuid );
         final GetOAuthAccessTokenDTO getOAuthAccessTokenDTO = this.tradeItService
                                                                   .getOAuthAccessToken( customerUuid,
                                                                                         broker,
                                                                                         accountName,
+                                                                                        tokenUpdate,
                                                                                         oAuthVerifier );
         logMethodEnd( methodName, getOAuthAccessTokenDTO );
         return getOAuthAccessTokenDTO;
@@ -168,7 +172,6 @@ public class TradeItController extends AbstractController
      * @return AuthenticateAPICall - contains the session token and standard TradeIt results.
      * @throws TradeItAccountNotFoundException
      * @throws LinkedAccountNotFoundException
-     * @throws TradeItAuthenticationException
      * @throws EntityVersionMismatchException
      * @throws CustomerNotFoundException
      * @throws NotAuthorizedException
@@ -183,7 +186,6 @@ public class TradeItController extends AbstractController
     public AuthenticateDTO authenticate( @PathVariable final String customerId,
                                          @PathVariable final String accountId )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                LinkedAccountNotFoundException,
                CustomerNotFoundException,
@@ -234,7 +236,6 @@ public class TradeItController extends AbstractController
                                                              @RequestBody final String answer )
         throws LinkedAccountNotFoundException,
                TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,
@@ -272,7 +273,6 @@ public class TradeItController extends AbstractController
     public KeepSessionAliveDTO keepSessionAlive( @PathVariable final String customerId,
                                                  @PathVariable final String tradeItAccountId )
         throws TradeItAccountNotFoundException,
-               TradeItAuthenticationException,
                EntityVersionMismatchException,
                CustomerNotFoundException,
                NotAuthorizedException,

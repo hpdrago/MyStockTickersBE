@@ -8,7 +8,7 @@ import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
  * This interface defines the methods for classes that will get Stock Quote information from the StockQuoteEntityCache
  */
 public interface StockCompanyEntityContainer extends TickerSymbolContainer,
-                                                     AsyncCacheDataReceiver<String,StockCompanyEntity>
+                                                     AsyncCacheDataReceiver<String,String,StockCompanyEntity>
 {
 
     /**

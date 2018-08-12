@@ -84,7 +84,7 @@ public class StockCatalystEventEntityService extends StockInformationEntityServi
     }
 
     @Override
-    protected List<StockCatalystEventDTO> entitiesToDTOs( final List<StockCatalystEventEntity> entities )
+    public List<StockCatalystEventDTO> entitiesToDTOs( final List<StockCatalystEventEntity> entities )
     {
         final List<StockCatalystEventDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService

@@ -1,7 +1,7 @@
 package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.servicelayer.tradeit.TradeItParameter;
-import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverViewAPIResult;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOverViewAPIResult>
+public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOverviewAPIResult>
 {
     /**
      * Execute the Keep Session Alive API call.
@@ -19,14 +19,14 @@ public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOver
      * @return Result of keep alive call.
      * @throws IllegalArgumentException If the required parameters are not found in {@code parameterMap}
      */
-    public GetAccountOverViewAPIResult execute( final TradeItAPICallParameters parameterMap )
+    public GetAccountOverviewAPIResult execute( final TradeItAPICallParameters parameterMap )
     {
         final String methodName = "execute";
         logMethodBegin( methodName, parameterMap );
         parameterMap.parameterCheck( TradeItParameter.TOKEN_PARAM, TradeItParameter.ACCOUNT_NUMBER_PARAM );
-        final GetAccountOverViewAPIResult getAccountOverViewAPIResult = super.callTradeIt( parameterMap );
-        logMethodEnd( methodName, getAccountOverViewAPIResult );
-        return getAccountOverViewAPIResult;
+        final GetAccountOverviewAPIResult getAccountOverviewAPIResult = super.callTradeIt( parameterMap );
+        logMethodEnd( methodName, getAccountOverviewAPIResult );
+        return getAccountOverviewAPIResult;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class GetAccountOverviewAPICall extends TradeItAPIRestCall<GetAccountOver
     }
 
     @Override
-    protected Class<GetAccountOverViewAPIResult> getAPIResultsClass()
+    protected Class<GetAccountOverviewAPIResult> getAPIResultsClass()
     {
-        return GetAccountOverViewAPIResult.class;
+        return GetAccountOverviewAPIResult.class;
     }
 }

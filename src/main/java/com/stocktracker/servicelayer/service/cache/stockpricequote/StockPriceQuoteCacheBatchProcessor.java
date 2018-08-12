@@ -1,7 +1,6 @@
 package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchProcessor;
-import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +10,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockPriceQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<String,
+                                                                                 String,
                                                                                  StockPriceQuote,
                                                                                  StockPriceQuoteCacheEntry,
                                                                                  StockPriceQuoteCacheDataReceiver,
                                                                                  StockPriceQuoteCacheRequest,
                                                                                  StockPriceQuoteCacheResponse,
+                                                                                 StockPriceQuoteCacheRequestKey,
                                                                                  StockPriceQuote,
-                                                                                 StockPriceQuoteDTO,
                                                                                  StockPriceQuoteServiceExecutor,
                                                                                  StockPriceQuoteCache,
                                                                                  StockPriceQuoteCacheClient>
@@ -26,11 +26,12 @@ public class StockPriceQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor
     private StockPriceQuoteCacheClient stockPriceQuoteCacheClient;
 
     @Override
-    protected void setDTOContainer( final StockPriceQuote cachedDataContainer, final StockPriceQuoteDTO dtoContainer )
+    protected void setDataReceiver( final StockPriceQuote cachedDataContainer,
+                                    final StockPriceQuoteCacheDataReceiver dataReceiver )
     {
-        dtoContainer.setLastPrice( cachedDataContainer.getLastPrice() );
-        dtoContainer.setCacheState( cachedDataContainer.getCacheState() );
-        dtoContainer.setCacheError( cachedDataContainer.getCacheError() );
+        cachedDataContainer.setLastPrice( cachedDataContainer.getLastPrice() );
+        cachedDataContainer.setCacheState( cachedDataContainer.getCacheState() );
+        cachedDataContainer.setCacheError( cachedDataContainer.getCacheError() );
     }
 
     @Override
