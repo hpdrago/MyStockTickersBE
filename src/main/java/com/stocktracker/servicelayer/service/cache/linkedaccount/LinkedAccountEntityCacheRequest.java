@@ -13,6 +13,8 @@ import java.util.UUID;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class LinkedAccountEntityCacheRequest extends AsyncBatchCacheRequest<UUID,LinkedAccountEntity,LinkedAccountEntity>
+public class LinkedAccountEntityCacheRequest extends AsyncBatchCacheRequest<UUID,
+                                                                            LinkedAccountEntity,
+                                                                            LinkedAccountEntityCacheAsyncKey>
 {
 }

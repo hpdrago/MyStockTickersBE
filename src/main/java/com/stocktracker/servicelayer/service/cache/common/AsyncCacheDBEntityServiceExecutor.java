@@ -7,6 +7,7 @@ import com.stocktracker.repositorylayer.common.VersionedEntity;
 import com.stocktracker.servicelayer.service.VersionedEntityService;
 import org.springframework.beans.BeanUtils;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,165 +16,132 @@ import java.util.List;
  * This is an extension of the async service executor to be used for the cases where we save the retrieved information
  * into the database.
  *
- * @param <CK> - The key type to the cache -- this is key used to query the information from the third party.
- * @param <TPK> - The third party cache key -- the key used to retrieve the information from the third party which can
+ * @param <CK> - The key type to the cache -- this is key used to query the information form the async source.
+ * @param <ASK> - The async cache key -- the key used to retrieve the information form the async source which can
  *                be different than the cache key.
  * @param <CD> - The cache data type which is the database entity that will be stored.
- * @param <TPD> - The external/third party data.  This is the data that we will retrieve from the external/third party.
+ * @param <ASD> - The external/async data.  This is the data that we will retrieve from the external/async.
  * @param <S> - The entity service.
- * @param <EX>- The exception type used when the requested data is not found.
  * @param <RQ>- The request type.
  * @param <RS>- The response type.
  */
 public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
-                                                        TPK,
                                                         CD extends VersionedEntity<CK>,
-                                                        TPD,
+                                                        ASK,
+                                                        ASD,
                                                         S extends VersionedEntityService<CK,CD,?,?,?>,
-                                                        EX extends AsyncCacheDataNotFoundException,
-                                                        RK extends AsyncBatchCacheRequestKey<CK,TPK>,
-                                                        RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                                        RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>>
-    extends BaseAsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>
+                                                        RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                                        RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                                        RS extends AsyncBatchCacheResponse<CK,ASK,ASD>>
+    extends BaseAsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>
 {
-//    @Override
-//    protected List<TPD> batchFetch( final List<RK> requestKeys )
-//    {
-//        final String methodName = "batchFetch";
-//        logMethodBegin( methodName, requestKeys );
-//        /*
-//         * Get the third party data for all of the request keys.
-//         */
-//        final List<RS> responseList = this.getThirdPartyData( requestKeys );
-//        final List<CD> returnCacheDataList = new ArrayList<>();
-//        /*
-//         * Update existing entities and insert new entities.
-//         */
-//        responseList.forEach( ( response )->
-//                             {
-//                                /*
-//                                 * Need to get the existing entity
-//                                 */
-//                                CD entity = null;
-//                                try
-//                                {
-//                                    entity = this.getEntityService()
-//                                                 .getEntity( response.getCacheKey() );
-//                                    this.copyThirdPartyData( response.getRequestKey(),
-//                                                             response.getData(),
-//                                                             entity );
-//                                }
-//                                catch( VersionedEntityNotFoundException e )
-//                                {
-//                                    /*
-//                                     * Not found so, create it
-//                                     */
-//                                    entity = this.createEntity();
-//                                    this.copyThirdPartyData( response.getRequestKey(),
-//                                                             response.getData(),
-//                                                             entity );
-//                                }
-//                                try
-//                                {
-//                                    entity = this.getEntityService()
-//                                                 .saveEntity( entity );
-//                                }
-//                                catch( DuplicateEntityException | EntityVersionMismatchException e )
-//                                {
-//                                    logDebug( methodName, "DuplicateEntityException encountered saving {0}",
-//                                              entity );
-//                                    /*
-//                                     * Retrieve and resave information.
-//                                     */
-//                                    try
-//                                    {
-//                                        entity = this.getEntityService()
-//                                                     .getEntity( response.getRequestKey()
-//                                                                         .getCacheKey() );
-//                                        this.copyThirdPartyData( response.getRequestKey(),
-//                                                                 response.getData(),
-//                                                                 entity );
-//                                        entity = this.getEntityService()
-//                                                     .saveEntity( entity );
-//                                    }
-//                                    catch( Exception ex )
-//                                    {
-//                                        logError( methodName, ex );
-//                                    }
-//                                }
-//                                returnCacheDataList.add( entity );
-//                            });
-//        logDebug( methodName, "cached items: {0}", returnCacheDataList );
-//        logMethodEnd( methodName, returnCacheDataList.size() + " cached items" );
-//        return returnCacheDataList;
-//    }
-
     /**
-     * Retrieves a batch of third party data objects for the {@code requestKeys}.
-     * By default, a request is made for each request key in {@code requestKeys}.
-     * For those third parties that provide batch request services, this method should be overridden to work within the
-     * batch request parameters of the third party.
-     * @param requestKeys
+     * Converts the data retrieved form the async sourcehronous source into a DB Entity instance.
+     * @param cacheKey
+     * @param asyncKey
+     * @param asyncData
      * @return
      */
-    protected List<RS> getThirdPartyData( final List<RK> requestKeys )
+    @Override
+    protected CD convertASyncData( @NotNull final CK cacheKey,
+                                   @NotNull final ASK asyncKey,
+                                   @NotNull final ASD asyncData )
     {
-        final String methodName = "getThirdPartyData";
-        logMethodBegin( methodName, requestKeys );
-        final List<RS> resultList = new ArrayList<>( requestKeys.size() );
-        for ( final RK requestKey : requestKeys )
+        final String methodName = "convertASyncData";
+        logMethodBegin( methodName, cacheKey, asyncKey, asyncData );
+        /*
+         * Need to get the existing entity
+         */
+        CD entity = null;
+        try
         {
+            entity = this.getEntityService()
+                         .getEntity( cacheKey );
+            this.copyASyncData( cacheKey, asyncData, entity );
+        }
+        catch( VersionedEntityNotFoundException e )
+        {
+            /*
+             * Not found so, create it
+             */
+            entity = this.createEntity();
+            this.copyASyncData( cacheKey, asyncData, entity );
+        }
+        try
+        {
+            entity = this.getEntityService()
+                         .saveEntity( entity );
+        }
+        catch( DuplicateEntityException | EntityVersionMismatchException e )
+        {
+            logDebug( methodName, "DuplicateEntityException encountered saving {0}",
+                      entity );
+            /*
+             * Retrieve and resave information.
+             */
             try
             {
-                final TPD thirdPartyData = this.getThirdPartyData( requestKey.getThirdPartyKey() );
-                resultList.add( this.createResponse( requestKey, thirdPartyData ));
+                entity = this.getEntityService()
+                             .getEntity( cacheKey );
+                this.copyASyncData( cacheKey, asyncData, entity );
+                entity = this.getEntityService()
+                             .saveEntity( entity );
             }
-            catch( AsyncCacheDataNotFoundException e )
+            catch( Exception ex )
             {
-                logError( methodName, e );
+                logError( methodName, ex );
             }
         }
-        logMethodEnd( methodName, "Received " + resultList.size() + " responses" );
-        return resultList;
+        return entity;
     }
+
 
     /**
      * Subclasses must override this method to create a new response type that includes the request key and the
-     * third party data retrieved.
+     * async data retrieved.
      * @param requestKey
-     * @param thirdPartyData
+     * @param asyncData
      * @return
      */
-    protected abstract RS createResponse( final RK requestKey, final TPD thirdPartyData );
+    protected abstract RS createResponse( final RK requestKey, final ASD asyncData );
 
     /**
-     * Get the third party data for a single key.
+     * Get the async data for a single key from the asynchronous data source.
+     * This is the call to the actual data provider.
      * @param searchKey
      * @return
      * @throws AsyncCacheDataNotFoundException
      */
-    protected abstract TPD getThirdPartyData( final TPK searchKey )
+    protected abstract ASD getASyncData( final ASK searchKey )
         throws AsyncCacheDataNotFoundException;
 
     /**
      * Fetches the information for {@code searchKey} from the external data source.
-     * Also, converts the data retrieved from the external/third party source into the target database entity instance
+     * Also, converts the data retrieved from the external/async source into the target database entity instance
      * and saves the information to the database.
      * @param requestKey The key to the cache.
-     * @param thirdPartyKey The search key.
+     * @param asyncKey The search key.
      * @return
      */
-    @Override
-    public TPD getThirdPartyData( final RK requestKey,
-                                  final TPK thirdPartyKey )
-        throws AsyncCacheDataNotFoundException
+    /**
+     * Fetches the information for {@code asyncKey} immediately.
+     * @param cacheKey The key to the cache.
+     * @param asyncKey The key to the asynchronous data.
+     * @return Information of type ASD wrapped in an Optional.
+     * @throws AsyncCacheDataNotFoundException When the requested async was not found in the asynchronous data source.
+     * @throws AsyncCacheDataRequestException When an exception occurs, other than the not found exception.
+     */
+    public CD getASyncData( @NotNull final CK cacheKey,
+                            @NotNull final ASK asyncKey )
+        throws AsyncCacheDataNotFoundException,
+               AsyncCacheDataRequestException
     {
-        final String methodName = "getThirdPartyData";
-        logMethodBegin( methodName, requestKey, thirdPartyKey );
-        TPD externalData = null;
+        final String methodName = "getASyncData";
+        logMethodBegin( methodName, cacheKey, asyncKey );
+        ASD asyncData = null;
         try
         {
-            externalData = this.getThirdPartyData( thirdPartyKey );
+            asyncData = this.getASyncData( asyncKey );
         }
         catch( AsyncCacheDataNotFoundException e )
         {
@@ -181,8 +149,8 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
         }
         catch( Exception e )
         {
-            logError( methodName, "searchKey not found: " + thirdPartyKey );
-            throw this.createException( thirdPartyKey, e );
+            logError( methodName, "searchKey not found: " + asyncKey );
+            throw this.createException( asyncKey, e );
         }
         boolean mismatch = false;
         CD entity = null;
@@ -192,8 +160,8 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
             try
             {
                 entity = this.getEntityService()
-                             .getEntity( requestKey.getCacheKey() );
-                this.copyThirdPartyData( requestKey, externalData, entity );
+                             .getEntity( cacheKey );
+                this.copyASyncData( cacheKey, asyncData, entity );
             }
             catch( EntityVersionMismatchException e1 )
             {
@@ -208,7 +176,7 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
                 try
                 {
                     entity = this.createEntity();
-                    this.copyThirdPartyData( requestKey, externalData, entity );
+                    this.copyASyncData( cacheKey, asyncData, entity );
                     entity = this.getEntityService()
                                  .addEntity( entity );
                 }
@@ -234,17 +202,18 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
     }
 
     /**
-     * Copies the third party data to the entity which is the cached information.
-     * @param thirdPartyData
+     * Copies the async data to the entity which is the cached information.
+     * @param cacheKey
+     * @param asyncData
      * @param entity
      * @return
      */
-    protected void copyThirdPartyData( final RK requestKey, final TPD thirdPartyData, final CD entity )
+    protected void copyASyncData( final CK cacheKey, final ASD asyncData, final CD entity )
     {
-        if ( thirdPartyData != null )
+        if ( asyncData != null )
         {
-            BeanUtils.copyProperties( thirdPartyData, entity );
-            entity.setId( requestKey.getCacheKey() );
+            BeanUtils.copyProperties( asyncData, entity );
+            entity.setId( cacheKey );
         }
     }
 
@@ -266,5 +235,8 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
      * @param cause
      * @return
      */
-    protected abstract EX createException( final TPK key, final Exception cause );
+    protected AsyncCacheDataRequestException createException( final ASK key, final Exception cause )
+    {
+        return new AsyncCacheDataRequestException( key, cause );
+    }
 }

@@ -17,7 +17,7 @@ import java.sql.Timestamp;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver<String,String,StockQuoteEntity>
+public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver<String,StockQuoteEntity,String>
 {
     private String tickerSymbol;
     private StockQuoteEntity stockQuoteEntity;
@@ -42,7 +42,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     }
 
     @Override
-    public String getThirdPartyKey()
+    public String getASyncKey()
     {
         return this.tickerSymbol;
     }
@@ -80,7 +80,7 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
     }
 
     /**
-     * Set the error value from the asynchronous fetch process.
+     * Set the error value form the async sourcehronous fetch process.
      * @param error
      */
     @Override

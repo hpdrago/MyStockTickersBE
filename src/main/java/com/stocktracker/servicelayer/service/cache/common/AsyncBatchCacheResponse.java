@@ -10,27 +10,26 @@ import org.springframework.stereotype.Component;
  * encountered for the request.
  *
  * @param <CK> Type of data that is used for the cache key.
- * @param <TPK> Type of data for the Third party key.
- * @param <TPD> Type of data returned from the third party.
- * @param <RK> Type of data for the request key type that contains the cache key and third party key.
+ * @param <ASK> Type of data for the async key.
+ * @param <ASD> Type of data returned form the async source.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class AsyncBatchCacheResponse<CK,
-                                    TPK,
-                                    TPD,
-                                     RK extends AsyncBatchCacheRequestKey<CK,TPK>>
+                                    ASK,
+                                    ASD>
 {
-    private RK requestKey;
-    private TPD data;
+    private CK cacheKey;
+    private ASK asyncKey;
+    private ASD data;
     private Exception exception;
 
-    public TPD getData()
+    public ASD getData()
     {
         return data;
     }
 
-    public void setData( final TPD data )
+    public void setData( final ASD data )
     {
         this.data = data;
     }
@@ -47,40 +46,30 @@ public class AsyncBatchCacheResponse<CK,
 
     public CK getCacheKey()
     {
-        return this.requestKey.getCacheKey();
+        return this.cacheKey;
     }
 
     public void setCacheKey( final CK cacheKey )
     {
-        this.requestKey.setCacheKey( cacheKey );
+        this.cacheKey = cacheKey;
     }
 
-    public TPK getThirdPartyKey()
+    public ASK getASyncKey()
     {
-        return this.requestKey.getThirdPartyKey();
+        return this.asyncKey;
     }
 
-    public void setThirdPartyKey( final TPK thirdPartyKey )
+    public void setASyncKey( final ASK asyncKey )
     {
-        this.requestKey.setThirdPartyKey( thirdPartyKey );
-    }
-
-    public RK getRequestKey()
-    {
-        return requestKey;
-    }
-
-    public void setRequestKey( final RK requestKey )
-    {
-        this.requestKey = requestKey;
+        this.asyncKey = asyncKey;
     }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "AsyncBatchCacheResult{" );
-        sb.append( "cacheKey=" ).append( this.requestKey.getCacheKey() );
-        sb.append( ", thirdPartyKey=" ).append( this.requestKey.getThirdPartyKey() );
+        sb.append( "cacheKey=" ).append( this.cacheKey );
+        sb.append( ", asyncKey=" ).append( this.asyncKey );
         sb.append( ", data=" ).append( data );
         sb.append( ", exception=" ).append( exception );
         sb.append( '}' );

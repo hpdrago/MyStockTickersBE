@@ -10,13 +10,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockPriceQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<String,
-                                                                                 String,
                                                                                  StockPriceQuote,
+                                                                                 String,
                                                                                  StockPriceQuoteCacheEntry,
                                                                                  StockPriceQuoteCacheDataReceiver,
+                                                                                 StockPriceQuoteCacheRequestKey,
                                                                                  StockPriceQuoteCacheRequest,
                                                                                  StockPriceQuoteCacheResponse,
-                                                                                 StockPriceQuoteCacheRequestKey,
                                                                                  StockPriceQuote,
                                                                                  StockPriceQuoteServiceExecutor,
                                                                                  StockPriceQuoteCache,

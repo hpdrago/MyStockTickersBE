@@ -8,14 +8,12 @@ import java.util.Objects;
 /**
  * This class is the base class for all objects that are cached in the AsyncCache.
  * @param <CK> - The type of the cache key.
- * @param <CD> - The type of cachedData to be retrieved from the third party source.
- * @param <TPK> - The type of the third party key.
- * @param <TPD> - The type of the third party data.
+ * @param <CD> - The type of cachedData to be retrieved form the async source source.
+ * @param <ASK> - The type of the async key.
  */
 public abstract class AsyncCacheEntry<CK,
                                       CD,
-                                     TPK,
-                                     TPD>
+                                     ASK>
 {
     /**
      * The current state of the cached item.
@@ -44,10 +42,10 @@ public abstract class AsyncCacheEntry<CK,
     private AsyncProcessor<CD> cachedDataSyncProcessor;
 
     /**
-     * This async processor is used to synchronize with the retrieval of the third party data.  It is only used internally
-     * within the cache itself to synchronize the retrieving of the background fetching of of the third party data.
+     * This async processor is used to synchronize with the retrieval of the async data.  It is only used internally
+     * within the cache itself to synchronize the retrieving of the background fetching of of the async data.
      */
-    //private AsyncProcessor<TPD> thirdPartyDataSyncProcessor;
+    //private AsyncProcessor<ASD> asyncDataSyncProcessor;
 
     /**
      * The exception if the asynchronous request failed.
@@ -65,9 +63,9 @@ public abstract class AsyncCacheEntry<CK,
     private CK cacheKey;
 
     /**
-     * The key used to retrieve the information from the third party.
+     * The key used to retrieve the information form the async source.
      */
-    private TPK thirdPartyKey;
+    private ASK asyncKey;
 
     /**
      * Creates a new instance.
@@ -87,12 +85,12 @@ public abstract class AsyncCacheEntry<CK,
      * @param cachedData
      */
     public synchronized void setCachedData( final CK cacheKey,
-                                            final TPK thirdPartyKey,
+                                            final ASK asyncKey,
                                             final CD cachedData )
     {
         Objects.requireNonNull( cacheKey, "cacheKey argument cannot be null" );
         this.cachedData = cachedData;
-        this.thirdPartyKey = thirdPartyKey;
+        this.asyncKey = asyncKey;
         if ( cachedData == null )
         {
             CD newCacheData = null;
@@ -224,14 +222,14 @@ public abstract class AsyncCacheEntry<CK,
         this.cacheKey = cacheKey;
     }
 
-    public TPK getThirdPartyKey()
+    public ASK getASyncKey()
     {
-        return thirdPartyKey;
+        return asyncKey;
     }
 
-    public void setThirdPartyKey( final TPK thirdPartyKey )
+    public void setASyncKey( final ASK asyncKey )
     {
-        this.thirdPartyKey = thirdPartyKey;
+        this.asyncKey = asyncKey;
     }
 
     public void setCachedDataSyncProcessor( final AsyncProcessor<CD> cachedDataSyncProcessor )
@@ -240,14 +238,14 @@ public abstract class AsyncCacheEntry<CK,
     }
 
     /*
-    public AsyncProcessor<TPD> getThirdPartyDataSyncProcessor()
+    public AsyncProcessor<ASD> getASyncDataSyncProcessor()
     {
-        return thirdPartyDataSyncProcessor;
+        return asyncDataSyncProcessor;
     }
 
-    public void setThirdPartyDataSyncProcessor( final AsyncProcessor<TPD> thirdPartyDataSyncProcessor )
+    public void setASyncDataSyncProcessor( final AsyncProcessor<ASD> asyncDataSyncProcessor )
     {
-        this.thirdPartyDataSyncProcessor = thirdPartyDataSyncProcessor;
+        this.asyncDataSyncProcessor = asyncDataSyncProcessor;
     }
     */
 

@@ -9,25 +9,25 @@ import java.util.List;
  *
  * @param <CK> - The key type to the cache
  * @param <CD> - The cached data type.
- * @param <TPK> - The third party key used to fetch the data from the third party.
- * @param <TPD>  - The type of cached data to obtain from the third party.
- * @param <E>  - The cache entry type which is a subclass of AsyncCacheEntry<TPD>.
+ * @param <ASK> - The async key used to fetch the data form the async source.
+ * @param <ASD> - The type of cached data to obtain form the async source.
+ * @param <CE> - The cache entry type which is a subclass of AsyncCacheEntry<ASD>.
  * @param <RQ> - Batch request type.
  * @param <RS> - Batch response type.
- * @param <RK> - Request key type.  Contains the CK, TPK key values.
+ * @param <RK> - Request key type.  Contains the CK, ASK key values.
  * @param <X>  - The interface definition of the class that will be performing synchronous and asynchronous work to
- *              get the information of type TPD.
+ *              get the information of type ASD.
  */
 public abstract class AsyncBatchCache< CK extends Serializable,
                                        CD,
-                                       TPK,
-                                       TPD,
-                                       E extends AsyncCacheEntry<CK,CD,TPK,TPD>,
-                                       RK extends AsyncBatchCacheRequestKey<CK,TPK>,
-                                       RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                       RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
-                                       X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>>
-    extends AsyncCache<CK,CD,TPK,TPD,E,X>
+                                       ASK,
+                                       ASD,
+                                       CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                       RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                       RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                       RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
+                                       X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>>
+    extends AsyncCache<CK,CD,ASK,CE,X>
 {
     /**
      * Performs a batch request to the external entity for each of the request keys.
@@ -46,7 +46,7 @@ public abstract class AsyncBatchCache< CK extends Serializable,
                    .map( requestKey ->
                          {
                              final RQ asyncBatchCacheRequest = this.createBatchRequestType();
-                             E cacheEntry = this.getCacheEntry( requestKey.getCacheKey() );
+                             CE cacheEntry = this.getCacheEntry( requestKey.getCacheKey() );
                              if ( cacheEntry == null )
                              {
                                  cacheEntry = this.createCacheEntry();

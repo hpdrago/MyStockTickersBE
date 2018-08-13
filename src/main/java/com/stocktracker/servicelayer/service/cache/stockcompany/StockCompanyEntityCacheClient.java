@@ -5,6 +5,7 @@ import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.zankowski.iextrading4j.api.stocks.Company;
 
 /**
  * This class the client interface to the {@code StockCompanyEntityCache}.  It defines the necessary methods and data
@@ -12,13 +13,14 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<String,
-                                                                            String,
                                                                             StockCompanyEntity,
+                                                                            String,
+                                                                            Company,
                                                                             StockCompanyEntityCacheEntry,
                                                                             StockCompanyEntityCacheDataReceiver,
+                                                                            StockCompanyEntityCacheRequestKey,
                                                                             StockCompanyEntityCacheRequest,
                                                                             StockCompanyEntityCacheResponse,
-                                                                            StockCompanyEntityCacheRequestKey,
                                                                             StockCompanyEntityServiceExecutor,
                                                                             StockCompanyEntityCache,
                                                                             StockCompanyEntityService>
@@ -52,8 +54,8 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
     }
 
     @Override
-    protected StockCompanyEntityCacheRequestKey createRequestKey( final String cacheKey, final String thirdPartyKey )
+    protected StockCompanyEntityCacheRequestKey createRequestKey( final String cacheKey, final String asyncKey )
     {
-        return new StockCompanyEntityCacheRequestKey( cacheKey, thirdPartyKey );
+        return new StockCompanyEntityCacheRequestKey( cacheKey, asyncKey );
     }
 }

@@ -16,7 +16,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * as that service does have volume restrictions.  We also get performance improvements by batching the requests.
  *
  * @param <CK> Key type for cached data.
- * @param <TPK> The key to the third party data.
+ * @param <ASK> The key to the async data.
  * @param  <CD> Cached data type.
  * @param <CE> Cache Entry Type.
  * @param <RQ> Cache request type.
@@ -27,16 +27,16 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  */
 public abstract class AsyncCacheBatchClient<CK extends Serializable,
                                             CD extends AsyncCacheData,
-                                           TPK,
-                                           TPD,
-                                            CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
-                                            DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
-                                            RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                            RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
-                                            RK extends AsyncBatchCacheRequestKey<CK,TPK>,
-                                             X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>,
-                                             C extends AsyncBatchCache<CK,CD,TPK,TPD,CE,RK,RQ,RS,X>>
-    extends AsyncCacheClient<CK,CD,TPK,TPD,CE,DR,X,C>
+                                           ASK,
+                                           ASD,
+                                            CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                            DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
+                                            RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                            RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                            RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
+                                             X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>,
+                                             C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>>
+    extends AsyncCacheClient<CK,CD,ASK,CE,DR,X,C>
 {
     /**
      * Updates the {@code receivers} with the any current information in the cache and performs an asynchronous fetch
@@ -64,7 +64,7 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
         final List<RK> requestKeys = receivers.stream()
                                               .filter( dr -> dr.getCacheState().isStale() )
                                               .map( dr -> this.createRequestKey( dr.getCacheKey(),
-                                                                                 dr.getThirdPartyKey() ))
+                                                                                 dr.getASyncKey() ))
                                               .collect( Collectors.toList() );
         /*
          * Request batch updates for the request keys.
@@ -85,12 +85,12 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
     }
 
     /**
-     * Subclasses must create a new instance of the request key that contains the cache key and the third party key.
+     * Subclasses must create a new instance of the request key that contains the cache key and the async key.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @return
      */
-    protected abstract RK createRequestKey( final CK cacheKey, final TPK thirdPartyKey );
+    protected abstract RK createRequestKey( final CK cacheKey, final ASK asyncKey );
 
     /**
      * Sets the cached data (if present) and the cache data state on the {@code receiver}.

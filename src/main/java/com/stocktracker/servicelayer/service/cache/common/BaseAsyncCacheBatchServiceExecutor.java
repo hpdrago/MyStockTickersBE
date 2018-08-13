@@ -13,20 +13,20 @@ import java.util.stream.Collectors;
  *
  * @param <CK> The type of the cache key.
  * @param <CD> The type of the cached data.
- * @param <TPK> The key to retrieve the third party data.
- * @param <TPD> The type of the data to be retrieved from the third party.
+ * @param <ASK> The key to retrieve the async data.
+ * @param <ASD> The type of the data to be retrieved form the async source.
  * @param <RQ> - The Async Request Type.
  * @param <RS> - The Async Response Type.
  */
 public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
                                                          CD,
-                                                         TPK,
-                                                         TPD,
-                                                         RK extends AsyncBatchCacheRequestKey<CK,TPK>,
-                                                         RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                                         RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>>
-    extends BaseAsyncCacheServiceExecutor<CK,CD,TPK,TPD>
-    implements AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>
+                                                         ASK,
+                                                         ASD,
+                                                         RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                                         RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                                         RS extends AsyncBatchCacheResponse<CK,ASK,ASD>>
+    extends BaseAsyncCacheServiceExecutor<CK,CD,ASK>
+    implements AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>
 {
     /**
      * Asynchronous fetching of the information for {@code searchKey}.
@@ -83,22 +83,22 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
                                              .map( request ->
                                                    {
                                                        final RK requestKey = this.createRequestKey( request.getCacheKey(),
-                                                                                                    request.getThirdPartyKey() );
+                                                                                                    request.getASyncKey() );
                                                        return requestKey;
                                                    })
                                              .collect(Collectors.toList());
         /*
          * Make the batch request.
          */
-        final List<TPD> thirdPartyDataList = this.batchFetch( requestKeys );
+        final Map<ASK,ASD> asyncDataList = this.batchFetch( requestKeys );
         /*
          * Convert the external data to responses.
          */
-        final List<RS> responses = thirdPartyDataList.stream()
-                                                      .map( thirdPartyData ->
+        final List<RS> responses = asyncDataList.stream()
+                                                      .map( asyncData ->
                                                             {
                                                                 final RS response = this.newResponse();
-                                                                this.processResponse( thirdPartyData, response );
+                                                                this.processResponse( asyncData, response );
                                                                 return response;
                                                             })
                                                       .collect( Collectors.toList() );
@@ -107,22 +107,22 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
     }
 
     /**
-     * Method to create the <RQ> request key which contains the cache key and the third party key.
+     * Method to create the <RQ> request key which contains the cache key and the async key.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @return
      */
-    protected abstract RK createRequestKey( final CK cacheKey, final TPK thirdPartyKey );
+    protected abstract RK createRequestKey( final CK cacheKey, final ASK asyncKey );
 
     /**
      * Sets the cache key and data on the response object.
-     * @param cacheData
+     * @param asyncData
      * @param response
      */
-    protected void processResponse( final TPD cacheData, final RS response )
+    protected void processResponse( final ASD asyncData,
+                                    final RS response )
     {
-        response.setCacheKey( response.getCacheKey() );
-        response.setData( cacheData );
+        response.setData( asyncData );
     }
 
     /**
@@ -130,7 +130,7 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
      * @param requestKeys
      * @return
      */
-    protected abstract List<TPD> batchFetch( final List<RK> requestKeys );
+    protected abstract Map<ASK,ASD> batchFetch( final List<RK> requestKeys );
 
     /**
      * Cycles through the responses and updates each request
@@ -151,18 +151,18 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
          * Save a lit of the request keys and remove them from the set as we step through the responses so at the end
          * of the step process, we can identify the requests that did not receive a response.
          */
-        final List<TPK> requestKeys = new ArrayList<>();
+        final List<ASK> requestKeys = new ArrayList<>();
         /*
          * Create a map of the requests for easier matching of requests to responses
          */
-        final Map<TPK,RQ> requestMap = new HashMap<>();
+        final Map<ASK,RQ> requestMap = new HashMap<>();
         /*
          * Extract the request data into the request keys list and request map.
          */
         requests.forEach( request ->
                           {
-                              requestMap.put( request.getThirdPartyKey(), request );
-                              requestKeys.add( request.getThirdPartyKey() );
+                              requestMap.put( request.getASyncKey(), request );
+                              requestKeys.add( request.getASyncKey() );
                           });
         /*
          * Cycle through the results, find the associated request entry, and make the results notification through
@@ -170,21 +170,32 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
          */
         for ( final RS response: responses )
         {
-            requestKeys.remove( response.getThirdPartyKey() );
-            final RQ request = requestMap.get( response.getThirdPartyKey() );
+            requestKeys.remove( response.getASyncKey() );
+            final RQ request = requestMap.get( response.getASyncKey() );
             Objects.requireNonNull( request, "Request not found for cache key: " + response.getCacheKey() );
             if ( response.getException() == null )
             {
                 request.setRequestResult( AsyncBatchCacheRequestResult.FOUND );
                 /*
-                 * The data retrieved from the third party may not be the same as what is cached.
-                 * Subclasses can override the {@code convertThirdPartyToCacheData} if this is the case.
+                 * The data retrieved form the async source may not be the same as what is cached.
+                 * Subclasses can override the {@code convertASyncToCacheData} if this is the case.
                  */
-                final CD cachedData = this.convertThirdPartyToCacheData( response.getData() );
-                request.getAsyncProcessor()
-                       .onNext( cachedData );
-                request.getAsyncProcessor()
-                       .onComplete();
+                final CD cachedData;
+                try
+                {
+                    cachedData = this.convertASyncData( response.getCacheKey(),
+                                                        response.getASyncKey(),
+                                                        response.getData() );
+                    request.getAsyncProcessor()
+                           .onNext( cachedData );
+                    request.getAsyncProcessor()
+                           .onComplete();
+                }
+                catch( AsyncCacheDataNotFoundException e )
+                {
+                    request.setRequestResult( AsyncBatchCacheRequestResult.ERROR );
+                    request.setException( e );
+                }
             }
             else
             {
@@ -196,17 +207,22 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
         /*
          * For each request for which a response was not found, notify the caller of the error.
          */
-        requestKeys.forEach( thirdPartyKey -> requestMap.get( thirdPartyKey )
+        requestKeys.forEach( asyncKey -> requestMap.get( asyncKey )
                                                         .setRequestResult( AsyncBatchCacheRequestResult.NOT_FOUND ));
         logMethodEnd( methodName );
     }
 
     /**
-     * Subclasses must override this method to convert the third party data into a cache data instance.
-     * @param data
+     * Subclasses must override this method to convert the async data into a cache data instance.
+     * @param cacheKey
+     * @param asyncKey
+     * @param asyncData
      * @return
      */
-    protected abstract CD convertThirdPartyToCacheData( final TPD data );
+    protected abstract CD convertASyncData( @NotNull final CK cacheKey,
+                                            @NotNull final ASK asyncKey,
+                                            @NotNull final ASD asyncData )
+        throws AsyncCacheDataNotFoundException;
 
     /**
      * Subclasses must override this method to create a new response type.

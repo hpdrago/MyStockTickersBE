@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
  * Base class for all Cache Service Executors.
  *
  * @param <CK> - The key used to get the cache entry.
- * @param <TPK> - The third party key used to fetch the third party data.
- * @param <TPD> - The type of information to obtain from the third party.
+ * @param <CD> - The cache data type.
+ * @param <ASK> - The async key used to fetch the async data.
  */
-public abstract class BaseAsyncCacheServiceExecutor<CK,CD,TPK,TPD> extends BaseService
-    implements AsyncCacheServiceExecutor<CK,CD,TPK,TPD>
+public abstract class BaseAsyncCacheServiceExecutor<CK,CD,ASK> extends BaseService
+    implements AsyncCacheServiceExecutor<CK,CD,ASK>
 {
     /**
      * Asynchronous fetching of the information for {@code searchKey}.
@@ -23,21 +23,22 @@ public abstract class BaseAsyncCacheServiceExecutor<CK,CD,TPK,TPD> extends BaseS
      * in a new thread being created.
      *
      * @param cacheKey
+     * @throws AsyncCacheDataRequestException When an issue is encountered with the asynchronous data source.
      */
     public void asynchronousFetch( @NotNull final CK cacheKey,
-                                   @NotNull final TPK thirdPartyKey,
+                                   @NotNull final ASK asyncKey,
                                    @NotNull final AsyncProcessor<CD> subject )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, cacheKey );
-        final TPD thirdPartyData;
+        final CD asyncData;
         try
         {
-            thirdPartyData = this.getThirdPartyData( cacheKey, thirdPartyKey );
-            logTrace( methodName, "fetchResult: {0}", thirdPartyData );
-            CD cacheData = this.convertThirdPartyData( thirdPartyKey, thirdPartyData );
+            asyncData = this.getASyncData( cacheKey, asyncKey );
+            logTrace( methodName, "fetchResult: {0}", asyncData );
             logTrace( methodName, "onNext();onComplete();" );
-            subject.onNext( cacheData );
+            subject.onNext( asyncData );
             subject.onComplete();
         }
         catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )

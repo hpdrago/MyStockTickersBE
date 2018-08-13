@@ -10,37 +10,28 @@ import javax.validation.constraints.NotNull;
  *
  * @param <CK>  - The cache key.
  * @param <CD>  - The cache data type.
- * @param <TPK> - The key used to query the information from the third party.
- * @param <TPD> - The type of information to obtain from the third party.
+ * @param <ASK> - The key used to query the information form the async source data source.
  */
-public interface AsyncCacheServiceExecutor<CK,CD,TPK,TPD>
+public interface AsyncCacheServiceExecutor<CK,CD,ASK>
 {
     /**
-     * Fetches the information for {@code searchKey} immediately.
-     * @param cacheKey The search key.
-     * @param thirdPartyKey
-     * @return Information of type TPD wrapped in an Optional.
+     * Fetches the information for {@code asyncKey} immediately.
+     * @param cacheKey The key to the cache.
+     * @param asyncKey The key to the asynchronous data.
+     * @return Information of type ASD wrapped in an Optional.
      */
-    TPD getThirdPartyData( @NotNull final CK cacheKey,
-                           @NotNull final TPK thirdPartyKey )
-        throws AsyncCacheDataNotFoundException;
+    CD getASyncData( @NotNull final CK cacheKey,
+                     @NotNull final ASK asyncKey )
+        throws AsyncCacheDataNotFoundException, AsyncCacheDataRequestException;
 
     /**
-     * Converts the third party data into the cached data instance.
-     * @param thirdPartyKey
-     * @param thirdPartyData
-     * @return Cached data.
-     */
-    CD convertThirdPartyData( @NotNull final TPK thirdPartyKey,
-                              @NotNull final TPD thirdPartyData );
-
-    /**
-     * Asynchronous fetching of the information for {@code thirdPartyKey}.
+     * Asynchronous fetching of the information for {@code asyncKey}.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @return Observable of result.
      */
     void asynchronousFetch( @NotNull final CK cacheKey,
-                            @NotNull final TPK thirdPartyKey,
-                            @NotNull final AsyncProcessor<CD> observable );
+                            @NotNull final ASK asyncKey,
+                            @NotNull final AsyncProcessor<CD> observable )
+        throws AsyncCacheDataRequestException;
 }

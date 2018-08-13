@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
  * and then update the containers with the DTO information for the cache data.
  * @param <CK>  - Key type.
  * @param <CD>  - Cache data type.
- * @param <TPK> - Third party key type.  Used to query the information from the third party.
- * @param <TPD> - Third party data type.
+ * @param <ASK> - async key type.  Used to query the information form the async source.
+ * @param <ASD> - async data type.
  * @param <CE> - Cache entry type.
  * @param <DR> - Data receiver type.
  * @param <RQ> - Asynchronous request data type.
  * @param <RS> - Asynchronous response data type.
- * @param <RK> - The request key that contains the cache key and the third party key.
+ * @param <RK> - The request key that contains the cache key and the async key.
  * @param <CDC> - Container type.
  * @param <X>  - Async executor type.
  * @param <C>  - Cache type.
@@ -25,17 +25,17 @@ import java.util.stream.Collectors;
  */
 public abstract class AsyncCacheBatchProcessor< CK extends Serializable,
                                                 CD extends AsyncCacheData,
-                                               TPK,
-                                               TPD,
-                                                CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
-                                                DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
-                                                RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                                RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
-                                                RK extends AsyncBatchCacheRequestKey<CK,TPK>,
+                                               ASK,
+                                               ASD,
+                                                CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                                DR extends AsyncCacheDataReceiver<CK,ASK,CD>,
+                                                RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                                RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                                RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
                                                CDC extends AsyncCachedDataContainer<CK,CD>,
-                                                 X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>,
-                                                 C extends AsyncBatchCache<CK,CD,TPK,TPD,CE,RK,RQ,RS,X>,
-                                                CL extends AsyncCacheBatchClient<CK,CD,TPK,TPD,CE,DR,RQ,RS,RK,X,C>>
+                                                 X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>,
+                                                 C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>,
+                                                CL extends AsyncCacheBatchClient<CK,CD,ASK,ASD,CE,DR,RK,RQ,RS,X,C>>
     extends BaseService
 {
     /**

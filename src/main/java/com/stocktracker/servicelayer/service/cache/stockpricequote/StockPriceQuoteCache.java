@@ -22,12 +22,13 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  */
 @Service
 public class StockPriceQuoteCache extends AsyncBatchCache<String,
-                                                          String,
                                                           StockPriceQuote,
+                                                          String,
+                                                          BigDecimal,
                                                           StockPriceQuoteCacheEntry,
+                                                          StockPriceQuoteCacheRequestKey,
                                                           StockPriceQuoteCacheRequest,
                                                           StockPriceQuoteCacheResponse,
-    StockPriceQuoteCacheRequestKey,
                                                           StockPriceQuoteServiceExecutor>
 {
     public static final long EXPIRATION_TIME = TimeUnit.MINUTES.toMillis( 15 );

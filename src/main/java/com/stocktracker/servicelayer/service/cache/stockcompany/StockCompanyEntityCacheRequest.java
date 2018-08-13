@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockCompanyEntityCacheRequest extends AsyncBatchCacheRequest<String,String,StockCompanyEntity>
+public class StockCompanyEntityCacheRequest extends AsyncBatchCacheRequest<String,
+                                                                           StockCompanyEntity,
+                                                                           String>
 {
 }

@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 @Qualifier( "stockQuoteDTO")
 public class StockQuoteDTO extends DatabaseEntityDTO<String>
-                           implements AsyncCacheDataReceiver<String,String,StockQuoteEntity>
+                           implements AsyncCacheDataReceiver<String,StockQuoteEntity,String>
 
 {
     private String tickerSymbol;
@@ -74,7 +74,7 @@ public class StockQuoteDTO extends DatabaseEntityDTO<String>
     }
 
     @Override
-    public String getThirdPartyKey()
+    public String getASyncKey()
     {
         return this.tickerSymbol;
     }

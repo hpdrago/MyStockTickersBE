@@ -30,18 +30,16 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  *
  * @param <CK> - The key type to the cache.
  * @param <CD> - The type of cached data.
- * @param <TPK> - The third party key used to fetch the external data.
- * @param <TPD> - The third party data type.
+ * @param <ASK> - The async key used to fetch the external data.
  * @param <E> - The cache entry type which is a subclass of AsyncCacheEntry<CD>.
  * @param <X> - The interface definition of the class that will be performing synchronous and asynchronous work to
  *              get the information of type CD.
  */
 public abstract class AsyncCache<CK extends Serializable,
                                  CD,
-                                TPK,
-                                TPD,
-                                  E extends AsyncCacheEntry<CK,CD,TPK,TPD>,
-                                  X extends AsyncCacheServiceExecutor<CK,TPK,TPD>>
+                                ASK,
+                                  E extends AsyncCacheEntry<CK,CD,ASK>,
+                                  X extends AsyncCacheServiceExecutor<CK,CD,ASK>>
     extends BaseService
     implements MyLogger
 {
@@ -68,7 +66,7 @@ public abstract class AsyncCache<CK extends Serializable,
     /**
      * Obtains the information from the cache.
      * @param cacheKey The key to the cache.
-     * @param thirdPartyKey The key to search for the information.
+     * @param asyncKey The key to search for the information.
      * @return If the information is in the cache and it is not stale, the information will be returned within
      *         the cache entry <E> container.
      *
@@ -76,10 +74,10 @@ public abstract class AsyncCache<CK extends Serializable,
      *         retrieved immediately.
      */
     public E synchronousGet( @NotNull final CK cacheKey,
-                             @NotNull final TPK thirdPartyKey )
+                             @NotNull final ASK asyncKey )
     {
         final String methodName = "synchronousGet";
-        logMethodBegin( methodName, cacheKey, thirdPartyKey );
+        logMethodBegin( methodName, cacheKey, asyncKey );
         E returnCacheEntry = null;
         final E cacheEntry = this.cacheMap
                                  .get( cacheKey );
@@ -97,7 +95,7 @@ public abstract class AsyncCache<CK extends Serializable,
             this.cacheMap
                 .put( cacheKey, returnCacheEntry );
             logTrace( methodName, "Created cache entry: {0}", cacheEntry );
-            this.synchronousFetch( cacheKey, thirdPartyKey, returnCacheEntry );
+            this.synchronousFetch( cacheKey, asyncKey, returnCacheEntry );
         }
         else
         {
@@ -115,7 +113,7 @@ public abstract class AsyncCache<CK extends Serializable,
 
                     case NOT_FETCHING:
                         logTrace( methodName, "{0} fetching now", cacheKey );
-                        this.synchronousFetch( cacheKey, thirdPartyKey, cacheEntry );
+                        this.synchronousFetch( cacheKey, asyncKey, cacheEntry );
                         returnCacheEntry = cacheEntry;
                         break;
                 }
@@ -133,7 +131,7 @@ public abstract class AsyncCache<CK extends Serializable,
     /**
      * Obtains the information from the cache asynchronously.
      * @param cacheKey The key to the cache.
-     * @param thirdPartyKey The key to search for the information.
+     * @param asyncKey The key to search for the information.
      * @return If the information is in the cache and it is not stale, the information will be returned within
      *         the cache entry <E> container.
      *
@@ -142,10 +140,11 @@ public abstract class AsyncCache<CK extends Serializable,
      *         thread.
      */
     public E asynchronousGet( @NotNull final CK cacheKey,
-                              @NotNull final TPK thirdPartyKey )
+                              @NotNull final ASK asyncKey )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousGet";
-        logMethodBegin( methodName, cacheKey, thirdPartyKey );
+        logMethodBegin( methodName, cacheKey, asyncKey );
         E cacheEntry = this.cacheMap
                            .get( cacheKey );
         /*
@@ -164,7 +163,7 @@ public abstract class AsyncCache<CK extends Serializable,
             this.cacheMap
                 .put( cacheKey, cacheEntry );
             logTrace( methodName, "Created cache entry: {0}", cacheEntry );
-            this.asynchronousFetch( cacheKey, thirdPartyKey, cacheEntry );
+            this.asynchronousFetch( cacheKey, asyncKey, cacheEntry );
         }
         else
         {
@@ -176,14 +175,14 @@ public abstract class AsyncCache<CK extends Serializable,
                 switch ( cacheEntry.getFetchState() )
                 {
                     case FETCHING:
-                        logTrace( methodName, "{0} is currently being fetched", thirdPartyKey );
+                        logTrace( methodName, "{0} is currently being fetched", asyncKey );
                         break;
 
                     case NOT_FETCHING:
                         logTrace( methodName, "{0} is NOT currently being fetched, fetching asynchronously",
-                                  thirdPartyKey );
+                                  asyncKey );
                         cacheEntry.setFetchState( FETCHING );
-                        this.asynchronousFetch( cacheKey, thirdPartyKey, cacheEntry );
+                        this.asynchronousFetch( cacheKey, asyncKey, cacheEntry );
                         break;
                 }
             }
@@ -195,27 +194,26 @@ public abstract class AsyncCache<CK extends Serializable,
     /**
      * Fetch the data synchronously.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @param cacheEntry
      */
     protected void synchronousFetch( final CK cacheKey,
-                                     final TPK thirdPartyKey,
+                                     final ASK asyncKey,
                                      final E cacheEntry )
     {
-        final String methodName = "getThirdPartyData";
-        logMethodBegin( methodName, cacheKey, thirdPartyKey, cacheEntry );
-        TPD thirdPartyData = null;
+        final String methodName = "getASyncData";
+        logMethodBegin( methodName, cacheKey, asyncKey, cacheEntry );
+        CD cacheData = null;
         cacheEntry.setCacheKey( cacheKey );
         try
         {
             cacheEntry.setFetchState( FETCHING );
             try
             {
-                thirdPartyData = this.getExecutor()
-                                     .getThirdPartyData( cacheKey, thirdPartyKey );
-                final CD cachedData = this.convertThirdPartyToCachedData( cacheKey, thirdPartyKey, thirdPartyData );
-                logDebug( methodName, "information: {0}", thirdPartyData );
-                cacheEntry.setCachedData( cacheKey, thirdPartyKey, cachedData );
+                cacheData = this.getExecutor()
+                                .getASyncData( cacheKey, asyncKey );
+                logDebug( methodName, "information: {0}", cacheData );
+                cacheEntry.setCachedData( cacheKey, asyncKey, cacheData );
                 cacheEntry.setCacheState( CURRENT );
             }
             catch( AsyncCacheDataNotFoundException asyncCacheDataNotFoundException )
@@ -235,40 +233,30 @@ public abstract class AsyncCache<CK extends Serializable,
             cacheEntry.setFetchState( NOT_FETCHING );
         }
         logTrace( methodName, "cacheEntry: {0}", cacheEntry );
-        logMethodEnd( methodName, thirdPartyData );
+        logMethodEnd( methodName, cacheData );
     }
-
-    /**
-     * Converts the third party data into a cached data instance.
-     * @param cacheKey
-     * @param thirdPartyKey
-     * @param thirdPartyData
-     * @return
-     */
-    protected abstract CD convertThirdPartyToCachedData( final CK cacheKey,
-                                                         final TPK thirdPartyKey,
-                                                         final TPD thirdPartyData );
 
     /**
      * Fetches the information asynchronously
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @param cacheEntry
      * @return
      */
     protected void asynchronousFetch( final CK cacheKey,
-                                      final TPK thirdPartyKey,
+                                      final ASK asyncKey,
                                       final E cacheEntry )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousFetch";
-        logMethodBegin( methodName, cacheKey, thirdPartyKey, cacheEntry );
+        logMethodBegin( methodName, cacheKey, asyncKey, cacheEntry );
         cacheEntry.setFetchState( FETCHING );
         /*
          * Call the injected executor to perform the work. This will be done on a separate thread and will return
          * immediately.
          */
         this.getExecutor()
-            .asynchronousFetch( cacheKey, thirdPartyKey, cacheEntry.getThirdPartyDataSyncProcessor() );
+            .asynchronousFetch( cacheKey, asyncKey, cacheEntry.getCachedDataSyncProcessor() );
         logTrace( methodName, "Subscribing to subject for {0}", cacheKey );
         /*
          * Setup the handling to handle the completed request.
@@ -277,7 +265,7 @@ public abstract class AsyncCache<CK extends Serializable,
                   .share()
                   .doOnError( throwable ->
                   {
-                      cacheEntry.setCachedData( cacheKey, thirdPartyKey, null );
+                      cacheEntry.setCachedData( cacheKey, asyncKey, null );
                       /*
                        * Check for a not found exception first, that's a normal scenario
                        */
@@ -299,7 +287,7 @@ public abstract class AsyncCache<CK extends Serializable,
                   {
                       logTrace( methodName, "subscribe.onNext fetch of key {0} value {1}",
                                 cacheKey, cacheData );
-                      cacheEntry.setCachedData( cacheKey, thirdPartyKey, cacheData );
+                      cacheEntry.setCachedData( cacheKey, asyncKey, cacheData );
                       cacheEntry.setFetchState( NOT_FETCHING );
                       cacheEntry.setCacheState( CURRENT );
                       logTrace( methodName, "cacheEntry: {0}", cacheEntry );
@@ -325,13 +313,13 @@ public abstract class AsyncCache<CK extends Serializable,
     /**
      * Creates a new cache entry and adds it to the cache.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @param cachedData
      * @param cacheState
      */
     public void createCacheEntry( final CK cacheKey,
                                   final CD cachedData,
-                                  final TPK thirdPartyKey,
+                                  final ASK asyncKey,
                                   final AsyncCacheEntryState cacheState )
     {
         final String methodName = "createCacheEntry";
@@ -341,7 +329,7 @@ public abstract class AsyncCache<CK extends Serializable,
         E cacheEntry = this.createCacheEntry();
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( cacheState );
-        cacheEntry.setCachedData( cacheKey, thirdPartyKey, cachedData );
+        cacheEntry.setCachedData( cacheKey, asyncKey, cachedData );
         /*
          * Store an "empty" cache entry for now
          */

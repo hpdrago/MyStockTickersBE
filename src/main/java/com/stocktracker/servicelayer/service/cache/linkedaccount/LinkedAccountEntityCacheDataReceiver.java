@@ -20,10 +20,11 @@ import java.util.UUID;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataReceiver<UUID,
                                                                                     LinkedAccountEntity,
-                                                                                    LinkedAccountEntity>
+                                                                                    LinkedAccountEntityCacheAsyncKey>
 {
     private UUID cacheKey;
     private LinkedAccountEntity linkedAccountEntity;
+    private LinkedAccountEntityCacheAsyncKey asyncKey;
     private AsyncCacheEntryState cacheState;
     private String error;
     private Timestamp dataExpiration;
@@ -45,9 +46,9 @@ public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataRecei
     }
 
     @Override
-    public LinkedAccountEntity getThirdPartyKey()
+    public LinkedAccountEntityCacheAsyncKey getASyncKey()
     {
-        return this.linkedAccountEntity;
+        return this.asyncKey;
     }
 
     /**
@@ -83,7 +84,7 @@ public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataRecei
     }
 
     /**
-     * Set the error value from the asynchronous fetch process.
+     * Set the error value form the async sourcehronous fetch process.
      * @param error
      */
     @Override
@@ -115,6 +116,7 @@ public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataRecei
     {
         final StringBuilder sb = new StringBuilder( "LinkedAccountEntityCacheDataReceiver{" );
         sb.append( "uuid='" ).append( cacheKey ).append( '\'' );
+        sb.append( ", asyncKey='" ).append( asyncKey ).append( '\'' );
         sb.append( ", linkedAccountEntity=" ).append( linkedAccountEntity );
         sb.append( ", cacheState=" ).append( cacheState );
         sb.append( ", error='" ).append( error ).append( '\'' );

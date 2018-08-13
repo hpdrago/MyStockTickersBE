@@ -2,7 +2,9 @@ package com.stocktracker.servicelayer.service.cache.linkedaccount;
 
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +18,11 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrat
  * they way we plan to use it initially.
  */
 @Service
-public class LinkedAccountEntityCache extends AsyncBatchCache<UUID,
-                                                              LinkedAccountEntity,
-                                                              LinkedAccountEntity,
-                                                              LinkedAccountEntityCacheEntry,
-                                                              LinkedAccountEntityCacheRequest,
-                                                              LinkedAccountEntityCacheResponse,
-                                                              LinkedAccountEntityCacheRequestKey,
-                                                              LinkedAccountEntityServiceExecutor>
+public class LinkedAccountEntityCache extends AsyncCache<UUID,
+                                                         LinkedAccountEntity,
+                                                         LinkedAccountEntityCacheAsyncKey,
+                                                         LinkedAccountEntityCacheEntry,
+                                                         LinkedAccountEntityServiceExecutor>
 {
     @Autowired
     private LinkedAccountEntityServiceExecutor stockQuoteEntityServiceExecutor;
@@ -57,11 +56,5 @@ public class LinkedAccountEntityCache extends AsyncBatchCache<UUID,
     protected AsyncCacheStrategy getCacheStrategy()
     {
         return REMOVE;
-    }
-
-    @Override
-    protected LinkedAccountEntityCacheRequest createBatchRequestType()
-    {
-        return this.context.getBean( LinkedAccountEntityCacheRequest.class );
     }
 }

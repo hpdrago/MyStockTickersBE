@@ -47,8 +47,8 @@ public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String
     }
 
     @Override
-    protected StockQuoteEntityCacheRequestKey createRequestKey( final String cacheKey, final String thirdPartyKey )
+    protected StockQuoteEntityCacheRequestKey createRequestKey( final String cacheKey, final String asyncKey )
     {
-        return new StockQuoteEntityCacheRequestKey( cacheKey, thirdPartyKey );
+        return new StockQuoteEntityCacheRequestKey( cacheKey, asyncKey );
     }
 }

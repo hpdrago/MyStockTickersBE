@@ -12,9 +12,9 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
 /**
  * Abstract class that implements the common pattern of obtaining a value from a AsyncCache.
  * @param <CK> Key type for cached data.
- * @param  <CD> Cached data type.
- * @param <TPK> The key to the third party key.
- * @param <TPD> The third party data.
+ * @param <CD> Cached data type.
+ * @param <ASK> The key to the async key.
+ * @param <ASD> The async data.
  * @param <CE> Cache Entry Type.
  * @param <RQ> Cache request type.
  * @param <RS> Cache response type.
@@ -25,17 +25,17 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  */
 public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
                                                CD extends AsyncCacheDBEntity<CK>,
-                                              TPK,
-                                              TPD,
-                                               CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
-                                               DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
-                                               RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                               RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>,
-                                               RK extends AsyncBatchCacheRequestKey<CK,TPK>,
-                                                X extends AsyncCacheBatchServiceExecutor<CK,CD,TPK,TPD,RK,RQ,RS>,
-                                                C extends AsyncBatchCache<CK,CD,TPK,TPD,CE,RK,RQ,RS,X>,
+                                              ASK,
+                                              ASD,
+                                               CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                               DR extends AsyncCacheDataReceiver<CK,ASK,CD>,
+                                               RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                               RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                               RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
+                                                X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>,
+                                                C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>,
                                                 S extends VersionedEntityService<CK,CD,?,?,?>>
-    extends AsyncCacheBatchClient<CK,CD,TPK,TPD,CE,DR,RQ,RS,RK,X,C>
+    extends AsyncCacheBatchClient<CK,CD,ASK,ASD,CE,DR,RK,RQ,RS,X,C>
 {
     /**
      * Working with the cache, and the entity service, attempts to retrieve the data from the database.  If it is not
@@ -58,7 +58,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
         {
             logDebug( methodName, "Making asynchronous fetch for {0}", receiver.getCacheKey() );
             this.getCache()
-                .asynchronousGet( receiver.getCacheKey(), receiver.getThirdPartyKey() );
+                .asynchronousGet( receiver.getCacheKey(), receiver.getASyncKey() );
         }
         logMethodEnd( methodName, receiver );
     }
@@ -140,7 +140,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
                 this.getCache()
                     .createCacheEntry( receiver.getCacheKey(),
                                        receiver.getCachedData(),
-                                       receiver.getThirdPartyKey(),
+                                       receiver.getASyncKey(),
                                        receiver.getCacheState() );
             }
         }
@@ -153,7 +153,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
             this.getCache()
                 .createCacheEntry( receiver.getCacheKey(),
                                    receiver.getCachedData(),
-                                   receiver.getThirdPartyKey(),
+                                   receiver.getASyncKey(),
                                    receiver.getCacheState() );
             /*
              * Throw the exception back to the caller and let them decide what to do.

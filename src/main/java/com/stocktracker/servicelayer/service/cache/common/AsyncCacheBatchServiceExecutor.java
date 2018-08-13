@@ -8,20 +8,20 @@ import java.util.List;
  *
  * @param <CK> - The key type to the cache
  * @param <CD> - The cached data type.
- * @param <TPK> - The third party key type.
- * @param <TPD> - The third party data type.
- * @param <RK> - The request key that contains the cache key and the third party key.
+ * @param <ASK> - The async key type.
+ * @param <ASD> - The async data type.
+ * @param <RK> - The request key that contains the cache key and the async key.
  * @param <RQ> - The Async Request Type.
  * @param <RS> - The Async Response Type.
  */
 public interface AsyncCacheBatchServiceExecutor<CK,
                                                 CD,
-                                                TPK,
-                                                TPD,
-                                                RK extends AsyncBatchCacheRequestKey<CK,TPK>,
-                                                RQ extends AsyncBatchCacheRequest<CK,CD,TPK,RK>,
-                                                RS extends AsyncBatchCacheResponse<CK,TPK,TPD,RK>>
-    extends AsyncCacheServiceExecutor<CK,CD,TPK,TPD>
+                                                ASK,
+                                                ASD,
+                                                RK extends AsyncBatchCacheRequestKey<CK,ASK>,
+                                                RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
+                                                RS extends AsyncBatchCacheResponse<CK,ASK,ASD>>
+    extends AsyncCacheServiceExecutor<CK,CD,ASK>
 {
     /**
      * Asynchronous fetching of the information for the keys contained in {@code requests}.

@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockPriceQuoteCacheRequest extends AsyncBatchCacheRequest<String,String,StockPriceQuote>
+public class StockPriceQuoteCacheRequest extends AsyncBatchCacheRequest<String,StockPriceQuote,String>
 {
 }

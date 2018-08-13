@@ -17,22 +17,20 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
 /**
  * Abstract class that implements the common pattern of obtaining a value from a AsyncCache.
  * @param <CK> Key type for cached data.
- * @param <TPK> Third Party Key type used to fetch the third party data.
- * @param <TPD> Third Party data type.
- * @param  <CD> Cached data type.
+ * @param <ASK> Third Party Key type used to fetch the async data.
+ * @param <CD> Cached data type.
  * @param <CE> Cache Entry Type.
- * @param  <X> Cache Executor Type
- * @param  <C> Cache type.
+ * @param <X> Cache Executor Type
+ * @param <C> Cache type.
  * @param <DR> Data Receiver.  The type that will receive the cached data
  */
 public abstract class AsyncCacheClient<CK extends Serializable,
                                        CD extends AsyncCacheData,
-                                      TPK,
-                                      TPD,
-                                       CE extends AsyncCacheEntry<CK,CD,TPK,TPD>,
-                                       DR extends AsyncCacheDataReceiver<CK,TPK,CD>,
-                                        X extends AsyncCacheServiceExecutor<CK,TPK,TPD>,
-                                        C extends AsyncCache<CK,CD,TPK,TPD,CE,X>>
+                                      ASK,
+                                       CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                       DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
+                                        X extends AsyncCacheServiceExecutor<CK,CD,ASK>,
+                                        C extends AsyncCache<CK,CD,ASK,CE,X>>
     extends BaseService
     implements MyLogger
 {
@@ -41,7 +39,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param receivers
      */
     public void getCachedData( final List<DR> receivers )
-        throws VersionedEntityNotFoundException
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "getCachedData";
         logMethodBegin( methodName, receivers.size() );
@@ -61,6 +59,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param receiver The object that will "receive" the cached data and cache state values.
      */
     public void getCachedData( final DR receiver )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "getCachedData";
         logMethodBegin( methodName, receiver );
@@ -69,7 +68,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         final CK key = receiver.getCacheKey();
         logDebug( methodName, "Making asynchronous fetch for: {0}", key );
         final CE cacheEntry = this.getCache()
-                                  .asynchronousGet( receiver.getCacheKey(), receiver.getThirdPartyKey() );
+                                  .asynchronousGet( receiver.getCacheKey(), receiver.getASyncKey() );
         logDebug( methodName, "cacheEntry: {0}", cacheEntry );
         receiver.setCacheState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
@@ -86,11 +85,12 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param receiver
      */
     protected void asynchronousFetch( final DR receiver )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, receiver );
         final CE cacheEntry = this.getCache()
-                                  .asynchronousGet( receiver.getCacheKey(), receiver.getThirdPartyKey() );
+                                  .asynchronousGet( receiver.getCacheKey(), receiver.getASyncKey() );
         receiver.setCacheState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
         logMethodEnd( methodName, receiver );
@@ -109,7 +109,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
          * Now block and wait if needed.
          */
         final CE cacheEntry = this.getCache()
-                                  .synchronousGet( receiver.getCacheKey(), receiver.getThirdPartyKey() );
+                                  .synchronousGet( receiver.getCacheKey(), receiver.getASyncKey() );
         receiver.setCacheState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
         logMethodEnd( methodName, receiver );
@@ -131,10 +131,10 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param cacheKey
      * @return
      */
-    public void getCachedData( final CK cacheKey, final TPK thirdPartyKey, final DR receiver )
+    public void getCachedData( final CK cacheKey, final ASK asyncKey, final DR receiver )
     {
         final String methodName = "getCachedData";
-        logMethodBegin( methodName, cacheKey, thirdPartyKey );
+        logMethodBegin( methodName, cacheKey, asyncKey );
         receiver.setCacheKey( cacheKey );
         final CE cacheEntry = this.getCache()
                                   .getCacheEntry( cacheKey );
@@ -143,7 +143,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
             logDebug( methodName, "cacheEntry: {0}", cacheEntry );
             if ( cacheEntry.getFetchState().isFetching() )
             {
-                this.handleInCacheIsFetching( cacheKey, thirdPartyKey, receiver, cacheEntry );
+                this.handleInCacheIsFetching( cacheKey, asyncKey, receiver, cacheEntry );
             }
             else
             {
@@ -168,7 +168,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         final String methodName = "handleNotInCache";
         logDebug( methodName, searchKey + " is not in the cache, fetching now" );
         final CE cacheEntry = this.getCache()
-                                  .synchronousGet( searchKey, receiver.getThirdPartyKey() );
+                                  .synchronousGet( searchKey, receiver.getASyncKey() );
         receiver.setCacheKey( searchKey );
         receiver.setCachedData( cacheEntry.getCachedData() );
         receiver.setCacheState( cacheEntry.getCacheState() );
@@ -202,7 +202,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         {
             logDebug( methodName, "It's stale" );
             CD cachedData = this.getCache()
-                                .synchronousGet( searchKey, receiver.getThirdPartyKey() )
+                                .synchronousGet( searchKey, receiver.getASyncKey() )
                                 .getCachedData();
             receiver.setCachedData( cachedData );
             if ( cachedData == null )
@@ -226,15 +226,15 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * Handles the condition when the information is already being fetched.  This method will subcribe to be notified
      * when the fetch has completed.  This is a blocking call.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @param receiver
      * @param cacheEntry
      */
-    protected void handleInCacheIsFetching( final CK cacheKey, final TPK thirdPartyKey,
+    protected void handleInCacheIsFetching( final CK cacheKey, final ASK asyncKey,
                                             final DR receiver, final CE cacheEntry )
     {
         final String methodName = "handleIsFetching";
-        logMethodBegin( methodName, cacheKey, thirdPartyKey, cacheEntry );
+        logMethodBegin( methodName, cacheKey, asyncKey, cacheEntry );
         Objects.requireNonNull( cacheKey, "searchKey argument cannot be null" );
         Objects.requireNonNull( cacheEntry, "cacheEntry argument cannot be null" );
         logDebug( methodName, "Is fetching.  Blocking and waiting" );
@@ -244,11 +244,11 @@ public abstract class AsyncCacheClient<CK extends Serializable,
                             {
                                 if ( e instanceof AsyncCacheDataNotFoundException )
                                 {
-                                    this.handleDataNotFound( cacheKey, thirdPartyKey, receiver, finalCacheEntry );
+                                    this.handleDataNotFound( cacheKey, asyncKey, receiver, finalCacheEntry );
                                 }
                                 else
                                 {
-                                    this.handleFailure( cacheKey, thirdPartyKey, receiver, finalCacheEntry, e );
+                                    this.handleFailure( cacheKey, asyncKey, receiver, finalCacheEntry, e );
                                 }
                             })
                   .blockingSubscribe( fetchedData ->
@@ -256,12 +256,12 @@ public abstract class AsyncCacheClient<CK extends Serializable,
                                           logDebug( methodName, "Received: " + fetchedData );
                                           if ( fetchedData != null )
                                           {
-                                              this.handleDataFound( cacheKey, thirdPartyKey, receiver,
+                                              this.handleDataFound( cacheKey, asyncKey, receiver,
                                                                     finalCacheEntry, fetchedData );
                                           }
                                           else
                                           {
-                                              this.handleDataNotFound( cacheKey, thirdPartyKey, receiver, finalCacheEntry );
+                                              this.handleDataNotFound( cacheKey, asyncKey, receiver, finalCacheEntry );
                                           }
                                       });
         logMethodEnd( methodName, cacheKey );
@@ -275,7 +275,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param fetchedData
      */
     private void handleDataFound( final CK cacheKey,
-                                  final TPK thirdPartyKey,
+                                  final ASK asyncKey,
                                   final DR receiver,
                                   final CE cacheEntry,
                                   final CD fetchedData )
@@ -291,7 +291,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         receiver.setCacheState( CURRENT );
         receiver.setCacheError( null );
         cacheEntry.setCacheState( CURRENT );
-        cacheEntry.setCachedData( cacheKey, thirdPartyKey, fetchedData );
+        cacheEntry.setCachedData( cacheKey, asyncKey, fetchedData );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setFetchThrowable( null );
     }
@@ -299,12 +299,12 @@ public abstract class AsyncCacheClient<CK extends Serializable,
     /**
      * This method is called when there is a failure retrieving the data.
      * @param cacheKey
-     * @param thirdPartyKey
+     * @param asyncKey
      * @param receiver
      * @param cacheEntry
      * @param throwable
      */
-    private void handleFailure( final CK cacheKey, final TPK thirdPartyKey, final DR receiver, final CE cacheEntry,
+    private void handleFailure( final CK cacheKey, final ASK asyncKey, final DR receiver, final CE cacheEntry,
                                 final Throwable throwable )
     {
         receiver.setCacheKey( cacheKey );
@@ -314,7 +314,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( FAILURE );
         cacheEntry.setFetchThrowable( throwable );
-        cacheEntry.setCachedData( cacheKey, thirdPartyKey, null );
+        cacheEntry.setCachedData( cacheKey, asyncKey, null );
     }
 
     /**
@@ -323,7 +323,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param receiver
      * @param cacheEntry
      */
-    private void handleDataNotFound( final CK cacheKey, final TPK thirdPartyKey, final DR receiver, final CE cacheEntry )
+    private void handleDataNotFound( final CK cacheKey, final ASK asyncKey, final DR receiver, final CE cacheEntry )
     {
         receiver.setCacheKey( cacheKey );
         receiver.setCachedData( null );
@@ -331,7 +331,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         receiver.setCacheError( "Could not find entry for " + cacheKey );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( NOT_FOUND );
-        cacheEntry.setCachedData( cacheKey, thirdPartyKey, null );
+        cacheEntry.setCachedData( cacheKey, asyncKey, null );
         cacheEntry.setFetchThrowable( null );
     }
 
@@ -346,11 +346,4 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @return
      */
     protected abstract CD createCachedDataObject();
-
-    /**
-     * Update the receiver.
-     * @param receiver
-     */
-    protected abstract void updateDataReceiver( final DR receiver )
-        throws VersionedEntityNotFoundException;
 }

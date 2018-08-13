@@ -12,12 +12,12 @@ import java.sql.Timestamp;
  * --4. Exception - Any exceptions that occurred during the fetching of the cached data.
  *
  * <CK> The cache key type.
- * <TPK> The third party key type used to fetch the third party data.
- * <T> The cached data type.
+ * <ASK> The async key type used to fetch the async data.
+ * <CD> The cached data type.
  */
 public interface AsyncCacheDataReceiver<CK extends Serializable,
-                                       TPK,
-                                         T>
+                                        CD,
+                                       ASK>
 {
     /**
      * Set the cache key.
@@ -32,22 +32,22 @@ public interface AsyncCacheDataReceiver<CK extends Serializable,
     CK getCacheKey();
 
     /**
-     * Get the third party key.
+     * Get the async key.
      * @return
      */
-    TPK getThirdPartyKey();
+    ASK getASyncKey();
 
     /**
      * Set the cached data on the receiver.
      * @param cachedData When null, there's just a state change.
      */
-    void setCachedData( final T cachedData );
+    void setCachedData( final CD cachedData );
 
     /**
      * Get the cached data that was set by the cache.
      * @return
      */
-    T getCachedData();
+    CD getCachedData();
 
     /**
      * Set the state of the cached data (STALE, CURRENT, ERROR).

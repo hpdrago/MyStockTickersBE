@@ -2,12 +2,12 @@ AsyncCaching Readme
 
 The async caching mechanism for StoxTracker is somewhat complicated.  The requirements are as follows:
 
-Request to third party entities including IEXTrading and TradeIt, when possible, should be performed asynchronously so
+Request to async entities including IEXTrading and TradeIt, when possible, should be performed asynchronously so
 that client is not waiting for ALL of the data to be loaded.  The user should be presented with the information that
 is readily available when the data is retrieved and the client will evaluate the data being loaded to see if a subsequent
 request to get the current data values is necessary and if so, makes that synchronous call to get the data.
 
-The idea here is that while the data is being returned to the user, the third party information is being fetched in the
+The idea here is that while the data is being returned to the user, the async information is being fetched in the
 background, and then the client will make another request, as indicated above, to block and wait (if necessary) to get
 the current information.
 
