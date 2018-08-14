@@ -4,6 +4,7 @@ import com.stocktracker.AppConfig;
 import com.stocktracker.servicelayer.service.IEXTradingStockService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheBatchServiceExecutor;
@@ -33,11 +34,11 @@ import static com.stocktracker.servicelayer.service.cache.stockpricequote.StockP
 public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceExecutor<String,
                                                                                        StockPriceQuote,
                                                                                        String,
-                                                                                       GetStockPriceResult,
+                                                                                       BigDecimal,
                                                                                        StockQuoteEntityCacheRequestKey,
                                                                                        StockPriceQuoteCacheRequest,
                                                                                        StockPriceQuoteCacheResponse>
-    implements AsyncCacheServiceExecutor<String,StockPriceQuote,String>
+    implements AsyncCacheServiceExecutor<String,BigDecimal>
 {
     @Autowired
     private StockPriceServiceExecutor stockPriceServiceExecutor;
@@ -57,7 +58,7 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
      * @return
      */
     @Override
-    protected List<GetStockPriceResult> batchFetch( final List<StockQuoteEntityCacheRequestKey> requestKeys )
+    protected Map<String,BigDecimal> batchFetch( final List<StockQuoteEntityCacheRequestKey> requestKeys )
     {
         final String methodName = "batchFetch";
         logMethodBegin( methodName, requestKeys );
@@ -77,6 +78,7 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
         /*
          * Check to see if we got different results.
          */
+        /*
         if ( stockPriceResults.size() != tickerSymbols.size() )
         {
             logWarn( methodName, "Did not receive all stock prices requested: {0} received: {1}",
@@ -94,6 +96,28 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
                                    });
         logMethodEnd( stockPriceQuotes.size() + " stock quotes" );
         return stockPriceQuotes;
+        */
+        return stockPriceResults;
+    }
+
+    /**
+     * Get the stock price quote for the ticker symbol.
+     * @param tickerSymbol
+     * @return
+     * @throws AsyncCacheDataNotFoundException
+     * @throws AsyncCacheDataRequestException
+     */
+    @Override
+    public BigDecimal getASyncData( final String tickerSymbol )
+        throws AsyncCacheDataNotFoundException,
+               AsyncCacheDataRequestException
+    {
+        final String methodName = "getASyncData";
+        logMethodBegin( methodName, tickerSymbol );
+        final BigDecimal stockPrice = this.iexTradingStockService
+                                          .getPrice( tickerSymbol );
+        logMethodEnd( methodName, stockPrice );
+        return stockPrice;
     }
 
     /**
@@ -102,9 +126,9 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
      * @param asyncKey Not used since the ticker symbol contained in cacheKey are the same.
      * @return
      */
-
+/*
     @Override
-    public StockPriceQuote getASyncData( final String cacheKey, final String asyncKey )
+    public BigDecimal getASyncData( final String cacheKey, final String asyncKey )
         throws AsyncCacheDataNotFoundException
     {
         final String methodName = "getASyncData";
@@ -114,23 +138,29 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
         logMethodEnd( methodName, stockPriceQuote );
         return stockPriceQuote;
     }
+    */
 
 
     /**
      * Process the stock price quote result returned from the stock price service executor.
-     * @param cacheKey
-     * @param asyncKey
-     * @param stockPriceResult
+     * @param tickerSymbol
+     * @param notused
+     * @param stockPrice
      * @return
      */
     @Override
-    protected StockPriceQuote convertASyncData( final String cacheKey, final String asyncKey,
-                                                final GetStockPriceResult stockPriceResult )
+    protected StockPriceQuote convertASyncData( final String tickerSymbol,
+                                                final String notused,
+                                                final BigDecimal stockPrice )
         throws AsyncCacheDataNotFoundException
     {
         final String methodName = "convertASyncData";
-        logMethodBegin( methodName, cacheKey, asyncKey, stockPriceResult );
+        logMethodBegin( methodName, tickerSymbol, stockPrice );
         final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
+        stockPriceQuote.setLastPrice( stockPrice );
+        stockPriceQuote.setTickerSymbol( tickerSymbol );
+        return stockPriceQuote;
+        /*
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
                                                                         .getCacheEntry( stockPriceResult.getTickerSymbol() );
         stockPriceQuote.setTickerSymbol( stockPriceResult.getTickerSymbol() );
@@ -159,24 +189,23 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
 
         }
         return stockPriceQuote;
+        */
     }
 
     /**
      * This method, when called, starts on a new thread launched and managed by the Spring container.
      * In the new thread, the stock quote will be retrieved and the caller will be notified through the {@code observable}
      * @param tickerSymbol
-     * @param asyncKey The cache key and async key are both ticker symbols.
      * @param subject Behaviour subject to use to notify the caller that the request has been completed.
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
     public void asynchronousFetch( final String tickerSymbol,
-                                   final String asyncKey,
-                                   final AsyncProcessor<StockPriceQuote> subject )
+                                   final AsyncProcessor<BigDecimal> subject )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
-        super.asynchronousFetch( tickerSymbol, asyncKey, subject );
+        super.asynchronousFetch( tickerSymbol, subject );
         logMethodEnd( methodName );
     }
 

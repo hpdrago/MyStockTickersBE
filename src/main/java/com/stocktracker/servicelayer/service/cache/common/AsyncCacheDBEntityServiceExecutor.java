@@ -36,7 +36,7 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
     extends BaseAsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>
 {
     /**
-     * Converts the data retrieved form the async sourcehronous source into a DB Entity instance.
+     * Converts the data retrieved form the asynchronous source into a DB Entity instance.
      * @param cacheKey
      * @param asyncKey
      * @param asyncData
@@ -95,16 +95,6 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
         return entity;
     }
 
-
-    /**
-     * Subclasses must override this method to create a new response type that includes the request key and the
-     * async data retrieved.
-     * @param requestKey
-     * @param asyncData
-     * @return
-     */
-    protected abstract RS createResponse( final RK requestKey, final ASD asyncData );
-
     /**
      * Get the async data for a single key from the asynchronous data source.
      * This is the call to the actual data provider.
@@ -112,7 +102,7 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
      * @return
      * @throws AsyncCacheDataNotFoundException
      */
-    protected abstract ASD getASyncData( final ASK searchKey )
+    public abstract ASD getASyncData( final ASK searchKey )
         throws AsyncCacheDataNotFoundException;
 
     /**

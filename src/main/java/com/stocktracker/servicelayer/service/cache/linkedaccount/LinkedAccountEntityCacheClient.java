@@ -1,9 +1,7 @@
 package com.stocktracker.servicelayer.service.cache.linkedaccount;
 
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
-import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheClient;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,8 @@ import java.util.UUID;
 @Service
 public class LinkedAccountEntityCacheClient extends AsyncCacheClient<UUID,
                                                                      LinkedAccountEntity,
-                                                                     LinkedAccountEntityCacheAsyncKey,
+                                                                     GetAccountOverviewAsyncCacheKey,
+                                                                     GetAccountOverviewAPIResult,
                                                                      LinkedAccountEntityCacheEntry,
                                                                      LinkedAccountEntityCacheDataReceiver,
                                                                      LinkedAccountEntityServiceExecutor,

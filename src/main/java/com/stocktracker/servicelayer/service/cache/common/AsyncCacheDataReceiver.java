@@ -38,6 +38,12 @@ public interface AsyncCacheDataReceiver<CK extends Serializable,
     ASK getASyncKey();
 
     /**
+     * Set the async key.
+     * @param asyncKey
+     */
+    void setAsyncKey( final ASK asyncKey );
+
+    /**
      * Set the cached data on the receiver.
      * @param cachedData When null, there's just a state change.
      */

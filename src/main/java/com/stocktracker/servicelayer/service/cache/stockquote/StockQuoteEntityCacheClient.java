@@ -6,19 +6,21 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClie
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEntityCacheRequestKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.zankowski.iextrading4j.api.stocks.Quote;
 
 /**
  * This interface is used by any class that need information from the {@code StockQuoteEntityCache}.
  */
 @Service
 public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String,
-                                                                          String,
                                                                           StockQuoteEntity,
+                                                                          String,
+                                                                          Quote,
                                                                           StockQuoteEntityCacheEntry,
                                                                           StockQuoteEntityCacheDataReceiver,
+                                                                          StockQuoteEntityCacheRequestKey,
                                                                           StockQuoteEntityCacheRequest,
                                                                           StockQuoteEntityCacheResponse,
-    StockQuoteEntityCacheRequestKey,
                                                                           StockQuoteEntityServiceExecutor,
                                                                           StockQuoteEntityCache,
                                                                           StockQuoteEntityService>

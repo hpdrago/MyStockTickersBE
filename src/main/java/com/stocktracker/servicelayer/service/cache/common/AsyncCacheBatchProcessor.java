@@ -27,13 +27,13 @@ public abstract class AsyncCacheBatchProcessor< CK extends Serializable,
                                                 CD extends AsyncCacheData,
                                                ASK,
                                                ASD,
-                                                CE extends AsyncCacheEntry<CK,CD,ASK>,
-                                                DR extends AsyncCacheDataReceiver<CK,ASK,CD>,
+                                                CE extends AsyncCacheEntry<CK,CD,ASK,ASD>,
+                                                DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
                                                 RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                                 RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                                 RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
                                                CDC extends AsyncCachedDataContainer<CK,CD>,
-                                                 X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>,
+                                                 X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RQ,RS>,
                                                  C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>,
                                                 CL extends AsyncCacheBatchClient<CK,CD,ASK,ASD,CE,DR,RK,RQ,RS,X,C>>
     extends BaseService
@@ -131,7 +131,7 @@ public abstract class AsyncCacheBatchProcessor< CK extends Serializable,
          * Make the batch data request and update the receivers with the status of the stock quote.
          */
         this.getAsyncCacheClient()
-            .getCachedData( receivers );
+            .asynchronousGetCachedData( receivers );
         /*
          *  It is safe to assume that the containers list and the receivers list are the same size and have the same
          *  ticker symbol but we'll check to make sure.

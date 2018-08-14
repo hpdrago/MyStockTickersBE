@@ -103,7 +103,7 @@ public class StockPriceQuoteService extends BaseService
         final StockPriceQuoteCacheDataReceiver stockPriceQuoteCacheDataReceiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
         stockPriceQuoteCacheDataReceiver.setCacheKey( container.getTickerSymbol() );
         this.stockPriceQuoteCacheClient
-            .getCachedData( stockPriceQuoteCacheDataReceiver );
+            .asynchronousGetCachedData( stockPriceQuoteCacheDataReceiver );
         setStockPriceQuote( container, stockPriceQuoteCacheDataReceiver );
         logMethodEnd( methodName, container );
     }

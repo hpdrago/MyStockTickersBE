@@ -14,6 +14,6 @@ import java.math.BigDecimal;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPriceQuoteCacheResponse extends AsyncBatchCacheResponse<String,
                                                                           String,
-                                                                          GetStockPriceResult>
+                                                                          BigDecimal>
 {
 }

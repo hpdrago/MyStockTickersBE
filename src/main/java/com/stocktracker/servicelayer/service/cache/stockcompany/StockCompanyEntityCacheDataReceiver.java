@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 /**
  * This class implement the {@code AsyncCacheDataReceiver} interface in order to interact with the {@code StockCompanyAsyncCache}.
  * This class will contain the results of requesting a stock company from the cache.
+ * The async key and the cache key are the same -- ticker symbol.
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
@@ -41,6 +42,12 @@ public class StockCompanyEntityCacheDataReceiver implements AsyncCacheDataReceiv
     public String getASyncKey()
     {
         return this.tickerSymbol;
+    }
+
+    @Override
+    public void setAsyncKey( final String asyncKey )
+    {
+        this.tickerSymbol = asyncKey;
     }
 
     @Override

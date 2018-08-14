@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.cache.linkedaccount;
 
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry;
+import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +12,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class LinkedAccountEntityCacheEntry extends AsyncCacheEntry<UUID,
                                                                    LinkedAccountEntity,
-    LinkedAccountEntityCacheAsyncKey>
+                                                                   GetAccountOverviewAsyncCacheKey,
+                                                                   GetAccountOverviewAPIResult>
 {
     /**
      * Stock quotes are valid for 6 hours.

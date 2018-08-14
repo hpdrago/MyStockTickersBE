@@ -27,12 +27,12 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
                                                CD extends AsyncCacheDBEntity<CK>,
                                               ASK,
                                               ASD,
-                                               CE extends AsyncCacheEntry<CK,CD,ASK>,
-                                               DR extends AsyncCacheDataReceiver<CK,ASK,CD>,
+                                               CE extends AsyncCacheEntry<CK,CD,ASK,ASD>,
+                                               DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
                                                RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                                RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                                RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
-                                                X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>,
+                                                X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RQ,RS>,
                                                 C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>,
                                                 S extends VersionedEntityService<CK,CD,?,?,?>>
     extends AsyncCacheBatchClient<CK,CD,ASK,ASD,CE,DR,RK,RQ,RS,X,C>
@@ -44,9 +44,10 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
      * @param receiver
      */
     @Override
-    public void getCachedData( final DR receiver )
+    public void asynchronousGetCachedData( final DR receiver )
+        throws AsyncCacheDataRequestException
     {
-        final String methodName = "getCachedData";
+        final String methodName = "asynchronousGetCachedData";
         logMethodBegin( methodName, receiver );
         Objects.requireNonNull( receiver, "receiver argument cannon be null" );
         Objects.requireNonNull( receiver.getCacheKey(), "receiver's entity key cannot be null" );

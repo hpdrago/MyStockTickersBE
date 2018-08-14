@@ -13,7 +13,8 @@ import java.util.Objects;
  */
 public abstract class AsyncCacheEntry<CK,
                                       CD,
-                                     ASK>
+                                     ASK,
+                                     ASD>
 {
     /**
      * The current state of the cached item.
@@ -40,12 +41,11 @@ public abstract class AsyncCacheEntry<CK,
      * whatever additional processing the cache needs to perform before sending the results to the requester.
      */
     private AsyncProcessor<CD> cachedDataSyncProcessor;
-
     /**
      * This async processor is used to synchronize with the retrieval of the async data.  It is only used internally
      * within the cache itself to synchronize the retrieving of the background fetching of of the async data.
      */
-    //private AsyncProcessor<ASD> asyncDataSyncProcessor;
+    private AsyncProcessor<ASD> asyncDataSyncProcessor;
 
     /**
      * The exception if the asynchronous request failed.
@@ -105,6 +105,11 @@ public abstract class AsyncCacheEntry<CK,
     public synchronized CD getCachedData()
     {
         return this.cachedData;
+    }
+
+    public void setCachedData( final CD cachedData )
+    {
+        this.cachedData = cachedData;
     }
 
     /**
@@ -237,7 +242,10 @@ public abstract class AsyncCacheEntry<CK,
         this.cachedDataSyncProcessor = cachedDataSyncProcessor;
     }
 
-    /*
+    /**
+     * Get the Asynchronous processor
+     * @return
+     */
     public AsyncProcessor<ASD> getASyncDataSyncProcessor()
     {
         return asyncDataSyncProcessor;
@@ -247,13 +255,16 @@ public abstract class AsyncCacheEntry<CK,
     {
         this.asyncDataSyncProcessor = asyncDataSyncProcessor;
     }
-    */
 
-    public void setCachedData( final CD cachedData )
+    public ASK getAsyncKey()
     {
-        this.cachedData = cachedData;
+        return asyncKey;
     }
 
+    public void setAsyncKey( final ASK asyncKey )
+    {
+        this.asyncKey = asyncKey;
+    }
 
     @Override
     public String toString()

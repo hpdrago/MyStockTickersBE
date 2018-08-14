@@ -25,8 +25,7 @@ public class StockPriceServiceExecutor implements MyLogger
     private IEXTradingStockService iexTradingStockService;
     @Autowired
     private YahooStockPriceService yahooStockService;
-    @Autowired
-    private StockCompanyEntityService stockCompanyEntityService;
+
     private TreeSet<String> discontinuedStocks = new TreeSet();
 
     /**

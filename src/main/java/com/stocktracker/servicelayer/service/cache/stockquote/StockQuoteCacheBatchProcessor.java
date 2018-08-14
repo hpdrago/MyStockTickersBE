@@ -5,6 +5,7 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchProcess
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEntityCacheRequestKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.zankowski.iextrading4j.api.stocks.Quote;
 
 /**
  * Stock quote batch processors.  Extends the AsyncCacheBatchProcessor which in turn uses the StockQuoteCacheClient
@@ -12,8 +13,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<String,
-                                                                            String,
                                                                             StockQuoteEntity,
+                                                                            String,
+                                                                            Quote,
                                                                             StockQuoteEntityCacheEntry,
                                                                             StockQuoteEntityCacheDataReceiver,
                                                                             StockQuoteEntityCacheRequestKey,

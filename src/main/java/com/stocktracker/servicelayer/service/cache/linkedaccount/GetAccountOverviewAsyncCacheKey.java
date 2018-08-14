@@ -6,9 +6,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+/**
+ * This class contains the information necessary to get the TradeIt account summary asynchronously.
+ */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class LinkedAccountEntityCacheAsyncKey
+public class GetAccountOverviewAsyncCacheKey
 {
     private String accountNumber;
     private UUID tradeItAccountUuid;

@@ -29,14 +29,14 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
                                             CD extends AsyncCacheData,
                                            ASK,
                                            ASD,
-                                            CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                            CE extends AsyncCacheEntry<CK,CD,ASK,ASD>,
                                             DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
                                             RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                             RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                             RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
-                                             X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>,
+                                             X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RQ,RS>,
                                              C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>>
-    extends AsyncCacheClient<CK,CD,ASK,CE,DR,X,C>
+    extends AsyncCacheClient<CK,CD,ASK,ASD,CE,DR,X,C>
 {
     /**
      * Updates the {@code receivers} with the any current information in the cache and performs an asynchronous fetch
@@ -44,9 +44,9 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
      * @param receivers
      */
     @Override
-    public void getCachedData( final List<DR> receivers )
+    public void asynchronousGetCachedData( final List<DR> receivers )
     {
-        final String methodName = "getCachedData";
+        final String methodName = "asynchronousGetCachedData";
         Objects.requireNonNull( receivers, "receivers argument cannot be null" );
         logMethodBegin( methodName, receivers.size() );
         /*

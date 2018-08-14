@@ -4,6 +4,8 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * Client interface with the Stock Price Quote Cache.
  */
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class StockPriceQuoteCacheClient extends AsyncCacheBatchClient<String,
                                                                       StockPriceQuote,
                                                                       String,
-                                                                      GetStockPriceResult,
+                                                                      BigDecimal,
                                                                       StockPriceQuoteCacheEntry,
                                                                       StockPriceQuoteCacheDataReceiver,
                                                                       StockPriceQuoteCacheRequestKey,

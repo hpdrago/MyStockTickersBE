@@ -31,6 +31,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  * @param <CK> - The key type to the cache.
  * @param <CD> - The type of cached data.
  * @param <ASK> - The async key used to fetch the external data.
+ * @param <ASD> - The async data to be retrieved from the asynchronous source.
  * @param <E> - The cache entry type which is a subclass of AsyncCacheEntry<CD>.
  * @param <X> - The interface definition of the class that will be performing synchronous and asynchronous work to
  *              get the information of type CD.
@@ -38,8 +39,9 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
 public abstract class AsyncCache<CK extends Serializable,
                                  CD,
                                 ASK,
-                                  E extends AsyncCacheEntry<CK,CD,ASK>,
-                                  X extends AsyncCacheServiceExecutor<CK,CD,ASK>>
+                                ASD,
+                                  E extends AsyncCacheEntry<CK,CD,ASK,ASD>,
+                                  X extends AsyncCacheServiceExecutor<ASK,ASD>>
     extends BaseService
     implements MyLogger
 {
@@ -203,16 +205,17 @@ public abstract class AsyncCache<CK extends Serializable,
     {
         final String methodName = "getASyncData";
         logMethodBegin( methodName, cacheKey, asyncKey, cacheEntry );
-        CD cacheData = null;
+        ASD asyncData = null;
         cacheEntry.setCacheKey( cacheKey );
         try
         {
             cacheEntry.setFetchState( FETCHING );
             try
             {
-                cacheData = this.getExecutor()
-                                .getASyncData( cacheKey, asyncKey );
-                logDebug( methodName, "information: {0}", cacheData );
+                asyncData = this.getExecutor()
+                                .getASyncData( asyncKey );
+                final CD cacheData = this.convertAsyncData( cacheKey, asyncKey, asyncData );
+                logDebug( methodName, "information: {0}", asyncData );
                 cacheEntry.setCachedData( cacheKey, asyncKey, cacheData );
                 cacheEntry.setCacheState( CURRENT );
             }
@@ -233,8 +236,18 @@ public abstract class AsyncCache<CK extends Serializable,
             cacheEntry.setFetchState( NOT_FETCHING );
         }
         logTrace( methodName, "cacheEntry: {0}", cacheEntry );
-        logMethodEnd( methodName, cacheData );
+        logMethodEnd( methodName, asyncData );
     }
+
+    /**
+     * Converts the {@code asyncData} to the cached data type {@code cacheData}.
+     * @param cacheKey
+     * @param asyncKey
+     * @param asyncData
+     * @return
+     */
+    protected abstract CD convertAsyncData( final CK cacheKey, final ASK asyncKey, final ASD asyncData )
+        throws AsyncCacheDataRequestException;
 
     /**
      * Fetches the information asynchronously
@@ -256,44 +269,69 @@ public abstract class AsyncCache<CK extends Serializable,
          * immediately.
          */
         this.getExecutor()
-            .asynchronousFetch( cacheKey, asyncKey, cacheEntry.getCachedDataSyncProcessor() );
+            .asynchronousFetch( asyncKey, cacheEntry.getASyncDataSyncProcessor() );
         logTrace( methodName, "Subscribing to subject for {0}", cacheKey );
         /*
          * Setup the handling to handle the completed request.
          */
-        cacheEntry.getCachedDataSyncProcessor()
+        cacheEntry.getASyncDataSyncProcessor()
                   .share()
-                  .doOnError( throwable ->
-                  {
-                      cacheEntry.setCachedData( cacheKey, asyncKey, null );
-                      /*
-                       * Check for a not found exception first, that's a normal scenario
-                       */
-                      if ( throwable instanceof AsyncCacheDataNotFoundException )
-                      {
-                          cacheEntry.setCacheState( NOT_FOUND );
-                      }
-                      else
-                      {
-                          cacheEntry.setFetchThrowable( throwable );
-                          cacheEntry.setCacheState( FAILURE );
-                          logError( methodName, String.format( "subscribe.onError for search Key: ", cacheKey ), throwable );
-                          cacheEntry.getCachedDataSyncProcessor().onError( throwable );
-                      }
-                      cacheEntry.setFetchState( NOT_FETCHING );
-                      logTrace( methodName, "cacheEntry: {0}", cacheEntry );
-                  })
-                  .subscribe( cacheData ->
-                  {
-                      logTrace( methodName, "subscribe.onNext fetch of key {0} value {1}",
-                                cacheKey, cacheData );
-                      cacheEntry.setCachedData( cacheKey, asyncKey, cacheData );
-                      cacheEntry.setFetchState( NOT_FETCHING );
-                      cacheEntry.setCacheState( CURRENT );
-                      logTrace( methodName, "cacheEntry: {0}", cacheEntry );
-                  });
+                  .doOnError( throwable -> handleASyncFetchError( cacheKey, asyncKey, cacheEntry, throwable ))
+                  .subscribe( asyncData -> handleASyncFetchSuccess( cacheKey, asyncKey, asyncData, cacheEntry ));
         logTrace( methodName, "cacheEntry: {0}", cacheEntry );
         logMethodEnd( methodName );
+    }
+
+    /**
+     * This method is called when an exception occurs fetching the asynchronous data.  It updates the cache entry with
+     * the exception information and nulls the cache data.
+     * @param cacheKey
+     * @param asyncKey
+     * @param cacheEntry
+     * @param throwable
+     */
+    private void handleASyncFetchError( final CK cacheKey, final ASK asyncKey, final E cacheEntry, final Throwable throwable )
+    {
+        final String methodName = "handleAsyncFetchError";
+        logMethodBegin( methodName, cacheKey, asyncKey );
+        cacheEntry.setCachedData( cacheKey, asyncKey, null );
+        /*
+         * Check for a not found exception first, that's a normal scenario
+         */
+        if ( throwable instanceof AsyncCacheDataNotFoundException )
+        {
+            cacheEntry.setCacheState( NOT_FOUND );
+        }
+        else
+        {
+            cacheEntry.setFetchThrowable( throwable );
+            cacheEntry.setCacheState( FAILURE );
+            logError( methodName, String.format( "subscribe.onError for search Key: {0}", cacheKey ), throwable );
+            cacheEntry.getASyncDataSyncProcessor().onError( throwable );
+        }
+        cacheEntry.setFetchState( NOT_FETCHING );
+        logMethodEnd( methodName, cacheEntry );
+    }
+
+    /**
+     * Handler when the asynchronous data is successfully fetched.
+     * @param cacheKey
+     * @param asyncKey
+     * @param asyncData
+     * @param cacheEntry
+     */
+    private void handleASyncFetchSuccess( final CK cacheKey, final ASK asyncKey, final ASD asyncData,  final E cacheEntry )
+        throws AsyncCacheDataRequestException
+    {
+        final String methodName = "handleASyncFetchSuccess";
+        logMethodBegin( methodName, cacheEntry, asyncKey, asyncData );
+        logTrace( methodName, "subscribe.onNext fetch of key {0} value {1}",
+                  cacheKey, asyncData );
+        final CD cacheData = this.convertAsyncData( cacheKey, asyncKey, asyncData );
+        cacheEntry.setCachedData( cacheKey, asyncKey, cacheData );
+        cacheEntry.setFetchState( NOT_FETCHING );
+        cacheEntry.setCacheState( CURRENT );
+        logMethodEnd( methodName, cacheEntry );
     }
 
     /**

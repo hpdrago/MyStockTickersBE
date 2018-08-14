@@ -89,7 +89,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
          * Get the cached data or make an asynchronous request for the data.
          */
         this.stockQuoteEntityCacheClient
-            .getCachedData( receiver );
+            .asynchronousGetCachedData( receiver );
         /*
          * Set the cache data and status results.
          */

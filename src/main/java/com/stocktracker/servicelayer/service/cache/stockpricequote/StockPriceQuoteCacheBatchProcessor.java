@@ -4,6 +4,8 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCacheBatchProcess
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 /**
  * Stock price quote batch processors.  Extends the AsyncCacheBatchProcessor which in turn uses the
  * StockPriceQuoteCacheClient to process a batch of DTOs to obtain the stock quote information from the Stock Quote Cache.
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class StockPriceQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<String,
                                                                                  StockPriceQuote,
                                                                                  String,
+                                                                                 BigDecimal,
                                                                                  StockPriceQuoteCacheEntry,
                                                                                  StockPriceQuoteCacheDataReceiver,
                                                                                  StockPriceQuoteCacheRequestKey,

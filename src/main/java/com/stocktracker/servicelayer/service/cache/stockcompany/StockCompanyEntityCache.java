@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,13 @@ public class StockCompanyEntityCache extends AsyncBatchCache<String,
 {
     @Autowired
     private StockCompanyEntityServiceExecutor stockCompanyEntityServiceExecutor;
+
+    @Override
+    protected StockCompanyEntity convertAsyncData( final String tickerSymbol, final String notUsed, final Company asyncData )
+        throws AsyncCacheDataRequestException
+    {
+        return null;
+    }
 
     /**
      * Creates the cache entry.

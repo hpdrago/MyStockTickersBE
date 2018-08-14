@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,23 +37,6 @@ public class StockPriceQuoteCache extends AsyncBatchCache<String,
     private StockPriceQuoteServiceExecutor stockPriceQuoteServiceExecutor;
 
     /**
-     * Gets the Stock Quote from the cache if present, otherwise the Stock Quote is fetch asynchronously.
-     * {@code stockPriceQuoteDTOContainer} will be upated with the Stock Quote information and the cache entry status.
-     * @param tickerSymbol
-     * @param stockPriceQuoteDTOContainer
-     */
-    /*
-    public void asynchronousGet( @NotNull final String tickerSymbol, @NotNull StockPriceQuoteDTOContainer stockPriceQuoteDTOContainer )
-    {
-        final String methodName = "asynchronousGet";
-        logMethodBegin( methodName, tickerSymbol );
-        final StockPriceQuoteCacheEntry cacheEntry = this.asynchronousGet( tickerSymbol );
-        stockPriceQuoteDTOContainer.setStockPriceQuote( cacheEntry.getCacheEntryState(), cacheEntry.getCachedData() );
-        logMethodEnd( methodName, cacheEntry );
-    }
-    */
-
-    /**
      * Updates the stock price cache for the ticker symbol.
      * @param tickerSymbol
      * @param stockPrice
@@ -70,6 +54,28 @@ public class StockPriceQuoteCache extends AsyncBatchCache<String,
         {
             stockPriceQuoteCacheEntry.getCachedData().setLastPrice( stockPrice );
         }
+    }
+
+    /**
+     * Convert the stock price into a {@code StockPriceQuote} instance.
+     * @param cacheKey
+     * @param asyncKey
+     * @param stockPrice
+     * @return
+     * @throws AsyncCacheDataRequestException
+     */
+    @Override
+    protected StockPriceQuote convertAsyncData( final String cacheKey,
+                                                final String asyncKey,
+                                                final BigDecimal stockPrice )
+        throws AsyncCacheDataRequestException
+    {
+        final String methodName = "convertAsyncData";
+        logMethodBegin( methodName, cacheKey, asyncKey, stockPricei );
+        final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
+        stockPriceQuote.setTickerSymbol( cacheKey );
+        stockPriceQuote.setLastPrice( stockPrice );
+        return stockPriceQuote;
     }
 
     /**

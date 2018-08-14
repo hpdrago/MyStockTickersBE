@@ -45,6 +45,7 @@ public class StockPriceQuote implements AsyncCacheData,
     {
         return lastPrice;
     }
+
     public void setLastPrice( final BigDecimal lastPrice )
     {
         this.lastPrice = lastPrice;// .divide( new BigDecimal( 1 ), 2,  BigDecimal.ROUND_HALF_UP  );

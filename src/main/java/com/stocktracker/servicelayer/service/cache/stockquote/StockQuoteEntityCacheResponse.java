@@ -11,6 +11,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteEntityCacheResponse extends AsyncBatchCacheResponse<String,StockQuoteEntity,String>
+public class StockQuoteEntityCacheResponse extends AsyncBatchCacheResponse<String,String,StockQuoteEntity>
 {
 }

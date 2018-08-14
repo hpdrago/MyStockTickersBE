@@ -6,6 +6,7 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheDataReceiver;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
@@ -53,7 +54,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             receivers.add( receiver );
         }
         this.stockCompanyEntityCacheClient
-            .getCachedData( receivers );
+            .asynchronousGetCachedData( receivers );
         /*
          * Mark the DTO's as quote is requested.
          */
@@ -67,6 +68,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
      * @param container The container to set the value.
      */
     public void setCompanyInformation( final StockCompanyDTOContainer container )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "setStockCompanyInformation";
         logMethodBegin( methodName, container.getTickerSymbol() );
@@ -79,7 +81,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
          * Get the cached data or make an asynchronous request for the data.
          */
         this.stockCompanyEntityCacheClient
-            .getCachedData( receiver );
+            .asynchronousGetCachedData( receiver );
         /*
          * Set the cache data and status results.
          */
@@ -101,6 +103,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
      * @return Stock Company DTO
      */
     public StockCompanyDTO getStockCompanyDTO( final String tickerSymbol )
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "getStockCompanyDTO";
         logMethodBegin( methodName, tickerSymbol );
@@ -109,8 +112,9 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
          */
         final StockCompanyEntityCacheDataReceiver receiver = this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
         receiver.setCacheKey( tickerSymbol );
+        receiver.setAsyncKey( tickerSymbol );
         this.stockCompanyEntityCacheClient
-            .getCachedData( tickerSymbol, receiver );
+            .asynchronousGetCachedData( receiver );
         /*
          * This maybe the first time the stock company is being fetched so we need to check to see if it is being
          * fetch and then wait for the result.
@@ -119,7 +123,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         {
             logDebug( methodName, "Waiting for asynchronous fetch to complete for {0}", tickerSymbol );
             this.stockCompanyEntityCacheClient
-                .getCachedData( tickerSymbol, receiver );
+                .synchronousGetCachedData( receiver );
         }
         StockCompanyDTO stockCompanyDTO;
         if ( receiver.getCachedData() == null )

@@ -25,8 +25,8 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
                                                          RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                                          RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                                          RS extends AsyncBatchCacheResponse<CK,ASK,ASD>>
-    extends BaseAsyncCacheServiceExecutor<CK,CD,ASK>
-    implements AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>
+    extends BaseAsyncCacheServiceExecutor<ASK,ASD>
+    implements AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RQ,RS>
 {
     /**
      * Asynchronous fetching of the information for {@code searchKey}.
@@ -82,26 +82,27 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
         final List<RK> requestKeys = requests.stream()
                                              .map( request ->
                                                    {
-                                                       final RK requestKey = this.createRequestKey( request.getCacheKey(),
-                                                                                                    request.getASyncKey() );
-                                                       return requestKey;
+                                                       return this.createRequestKey( request.getCacheKey(),
+                                                                                     request.getASyncKey() );
                                                    })
                                              .collect(Collectors.toList());
         /*
          * Make the batch request.
          */
         final Map<ASK,ASD> asyncDataList = this.batchFetch( requestKeys );
+
         /*
          * Convert the external data to responses.
          */
-        final List<RS> responses = asyncDataList.stream()
-                                                      .map( asyncData ->
-                                                            {
-                                                                final RS response = this.newResponse();
-                                                                this.processResponse( asyncData, response );
-                                                                return response;
-                                                            })
-                                                      .collect( Collectors.toList() );
+        final List<RS> responses = asyncDataList.values()
+                                                .stream()
+                                                .map( asyncData ->
+                                                      {
+                                                          final RS response = this.newResponse();
+                                                          this.processResponse( asyncData, response );
+                                                          return response;
+                                                      })
+                                                .collect( Collectors.toList() );
         logMethodEnd( methodName, responses.size() + " responses" );
         return responses;
     }
@@ -208,7 +209,7 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
          * For each request for which a response was not found, notify the caller of the error.
          */
         requestKeys.forEach( asyncKey -> requestMap.get( asyncKey )
-                                                        .setRequestResult( AsyncBatchCacheRequestResult.NOT_FOUND ));
+                                                   .setRequestResult( AsyncBatchCacheRequestResult.NOT_FOUND ));
         logMethodEnd( methodName );
     }
 

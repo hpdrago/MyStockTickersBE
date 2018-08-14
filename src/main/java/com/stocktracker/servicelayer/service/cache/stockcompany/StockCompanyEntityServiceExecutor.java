@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,23 +51,20 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
     /**
      * This method, when call is called on a new thread launched and managed by the Spring container.
      * In the new thread, the stock company will be retrieved and the caller will be notified through the {@code observable}
-     * @param tickerSymbol
-     * @param asyncKey The ticker symbol is both the cache key and the async key.
+     * @param tickerSymbol The ticker symbol is both the cache key and the async key.
      * @param asyncProcessor Behaviour subject to use to notify the caller that the request has been completed.
      */
     @Async( AppConfig.STOCK_COMPANY_THREAD_POOL )
     @Override
     public void asynchronousFetch( final String tickerSymbol,
-                                   final String asyncKey,
-                                   final AsyncProcessor<StockCompanyEntity> asyncProcessor )
-        throws AsyncCacheDataRequestException
+                                   final AsyncProcessor<Company> asyncProcessor )
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, tickerSymbol );
         /*
          * The super class calls this.getASyncData and takes care of the subject notification.
          */
-        super.asynchronousFetch( tickerSymbol, tickerSymbol, asyncProcessor );
+        super.asynchronousFetch( tickerSymbol, asyncProcessor );
         logMethodEnd( methodName );
     }
 
@@ -97,18 +95,29 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
      * @param requestKeys
      */
      @Override
-    protected List<Company> batchFetch( final List<StockCompanyEntityCacheRequestKey> requestKeys )
+    protected Map<String,Company> batchFetch( final List<StockCompanyEntityCacheRequestKey> requestKeys )
     {
         final String methodName = "getASyncData";
         logMethodBegin( methodName, requestKeys );
+        /*
+         * Extract the tickers symbols.
+         */
         final List<String> tickerSymbols = requestKeys.stream()
                                                       .map( stockCompanyEntityCacheRequestKey ->
                                                                 stockCompanyEntityCacheRequestKey.getASyncKey() )
                                                       .collect(Collectors.toList());
+        /*
+         * Make the call to IEXTrading to get the companies.
+         */
         final List<Company> companies = this.iexTradingStockService
                                             .getCompanies( tickerSymbols );
+        /*
+         * Convert the list of companies to a map of companies keyed by ticker symbol
+         */
+        final Map<String,Company> companyMap = new HashMap<>(companies.size());
+        companies.forEach( company -> companyMap.put( company.getSymbol(), company ));
         logMethodEnd( methodName, "Received " + companies.size() + " stock companies" );
-        return companies;
+        return companyMap;
     }
 
     /**
@@ -118,7 +127,7 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
      * @throws AsyncCacheDataNotFoundException
      */
     @Override
-    protected Company getASyncData( final String tickerSymbol )
+    public Company getASyncData( final String tickerSymbol )
     {
         final String methodName = "getASyncData";
         logMethodBegin( methodName, tickerSymbol );
@@ -128,31 +137,11 @@ public class StockCompanyEntityServiceExecutor extends AsyncCacheDBEntityService
         return company;
     }
 
-
-    /**
-     * Copy company information from the IEXTrading data to the company entity.
-     * @param company
-     * @param companyEntity
-     */
-    protected void copyExternalDataToEntity( final Company company, final StockCompanyEntity companyEntity )
-    {
-        companyEntity.setTickerSymbol( company.getSymbol() );
-        BeanUtils.copyProperties( company, companyEntity );
-    }
-
     @Override
     protected StockCompanyEntityCacheResponse newResponse()
     {
         return this.context.getBean( StockCompanyEntityCacheResponse.class );
     }
-
-    @Override
-    protected StockCompanyEntityCacheResponse createResponse( final StockCompanyEntityCacheRequestKey requestKey,
-                                                              final Company asyncData )
-    {
-        return null;
-    }
-
 
     /**
      * Creates a new entity instance.

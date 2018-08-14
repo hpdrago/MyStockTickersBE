@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service.cache.linkedaccount;
 
-import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCacheResponse;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class LinkedAccountEntityCacheResponse extends AsyncBatchCacheResponse<UUID,
-                                                                              LinkedAccountEntityCacheAsyncKey,
+    GetAccountOverviewAsyncCacheKey,
                                                                               GetAccountOverviewAPIResult>
 {
 }

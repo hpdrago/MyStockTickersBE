@@ -2,10 +2,12 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry;
 
+import java.math.BigDecimal;
+
 /**
  * This class defines the Stock Price Quote cache's entry types.
  */
-public class StockPriceQuoteCacheEntry extends AsyncCacheEntry<String,StockPriceQuote,String>
+public class StockPriceQuoteCacheEntry extends AsyncCacheEntry<String,StockPriceQuote,String,BigDecimal>
 {
     /**
      * Identifies if the stock company table's existence has already been checked.

@@ -7,6 +7,9 @@ import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
+import com.stocktracker.servicelayer.service.cache.linkedaccount.GetAccountOverviewAsyncCacheKey;
+import com.stocktracker.servicelayer.service.cache.linkedaccount.LinkedAccountEntityCacheClient;
+import com.stocktracker.servicelayer.service.cache.linkedaccount.LinkedAccountEntityCacheDataReceiver;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,8 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     private TradeItAsyncUpdateService tradeItAsyncUpdateService;
     @Autowired
     private TradeItAccountEntityService tradeItAccountEntityService;
+    @Autowired
+    private LinkedAccountEntityCacheClient linkedAccountEntityCacheClient;
 
     /**
      * Get all of the linked account for a customer.
@@ -98,12 +103,8 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
              *
              * These are asynchronous calls to refresh the account overview information
              */
-            linkedAccountEntities
-                .forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
-                    .prepareToUpdateLinkedAccount( linkedAccountEntity ) );
-            linkedAccountEntities
-                .forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
-                    .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ) );
+            linkedAccountEntities.forEach( linkedAccountEntity -> this.tradeItAsyncUpdateService
+                                 .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity ) );
         }
         else
         {
@@ -184,22 +185,31 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
      * @throws IllegalArgumentException if the {@code linkedAccountId} is not registered to be updated.
      */
     public LinkedAccountDTO getUpdatedLinkedAccount( UUID linkedAccountUuid )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getUpdatedLinkedAccount";
         logMethodBegin( methodName, linkedAccountUuid );
-        this.tradeItAsyncUpdateService
-            .checkGetAccountOverviewExists( linkedAccountUuid );
         logDebug( methodName, "blocking for linked account: {0}", linkedAccountUuid );
-        final LinkedAccountEntity linkedAccountEntity = this.tradeItAsyncUpdateService
-                                                            .subscribeToGetAccountOverview( linkedAccountUuid )
-                                                            .doOnError( throwable ->
-                                                                        {
-                                                                            logError( methodName, throwable.getCause() );
-                                                                        })
-                                                            .blockingFirst();
+        /*
+         * Setup the information necessary to get the updated linked account information.
+         */
+        final LinkedAccountEntityCacheDataReceiver receiver = this.context
+                                                                  .getBean( LinkedAccountEntityCacheDataReceiver.class );
+        receiver.setCacheKey( linkedAccountUuid );
+        final GetAccountOverviewAsyncCacheKey getAccountOverviewAsyncCacheKey = this.context
+                                                                                    .getBean( GetAccountOverviewAsyncCacheKey.class );
+        LinkedAccountEntity linkedAccountEntity = this.getEntity( linkedAccountUuid );
+        getAccountOverviewAsyncCacheKey.setAccountNumber( linkedAccountEntity.getAccountNumber() );
+        getAccountOverviewAsyncCacheKey.setLinkedAccountUuid( linkedAccountEntity.getId() );
+        getAccountOverviewAsyncCacheKey.setTradeItAccountUuid( linkedAccountEntity.getTradeItAccountUuid() );
+        receiver.setAsyncKey( getAccountOverviewAsyncCacheKey );
+        /*
+         * block and wait for the background task to complete.
+         */
+        this.linkedAccountEntityCacheClient
+            .synchronousGetCachedData( receiver );
         logDebug( methodName, "received after blocking {0}", linkedAccountEntity );
-        this.tradeItAsyncUpdateService
-            .removeGetAccountOverviewRequest( linkedAccountUuid );
+        linkedAccountEntity = receiver.getCachedData();
         final LinkedAccountDTO linkedAccountDTO = this.entityToDTO( linkedAccountEntity );
         logMethodEnd( methodName, linkedAccountDTO );
         return linkedAccountDTO;

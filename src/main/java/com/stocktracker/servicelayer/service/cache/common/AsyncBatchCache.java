@@ -22,12 +22,12 @@ public abstract class AsyncBatchCache< CK extends Serializable,
                                        CD,
                                        ASK,
                                        ASD,
-                                       CE extends AsyncCacheEntry<CK,CD,ASK>,
+                                       CE extends AsyncCacheEntry<CK,CD,ASK,ASD>,
                                        RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                        RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                        RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
-                                       X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RK,RQ,RS>>
-    extends AsyncCache<CK,CD,ASK,CE,X>
+                                       X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RQ,RS>>
+    extends AsyncCache<CK,CD,ASK,ASD,CE,X>
 {
     /**
      * Performs a batch request to the external entity for each of the request keys.
