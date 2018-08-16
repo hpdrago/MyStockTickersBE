@@ -47,6 +47,12 @@ public class StockQuoteEntityCacheDataReceiver implements AsyncCacheDataReceiver
         return this.tickerSymbol;
     }
 
+    @Override
+    public void setAsyncKey( final String asyncKey )
+    {
+        this.tickerSymbol = asyncKey;
+    }
+
     /**
      * Set the StockQuoteEntity data.
      * @param stockQuoteEntity

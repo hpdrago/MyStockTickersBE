@@ -180,15 +180,18 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
 
     /**
      * Blocks and waits for the get account summary information call that must have been made previously.
+     * @param tradeItAccountUuid
      * @param linkedAccountUuid
      * @return Updated linked account.
      * @throws IllegalArgumentException if the {@code linkedAccountId} is not registered to be updated.
      */
-    public LinkedAccountDTO getUpdatedLinkedAccount( UUID linkedAccountUuid )
+    public LinkedAccountDTO getUpdatedLinkedAccount( final UUID tradeItAccountUuid,
+                                                     final UUID linkedAccountUuid,
+                                                     final String accountNumber )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getUpdatedLinkedAccount";
-        logMethodBegin( methodName, linkedAccountUuid );
+        logMethodBegin( methodName, tradeItAccountUuid, linkedAccountUuid );
         logDebug( methodName, "blocking for linked account: {0}", linkedAccountUuid );
         /*
          * Setup the information necessary to get the updated linked account information.
@@ -196,6 +199,12 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         final LinkedAccountEntityCacheDataReceiver receiver = this.context
                                                                   .getBean( LinkedAccountEntityCacheDataReceiver.class );
         receiver.setCacheKey( linkedAccountUuid );
+        final GetAccountOverviewAsyncCacheKey asyncCacheKey = this.context
+                                                                  .getBean( GetAccountOverviewAsyncCacheKey.class );
+        asyncCacheKey.setTradeItAccountUuid( tradeItAccountUuid );
+        asyncCacheKey.setLinkedAccountUuid( linkedAccountUuid );
+        asyncCacheKey.setAccountNumber( accountNumber );
+        receiver.setAsyncKey( asyncCacheKey );
         final GetAccountOverviewAsyncCacheKey getAccountOverviewAsyncCacheKey = this.context
                                                                                     .getBean( GetAccountOverviewAsyncCacheKey.class );
         LinkedAccountEntity linkedAccountEntity = this.getEntity( linkedAccountUuid );

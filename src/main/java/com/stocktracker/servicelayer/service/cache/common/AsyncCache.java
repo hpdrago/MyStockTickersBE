@@ -143,7 +143,6 @@ public abstract class AsyncCache<CK extends Serializable,
      */
     public E asynchronousGet( @NotNull final CK cacheKey,
                               @NotNull final ASK asyncKey )
-        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousGet";
         logMethodBegin( methodName, cacheKey, asyncKey );
@@ -259,7 +258,6 @@ public abstract class AsyncCache<CK extends Serializable,
     protected void asynchronousFetch( final CK cacheKey,
                                       final ASK asyncKey,
                                       final E cacheEntry )
-        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousFetch";
         logMethodBegin( methodName, cacheKey, asyncKey, cacheEntry );

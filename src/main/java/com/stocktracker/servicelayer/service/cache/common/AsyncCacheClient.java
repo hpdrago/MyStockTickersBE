@@ -56,7 +56,6 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * @param receiver The object that will "receive" the cached data and cache state values.
      */
     public void asynchronousGetCachedData( final DR receiver )
-        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousGetCachedData";
         logMethodBegin( methodName, receiver );

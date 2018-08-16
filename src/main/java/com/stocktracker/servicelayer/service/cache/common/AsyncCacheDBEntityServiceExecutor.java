@@ -102,94 +102,86 @@ public abstract class AsyncCacheDBEntityServiceExecutor<CK extends Serializable,
      * @return
      * @throws AsyncCacheDataNotFoundException
      */
+    /*
     public abstract ASD getASyncData( final ASK searchKey )
         throws AsyncCacheDataNotFoundException;
+        */
 
     /**
-     * Fetches the information for {@code searchKey} from the external data source.
-     * Also, converts the data retrieved from the external/async source into the target database entity instance
-     * and saves the information to the database.
-     * @param requestKey The key to the cache.
-     * @param asyncKey The search key.
-     * @return
-     */
-    /**
      * Fetches the information for {@code asyncKey} immediately.
-     * @param cacheKey The key to the cache.
      * @param asyncKey The key to the asynchronous data.
      * @return Information of type ASD wrapped in an Optional.
      * @throws AsyncCacheDataNotFoundException When the requested async was not found in the asynchronous data source.
      * @throws AsyncCacheDataRequestException When an exception occurs, other than the not found exception.
      */
-    public CD getASyncData( @NotNull final CK cacheKey,
-                            @NotNull final ASK asyncKey )
-        throws AsyncCacheDataNotFoundException,
-               AsyncCacheDataRequestException
-    {
-        final String methodName = "getASyncData";
-        logMethodBegin( methodName, cacheKey, asyncKey );
-        ASD asyncData = null;
-        try
-        {
-            asyncData = this.getASyncData( asyncKey );
-        }
-        catch( AsyncCacheDataNotFoundException e )
-        {
-            throw e;
-        }
-        catch( Exception e )
-        {
-            logError( methodName, "searchKey not found: " + asyncKey );
-            throw this.createException( asyncKey, e );
-        }
-        boolean mismatch = false;
-        CD entity = null;
-        do
-        {
-            mismatch = false;
-            try
-            {
-                entity = this.getEntityService()
-                             .getEntity( cacheKey );
-                this.copyASyncData( cacheKey, asyncData, entity );
-            }
-            catch( EntityVersionMismatchException e1 )
-            {
-                logDebug( methodName, "Entity version mismatch, trying again.  {0}", entity );
-                mismatch = true;
-            }
-            catch( VersionedEntityNotFoundException e )
-            {
-                /*
-                 * If it doesn't exist then add it.
-                 */
-                try
-                {
-                    entity = this.createEntity();
-                    this.copyASyncData( cacheKey, asyncData, entity );
-                    entity = this.getEntityService()
-                                 .addEntity( entity );
-                }
-                catch( EntityVersionMismatchException e1 )
-                {
-                    mismatch = true;
-                    logDebug( methodName, "Entity version mismatch, trying again.  {0}", entity );
-                }
-                catch( DuplicateEntityException e1 )
-                {
-                    logError( methodName, "Should not get a duplicate after checking for existence: " +
-                                          entity, e );
-                }
-                catch( VersionedEntityNotFoundException e1 )
-                {
-                    logError( methodName, "Should not get a not found after checking for existence: " +
-                                          entity, e );
-                }
-            }
-        }
-        while ( mismatch );
-        return entity;
-    }
+//    public ASD getASyncData( @NotNull final ASK asyncKey )
+//        throws AsyncCacheDataNotFoundException,
+//               AsyncCacheDataRequestException
+//    {
+//        final String methodName = "getASyncData";
+//        logMethodBegin( methodName, cacheKey, asyncKey );
+//        ASD asyncData = null;
+//        try
+//        {
+//            asyncData = super.getASyncData( asyncKey );
+//        }
+//        catch( AsyncCacheDataNotFoundException e )
+//        {
+//            throw e;
+//        }
+//        catch( Exception e )
+//        {
+//            logError( methodName, "searchKey not found: " + asyncKey );
+//            throw this.createException( asyncKey, e );
+//        }
+//        boolean mismatch = false;
+//        CD entity = null;
+//        do
+//        {
+//            mismatch = false;
+//            try
+//            {
+//                entity = this.getEntityService()
+//                             .getEntity( cacheKey );
+//                this.copyASyncData( cacheKey, asyncData, entity );
+//            }
+//            catch( EntityVersionMismatchException e1 )
+//            {
+//                logDebug( methodName, "Entity version mismatch, trying again.  {0}", entity );
+//                mismatch = true;
+//            }
+//            catch( VersionedEntityNotFoundException e )
+//            {
+//                /*
+//                 * If it doesn't exist then add it.
+//                 */
+//                try
+//                {
+//                    entity = this.createEntity();
+//                    this.copyASyncData( cacheKey, asyncData, entity );
+//                    entity = this.getEntityService()
+//                                 .addEntity( entity );
+//                }
+//                catch( EntityVersionMismatchException e1 )
+//                {
+//                    mismatch = true;
+//                    logDebug( methodName, "Entity version mismatch, trying again.  {0}", entity );
+//                }
+//                catch( DuplicateEntityException e1 )
+//                {
+//                    logError( methodName, "Should not get a duplicate after checking for existence: " +
+//                                          entity, e );
+//                }
+//                catch( VersionedEntityNotFoundException e1 )
+//                {
+//                    logError( methodName, "Should not get a not found after checking for existence: " +
+//                                          entity, e );
+//                }
+//            }
+//        }
+//        while ( mismatch );
+//        return entity;
+//    }
 
     /**
      * Copies the async data to the entity which is the cached information.

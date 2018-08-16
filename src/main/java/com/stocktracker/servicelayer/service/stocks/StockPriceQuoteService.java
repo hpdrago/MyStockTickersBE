@@ -2,6 +2,7 @@ package com.stocktracker.servicelayer.service.stocks;
 
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.BaseService;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheBatchProcessor;
@@ -172,10 +173,10 @@ public class StockPriceQuoteService extends BaseService
      *
      * @param tickerSymbol
      * @return
-     * @throws StockNotFoundException
+     * @throws AsyncCacheDataRequestException
      */
     public StockPriceQuoteDTO getAsynchronousStockPriceQuote( final String tickerSymbol )
-        throws StockNotFoundException
+        throws AsyncCacheDataRequestException
     {
         final String methodName = "getAynchronousStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
@@ -195,18 +196,18 @@ public class StockPriceQuoteService extends BaseService
      *
      * @param tickerSymbol
      * @return
-     * @throws StockNotFoundException
      */
     public StockPriceQuoteDTO getSynchronousStockPriceQuote( final String tickerSymbol )
-        throws StockNotFoundException
     {
         final String methodName = "getSynchronousStockPriceQuote";
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'" );
         final StockPriceQuoteCacheDataReceiver stockPriceQuoteCacheDataReceiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
+        stockPriceQuoteCacheDataReceiver.setCacheKey( tickerSymbol );
+        stockPriceQuoteCacheDataReceiver.setAsyncKey( tickerSymbol );
         this.stockPriceQuoteCacheClient
-            .getCachedData( tickerSymbol, stockPriceQuoteCacheDataReceiver );
+            .synchronousGetCachedData( stockPriceQuoteCacheDataReceiver );
         final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
         BeanUtils.copyProperties( stockPriceQuoteCacheDataReceiver.getCachedData(), stockPriceQuoteDTO );
         logMethodEnd( methodName, stockPriceQuoteDTO );

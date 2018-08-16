@@ -71,7 +71,7 @@ public class StockPriceQuoteCache extends AsyncBatchCache<String,
         throws AsyncCacheDataRequestException
     {
         final String methodName = "convertAsyncData";
-        logMethodBegin( methodName, cacheKey, asyncKey, stockPricei );
+        logMethodBegin( methodName, cacheKey, asyncKey, stockPrice );
         final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
         stockPriceQuote.setTickerSymbol( cacheKey );
         stockPriceQuote.setLastPrice( stockPrice );

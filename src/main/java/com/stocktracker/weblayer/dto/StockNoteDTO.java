@@ -44,18 +44,6 @@ public class StockNoteDTO extends DatabaseEntityDTO<String>
     private StockPriceQuoteDTO stockPriceQuoteDTO;
     private StockQuoteDTO stockQuoteDTO;
 
-    @Override
-    public String getCacheKey()
-    {
-        return this.tickerSymbol;
-    }
-
-    @Override
-    public void setCacheKey( final String tickerSymbol )
-    {
-        this.tickerSymbol = tickerSymbol;
-    }
-
     public String getNotes()
     {
         return notes;

@@ -20,7 +20,7 @@ import java.util.UUID;
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataReceiver<UUID,
                                                                                     LinkedAccountEntity,
-    GetAccountOverviewAsyncCacheKey>
+                                                                                    GetAccountOverviewAsyncCacheKey>
 {
     private UUID cacheKey;
     private LinkedAccountEntity linkedAccountEntity;
@@ -49,6 +49,12 @@ public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataRecei
     public GetAccountOverviewAsyncCacheKey getASyncKey()
     {
         return this.asyncKey;
+    }
+
+    @Override
+    public void setAsyncKey( final GetAccountOverviewAsyncCacheKey asyncKey )
+    {
+        this.setAsyncKey( asyncKey );
     }
 
     /**

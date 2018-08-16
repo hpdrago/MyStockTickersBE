@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This class defines the Stock Quote Entity cache's entry types.
  */
-public class StockQuoteEntityCacheEntry extends AsyncCacheEntry<String,StockQuoteEntity,String>
+public class StockQuoteEntityCacheEntry extends AsyncCacheEntry<String,StockQuoteEntity,String,Quote>
 {
     /**
      * Stock quotes are valid for 6 hours.

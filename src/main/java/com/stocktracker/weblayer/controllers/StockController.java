@@ -4,6 +4,7 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
@@ -113,8 +114,16 @@ public class StockController extends AbstractController implements MyLogger
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be nulls");
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
-        StockCompanyDTO stockCompanyDTO = this.stockCompanyEntityService
-                                              .getStockCompanyDTO( tickerSymbol );
+        StockCompanyDTO stockCompanyDTO = null;
+        try
+        {
+            stockCompanyDTO = this.stockCompanyEntityService
+                                                  .getStockCompanyDTO( tickerSymbol );
+        }
+        catch( AsyncCacheDataRequestException e )
+        {
+            throw new StockNotFoundException( tickerSymbol, e );
+        }
         logMethodEnd( methodName, stockCompanyDTO );
         return stockCompanyDTO;
     }

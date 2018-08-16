@@ -124,11 +124,12 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
          */
         final StockQuoteEntityCacheDataReceiver receiver = this.context.getBean( StockQuoteEntityCacheDataReceiver.class );
         receiver.setCacheKey( tickerSymbol );
+        receiver.setAsyncKey( tickerSymbol );
         /*
          * Block and wait for results
          */
         this.stockQuoteEntityCacheClient
-            .getCachedData( tickerSymbol, receiver );
+            .synchronousGetCachedData( receiver );
         /*
          * Check the results and extract the values.
          */

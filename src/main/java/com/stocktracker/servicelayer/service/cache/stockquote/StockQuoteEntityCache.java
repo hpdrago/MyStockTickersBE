@@ -2,11 +2,13 @@ package com.stocktracker.servicelayer.service.cache.stockquote;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEntityCacheRequestKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
+import yahoofinance.quotes.stock.StockQuote;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 
@@ -21,13 +23,31 @@ public class StockQuoteEntityCache extends AsyncBatchCache<String,
                                                            String,
                                                            Quote,
                                                            StockQuoteEntityCacheEntry,
+                                                           StockQuoteEntityCacheRequestKey,
                                                            StockQuoteEntityCacheRequest,
                                                            StockQuoteEntityCacheResponse,
-                                                           StockQuoteEntityCacheRequestKey,
                                                            StockQuoteEntityServiceExecutor>
 {
     @Autowired
     private StockQuoteEntityServiceExecutor stockQuoteEntityServiceExecutor;
+
+    /**
+     * Converts the Quote into a StockQuoteEntity
+     * @param cacheKey
+     * @param asyncKey
+     * @param asyncData
+     * @return
+     * @throws AsyncCacheDataRequestException
+     */
+    @Override
+    protected StockQuoteEntity convertAsyncData( final String cacheKey, final String asyncKey, final Quote asyncData )
+        throws AsyncCacheDataRequestException
+    {
+        final StockQuoteEntity stockQuoteEntity = this.context.getBean( StockQuoteEntity.class );
+        stockQuoteEntity.setTickerSymbol( cacheKey );
+        stockQuoteEntity.copyQuote( asyncData );
+        return stockQuoteEntity;
+    }
 
     /**
      * Creates the cache entry.

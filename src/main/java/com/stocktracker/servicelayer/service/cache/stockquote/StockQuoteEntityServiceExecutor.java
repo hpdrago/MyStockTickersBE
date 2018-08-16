@@ -15,8 +15,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Quote: https://iextrading.com/developer/docs/#quote.
@@ -48,18 +50,29 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
 
     /**
      * Get the quotes for the ticker symbols.
-     * @param tickerSymbols
+     * @param requestKeys
      * @return
      */
     @Override
-    protected List<Quote> getASyncData( final List<String> tickerSymbols )
+    protected Map<String, Quote> batchFetch( final List<StockQuoteEntityCacheRequestKey> requestKeys )
     {
-        final String methodName = "getASyncData";
-        logMethodBegin( methodName, tickerSymbols );
-        final List<Quote> quotes = this.iexTradingStockService
-                                       .getQuotes( tickerSymbols );
-        logMethodEnd( methodName, "Received " + quotes.size() + " quotes" );
-        return quotes;
+        final String methodName = "batchFetch";
+        logMethodBegin( methodName, requestKeys );
+        final List<String> tickerSymbols = requestKeys.stream()
+                                                      .map( requestKey -> requestKey.getASyncKey() )
+                                                      .collect( Collectors.toList() );
+        /*
+         * Get the quotes
+         */
+        final List<Quote> quoteList = this.iexTradingStockService
+                                          .getQuotes( tickerSymbols );
+        /*
+         * Convert to a map
+         */
+        final Map<String,Quote> quoteMap = quoteList.stream()
+                                                    .collect(Collectors.toMap( Quote::getSymbol, quote-> quote ));
+        logMethodEnd( methodName, "Received " + quoteList.size() + " quotes" );
+        return quoteMap;
     }
 
     /**
@@ -69,7 +82,7 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
      * @throws AsyncCacheDataNotFoundException
      */
     @Override
-    protected Quote getASyncData( final String tickerSymbol )
+    public Quote getASyncData( final String tickerSymbol )
         throws AsyncCacheDataNotFoundException
     {
         final String methodName = "getASyncData";
@@ -88,14 +101,12 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
      * This method, when call is called on a new thread launched and managed by the Spring container.
      * In the new thread, the stock quote will be retrieved and the caller will be notified through the {@code observable}
      * @param cacheKey
-     * @param asyncKey The cache key and the async key are the same -- ticker symbol.
      * @param subject Behaviour subject to use to notify the caller that the request has been completed.
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
     public void asynchronousFetch( final String cacheKey,
-                                   final String asyncKey,
-                                   final AsyncProcessor<StockQuoteEntity> subject )
+                                   final AsyncProcessor<Quote> subject )
     {
         final String methodName = "asynchronousFetch";
         final String tickerSymbol = cacheKey;
@@ -103,7 +114,7 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
         /*
          * The super class calls this.getASyncData and takes care of the subject notification.
          */
-        super.asynchronousFetch( tickerSymbol, tickerSymbol, subject );
+        super.asynchronousFetch( tickerSymbol, subject );
         logMethodEnd( methodName );
     }
 
@@ -115,19 +126,12 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
      */
     @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
     @Override
-    public void asynchronousFetch( final Map<String, StockQuoteEntityCacheRequest> asyncBatchCacheRequests )
+    public void asynchronousFetch( final List<StockQuoteEntityCacheRequest> asyncBatchCacheRequests )
     {
         final String methodName = "asynchronousFetch";
-        logMethodBegin( methodName, asyncBatchCacheRequests.keySet() );
+        logMethodBegin( methodName, asyncBatchCacheRequests );
         super.asynchronousFetch( asyncBatchCacheRequests );
         logMethodEnd( methodName );
-    }
-
-    @Override
-    protected void copyASyncData( final Quote asyncData, final StockQuoteEntity entity )
-    {
-        super.copyASyncData( asyncData, entity );
-        entity.copyQuote( asyncData );
     }
 
     /**
@@ -141,27 +145,9 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
     }
 
     @Override
-    protected String getCacheKeyFromASyncData( final Quote quote )
-    {
-        return quote.getSymbol();
-    }
-
-    @Override
-    protected String getCacheKey( final StockQuoteEntity stockQuoteEntity )
-    {
-        return stockQuoteEntity.getTickerSymbol();
-    }
-
-    @Override
     protected StockQuoteEntityCacheRequestKey createRequestKey( final String cacheKey, final String asyncKey )
     {
-        return null;
-    }
-
-    @Override
-    protected List<Quote> batchFetch( final List<StockQuoteEntityCacheRequestKey> requestKeys )
-    {
-        return null;
+        return new StockQuoteEntityCacheRequestKey( cacheKey, asyncKey );
     }
 
     @Override
@@ -176,17 +162,4 @@ public class StockQuoteEntityServiceExecutor extends AsyncCacheDBEntityServiceEx
         return this.stockQuoteEntityService;
     }
 
-    @Override
-    protected StockQuoteNotFoundException createException( final String key, final Exception cause )
-    {
-        return new StockQuoteNotFoundException( key, cause );
-    }
-
-    @Override
-    protected StockQuoteEntityCacheResponse createResponse( final StockQuoteEntityCacheRequestKey requestKey,
-                                                            final Quote asyncData )
-    {
-        final StockQuoteEntityCacheResponse response = this.context.getBean( StockQuoteEntityCacheResponse.class  );
-        response.setASyncKey( requestKey.getASyncKey() );
-    }
 }

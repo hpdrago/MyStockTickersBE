@@ -197,17 +197,22 @@ public class LinkedAccountController extends AbstractController
     @RequestMapping( value = CONTEXT_URL + "/getAccountOverview"
                              + "/id/{linkedAccountId}"
                              + "/tradeItAccountId/{tradeItAccountId}"
+                             + "/accountNumber/{accountNumber}"
                              + "/customerId/{customerId}",
                      method = GET,
                      produces = {MediaType.APPLICATION_JSON_VALUE} )
     public LinkedAccountDTO getUpdatedLinkedAccount( @PathVariable final String linkedAccountId,
                                                      @PathVariable final String tradeItAccountId,
+                                                     @PathVariable final String accountNumber,
                                                      @PathVariable final String customerId )
+        throws VersionedEntityNotFoundException
     {
         final String methodName = "getUpdatedLinkedAccount";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
         final LinkedAccountDTO linkedAccountDTO = this.linkedAccountEntityService
-                                                      .getUpdatedLinkedAccount( UUIDUtil.uuid( linkedAccountId ) );
+                                                      .getUpdatedLinkedAccount( UUIDUtil.uuid( tradeItAccountId ),
+                                                                                UUIDUtil.uuid( linkedAccountId ),
+                                                                                accountNumber );
         logMethodEnd( methodName, linkedAccountDTO );
         return linkedAccountDTO;
     }

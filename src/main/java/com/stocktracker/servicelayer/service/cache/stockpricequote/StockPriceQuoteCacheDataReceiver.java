@@ -36,6 +36,12 @@ public class StockPriceQuoteCacheDataReceiver implements AsyncCacheDataReceiver<
     }
 
     @Override
+    public void setAsyncKey( final String asyncKey )
+    {
+        this.tickerSymbol = asyncKey;
+    }
+
+    @Override
     public void setCachedData( final StockPriceQuote stockPriceQuote )
     {
         /*
