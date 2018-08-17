@@ -32,6 +32,22 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
      */
     List<LinkedAccountEntity> findByCustomerUuid( final UUID customerUuid );
 
+    /**
+     * Find by customer uuid and account number.
+     * @param customerUuid
+     * @param accountNumber
+     * @return
+     */
+    LinkedAccountEntity findByCustomerUuidAndAccountNumber( final UUID customerUuid, final String accountNumber );
+
+    /**
+     * Find by TradeIt account id and account number.
+     * @param tradeItAccountUuid
+     * @param accountNumber
+     * @return
+     */
+    LinkedAccountEntity findByTradeItAccountUuidAndAccountNumber( UUID tradeItAccountUuid, String accountNumber );
+
     @Override
     @Transactional
     @Modifying

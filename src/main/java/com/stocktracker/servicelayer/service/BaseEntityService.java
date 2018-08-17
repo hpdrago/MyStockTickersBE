@@ -107,7 +107,7 @@ public abstract class BaseEntityService<EK extends Serializable,
      * @param entities
      * @return
      */
-    public List<D> entitiesToDTOs( final List<E> entities )
+    public List<D> entitiesToDTOs( final Iterable<E> entities )
     {
         final List<D> dtos = new ArrayList<>();
         for ( final E entity : entities )
@@ -123,7 +123,7 @@ public abstract class BaseEntityService<EK extends Serializable,
      * @param dtos
      * @return
      */
-    protected List<E> dtosToEntities( final List<D> dtos )
+    protected List<E> dtosToEntities( final Iterable<D> dtos )
     {
         final List<E> entities = new ArrayList<>();
         for ( final D dto : dtos )

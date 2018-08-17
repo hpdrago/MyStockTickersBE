@@ -41,7 +41,7 @@ public class TradeItAccountEntity extends UUIDEntity
     private boolean tradeItAccountFlag;
 
     //private CustomerEntity customerByCustomerUuid;
-    private List<LinkedAccountEntity> linkedAccounts;
+    private LinkedAccountEntityList linkedAccounts;
 
     public TradeItAccountEntity()
     {
@@ -255,13 +255,13 @@ public class TradeItAccountEntity extends UUIDEntity
     }
 
     @Transient
-    public List<LinkedAccountEntity> getLinkedAccounts()
+    public LinkedAccountEntityList getLinkedAccounts()
     {
         return linkedAccounts;
     }
 
     @Transient
-    public void setLinkedAccounts( final List<LinkedAccountEntity> linkedAccounts )
+    public void setLinkedAccounts( final LinkedAccountEntityList linkedAccounts )
     {
         this.linkedAccounts = linkedAccounts;
     }

@@ -37,6 +37,7 @@ import com.stocktracker.weblayer.dto.TradeItAccountDTO;
 import com.stocktracker.weblayer.dto.tradeit.AnswerSecurityQuestionDTO;
 import com.stocktracker.weblayer.dto.tradeit.AuthenticateDTO;
 import com.stocktracker.weblayer.dto.tradeit.CloseSessionDTO;
+import com.stocktracker.weblayer.dto.tradeit.GetAccountOverviewDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetBrokersDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenDTO;
 import com.stocktracker.weblayer.dto.tradeit.GetOAuthAccessTokenUpdateURLDTO;
@@ -659,8 +660,7 @@ public class TradeItService implements MyLogger
     }
 
     /**
-     * Get the account overview from TradeIt for the account number.  This is a sub account of the account identified
-     * by {@code accountId}.
+     * Get the account overview from TradeIt for the account number.
      * @param tradeItAccountEntity
      * @param accountNumber The brokerage account number.
      * @return
@@ -695,7 +695,7 @@ public class TradeItService implements MyLogger
         /*
          * Create the return DTO.
          */
-        final GetAccountOverviewAPIResult getAccountOverviewDTO = this.context.getBean( GetAccountOverviewAPIResult.class );
+        final GetAccountOverviewDTO getAccountOverviewDTO = this.context.getBean( GetAccountOverviewDTO.class );
         getAccountOverviewDTO.setResults( getAccountOverviewAPIResult );
         logMethodEnd( methodName, getAccountOverviewDTO );
         return getAccountOverviewDTO;
