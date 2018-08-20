@@ -32,7 +32,9 @@ public class StockCompanyEntityCache extends AsyncBatchCache<String,
     protected StockCompanyEntity convertAsyncData( final String tickerSymbol, final String notUsed, final Company asyncData )
         throws AsyncCacheDataRequestException
     {
-        return null;
+        final StockCompanyEntity stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
+        stockCompanyEntity.copyCompany( asyncData );
+        return stockCompanyEntity;
     }
 
     /**

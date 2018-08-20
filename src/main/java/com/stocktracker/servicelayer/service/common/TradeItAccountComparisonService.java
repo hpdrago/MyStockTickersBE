@@ -6,6 +6,7 @@ import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
+import com.stocktracker.repositorylayer.entity.LinkedAccountEntityList;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
@@ -214,8 +215,8 @@ public class TradeItAccountComparisonService implements MyLogger
         final String methodName = "validateLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateAPIResult );
         Set<String> currentAccounts = new TreeSet();
-        final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountEntityService
-                                                                    .getLinkedAccountEntities( tradeItAccountEntity.getUuid() );
+        final LinkedAccountEntityList linkedAccountEntities = this.linkedAccountEntityService
+                                                                  .getLinkedAccountEntities( tradeItAccountEntity.getUuid() );
         linkedAccountEntities.forEach( linkedAccount -> currentAccounts.add( linkedAccount.getAccountNumber() ));
         Set<String> tradeItAccounts = new TreeSet<>();
         if ( authenticateAPIResult.getAccounts().isPresent() )

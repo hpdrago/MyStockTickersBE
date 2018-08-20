@@ -30,36 +30,9 @@ public class StockQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor<Stri
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
 
     @Override
-    protected void setDataReceiver( final StockQuoteEntityContainer cachedDataContainer,
-                                    final StockQuoteEntityCacheDataReceiver dataReceiver )
-    {
-        /*
-         * The cached data will be null if the data is not found, needs to be fetched, or there was an error.
-         */
-        if ( cachedDataContainer.getCachedData() != null )
-        {
-            dataReceiver.setCachedData( cachedDataContainer.getCachedData() );
-        }
-        dataReceiver.setCacheState( cachedDataContainer.getCacheState() );
-        dataReceiver.setCacheError( cachedDataContainer.getCacheError() );
-    }
-
-    @Override
     protected String getCacheKey( final StockQuoteEntityContainer container )
     {
         return container.getCacheKey();
-    }
-
-    @Override
-    public StockQuoteEntityCacheDataReceiver newReceiver()
-    {
-        return this.context.getBean( StockQuoteEntityCacheDataReceiver.class );
-    }
-
-    @Override
-    protected StockQuoteEntityContainer newContainer()
-    {
-        return this.context.getBean( StockQuoteEntityContainer.class );
     }
 
     @Override

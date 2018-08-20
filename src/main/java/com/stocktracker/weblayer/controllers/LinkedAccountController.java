@@ -153,7 +153,7 @@ public class LinkedAccountController extends AbstractController
         final String methodName = "getLinkedAccounts";
         logMethodBegin( methodName, tradeItAccountId, customerId );
         List<LinkedAccountDTO> accounts = this.linkedAccountEntityService
-                                              .getLinkedAccounts( UUIDUtil.uuid( tradeItAccountId ));
+                                              .getLinkedAccountsForTradeItAccount( UUIDUtil.uuid( tradeItAccountId ));
         logMethodEnd( methodName, "accounts size: " + accounts.size() );
         return accounts;
     }

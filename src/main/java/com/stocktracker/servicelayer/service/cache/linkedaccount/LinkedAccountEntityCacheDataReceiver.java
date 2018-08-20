@@ -3,7 +3,9 @@ package com.stocktracker.servicelayer.service.cache.linkedaccount;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,32 @@ public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataRecei
     private AsyncCacheEntryState cacheState;
     private String error;
     private Timestamp dataExpiration;
+
+    /**
+     * Create the cache data receiver which is used to interact with the Linked Account Async cache which obtains
+     * the account summary information from TradeIt asynchronously.
+     * @param tradeItAccountUuid
+     * @param linkedAccountUuid
+     * @param accountNumber
+     * @return
+     */
+    public static LinkedAccountEntityCacheDataReceiver newInstance( final UUID tradeItAccountUuid,
+                                                                    final UUID linkedAccountUuid,
+                                                                    final String accountNumber )
+    {
+        /*
+         * Setup the information necessary to get the updated linked account information.
+         */
+        final LinkedAccountEntityCacheDataReceiver receiver = new LinkedAccountEntityCacheDataReceiver();
+        receiver.setCacheKey( linkedAccountUuid );
+        final GetAccountOverviewAsyncCacheKey asyncCacheKey = new GetAccountOverviewAsyncCacheKey();
+        asyncCacheKey.setTradeItAccountUuid( tradeItAccountUuid );
+        asyncCacheKey.setLinkedAccountUuid( linkedAccountUuid );
+        asyncCacheKey.setAccountNumber( accountNumber );
+        receiver.setAsyncKey( asyncCacheKey );
+        return receiver;
+    }
+
 
     @Override
     public void setCacheKey( final UUID key )

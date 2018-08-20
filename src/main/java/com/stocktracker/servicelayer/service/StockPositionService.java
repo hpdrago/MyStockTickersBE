@@ -190,7 +190,7 @@ public class StockPositionService extends StockInformationEntityService<StockPos
     }
 
     @Override
-    public List<StockPositionDTO> entitiesToDTOs( final List<StockPositionEntity> stockPositions )
+    public List<StockPositionDTO> entitiesToDTOs( final Iterable<StockPositionEntity> stockPositions )
     {
         final List<StockPositionDTO> dtos = super.entitiesToDTOs( stockPositions );
         this.stockPriceQuoteService

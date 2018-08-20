@@ -174,9 +174,9 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     public void synchronizeTradeItAccount( final TradeItAccountEntity tradeItAccountEntity,
                                            final AuthenticateDTO authenticateDTO )
         throws LinkedAccountNotFoundException,
-               TradeItAccountNotFoundException,
                EntityVersionMismatchException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               TradeItAccountNotFoundException
     {
         final String methodName = "synchronizeTradeItAccount";
         logMethodBegin( methodName, tradeItAccountEntity, authenticateDTO );
@@ -186,7 +186,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
          * Gather up all of the linked accounts and add them to the authenticate DTO.
          */
         List<LinkedAccountDTO> linkedAccountDTOs = this.linkedAccountEntityService
-                                                       .getLinkedAccounts( tradeItAccountEntity.getUuid() );
+                                                       .getLinkedAccountsForTradeItAccount( tradeItAccountEntity.getUuid() );
         authenticateDTO.setLinkedAccounts( linkedAccountDTOs );
         /*
          * Need to send back the updated account DTO
@@ -218,7 +218,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         final TradeItAccountEntity updatedTradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         final TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( updatedTradeItAccountEntity );
         final List<LinkedAccountDTO> linkedAccountDTOs = this.linkedAccountEntityService
-                                                             .getLinkedAccounts( updatedTradeItAccountEntity.getUuid() );
+                                                             .getLinkedAccountsForTradeItAccount( updatedTradeItAccountEntity.getUuid() );
         keepSessionAliveDTO.setTradeItAccount( tradeItAccountDTO );
         keepSessionAliveDTO.setLinkedAccounts( linkedAccountDTOs );
         logMethodEnd( methodName, tradeItAccountDTO );

@@ -115,15 +115,8 @@ public class StockController extends AbstractController implements MyLogger
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be nulls");
         Assert.isTrue( !tickerSymbol.equalsIgnoreCase( "null" ), "ticker symbol cannot be 'null'");
         StockCompanyDTO stockCompanyDTO = null;
-        try
-        {
-            stockCompanyDTO = this.stockCompanyEntityService
-                                                  .getStockCompanyDTO( tickerSymbol );
-        }
-        catch( AsyncCacheDataRequestException e )
-        {
-            throw new StockNotFoundException( tickerSymbol, e );
-        }
+        stockCompanyDTO = this.stockCompanyEntityService
+                              .getStockCompanyDTO( tickerSymbol );
         logMethodEnd( methodName, stockCompanyDTO );
         return stockCompanyDTO;
     }

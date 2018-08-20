@@ -5,6 +5,7 @@ import com.stocktracker.servicelayer.service.stocks.StockCompanyContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import pl.zankowski.iextrading4j.api.stocks.Company;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -116,6 +117,14 @@ public class StockCompanyEntity extends TickerSymbolEntity
     public Timestamp getExpiration()
     {
         return new Timestamp( this.getUpdateDate().getTime() + TimeUnit.DAYS.convert( 365, TimeUnit.MILLISECONDS ));
+    }
+
+    public void copyCompany( final Company company )
+    {
+        this.setTickerSymbol( company.getSymbol() );
+        this.setCompanyName( company.getCompanyName() );
+        this.setSector( company.getSector() );
+        this.setIndustry( company.getIndustry() );
     }
 
     @Override

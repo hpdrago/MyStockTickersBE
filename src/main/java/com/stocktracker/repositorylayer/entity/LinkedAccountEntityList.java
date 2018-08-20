@@ -2,16 +2,13 @@ package com.stocktracker.repositorylayer.entity;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
-import com.stocktracker.servicelayer.service.cache.linkedaccount.GetAccountOverviewAsyncCacheKey;
 import com.stocktracker.servicelayer.service.cache.linkedaccount.LinkedAccountEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.linkedaccount.LinkedAccountEntityCacheDataReceiver;
-import com.stocktracker.weblayer.dto.LinkedAccountDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -79,40 +76,14 @@ public class LinkedAccountEntityList extends BaseEntityList<UUID,LinkedAccountEn
         forEach( linkedAccountEntity ->
                  {
                      final LinkedAccountEntityCacheDataReceiver receiver =
-                         this.createAsyncCacheReceiver( linkedAccountEntity.getTradeItAccountUuid(),
-                                                        linkedAccountEntity.getId(),
-                                                        linkedAccountEntity.getAccountNumber() );
+                         LinkedAccountEntityCacheDataReceiver.newInstance( linkedAccountEntity.getTradeItAccountUuid(),
+                                                                           linkedAccountEntity.getId(),
+                                                                            linkedAccountEntity.getAccountNumber() );
                      this.linkedAccountEntityCacheClient
                          .asynchronousGetCachedData( receiver );
                  });
         logMethodEnd( methodName );
     }
 
-    /**
-     * Create the cache data receiver which is used to interact with the Linked Account Async cache which obtains
-     * the account summary information from TradeIt asynchronously.
-     * @param tradeItAccountUuid
-     * @param linkedAccountUuid
-     * @param accountNumber
-     * @return
-     */
-    private LinkedAccountEntityCacheDataReceiver createAsyncCacheReceiver( final UUID tradeItAccountUuid,
-                                                                           final UUID linkedAccountUuid,
-                                                                           final String accountNumber )
-    {
-        /*
-         * Setup the information necessary to get the updated linked account information.
-         */
-        final LinkedAccountEntityCacheDataReceiver receiver = this.context
-            .getBean( LinkedAccountEntityCacheDataReceiver.class );
-        receiver.setCacheKey( linkedAccountUuid );
-        final GetAccountOverviewAsyncCacheKey asyncCacheKey = this.context
-            .getBean( GetAccountOverviewAsyncCacheKey.class );
-        asyncCacheKey.setTradeItAccountUuid( tradeItAccountUuid );
-        asyncCacheKey.setLinkedAccountUuid( linkedAccountUuid );
-        asyncCacheKey.setAccountNumber( accountNumber );
-        receiver.setAsyncKey( asyncCacheKey );
-        return receiver;
-    }
 
 }

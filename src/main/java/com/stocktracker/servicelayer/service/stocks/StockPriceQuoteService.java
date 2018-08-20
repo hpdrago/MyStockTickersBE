@@ -44,20 +44,6 @@ public class StockPriceQuoteService extends BaseService
         Objects.requireNonNull( containers, "containers argument cannot be null" );
         logMethodBegin( methodName, containers.size() + " containers" );
         /*
-         * Create DTO for each container.
-         */
-        /*
-        final List<StockPriceQuoteDTO> dtos = containers.stream()
-                                                        .map( (StockPriceQuoteDTOContainer container) ->
-                                                              {
-                                                                  StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
-                                                                  container.setStockPriceQuote( stockPriceQuoteDTO );
-                                                                  stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
-                                                                  return stockPriceQuoteDTO;
-                                                              })
-                                                        .collect( Collectors.toList() );
-                                                        */
-        /*
          * Create the stock price quote data receivers
          */
         final List<StockPriceQuoteCacheDataReceiver> receivers =
@@ -65,6 +51,8 @@ public class StockPriceQuoteService extends BaseService
                       .map( (StockPriceQuoteDTOContainer container) ->
                             {
                                 StockPriceQuoteCacheDataReceiver receiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
+                                receiver.setAsyncKey( container.getTickerSymbol() );
+                                receiver.setCacheKey( container.getTickerSymbol() );
                                 StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
                                 container.setStockPriceQuote( stockPriceQuoteDTO );
                                 stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
@@ -103,6 +91,7 @@ public class StockPriceQuoteService extends BaseService
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
         final StockPriceQuoteCacheDataReceiver stockPriceQuoteCacheDataReceiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
         stockPriceQuoteCacheDataReceiver.setCacheKey( container.getTickerSymbol() );
+        stockPriceQuoteCacheDataReceiver.setAsyncKey( container.getTickerSymbol() );
         this.stockPriceQuoteCacheClient
             .asynchronousGetCachedData( stockPriceQuoteCacheDataReceiver );
         setStockPriceQuote( container, stockPriceQuoteCacheDataReceiver );

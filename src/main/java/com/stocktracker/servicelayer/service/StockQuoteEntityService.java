@@ -39,26 +39,14 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     {
         final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, containers.size() );
-        /*
-         * Create DTO for each container.
-         */
-        /*
-        final List<StockQuoteDTO> dtos = containers.stream()
-                                                   .map( (StockQuoteDTOContainer container) ->
-                                                         {
-                                                             StockQuoteDTO stockQuoteDTO = this.context
-                                                                                               .getBean( StockQuoteDTO.class );
-                                                             container.setStockQuoteDTO( stockQuoteDTO );
-                                                             stockQuoteDTO.setCacheKey( container.getTickerSymbol() );
-                                                             return stockQuoteDTO;
-                                                         })
-                                                   .collect(Collectors.toList());*/
         final List<StockQuoteEntityCacheDataReceiver> receivers =
             containers.stream()
                       .map( (StockQuoteDTOContainer container) ->
                             {
                                 StockQuoteEntityCacheDataReceiver receiver = this.context
-                                                                                .getBean( StockQuoteEntityCacheDataReceiver.class );
+                                                                                 .getBean( StockQuoteEntityCacheDataReceiver.class );
+                                receiver.setAsyncKey( container.getTickerSymbol() );
+                                receiver.setCacheKey( container.getTickerSymbol() );
                                 StockQuoteDTO stockQuoteDTO = this.context
                                                                   .getBean( StockQuoteDTO.class );
                                 container.setStockQuoteDTO( stockQuoteDTO );
@@ -85,6 +73,7 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
          */
         final StockQuoteEntityCacheDataReceiver receiver = this.context.getBean( StockQuoteEntityCacheDataReceiver.class );
         receiver.setCacheKey( container.getTickerSymbol() );
+        receiver.setAsyncKey( container.getTickerSymbol() );
         /*
          * Get the cached data or make an asynchronous request for the data.
          */

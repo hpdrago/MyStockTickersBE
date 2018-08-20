@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceFetchResult.DISCONTINUED;
@@ -75,28 +76,6 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
          */
         final Map<String,BigDecimal> stockPriceResults = this.iexTradingStockService
                                                              .getStockPrices( tickerSymbols );
-        /*
-         * Check to see if we got different results.
-         */
-        /*
-        if ( stockPriceResults.size() != tickerSymbols.size() )
-        {
-            logWarn( methodName, "Did not receive all stock prices requested: {0} received: {1}",
-                     tickerSymbols.size(), stockPriceResults.size() );
-        }
-        final List<StockPriceQuote> stockPriceQuotes = new ArrayList<>( tickerSymbols.size() );
-        stockPriceResults.forEach( ( String tickerSymbol, BigDecimal stockPrice ) ->
-                                   {
-                                       final StockPriceQuote stockPriceQuote = this.context.getBean( StockPriceQuote.class );
-                                       stockPriceQuote.setTickerSymbol( tickerSymbol );
-                                       stockPriceQuote.setCacheState( AsyncCacheEntryState.CURRENT );
-                                       stockPriceQuote.setLastPrice( stockPrice );
-                                       stockPriceQuote.setCacheError( null );
-                                       stockPriceQuotes.add( stockPriceQuote );
-                                   });
-        logMethodEnd( stockPriceQuotes.size() + " stock quotes" );
-        return stockPriceQuotes;
-        */
         return stockPriceResults;
     }
 
@@ -209,13 +188,21 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
         logMethodEnd( methodName );
     }
 
+    /**
+     * Create the request key.
+     * @param cacheKey
+     * @param asyncKey
+     * @return
+     */
     @Override
     protected StockQuoteEntityCacheRequestKey createRequestKey( final String cacheKey, final String asyncKey )
     {
         final StockQuoteEntityCacheRequestKey requestKey = this.context.getBean( StockQuoteEntityCacheRequestKey.class );
+        Objects.requireNonNull( cacheKey, "cacheKey cannot be null" );
+        Objects.requireNonNull( asyncKey, "asyncKey cannot be null" );
         requestKey.setASyncKey( asyncKey );
         requestKey.setCacheKey( cacheKey );
-        return null;
+        return requestKey;
     }
 
     @Override

@@ -89,20 +89,28 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
         /*
          * Make the batch request.
          */
-        final Map<ASK,ASD> asyncDataList = this.batchFetch( requestKeys );
+        final Map<ASK,ASD> asyncDataMap = this.batchFetch( requestKeys );
 
         /*
-         * Convert the external data to responses.
+         * Convert the external data to responses by looping through each request and searching the result asyncDataMap
+         * for the response.
          */
-        final List<RS> responses = asyncDataList.values()
-                                                .stream()
-                                                .map( asyncData ->
-                                                      {
-                                                          final RS response = this.newResponse();
-                                                          this.processResponse( asyncData, response );
-                                                          return response;
-                                                      })
-                                                .collect( Collectors.toList() );
+        final List<RS> responses = new ArrayList<>();
+        requests.forEach( request ->
+                          {
+                              final ASD asyncData = asyncDataMap.get( request.getASyncKey() );
+                              /*
+                               * All keys may not have been returned so only process those that are returned.
+                               */
+                              if ( asyncData != null )
+                              {
+                                  final RS response = this.newResponse();
+                                  response.setASyncKey( request.getASyncKey() );
+                                  response.setCacheKey( request.getCacheKey() );
+                                  response.setData( asyncData );
+                                  responses.add( response );
+                              }
+                          });
         logMethodEnd( methodName, responses.size() + " responses" );
         return responses;
     }
@@ -115,16 +123,6 @@ public abstract class BaseAsyncCacheBatchServiceExecutor<CK,
      */
     protected abstract RK createRequestKey( final CK cacheKey, final ASK asyncKey );
 
-    /**
-     * Sets the cache key and data on the response object.
-     * @param asyncData
-     * @param response
-     */
-    protected void processResponse( final ASD asyncData,
-                                    final RS response )
-    {
-        response.setData( asyncData );
-    }
 
     /**
      * Subclasses must override this method to retrieve the external data for the {@code requestKeys}.

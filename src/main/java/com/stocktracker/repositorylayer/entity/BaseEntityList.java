@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
@@ -59,5 +58,14 @@ public class BaseEntityList<K extends Serializable, E extends BaseEntity<K>> imp
     public int size()
     {
         return this.entityList.size();
+    }
+
+    /**
+     * Add a new entity to the list.
+     * @param entity
+     */
+    public void add( final E entity )
+    {
+        this.entityList.add( entity );;
     }
 }

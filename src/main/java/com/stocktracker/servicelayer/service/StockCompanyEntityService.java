@@ -51,6 +51,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
             final StockCompanyEntityCacheDataReceiver receiver = this.context
                                                                      .getBean( StockCompanyEntityCacheDataReceiver.class );
             receiver.setCacheKey( container.getTickerSymbol() );
+            receiver.setAsyncKey( container.getTickerSymbol() );
             receivers.add( receiver );
         }
         this.stockCompanyEntityCacheClient
@@ -77,6 +78,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
          */
         final StockCompanyEntityCacheDataReceiver receiver = this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
         receiver.setCacheKey( container.getTickerSymbol() );
+        receiver.setAsyncKey( container.getTickerSymbol() );
         /*
          * Get the cached data or make an asynchronous request for the data.
          */
@@ -103,7 +105,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
      * @return Stock Company DTO
      */
     public StockCompanyDTO getStockCompanyDTO( final String tickerSymbol )
-        throws AsyncCacheDataRequestException
     {
         final String methodName = "getStockCompanyDTO";
         logMethodBegin( methodName, tickerSymbol );
@@ -114,17 +115,7 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
         receiver.setCacheKey( tickerSymbol );
         receiver.setAsyncKey( tickerSymbol );
         this.stockCompanyEntityCacheClient
-            .asynchronousGetCachedData( receiver );
-        /*
-         * This maybe the first time the stock company is being fetched so we need to check to see if it is being
-         * fetch and then wait for the result.
-         */
-        if ( receiver.getCacheState().isStale() )
-        {
-            logDebug( methodName, "Waiting for asynchronous fetch to complete for {0}", tickerSymbol );
-            this.stockCompanyEntityCacheClient
-                .synchronousGetCachedData( receiver );
-        }
+            .synchronousGetCachedData( receiver );
         StockCompanyDTO stockCompanyDTO;
         if ( receiver.getCachedData() == null )
         {

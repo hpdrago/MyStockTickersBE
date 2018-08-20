@@ -29,30 +29,9 @@ public class StockPriceQuoteCacheBatchProcessor extends AsyncCacheBatchProcessor
     private StockPriceQuoteCacheClient stockPriceQuoteCacheClient;
 
     @Override
-    protected void setDataReceiver( final StockPriceQuote cachedDataContainer,
-                                    final StockPriceQuoteCacheDataReceiver dataReceiver )
-    {
-        cachedDataContainer.setLastPrice( cachedDataContainer.getLastPrice() );
-        cachedDataContainer.setCacheState( cachedDataContainer.getCacheState() );
-        cachedDataContainer.setCacheError( cachedDataContainer.getCacheError() );
-    }
-
-    @Override
     protected String getCacheKey( final StockPriceQuote container )
     {
         return container.getCacheKey();
-    }
-
-    @Override
-    public StockPriceQuoteCacheDataReceiver newReceiver()
-    {
-        return context.getBean( StockPriceQuoteCacheDataReceiver.class );
-    }
-
-    @Override
-    protected StockPriceQuote newContainer()
-    {
-        return context.getBean( StockPriceQuote.class );
     }
 
     @Override

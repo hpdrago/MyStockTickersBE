@@ -120,7 +120,7 @@ public class PortfolioStockEntityService extends StockInformationEntityService<P
     }
 
     @Override
-    public List<PortfolioStockDTO> entitiesToDTOs( final List<PortfolioStockEntity> entities )
+    public List<PortfolioStockDTO> entitiesToDTOs( final Iterable<PortfolioStockEntity> entities )
     {
         List<PortfolioStockDTO> dtos = super.entitiesToDTOs( entities );
 

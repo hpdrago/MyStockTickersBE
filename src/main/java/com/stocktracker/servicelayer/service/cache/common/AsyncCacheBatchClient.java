@@ -44,7 +44,7 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
      * @param receivers
      */
     @Override
-    public void asynchronousGetCachedData( final List<DR> receivers )
+    public void asynchronousGetCachedData( final List<? extends DR> receivers )
     {
         final String methodName = "asynchronousGetCachedData";
         Objects.requireNonNull( receivers, "receivers argument cannot be null" );
@@ -100,7 +100,7 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
     {
         Objects.requireNonNull( receiver, "receiver argument cannot be null" );
         final String methodName = "updateDataReceiver";
-        logMethodBegin( methodName );
+        //logMethodBegin( methodName );
         CE cacheEntry = this.getCache()
                             .getCacheEntry( receiver.getCacheKey() );
         if ( cacheEntry == null || cacheEntry.isStale() || cacheEntry.getCacheState() == null )
@@ -122,7 +122,7 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
                 logError( methodName, " error updating receiver with cache key: " + receiver.getCacheKey(), e );
             }
         }
-        logMethodEnd( methodName );
+        //logMethodEnd( methodName );
     }
 
     /**

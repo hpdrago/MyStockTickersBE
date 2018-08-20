@@ -54,6 +54,7 @@ public abstract class AsyncBatchCache< CK extends Serializable,
                                  this.addCacheEntry( requestKey.getCacheKey(), cacheEntry );
                              }
                              asyncBatchCacheRequest.setCacheKey( requestKey.getCacheKey() );
+                             asyncBatchCacheRequest.setASyncKey( requestKey.getASyncKey() );
                              asyncBatchCacheRequest.setAsyncProcessor( cacheEntry.getCachedDataSyncProcessor() );
                              return asyncBatchCacheRequest;
                          })

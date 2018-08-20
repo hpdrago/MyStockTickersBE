@@ -36,6 +36,22 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     private LinkedAccountRepository linkedAccountRepository;
     @Autowired
     private TradeItAccountEntityService tradeItAccountEntityService;
+    @Autowired
+    private LinkedAccountEntityCacheClient linkedAccountEntityCacheClient;
+
+    /**
+     * Get the linked account entities for a TradeIt account.
+     * @param tradeItAccountUuid
+     * @return
+     */
+    public LinkedAccountEntityList getLinkedAccountEntities( final UUID tradeItAccountUuid )
+    {
+        final String methodName = "getLinkedAccountsForCustomer";
+        LinkedAccountEntityList linkedAccountEntityList = this.context.getBean( LinkedAccountEntityList.class );
+        linkedAccountEntityList.findByTradeItAccountUuid( tradeItAccountUuid );
+        logMethodEnd( methodName );
+        return linkedAccountEntityList;
+    }
 
     /**
      * Get all of the linked account for a customer.
@@ -56,22 +72,6 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     }
 
     /**
-     * Loads all of the linked accounts for the LinkedAccount entity.
-     * @param tradeItAccountEntity
-     */
-    public void loadLinkedAccountsForTradeItAccount( final TradeItAccountEntity tradeItAccountEntity )
-    {
-        final String methodName = "getLinkedAccountsForTradeItAccount";
-        logMethodBegin( methodName, tradeItAccountEntity );
-        final LinkedAccountEntityList linkedAccountEntities = this.context
-                                                                  .getBean( LinkedAccountEntityList.class );
-        linkedAccountEntities.findByTradeItAccountUuid( tradeItAccountEntity.getUuid() );
-        linkedAccountEntities.requestAccountOverviewInformation();
-        tradeItAccountEntity.setLinkedAccounts( linkedAccountEntities );
-        logMethodEnd( methodName );
-    }
-
-    /**
      * This method will retrieve all of the linked accounts (child to the tradeit_account table) for the TradeIt account.
      * If the TradeIt account is not a manual account, the TradeIt account will be synchronized between TradeIt and
      * the database.
@@ -79,10 +79,10 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
      * @return
      * @throws TradeItAccountNotFoundException
      */
-    public List<LinkedAccountDTO> getLinkedAccounts( final UUID tradeItAccountUuid )
+    public List<LinkedAccountDTO> getLinkedAccountsForTradeItAccount( final UUID tradeItAccountUuid )
         throws TradeItAccountNotFoundException
     {
-        final String methodName = "getLinkedAccounts";
+        final String methodName = "getLinkedAccountsForTradeItAccount";
         logMethodBegin( methodName, tradeItAccountUuid );
         final TradeItAccountEntity tradeItAccountEntity;
         try
@@ -115,6 +115,23 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
     }
 
     /**
+     * Loads all of the linked accounts for the LinkedAccount entity.
+     * @param tradeItAccountEntity
+     */
+    public void loadLinkedAccounts( final TradeItAccountEntity tradeItAccountEntity )
+    {
+        final String methodName = "getLinkedAccounts";
+        logMethodBegin( methodName, tradeItAccountEntity );
+        final LinkedAccountEntityList linkedAccountEntities = this.context
+            .getBean( LinkedAccountEntityList.class );
+        linkedAccountEntities.findByTradeItAccountUuid( tradeItAccountEntity.getUuid() );
+        linkedAccountEntities.requestAccountOverviewInformation();
+        tradeItAccountEntity.setLinkedAccounts( linkedAccountEntities );
+        logMethodEnd( methodName );
+    }
+
+
+    /**
      * Gets the linked account for the {@code tradeItAccountUuid} and the {@code accountNumber}
      * @param tradeItAccountUuid
      * @param accountNumber
@@ -125,7 +142,8 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         final String methodName = "getLinkedAccountEntities";
         logMethodBegin( methodName, tradeItAccountUuid, accountNumber );
         final LinkedAccountEntity linkedAccountEntity = this.linkedAccountRepository
-                                                            .findByTradeItAccountUuidAndAccountNumber( tradeItAccountUuid, accountNumber )
+                                                            .findByTradeItAccountUuidAndAccountNumber( tradeItAccountUuid,
+                                                                                                       accountNumber );
         logMethodEnd( methodName, linkedAccountEntity );
         return Optional.ofNullable( linkedAccountEntity );
     }
@@ -170,9 +188,9 @@ public class LinkedAccountEntityService extends UuidEntityService<LinkedAccountE
         Objects.requireNonNull( linkedAccountUuid, "linkedAccountUuid argument cannot be null" );
         Objects.requireNonNull( accountNumber, "accountNumber argument cannot be null" );
         logDebug( methodName, "blocking for linked account: {0}", linkedAccountUuid );
-        final LinkedAccountEntityCacheDataReceiver receiver = this.createAsyncCacheReceiver( tradeItAccountUuid,
-                                                                                             linkedAccountUuid,
-                                                                                             accountNumber );
+        final LinkedAccountEntityCacheDataReceiver receiver = LinkedAccountEntityCacheDataReceiver.newInstance( tradeItAccountUuid,
+                                                                                                                linkedAccountUuid,
+                                                                                                                accountNumber );
         /*
          * block and wait for the background task to complete.
          */

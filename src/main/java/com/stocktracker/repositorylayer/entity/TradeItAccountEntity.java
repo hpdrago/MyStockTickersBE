@@ -271,7 +271,7 @@ public class TradeItAccountEntity extends UUIDEntity
     {
         if ( this.linkedAccounts == null )
         {
-            this.linkedAccounts = new ArrayList<>();
+            this.linkedAccounts = new LinkedAccountEntityList();
         }
         this.linkedAccounts.add( linkedAccountEntity );
     }

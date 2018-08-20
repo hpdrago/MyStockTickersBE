@@ -78,6 +78,8 @@ public abstract class AsyncCacheEntry<CK,
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
         this.cachedDataSyncProcessor = AsyncProcessor.create();
         this.cachedDataSyncProcessor.serialize();
+        this.asyncDataSyncProcessor = AsyncProcessor.create();
+        this.asyncDataSyncProcessor.serialize();
     }
 
     /**
@@ -91,10 +93,6 @@ public abstract class AsyncCacheEntry<CK,
         Objects.requireNonNull( cacheKey, "cacheKey argument cannot be null" );
         this.cachedData = cachedData;
         this.asyncKey = asyncKey;
-        if ( cachedData == null )
-        {
-            CD newCacheData = null;
-        }
         this.expirationTime = new Timestamp( System.currentTimeMillis() + this.getCurrentDurationTime() );
     }
 

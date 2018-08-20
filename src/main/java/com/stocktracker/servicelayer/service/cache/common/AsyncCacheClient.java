@@ -38,7 +38,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * Set the cached data on multiple receivers.  See {@code asynchronousGetCachedData} for details.
      * @param receivers
      */
-    public void asynchronousGetCachedData( final List<DR> receivers )
+    public void asynchronousGetCachedData( final List<? extends DR> receivers )
         throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousGetCachedData";
@@ -265,12 +265,6 @@ public abstract class AsyncCacheClient<CK extends Serializable,
                                   final CE cacheEntry,
                                   final CD fetchedData )
     {
-        /*
-        final CD cachedData = cacheEntry.asynchronousGetCachedData() == null
-                                  ? this.createCachedDataObject()
-                                  : cacheEntry.asynchronousGetCachedData();
-        BeanUtils.copyProperties( fetchedData, cachedData );
-                                  */
         receiver.setCachedData( fetchedData );
         receiver.setCacheState( CURRENT );
         receiver.setCacheError( null );
@@ -299,7 +293,6 @@ public abstract class AsyncCacheClient<CK extends Serializable,
 
     /**
      * This method is called when the data is not found.
-     * @param cacheKey
      * @param receiver
      * @param cacheEntry
      */

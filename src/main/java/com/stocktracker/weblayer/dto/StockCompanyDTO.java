@@ -130,7 +130,7 @@ public class StockCompanyDTO extends DatabaseEntityDTO<String>
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "StockCompanyEntityCacheDTO{" );
+        final StringBuilder sb = new StringBuilder( "StockCompanyDTO{" );
         sb.append( "tickerSymbol='" ).append( tickerSymbol ).append( '\'' );
         sb.append( ", companyName='" ).append( companyName ).append( '\'' );
         sb.append( ", website='" ).append( website ).append( '\'' );

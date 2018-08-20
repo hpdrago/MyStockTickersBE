@@ -117,7 +117,7 @@ public class StockToBuyEntityService extends StockInformationEntityService<Stock
      * @return
      */
     @Override
-    public List<StockToBuyDTO> entitiesToDTOs( final List<StockToBuyEntity> entities )
+    public List<StockToBuyDTO> entitiesToDTOs( final Iterable<StockToBuyEntity> entities )
     {
         final List<StockToBuyDTO> dtos = super.entitiesToDTOs( entities );
         this.stockQuoteEntityService

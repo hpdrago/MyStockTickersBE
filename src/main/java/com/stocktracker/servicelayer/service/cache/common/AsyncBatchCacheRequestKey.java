@@ -11,6 +11,10 @@ public abstract class AsyncBatchCacheRequestKey<CK,
     private CK cacheKey;
     private ASK asyncKey;
 
+    public AsyncBatchCacheRequestKey()
+    {
+    }
+
     public AsyncBatchCacheRequestKey( final CK cacheKey, final ASK asyncKey )
     {
         this.cacheKey = cacheKey;
