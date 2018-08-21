@@ -62,7 +62,8 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
          * and send the list of keys to the cache to perform the work.
          */
         final List<RK> requestKeys = receivers.stream()
-                                              .filter( dr -> dr.getCacheState().isStale() )
+                                              .filter( dr -> dr.getCacheState() == null ||
+                                                             dr.getCacheState().isStale() )
                                               .map( dr -> this.createRequestKey( dr.getCacheKey(),
                                                                                  dr.getASyncKey() ))
                                               .collect( Collectors.toList() );
@@ -105,6 +106,7 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
                             .getCacheEntry( receiver.getCacheKey() );
         if ( cacheEntry == null || cacheEntry.isStale() || cacheEntry.getCacheState() == null )
         {
+            logDebug( methodName, "No cache entry found for " + receiver.getCacheKey() );
             receiver.setCacheState( STALE );
         }
         else

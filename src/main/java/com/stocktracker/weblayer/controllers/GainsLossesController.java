@@ -120,7 +120,7 @@ public class GainsLossesController extends AbstractController
         logMethodBegin( methodName, pageRequest, customerId );
         Page<GainsLossesDTO> gainsLossesDTOs = this.gainsLossesService
                                                    .getGainsLosses( pageRequest, UUIDUtil.uuid( customerId ));
-        logDebug( methodName, "StocksToBuy: {0}", gainsLossesDTOs.getContent() );
+        //logDebug( methodName, "Gains/Losses: {0}", gainsLossesDTOs.getContent() );
         logMethodEnd( methodName, "gainsLossesDTOs size: " + gainsLossesDTOs.getContent().size() );
         return gainsLossesDTOs;
     }
@@ -160,7 +160,7 @@ public class GainsLossesController extends AbstractController
                                                    .getGainsLosses( pageRequest,
                                                                     UUIDUtil.uuid( customerId ),
                                                                     tickerSymbol );
-        logDebug( methodName, "StocksToBuy: {0}", gainsLossesDTOs.getContent() );
+        logDebug( methodName, "Gains/Losses: {0}", gainsLossesDTOs.getContent() );
         logMethodEnd( methodName, "gainsLossesDTOs size: " + gainsLossesDTOs.getContent().size() );
         return gainsLossesDTOs;
     }

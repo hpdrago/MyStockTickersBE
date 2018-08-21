@@ -375,6 +375,24 @@ public abstract class AsyncCache<CK extends Serializable,
     }
 
     /**
+     * Determines if the cache entry should be removed from the cache.  This method should be called after a synchronous
+     * fetch has been made to remove entries after they are no longer needed or will just be stale when the next request
+     * is made.
+     * @param cacheEntry
+     * @param <CE>
+     */
+    public <CE extends AsyncCacheEntry<CK,CD,ASK,ASD>> void checkRemovalStrategy( final CE cacheEntry )
+    {
+        final String methodName = "checkRemovalStrategy";
+        if ( this.getCacheStrategy().isRemove() )
+        {
+            logDebug( methodName, "Removing " + cacheEntry.getCacheKey() + " from cache" );
+            this.cacheMap
+                .remove( cacheEntry.getCacheKey() );
+        }
+    }
+
+    /**
      * Creates a new cache entry instance.
      * @return
      */

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
 
 /**
- * This interface is used by any class that need information from the {@code StockQuoteEntityCache}.
+ * This is the client class that interacts with the {@code StockQuoteEntityCache} to get current IEXTrading Quote
+ * updates.
  */
 @Service
 public class StockQuoteEntityCacheClient extends AsyncCacheDBEntityClient<String,

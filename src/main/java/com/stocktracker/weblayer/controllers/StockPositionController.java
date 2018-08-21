@@ -67,7 +67,7 @@ public class StockPositionController extends AbstractController
                                                      .getPositions( UUIDUtil.uuid( customerId ),
                                                                     UUIDUtil.uuid( tradeItAccountId ),
                                                                     UUIDUtil.uuid( linkedAccountId ));
-        logDebug( methodName, "positions: {0}", positions );
+        //logDebug( methodName, "positions: {0}", positions );
         logMethodEnd( methodName, "positions size: " + positions.size() );
         return positions;
     }

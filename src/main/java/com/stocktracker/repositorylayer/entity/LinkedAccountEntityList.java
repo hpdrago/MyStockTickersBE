@@ -49,7 +49,7 @@ public class LinkedAccountEntityList extends BaseEntityList<UUID,LinkedAccountEn
         logMethodBegin( methodName, customerUuid );
         Objects.requireNonNull( customerUuid );
         final List<LinkedAccountEntity> linkedAccountEntities = this.linkedAccountRepository
-                                                                    .findAllByTradeItAccountUuid( customerUuid );
+                                                                    .findByCustomerUuid( customerUuid );
         this.addEntities( linkedAccountEntities );
         logMethodEnd( methodName, linkedAccountEntities );
     }

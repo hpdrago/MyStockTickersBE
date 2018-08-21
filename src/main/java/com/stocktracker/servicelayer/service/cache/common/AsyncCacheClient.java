@@ -149,6 +149,12 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         {
             this.handleNotInCache( receiver );
         }
+        /*
+         * If the strategy is to remove cache entry after it has been retrieved then do this now from the client side
+         * as it will known when this is the case.
+         */
+        this.getCache()
+            .checkRemovalStrategy( cacheEntry );
         logMethodEnd( methodName, receiver );
     }
 
