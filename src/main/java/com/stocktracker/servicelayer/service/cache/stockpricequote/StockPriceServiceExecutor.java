@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.IEXTradingStockService;
-import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

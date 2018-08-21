@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service.cache.linkedaccount;
 
-import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
@@ -10,7 +9,6 @@ import com.stocktracker.servicelayer.service.cache.common.AsyncCache;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetAccountOverviewAPIResult;
-import com.stocktracker.servicelayer.tradeit.types.LinkedAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,22 +57,21 @@ public class LinkedAccountEntityCache extends AsyncCache<UUID,
     {
         final String methodName = "convertAsyncData";
         logMethodBegin( methodName, cacheKey, asyncKey, asyncData );
-        LinkedAccountEntity linkedAccountEntity;
         try
         {
-            linkedAccountEntity = this.linkedAccountEntityService
-                                      .getEntity( asyncKey.getLinkedAccountUuid() );
+            final LinkedAccountEntity linkedAccountEntity = this.linkedAccountEntityService
+                                                                .getEntity( asyncKey.getLinkedAccountUuid() );
             final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                                   .getEntity( asyncKey.getTradeItAccountUuid() );
             this.tradeItAsyncUpdateService
-                .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity );
+                .updateLinkedAccount( tradeItAccountEntity, linkedAccountEntity, asyncData );
+            logMethodEnd( methodName, linkedAccountEntity );
+            return linkedAccountEntity;
         }
-        catch( VersionedEntityNotFoundException e )
+        catch( Exception e )
         {
             throw new AsyncCacheDataRequestException( asyncKey, e );
         }
-        logMethodEnd( methodName, linkedAccountEntity );
-        return linkedAccountEntity;
     }
 
     /**

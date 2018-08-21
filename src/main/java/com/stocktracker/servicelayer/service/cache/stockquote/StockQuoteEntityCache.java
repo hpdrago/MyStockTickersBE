@@ -8,7 +8,6 @@ import com.stocktracker.servicelayer.service.cache.stockpricequote.StockQuoteEnt
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Quote;
-import yahoofinance.quotes.stock.StockQuote;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 

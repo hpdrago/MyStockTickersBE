@@ -9,8 +9,6 @@ import org.springframework.beans.BeanUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This is an extension of the async service executor to be used for the cases where we save the retrieved information

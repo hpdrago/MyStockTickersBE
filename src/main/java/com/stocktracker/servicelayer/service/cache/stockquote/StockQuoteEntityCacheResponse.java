@@ -1,6 +1,5 @@
 package com.stocktracker.servicelayer.service.cache.stockquote;
 
-import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCacheResponse;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;

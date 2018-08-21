@@ -3,11 +3,8 @@ package com.stocktracker.servicelayer.service.cache.linkedaccount;
 import com.stocktracker.AppConfig;
 import com.stocktracker.common.exceptions.DuplicateEntityException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
-import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
-import com.stocktracker.servicelayer.service.LinkedAccountEntityService;
 import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
-import com.stocktracker.servicelayer.service.TradeItAsyncUpdateService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheServiceExecutor;
@@ -50,13 +47,14 @@ public class LinkedAccountEntityServiceExecutor extends BaseAsyncCacheServiceExe
         final String methodName = "getASyncData";
         logMethodBegin( methodName, asyncKey );
         GetAccountOverviewAPIResult accountOverview = null;
-        LinkedAccountEntity linkedAccountEntity = null;
         try
         {
             final TradeItAccountEntity tradeItAccountEntity = this.tradeItAccountEntityService
                                                                   .getEntity( asyncKey.getTradeItAccountUuid() );
             accountOverview = this.tradeItService
                                   .getAccountOverview( tradeItAccountEntity, asyncKey.getAccountNumber() );
+            logMethodEnd( methodName, accountOverview );
+            return accountOverview;
         }
         catch( VersionedEntityNotFoundException e )
         {
@@ -67,8 +65,6 @@ public class LinkedAccountEntityServiceExecutor extends BaseAsyncCacheServiceExe
         {
             throw new AsyncCacheDataRequestException( e );
         }
-        logMethodEnd( methodName, linkedAccountEntity );
-        return accountOverview;
     }
 
     /**

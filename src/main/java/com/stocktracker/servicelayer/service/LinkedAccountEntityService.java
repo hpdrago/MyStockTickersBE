@@ -8,7 +8,6 @@ import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntityList;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.LinkedAccountRepository;
-import com.stocktracker.servicelayer.service.cache.linkedaccount.GetAccountOverviewAsyncCacheKey;
 import com.stocktracker.servicelayer.service.cache.linkedaccount.LinkedAccountEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.linkedaccount.LinkedAccountEntityCacheDataReceiver;
 import com.stocktracker.weblayer.dto.LinkedAccountDTO;

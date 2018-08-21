@@ -5,7 +5,6 @@ import com.stocktracker.servicelayer.service.IEXTradingStockService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.BaseAsyncCacheBatchServiceExecutor;
 import io.reactivex.processors.AsyncProcessor;
@@ -15,15 +14,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceFetchResult.DISCONTINUED;
-import static com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceFetchResult.NOT_FOUND;
-import static com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceFetchResult.SUCCESS;
 
 /**
  * This class makes the calls to the IEXTrading API to get the Stock Price: https://iextrading.com/developer/docs/#price

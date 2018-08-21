@@ -1,15 +1,12 @@
 package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.AppConfig;
-import com.stocktracker.common.exceptions.StockCompanyNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.IEXTradingStockService;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityServiceExecutor;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataNotFoundException;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import io.reactivex.processors.AsyncProcessor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;

@@ -3,7 +3,6 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheData;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCachedDataContainer;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

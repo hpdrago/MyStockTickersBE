@@ -4,8 +4,6 @@ import com.stocktracker.servicelayer.service.BaseService;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This class provides the ability to process a batch of containers (<C>) to obtain the async cache data for each container

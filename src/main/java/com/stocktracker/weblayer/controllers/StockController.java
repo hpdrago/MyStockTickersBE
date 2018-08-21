@@ -4,7 +4,6 @@ import com.stocktracker.common.MyLogger;
 import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.StockQuoteEntityService;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.stocks.StockPriceQuoteService;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
 import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;

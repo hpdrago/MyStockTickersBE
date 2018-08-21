@@ -3,9 +3,7 @@ package com.stocktracker.servicelayer.service.cache.linkedaccount;
 import com.stocktracker.repositorylayer.entity.LinkedAccountEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -82,7 +80,7 @@ public class LinkedAccountEntityCacheDataReceiver implements AsyncCacheDataRecei
     @Override
     public void setAsyncKey( final GetAccountOverviewAsyncCacheKey asyncKey )
     {
-        this.setAsyncKey( asyncKey );
+        this.asyncKey = asyncKey;
     }
 
     /**

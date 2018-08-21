@@ -205,7 +205,6 @@ public class LinkedAccountController extends AbstractController
                                                      @PathVariable final String tradeItAccountId,
                                                      @PathVariable final String accountNumber,
                                                      @PathVariable final String customerId )
-        throws VersionedEntityNotFoundException
     {
         final String methodName = "getUpdatedLinkedAccount";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );

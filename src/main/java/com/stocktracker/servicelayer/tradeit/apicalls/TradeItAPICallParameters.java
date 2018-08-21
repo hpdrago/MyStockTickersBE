@@ -2,9 +2,6 @@ package com.stocktracker.servicelayer.tradeit.apicalls;
 
 import com.stocktracker.common.MyLogger;
 import com.stocktracker.servicelayer.tradeit.TradeItParameter;
-import com.stocktracker.servicelayer.tradeit.TradeItService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
