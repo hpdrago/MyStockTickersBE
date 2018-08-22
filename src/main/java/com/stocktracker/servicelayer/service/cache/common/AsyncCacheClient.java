@@ -95,9 +95,9 @@ public abstract class AsyncCacheClient<CK extends Serializable,
     /**
      * Get the cache data and block and wait if it is not available.
      * @param receiver
-     * @return
+     * @return Cache entry.
      */
-    protected void synchronousFetch( final DR receiver )
+    protected CE synchronousFetch( final DR receiver )
     {
         final String methodName = "synchronousFetch";
         logMethodBegin( methodName, receiver );
@@ -108,7 +108,8 @@ public abstract class AsyncCacheClient<CK extends Serializable,
                                   .synchronousGet( receiver.getCacheKey(), receiver.getASyncKey() );
         receiver.setCacheState( cacheEntry.getCacheState() );
         receiver.setCachedData( cacheEntry.getCachedData() );
-        logMethodEnd( methodName, receiver );
+        logMethodEnd( methodName, cacheEntry );
+        return cacheEntry;
     }
 
     /**
@@ -131,8 +132,8 @@ public abstract class AsyncCacheClient<CK extends Serializable,
     {
         final String methodName = "asynchronousGetCachedData";
         logMethodBegin( methodName, receiver );
-        final CE cacheEntry = this.getCache()
-                                  .getCacheEntry( receiver.getCacheKey() );
+        CE cacheEntry = this.getCache()
+                            .getCacheEntry( receiver.getCacheKey() );
         if ( cacheEntry != null )
         {
             logDebug( methodName, "cacheEntry: {0}", cacheEntry );
@@ -147,7 +148,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         }
         else
         {
-            this.handleNotInCache( receiver );
+            cacheEntry = this.handleNotInCache( receiver );
         }
         /*
          * If the strategy is to remove cache entry after it has been retrieved then do this now from the client side
@@ -163,7 +164,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * will be made
      * @param receiver
      */
-    protected void handleNotInCache( final DR receiver )
+    protected CE handleNotInCache( final DR receiver )
     {
         final String methodName = "handleNotInCache";
         logDebug( methodName, receiver.getCacheKey() + " is not in the cache, fetching now" );
@@ -177,6 +178,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
             receiver.setCacheError( cacheEntry.getFetchThrowable().getMessage() );
         }
         receiver.setExpirationTime( cacheEntry.getExpirationTime() );
+        return cacheEntry;
     }
 
     /**

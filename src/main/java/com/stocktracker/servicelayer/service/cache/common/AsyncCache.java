@@ -352,11 +352,12 @@ public abstract class AsyncCache<CK extends Serializable,
      * @param asyncKey
      * @param cachedData
      * @param cacheState
+     * @return cache entry that was created.
      */
-    public void createCacheEntry( final CK cacheKey,
-                                  final CD cachedData,
-                                  final ASK asyncKey,
-                                  final AsyncCacheEntryState cacheState )
+    public E createCacheEntry( final CK cacheKey,
+                               final CD cachedData,
+                               final ASK asyncKey,
+                               final AsyncCacheEntryState cacheState )
     {
         final String methodName = "createCacheEntry";
         logMethodBegin( methodName, cacheKey, cacheState );
@@ -372,6 +373,7 @@ public abstract class AsyncCache<CK extends Serializable,
         this.cacheMap
             .put( cacheKey, cacheEntry );
         logMethodEnd( methodName, cacheKey );
+        return cacheEntry;
     }
 
     /**

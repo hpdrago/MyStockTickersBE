@@ -66,33 +66,35 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
     /**
      * The data is not in the cache, see if the data is in the database, if not go get it asynchronously.
      * @param receiver
+     * @return new cache entry
      */
     @Override
-    protected void handleNotInCache( final DR receiver )
+    protected CE handleNotInCache( final DR receiver )
     {
         final String methodName = "handleNotInCache";
         logMethodBegin( methodName, receiver );
+        CE cacheEntry;
         try
         {
-            this.getDBEntity( receiver, null );
+            cacheEntry = this.getDBEntity( receiver, null );
             if ( receiver.getCacheState().isStale() )
             {
                 logDebug( methodName, "{0} is stale, synchronously fetching now", receiver.getCacheKey() );
-                this.synchronousFetch( receiver );
+                cacheEntry = this.synchronousFetch( receiver );
             }
             else if ( receiver.getCacheState().isNotFound() )
             {
                 logDebug( methodName, "{0} was not found, synchronously fetching now", receiver.getCacheKey() );
-                this.synchronousFetch( receiver );
+                cacheEntry = this.synchronousFetch( receiver );
             }
         }
         catch( VersionedEntityNotFoundException e )
         {
             logDebug( methodName, "{0} was not in the database, synchronously fetching now", receiver.getCacheKey() );
-            this.synchronousFetch( receiver );
+            cacheEntry = this.synchronousFetch( receiver );
         }
-
         logMethodEnd( methodName, receiver.getCacheKey() );
+        return cacheEntry;
     }
 
     /**
@@ -101,7 +103,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
      * @param cacheEntry
      * @throws VersionedEntityNotFoundException
      */
-    private void getDBEntity( final DR receiver, final CE cacheEntry )
+    private CE getDBEntity( final DR receiver, final CE cacheEntry )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getDBEntity";
@@ -110,6 +112,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
          * Retrieve the entity from the database, it might not exist.
          */
         final CD entity;
+        CE myCacheEntry = cacheEntry;
         try
         {
             entity = this.getEntityService()
@@ -136,11 +139,11 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
              */
             if ( cacheEntry == null )
             {
-                this.getCache()
-                    .createCacheEntry( receiver.getCacheKey(),
-                                       receiver.getCachedData(),
-                                       receiver.getASyncKey(),
-                                       receiver.getCacheState() );
+                myCacheEntry = this.getCache()
+                                   .createCacheEntry( receiver.getCacheKey(),
+                                                      receiver.getCachedData(),
+                                                      receiver.getASyncKey(),
+                                                      receiver.getCacheState() );
             }
         }
         catch( VersionedEntityNotFoundException e )
@@ -162,6 +165,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
             throw e;
         }
         logMethodEnd( methodName, receiver.getCacheKey() );
+        return myCacheEntry;
     }
 
     /**
