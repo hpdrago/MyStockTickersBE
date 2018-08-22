@@ -88,7 +88,7 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         tradeItAccountEntity.setUserId( userId );
         tradeItAccountEntity.setUserToken( userToken );
         tradeItAccountEntity.setCustomerUuid( customerUuid );
-        tradeItAccountEntity.setTradeItAccountFlag( true );
+        tradeItAccountEntity.setTradeItAccountInd( true );
         tradeItAccountEntity = this.saveEntity( tradeItAccountEntity );
         logDebug( methodName, "saved entity: {0}", tradeItAccountEntity );
         TradeItAccountDTO tradeItAccountDTO = this.entityToDTO( tradeItAccountEntity );
@@ -256,6 +256,18 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
         return linkedAccountEntity;
     }
 
+    /**
+     * Determines if the token has expired for the TradeItAccount.
+     * @param tradeItAccountUuid
+     * @return
+     * @throws VersionedEntityNotFoundException
+     */
+    public boolean isTokenExpired( final UUID tradeItAccountUuid )
+        throws VersionedEntityNotFoundException
+    {
+        return this.getEntity( tradeItAccountUuid ).isTokenExpired();
+    }
+
     @Override
     protected TradeItAccountDTO createDTO()
     {
@@ -273,5 +285,4 @@ public class TradeItAccountEntityService extends UuidEntityService<TradeItAccoun
     {
         return this.tradeItAccountRepository;
     }
-
 }

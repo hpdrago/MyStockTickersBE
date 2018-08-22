@@ -35,7 +35,8 @@ public class TradeItAccountEntity extends UUIDEntity
     private String authUuid;
     private UUID customerUuid;
     private Timestamp authTimestamp;
-    private boolean tradeItAccountFlag;
+    private boolean tradeItAccountInd;
+    private boolean tokenExpiredInd;
 
     //private CustomerEntity customerByCustomerUuid;
     private LinkedAccountEntityList linkedAccounts;
@@ -233,22 +234,46 @@ public class TradeItAccountEntity extends UUIDEntity
         this.authTimestamp = authTimestamp;
     }
 
-    @Transient
-    public boolean isTradeItAccount()
+    @Basic
+    @Column( name = "token_expired_ind", nullable = false, columnDefinition = "TINYINT", length = 1)
+    public boolean getTokenExpiredInd()
     {
-        return tradeItAccountFlag;
+        return tokenExpiredInd;
+    }
+
+    public void setTokenExpiredInd( final boolean tokenExpiredInd )
+    {
+        this.tokenExpiredInd = tokenExpiredInd;
+    }
+
+    @Transient
+    public boolean isTokenExpired()
+    {
+        return this.tokenExpiredInd;
     }
 
     @Basic
-    @Column( name = "tradeit_account_flag" )
-    public boolean getTradeItAccountFlag()
+    @Column( name = "tradeit_account_ind", nullable = false, columnDefinition = "TINYINT", length = 1)
+    public boolean getTradeItAccountInd()
     {
-        return tradeItAccountFlag;
+        return tradeItAccountInd;
     }
 
-    public void setTradeItAccountFlag( final boolean tradeItAccountFlag )
+    public void setTradeItAccountInd( final boolean tradeItAccountFlag )
     {
-        this.tradeItAccountFlag = tradeItAccountFlag;
+        this.tradeItAccountInd = tradeItAccountFlag;
+    }
+
+    @Transient
+    public boolean isTradeItAccount()
+    {
+        return tradeItAccountInd;
+    }
+
+    @Transient
+    public boolean isTradeItAccountInd()
+    {
+        return tradeItAccountInd;
     }
 
     @Transient
@@ -287,7 +312,8 @@ public class TradeItAccountEntity extends UUIDEntity
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", linkedAccounts=" ).append( this.linkedAccounts );
-        sb.append( ", tradeItAccountFlag=" ).append( tradeItAccountFlag );
+        sb.append( ", tradeItAccountInd=" ).append( tradeItAccountInd );
+        sb.append( ", tokenExpiredInd" ).append( tokenExpiredInd );
         sb.append( ", super=" ).append( super.toString() );
         sb.append( '}' );
         return sb.toString();

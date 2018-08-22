@@ -12,6 +12,7 @@ import com.stocktracker.repositorylayer.entity.StockPositionEntity;
 import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.repositorylayer.repository.StockPositionRepository;
 import com.stocktracker.servicelayer.service.common.StockPositionComparator;
+import com.stocktracker.servicelayer.tradeit.TradeItCodeEnum;
 import com.stocktracker.servicelayer.tradeit.TradeItService;
 import com.stocktracker.servicelayer.tradeit.apiresults.GetPositionsAPIResult;
 import com.stocktracker.servicelayer.tradeit.types.TradeItPosition;
@@ -155,6 +156,13 @@ public class StockPositionService extends StockInformationEntityService<StockPos
             this.createPositionDTOList( customerUuid, tradeItAccountEntity.getUuid(), linkedAccountUuid, getPositionsAPIResult );
             this.stockQuoteEntityService
                 .setStockQuoteInformation( stockPositionList );
+        }
+        // Handle expiration issue -- just report to log since this method is reporting the same error as the account
+        // authentication code is reporting the issue back to the user.
+        else if ( getPositionsAPIResult.getCode() == TradeItCodeEnum.SESSION_EXPIRED_ERROR.getErrorNumber() ||
+                  getPositionsAPIResult.getCode() == TradeItCodeEnum.TOKEN_INVALID_OR_EXPIRED_ERROR.getErrorNumber() )
+        {
+            logDebug( methodName, "Session or token has expired, cannot obtain positions at this time" );
         }
         else
         {

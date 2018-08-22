@@ -6,9 +6,12 @@ import com.stocktracker.common.exceptions.EntityVersionMismatchException;
 import com.stocktracker.common.exceptions.LinkedAccountNotFoundException;
 import com.stocktracker.common.exceptions.TradeItAPIException;
 import com.stocktracker.common.exceptions.TradeItAccountNotFoundException;
+import com.stocktracker.common.exceptions.TradeItAccountTokenExpiredException;
 import com.stocktracker.common.exceptions.TradeItAuthenticationException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
+import com.stocktracker.repositorylayer.entity.TradeItAccountEntity;
 import com.stocktracker.servicelayer.service.StockPositionService;
+import com.stocktracker.servicelayer.service.TradeItAccountEntityService;
 import com.stocktracker.weblayer.dto.StockPositionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,7 +36,11 @@ public class StockPositionController extends AbstractController
     /**
      * Service class that performs all of the entity work.
      */
+    @Autowired
     private StockPositionService stockPositionService;
+
+    @Autowired
+    private TradeItAccountEntityService tradeItAccountEntityService;
 
     /**
      * Get all of the positions for a linked account.
@@ -59,10 +66,15 @@ public class StockPositionController extends AbstractController
                TradeItAPIException,
                EntityVersionMismatchException,
                VersionedEntityNotFoundException,
-               DuplicateEntityException
+               DuplicateEntityException,
+               TradeItAccountTokenExpiredException
     {
         final String methodName = "getPositions";
         logMethodBegin( methodName, linkedAccountId, tradeItAccountId, customerId );
+        if ( this.tradeItAccountEntityService.isTokenExpired( UUIDUtil.uuid( tradeItAccountId )))
+        {
+            throw new TradeItAccountTokenExpiredException( tradeItAccountId );
+        }
         final List<StockPositionDTO> positions = this.stockPositionService
                                                      .getPositions( UUIDUtil.uuid( customerId ),
                                                                     UUIDUtil.uuid( tradeItAccountId ),
@@ -70,11 +82,5 @@ public class StockPositionController extends AbstractController
         //logDebug( methodName, "positions: {0}", positions );
         logMethodEnd( methodName, "positions size: " + positions.size() );
         return positions;
-    }
-
-    @Autowired
-    public void setStockPositionService( final StockPositionService stockPositionService )
-    {
-        this.stockPositionService = stockPositionService;
     }
 }

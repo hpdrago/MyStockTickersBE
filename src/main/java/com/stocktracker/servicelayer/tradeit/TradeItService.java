@@ -204,6 +204,7 @@ public class TradeItService implements MyLogger
         }
         tradeItAccountEntity.setUserId( getOAuthAccessTokenAPIResult.getUserId() );
         tradeItAccountEntity.setUserToken( getOAuthAccessTokenAPIResult.getUserToken() );
+        tradeItAccountEntity.setTokenExpiredInd( false );
         this.tradeItAccountEntityService
             .saveEntity( tradeItAccountEntity );
         final TradeItAccountDTO tradeItAccountDTO = this.tradeItAccountEntityService
@@ -739,8 +740,7 @@ public class TradeItService implements MyLogger
                         /*
                          * Update the token as that has changed on a successful re-authenticate.
                          */
-                        final AuthenticateAPIResult authenticateAPIResult = this
-                            .handleSessionExpired( tradeItAccountEntity );
+                        final AuthenticateAPIResult authenticateAPIResult = this.handleSessionExpired( tradeItAccountEntity );
                         if ( authenticateAPIResult.isSuccessful() )
                         {
                             tradeItAPICallParameterMap.addParameter( TradeItParameter.TOKEN_PARAM,
@@ -827,7 +827,13 @@ public class TradeItService implements MyLogger
         else
         {
             logDebug( methodName, "Authentication failed {0}", authenticateAPIResult );
-            //throw new TradeItAuthenticationException( authenticateAPIResult );
+            final TradeItAccountEntity existingTradeItAccountEntity = this.tradeItAccountEntityService
+                                                                          .getEntity( tradeItAccountEntity.getUuid() );
+
+            logDebug( methodName, "Setting token expired flag" );
+            existingTradeItAccountEntity.setTokenExpiredInd( true );
+            this.tradeItAccountEntityService
+                .saveEntity( existingTradeItAccountEntity );
         }
         logMethodEnd( methodName );
         return authenticateAPIResult;

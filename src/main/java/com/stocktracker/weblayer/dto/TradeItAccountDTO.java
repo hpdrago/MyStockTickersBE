@@ -23,7 +23,7 @@ public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
     private String name;
     private String customerId;
     private String brokerage;
-    private boolean tradeItAccountFlag;
+    private boolean tradeItAccountInd;
     private Timestamp authTimestamp;
     private Integer version;
 
@@ -82,17 +82,17 @@ public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
 
     public boolean isTradeItAccount()
     {
-        return tradeItAccountFlag;
+        return tradeItAccountInd;
     }
 
     public boolean getTradeItAccount()
     {
-        return tradeItAccountFlag;
+        return tradeItAccountInd;
     }
 
     public void setTradeItAccount( final boolean tradeItAccountFlag )
     {
-        this.tradeItAccountFlag = tradeItAccountFlag;
+        this.tradeItAccountInd = tradeItAccountFlag;
     }
 
     public Integer getVersion()
@@ -113,7 +113,7 @@ public class TradeItAccountDTO implements UuidDTO, CustomerIdContainer
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", brokerage='" ).append( brokerage ).append( '\'' );
         sb.append( ", customerId='" ).append( customerId ).append( '\'' );
-        sb.append( ", isTradeItAccount=" ).append( tradeItAccountFlag );
+        sb.append( ", isTradeItAccount=" ).append( tradeItAccountInd );
         sb.append( ", authTimestamp='" ).append( authTimestamp ).append( '\'' );
         sb.append( ", version=" ).append( version );
         sb.append( '}' );
