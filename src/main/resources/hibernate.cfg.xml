@@ -30,5 +30,7 @@
         <mapping class="com.stocktracker.repositorylayer.entity.StockKeyStatsEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockQuoteEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.GainsLossesEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.WatchListEntity"/>
+        <mapping class="com.stocktracker.repositorylayer.entity.WatchListStockEntity"/>
     </session-factory>
 </hibernate-configuration>

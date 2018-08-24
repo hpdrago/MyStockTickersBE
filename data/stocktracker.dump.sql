@@ -24,16 +24,15 @@ DROP TABLE IF EXISTS `customer`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `customer` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
-  `email` varchar(45) NOT NULL,
-  `password` varchar(45) NOT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `email` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `password` varchar(45) CHARACTER SET utf8 NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
   PRIMARY KEY (`uuid`),
-  UNIQUE KEY `idx_customer_email` (`email`),
-  UNIQUE KEY `IDX_UUID` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  UNIQUE KEY `idx_customer_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -55,16 +54,16 @@ DROP TABLE IF EXISTS `customer_tag`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `customer_tag` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
-  `tag_name` varchar(20) NOT NULL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `tag_name` varchar(20) CHARACTER SET utf8 NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `customer_id_tag_name_UNIQUE` (`tag_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -86,13 +85,13 @@ DROP TABLE IF EXISTS `exception`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `exception` (
   `id` int(11) NOT NULL,
-  `class_name` varchar(45) NOT NULL,
-  `method_name` varchar(45) NOT NULL,
-  `arguments` varchar(255) NOT NULL,
-  `stack_trace` varchar(4096) NOT NULL,
+  `class_name` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `method_name` varchar(45) CHARACTER SET utf8 NOT NULL,
+  `arguments` varchar(255) CHARACTER SET utf8 NOT NULL,
+  `stack_trace` varchar(4096) CHARACTER SET utf8 NOT NULL,
   `datetime` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -151,14 +150,14 @@ DROP TABLE IF EXISTS `linked_account`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `linked_account` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
-  `account_number` varchar(20) NOT NULL,
-  `account_name` varchar(40) NOT NULL,
-  `account_index` varchar(30) DEFAULT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `account_number` varchar(20) CHARACTER SET utf8 NOT NULL,
+  `account_name` varchar(40) CHARACTER SET utf8 NOT NULL,
+  `account_index` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
   `tradeit_account_uuid` binary(16) NOT NULL,
-  `tradeit_account_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`tradeit_account_uuid`)) VIRTUAL,
+  `tradeit_account_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`tradeit_account_uuid`)) VIRTUAL,
   `available_cash` decimal(10,2) DEFAULT NULL,
   `buying_power` decimal(10,2) DEFAULT NULL,
   `total_value` decimal(10,2) DEFAULT NULL,
@@ -175,7 +174,7 @@ CREATE TABLE `linked_account` (
   KEY `FK_LINKED_ACCOUNT_CUSTOMER_UUID_idx` (`customer_uuid`),
   KEY `FK_LINKED_ACCOUNT_ACCOUNT_idx` (`tradeit_account_uuid`),
   CONSTRAINT `FK_LINKED_ACCOUNT_TRADEIT_ACCOUNT` FOREIGN KEY (`tradeit_account_uuid`) REFERENCES `tradeit_account` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,12 +196,12 @@ DROP TABLE IF EXISTS `portfolio`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `portfolio` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
-  `name` varchar(20) NOT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `name` varchar(20) CHARACTER SET utf8 NOT NULL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
   `linked_account_uuid` binary(16) NOT NULL,
-  `linked_account_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`linked_account_uuid`)) VIRTUAL,
+  `linked_account_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`linked_account_uuid`)) VIRTUAL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
@@ -212,7 +211,7 @@ CREATE TABLE `portfolio` (
   KEY `FK_PORTFOLIO_LINKED_ACCOUNT_idx` (`linked_account_uuid`),
   CONSTRAINT `FK_PORTFOLIO_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_PORTFOLIO_LINKED_ACCOUNT` FOREIGN KEY (`linked_account_uuid`) REFERENCES `linked_account` (`uuid`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -234,12 +233,12 @@ DROP TABLE IF EXISTS `portfolio_stock`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `portfolio_stock` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
   `portfolio_uuid` binary(16) DEFAULT NULL,
-  `portfolio_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`portfolio_uuid`)) VIRTUAL,
-  `ticker_symbol` varchar(20) NOT NULL,
+  `portfolio_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`portfolio_uuid`)) VIRTUAL,
+  `ticker_symbol` varchar(20) CHARACTER SET utf8 NOT NULL,
   `stop_loss_price` decimal(7,2) DEFAULT NULL,
   `stop_loss_shares` int(11) DEFAULT NULL,
   `profit_taking_price` decimal(7,2) DEFAULT NULL,
@@ -253,7 +252,7 @@ CREATE TABLE `portfolio_stock` (
   KEY `FK_PORTFOLIO_STOCK_PORTFOLIO_idx` (`portfolio_uuid`),
   CONSTRAINT `FK_PORTFOLIO_STOCK_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_PORTFOLIO_STOCK_PORTFOLIO` FOREIGN KEY (`portfolio_uuid`) REFERENCES `portfolio` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,22 +272,22 @@ DROP TABLE IF EXISTS `stock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock` (
-  `ticker_symbol` varchar(5) NOT NULL,
-  `company_name` varchar(70) DEFAULT NULL,
-  `stock_exchange` varchar(10) DEFAULT 'OTHER',
+  `ticker_symbol` varchar(5) CHARACTER SET utf8 NOT NULL,
+  `company_name` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
+  `stock_exchange` varchar(10) CHARACTER SET utf8 DEFAULT 'OTHER',
   `created_by` int(11) DEFAULT '1',
-  `user_entered` char(1) DEFAULT 'Y',
+  `user_entered` char(1) CHARACTER SET utf8 DEFAULT 'Y',
   `last_price` decimal(7,2) DEFAULT NULL,
   `last_price_update` datetime DEFAULT NULL,
   `last_price_change` datetime DEFAULT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `quote_url` varchar(120) DEFAULT NULL,
-  `sector` varchar(45) DEFAULT NULL,
-  `industry` varchar(45) DEFAULT NULL,
+  `quote_url` varchar(120) CHARACTER SET utf8 DEFAULT NULL,
+  `sector` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `industry` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
   UNIQUE KEY `ticker_symbol_UNIQUE` (`ticker_symbol`),
   FULLTEXT KEY `idx_stock_ticker_symbol` (`ticker_symbol`),
   FULLTEXT KEY `idx_stock_company_name` (`company_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -310,11 +309,11 @@ DROP TABLE IF EXISTS `stock_analyst_consensus`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_analyst_consensus` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
-  `ticker_symbol` varchar(10) NOT NULL,
-  `comments` varchar(4000) DEFAULT NULL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `ticker_symbol` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `comments` varchar(4000) CHARACTER SET utf8 DEFAULT NULL,
   `analyst_strong_buy_count` int(11) DEFAULT NULL,
   `analyst_buy_count` int(11) DEFAULT NULL,
   `analyst_hold_count` int(11) DEFAULT NULL,
@@ -326,7 +325,7 @@ CREATE TABLE `stock_analyst_consensus` (
   `high_analyst_price_target` decimal(10,2) DEFAULT NULL,
   `analyst_price_date` timestamp NULL DEFAULT NULL,
   `notes_source_uuid` binary(16) DEFAULT NULL,
-  `notes_source_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`notes_source_uuid`)) VIRTUAL,
+  `notes_source_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`notes_source_uuid`)) VIRTUAL,
   `stock_price_when_created` decimal(10,2) DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -338,7 +337,7 @@ CREATE TABLE `stock_analyst_consensus` (
   KEY `FK_STOCK_ANALYST_CONSENSUS_NOTE_SOURCE_idx` (`notes_source_uuid`),
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_STOCK_ANALYST_CONSENSUS_NOTE_SOURCE` FOREIGN KEY (`notes_source_uuid`) REFERENCES `stock_note_source` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -463,12 +462,12 @@ DROP TABLE IF EXISTS `stock_catalyst_event`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_catalyst_event` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
-  `ticker_symbol` varchar(10) NOT NULL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `ticker_symbol` varchar(10) CHARACTER SET utf8 NOT NULL,
   `catalyst_date` timestamp NULL DEFAULT NULL,
-  `catalyst_desc` varchar(1000) NOT NULL,
+  `catalyst_desc` varchar(1000) CHARACTER SET utf8 NOT NULL,
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   `date_or_time_period` tinyint(1) NOT NULL,
@@ -479,7 +478,7 @@ CREATE TABLE `stock_catalyst_event` (
   UNIQUE KEY `uuid_UNIQUE` (`uuid`),
   KEY `FK_STOCK_CATALYST_EVENT_CUSTOMER_UUID_idx` (`customer_uuid`),
   CONSTRAINT `FK_STOCK_CATALYST_EVENT_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,12 +499,12 @@ DROP TABLE IF EXISTS `stock_company`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_company` (
-  `ticker_symbol` varchar(25) NOT NULL,
-  `company_name` varchar(70) DEFAULT NULL,
-  `website` varchar(120) DEFAULT NULL,
-  `sector` varchar(45) DEFAULT NULL,
-  `industry` varchar(45) DEFAULT NULL,
-  `discontinued_ind` varchar(1) DEFAULT 'N',
+  `ticker_symbol` varchar(25) CHARACTER SET utf8 NOT NULL,
+  `company_name` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
+  `website` varchar(120) CHARACTER SET utf8 DEFAULT NULL,
+  `sector` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `industry` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `discontinued_ind` varchar(1) CHARACTER SET utf8 DEFAULT 'N',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
@@ -513,7 +512,7 @@ CREATE TABLE `stock_company` (
   UNIQUE KEY `ticker_symbol_UNIQUE` (`ticker_symbol`),
   FULLTEXT KEY `idx_stock_company_ticker_symbol` (`ticker_symbol`),
   FULLTEXT KEY `idx_stock_company_company_name` (`company_name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -534,7 +533,7 @@ DROP TABLE IF EXISTS `stock_key_stats`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_key_stats` (
-  `ticker_symbol` varchar(25) NOT NULL,
+  `ticker_symbol` varchar(25) CHARACTER SET utf8 NOT NULL,
   `beta` int(11) DEFAULT NULL,
   `week_52_high` decimal(10,2) DEFAULT NULL,
   `week_52_low` decimal(10,2) DEFAULT NULL,
@@ -556,13 +555,13 @@ CREATE TABLE `stock_key_stats` (
   `month_1_change_percent` decimal(7,2) DEFAULT NULL,
   `day_5_change_percent` decimal(7,2) DEFAULT NULL,
   `key_stats_request_date` datetime DEFAULT NULL COMMENT 'The last time the call to IEXtrading was made for the Key Stats.',
-  `discontinued_ind` varchar(1) DEFAULT 'N',
+  `discontinued_ind` varchar(1) CHARACTER SET utf8 DEFAULT 'N',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ticker_symbol`),
   UNIQUE KEY `ticker_symbol_UNIQUE` (`ticker_symbol`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -583,20 +582,20 @@ DROP TABLE IF EXISTS `stock_note`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_note` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
-  `ticker_symbol` varchar(10) NOT NULL,
-  `notes` varchar(4000) NOT NULL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `ticker_symbol` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `notes` varchar(4000) CHARACTER SET utf8 NOT NULL,
   `notes_source_uuid` binary(16) DEFAULT NULL,
-  `notes_source_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`notes_source_uuid`)) VIRTUAL,
+  `notes_source_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`notes_source_uuid`)) VIRTUAL,
   `notes_rating` tinyint(1) DEFAULT NULL,
   `notes_date` datetime NOT NULL,
   `bull_or_bear` tinyint(1) DEFAULT NULL,
   `action_taken` tinyint(1) NOT NULL DEFAULT '0',
   `action_taken_shares` int(11) NOT NULL DEFAULT '0',
-  `action_taken_price` varchar(45) DEFAULT NULL,
-  `public_ind` varchar(1) DEFAULT NULL,
+  `action_taken_price` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `public_ind` varchar(1) CHARACTER SET utf8 DEFAULT NULL,
   `stock_price_when_created` decimal(10,2) DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -606,7 +605,7 @@ CREATE TABLE `stock_note` (
   KEY `FK_STOCK_NOTE_STOCK_NOTE_SOURCE_idx` (`notes_source_uuid`),
   CONSTRAINT `FK_STOCK_NOTE_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_STOCK_NOTE_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_uuid`) REFERENCES `stock_note_source` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -673,10 +672,10 @@ DROP TABLE IF EXISTS `stock_note_source`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_note_source` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
-  `name` varchar(20) NOT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `name` varchar(20) CHARACTER SET utf8 NOT NULL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
   `times_used` int(11) NOT NULL DEFAULT '0',
   `create_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` datetime DEFAULT NULL,
@@ -687,7 +686,7 @@ CREATE TABLE `stock_note_source` (
   KEY `FK_STOCK_NOTE_SOURCE_CUSTOMER_UUID_idx` (`customer_uuid`),
   KEY `IDX_CUSTOMER_ID` (`name`),
   CONSTRAINT `FK_STOCK_NOTE_SOURCE_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -709,15 +708,15 @@ DROP TABLE IF EXISTS `stock_position`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_position` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `linked_account_uuid` binary(16) NOT NULL,
-  `linked_account_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `linked_account_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `cost_basis` decimal(12,2) DEFAULT NULL,
-  `holding_type` varchar(5) DEFAULT NULL,
+  `holding_type` varchar(5) CHARACTER SET utf8 DEFAULT NULL,
   `last_price` decimal(10,2) DEFAULT NULL,
   `quantity` decimal(10,2) DEFAULT NULL,
-  `ticker_symbol` varchar(25) DEFAULT NULL,
-  `symbol_class` varchar(20) DEFAULT NULL,
+  `ticker_symbol` varchar(25) CHARACTER SET utf8 DEFAULT NULL,
+  `symbol_class` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
   `today_gain_loss_absolute` decimal(12,2) DEFAULT NULL,
   `today_gain_loss_percentage` decimal(8,2) DEFAULT NULL,
   `total_gain_loss_absolute` decimal(12,2) DEFAULT NULL,
@@ -730,7 +729,7 @@ CREATE TABLE `stock_position` (
   UNIQUE KEY `IDX_UNIQUE_LINKED_ACCOUNT_UUID_TICKER_SYMBOL` (`linked_account_uuid`,`ticker_symbol`),
   KEY `FK_STOCK_POSITION_LINKED_ACCOUNT_idx` (`linked_account_uuid`),
   CONSTRAINT `FK_STOCK_POSITION_LINKED_ACCOUNT` FOREIGN KEY (`linked_account_uuid`) REFERENCES `linked_account` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -751,17 +750,17 @@ DROP TABLE IF EXISTS `stock_quote`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_quote` (
-  `ticker_symbol` varchar(25) NOT NULL,
-  `company_name` varchar(70) DEFAULT NULL,
-  `discontinued_ind` varchar(1) DEFAULT 'N',
-  `calculation_price` varchar(20) DEFAULT NULL COMMENT 'refers to the source of the latest price. \n("tops", "sip", "previousclose" or "close")',
+  `ticker_symbol` varchar(25) CHARACTER SET utf8 NOT NULL,
+  `company_name` varchar(70) CHARACTER SET utf8 DEFAULT NULL,
+  `discontinued_ind` varchar(1) CHARACTER SET utf8 DEFAULT 'N',
+  `calculation_price` varchar(20) CHARACTER SET utf8 DEFAULT NULL COMMENT 'refers to the source of the latest price. \n("tops", "sip", "previousclose" or "close")',
   `open_price` decimal(10,2) DEFAULT NULL COMMENT 'refers to the official open price',
   `close_price` decimal(10,2) DEFAULT NULL COMMENT 'refers to the official close price',
   `high_price` decimal(10,2) DEFAULT NULL COMMENT 'refers to the market-wide highest price from the SIP. 15 minute delayed',
   `low_price` decimal(10,2) DEFAULT NULL COMMENT 'refers to the market-wide lowest price from the SIP. 15 minute delayed',
   `latest_price` decimal(10,2) DEFAULT NULL COMMENT 'refers to the latest price being the IEX real time price, the 15 minute delayed market price, or the previous close price.',
-  `latest_price_source` varchar(25) DEFAULT NULL COMMENT 'refers to the source of latestPrice (we use last_price). \n("IEX real time price", "15 minute delayed price", "Close" or "Previous close")',
-  `latest_price_time` varchar(25) DEFAULT NULL COMMENT 'refers to a human readable time of the latestPrice. The format will vary based on latestSource.',
+  `latest_price_source` varchar(25) CHARACTER SET utf8 DEFAULT NULL COMMENT 'refers to the source of latestPrice (we use last_price). \n("IEX real time price", "15 minute delayed price", "Close" or "Previous close")',
+  `latest_price_time` varchar(25) CHARACTER SET utf8 DEFAULT NULL COMMENT 'refers to a human readable time of the latestPrice. The format will vary based on latestSource.',
   `latest_update` bigint(13) DEFAULT NULL COMMENT 'refers to the update time of latestPrice in milliseconds since midnight Jan 1, 1970.',
   `latest_volume` int(11) DEFAULT NULL COMMENT 'refers to the total market volume of the stock.',
   `delayed_price` decimal(10,2) DEFAULT NULL COMMENT 'refers to the 15 minute delayed market price.',
@@ -781,7 +780,7 @@ CREATE TABLE `stock_quote` (
   `version` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`ticker_symbol`),
   UNIQUE KEY `ticker_symbol_UNIQUE` (`ticker_symbol`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -790,7 +789,7 @@ CREATE TABLE `stock_quote` (
 
 LOCK TABLES `stock_quote` WRITE;
 /*!40000 ALTER TABLE `stock_quote` DISABLE KEYS */;
-INSERT INTO `stock_quote` VALUES ('AAAP','Advanced Accelerator Applications S.A.',NULL,'previousclose',81.63,81.63,82.05,81.50,81.63,'Previous close','February 9, 2018',1518134400000,12119,81.63,1518210000359,81.63,0.00,0.00,177487,3605317762,-62.31,82.74,35.11,0.00,NULL,'2018-06-25 17:45:03','2018-08-03 20:17:07',2),('AAP','Advance Auto Parts Inc W/I',NULL,'close',144.25,144.68,145.66,143.03,144.68,'Close','August 3, 2018',1533326523067,532244,144.68,1533326523067,143.26,1.42,0.01,774128,10710850075,24.61,145.20,78.81,0.36,NULL,'2018-06-25 17:54:32','2018-08-03 20:17:07',2),('AAPL','Apple Inc.',NULL,'close',209.45,207.11,209.50,206.76,215.05,'Close','August 7, 2018',1534968000387,18868817,215.05,1534968000387,215.04,-1.96,0.00,23922439,1038675586300,20.76,219.18,149.16,0.21,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',82),('ACAD','ACADIA Pharmaceuticals Inc.',NULL,'tops',15.61,15.22,15.65,15.08,14.11,'Close','August 3, 2018',1534869300006,698137,14.02,1534868426275,13.57,-0.27,0.04,3401961,1763844862,-6.95,41.20,12.77,-0.51,NULL,'2018-06-19 19:43:47','2018-08-21 16:36:12',9),('ACRX','AcelRx Pharmaceuticals Inc.',NULL,'close',2.80,2.75,2.95,2.70,2.75,'Close','July 27, 2018',1532721600579,997848,2.75,1532721600579,2.83,-0.08,-0.03,848988,141131645,-2.75,5.75,1.55,0.35,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:49',5),('ADMA','ADMA Biologics Inc',NULL,'tops',6.29,6.23,6.36,5.99,5.66,'Close','August 3, 2018',1534868875869,97629,5.67,1534868221581,5.43,-0.02,0.04,380292,262338249,-16.17,6.86,2.01,0.89,NULL,'2018-07-23 21:12:27','2018-08-21 16:36:17',7),('ADMP','Adamis Pharmaceuticals Corporation',NULL,'close',3.75,3.75,3.80,3.60,2.25,'Close','July 27, 2018',1534881600495,1624483,2.25,1534881600495,2.35,0.00,-0.04,843113,106405556,-2.96,5.85,2.25,-0.18,NULL,'2018-07-22 23:11:40','2018-08-21 21:46:17',14),('ADMS','Adamas Pharmaceuticals Inc.',NULL,'close',26.85,26.29,26.85,26.15,26.29,'Close','July 27, 2018',1532721600399,329473,26.29,1532721600399,26.84,-0.55,-0.02,518207,709365245,-5.73,44.00,13.50,-0.27,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('ADVM','Adverum Biotechnologies Inc.',NULL,'close',5.30,4.73,5.30,4.65,4.73,'Close','July 27, 2018',1532721600279,703105,4.73,1532721600279,5.30,-0.58,-0.11,805849,294234732,-3.90,8.59,2.40,0.34,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('AGEN','Agenus Inc.',NULL,'close',1.77,1.74,1.77,1.70,1.74,'Close','August 3, 2018',1533326400314,809953,1.74,1533326400314,1.76,-0.02,-0.01,1383958,180958401,-1.19,6.19,1.74,-0.51,NULL,'2018-06-19 19:43:47','2018-08-03 20:17:24',8),('AGLE','Aeglea BioTherapeutics Inc.',NULL,'close',9.03,8.98,9.11,8.90,9.47,'15 minute delayed price','11:56:33 AM',1534881600321,127933,9.47,1534881600321,9.16,-0.03,0.03,200160,208292953,-5.23,12.00,2.94,0.67,NULL,'2018-06-20 16:36:51','2018-08-21 22:09:15',54),('AGRX','Agile Therapeutics Inc.',NULL,'close',0.31,0.30,0.33,0.28,0.30,'Close','July 27, 2018',1532721600187,444444,0.30,1532721600187,0.30,0.00,-0.01,507261,10188860,-0.34,5.60,0.27,-0.90,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',5),('AKAO','Achaogen Inc.',NULL,'tops',7.05,6.86,7.10,6.72,5.54,'Close','August 3, 2018',1534869131975,176224,5.52,1534868392178,5.42,-0.09,0.02,1495359,250234156,-1.38,19.74,5.11,-0.40,NULL,'2018-07-23 21:12:26','2018-08-21 16:36:12',7),('ALDR','Alder BioPharmaceuticals Inc.',NULL,'tops',NULL,NULL,NULL,NULL,18.50,NULL,NULL,1534869309095,159158,18.45,1534868345474,18.50,NULL,0.00,NULL,1262373234,-4.12,20.87,8.60,NULL,NULL,'2018-08-21 16:36:12','2018-08-21 16:36:12',1),('ALDX','Aldeyra Therapeutics Inc.',NULL,'tops',8.65,8.65,8.80,8.55,7.20,'IEX real time price','3:39:45 PM',1534869146873,39413,7.15,1534868035193,7.10,-0.03,0.01,90979,151019424,-4.56,11.90,3.90,0.23,NULL,'2018-06-19 19:43:46','2018-08-21 16:36:11',3),('APEN','Apollo Endosurgery Inc.',NULL,'close',8.46,8.55,8.58,8.35,8.55,'Close','August 3, 2018',1533326400438,47906,8.55,1533326400438,8.40,0.15,0.02,106169,186548508,-7.07,9.65,3.55,0.47,NULL,'2018-06-29 19:27:04','2018-08-05 20:50:30',2),('ARLZ','Aralez Pharmaceuticals Inc.',NULL,'close',0.32,0.30,0.33,0.29,0.30,'Close','July 27, 2018',1532721600417,856164,0.30,1532721600417,0.32,-0.02,-0.07,1308408,20158795,-0.21,2.98,0.21,-0.87,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:49',13),('ARQL','ArQule Inc.',NULL,'close',5.53,5.43,5.57,5.32,5.43,'Close','August 3, 2018',1533326400501,942338,5.43,1533326400501,5.50,-0.07,-0.01,2397788,590876229,-27.15,7.21,0.94,2.11,NULL,'2018-08-05 16:18:54','2018-08-05 16:18:54',1),('ARRY','Array BioPharma Inc.',NULL,'close',15.55,15.12,15.61,14.97,15.12,'Close','August 3, 2018',1533326400274,1554927,15.12,1533326400274,15.51,-0.39,-0.03,2544483,3184832861,-19.64,20.21,7.85,0.09,NULL,'2018-06-25 15:53:48','2018-08-05 16:14:40',2),('ATHX','Athersys Inc.',NULL,'close',1.97,1.92,1.99,1.91,1.92,'Close','July 27, 2018',1532721600199,392251,1.92,1532721600199,1.95,-0.03,-0.02,828437,264880406,-6.19,3.09,1.29,0.06,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('AUPH','Aurinia Pharmaceuticals Inc',NULL,'close',5.75,5.59,5.80,5.55,5.59,'Close','July 27, 2018',1532721600580,466443,5.59,1532721600580,5.76,-0.17,-0.03,435007,472232322,-13.63,7.60,4.41,0.16,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('AVEO','AVEO Pharmaceuticals Inc.',NULL,'tops',2.80,2.83,2.82,2.63,2.76,'IEX real time price','11:32:19 AM',1531236739313,2017123,2.67,1531235876827,2.83,-0.07,-0.02,2184914,328074220,-10.62,4.24,1.91,0.01,NULL,'2018-07-10 15:33:03','2018-07-10 15:33:03',1),('AVXL','Anavex Life Sciences Corp.',NULL,'close',3.00,2.88,3.05,2.80,2.88,'Close','July 27, 2018',1532721600261,223907,2.88,1532721600261,2.95,-0.07,-0.02,676352,128620979,-7.02,5.15,1.85,-0.09,NULL,'2018-06-19 20:31:43','2018-07-27 20:29:49',59),('AXDX','Accelerate Diagnostics Inc.',NULL,'sip',21.65,21.40,21.95,21.45,22.75,'IEX real time price','11:08:36 AM',1534953989157,25974,22.75,1534953989157,22.65,0.35,0.00,184929,1231411773,-16.49,30.35,16.75,-0.20,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:02',104),('AXSM','Axsome Therapeutics Inc.',NULL,'sip',2.65,2.60,2.70,2.55,2.33,'Close','July 27, 2018',1534868234117,14943,2.33,1534868234117,2.30,-0.05,0.01,161901,61037904,-2.19,6.45,2.05,-0.53,NULL,'2018-07-23 21:12:27','2018-08-21 16:36:18',5),('BA','The Boeing Company',NULL,'close',348.29,350.76,352.12,345.50,350.03,'Close','August 7, 2018',1534968026125,2690692,350.03,1534968026125,353.77,4.19,-0.01,3067051,201095145149,24.16,374.48,234.29,0.19,NULL,'2018-06-22 20:15:58','2018-08-22 22:41:57',37),('BCLI','Brainstorm Cell Therapeutics Inc.',NULL,'sip',4.16,4.12,4.20,4.03,4.03,'15 minute delayed price','10:54:46 AM',1529679286446,46948,4.03,1529679286446,4.12,-0.09,-0.02,229530,77018644,-13.90,5.35,2.88,0.11,NULL,'2018-06-22 15:10:27','2018-06-22 15:10:27',1),('BDSI','BioDelivery Sciences International Inc.',NULL,'close',2.80,2.73,2.80,2.70,2.73,'Close','July 27, 2018',1532721600449,153257,2.73,1532721600449,2.80,-0.08,-0.03,405332,161734080,-2.87,3.56,1.70,-0.04,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('BGB','Blackstone / GSO Strategic Credit Fund',NULL,'close',16.06,16.10,16.13,16.06,16.11,'Close','August 7, 2018',1534968120965,40000,16.11,1534968120965,16.10,0.00,0.00,103012,719543194,NULL,16.21,15.51,0.07,NULL,'2018-06-20 22:52:03','2018-08-22 22:41:57',38),('BGX','Blackstone GSO Long Short Credit Income Fund',NULL,'close',16.70,16.70,16.73,16.64,16.88,'Close','August 7, 2018',1534968120966,30563,16.88,1534968120966,16.88,-0.02,0.00,44956,214412461,NULL,17.05,15.60,0.09,NULL,'2018-06-22 20:15:57','2018-08-22 20:41:56',35),('BLRX','BioLineRx Ltd.',NULL,'close',0.88,0.85,0.91,0.85,0.88,'Close','July 27, 2018',1534881600293,261631,0.88,1534881600293,0.89,-0.03,-0.01,317279,95090125,-3.52,1.34,0.78,-0.23,NULL,'2018-06-08 18:25:58','2018-08-21 21:46:17',48),('BLW','Blackrock Limited Duration Income Trust',NULL,'close',14.94,14.97,14.97,14.94,14.98,'Close','August 7, 2018',1534968120098,67227,14.98,1534968120098,14.96,0.02,0.00,91745,553404327,NULL,16.30,14.77,-0.03,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',37),('BRK.A','Berkshire Hathaway Inc.',NULL,'close',313950.00,315600.00,317100.00,313950.00,312400.00,'Close','August 7, 2018',1534968021410,147,312400.00,1534968021410,313725.00,3794.50,0.00,364,242010032000,27.10,326350.00,259040.00,0.07,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',56),('CALA','Calithera Biosciences Inc.',NULL,'close',4.25,4.40,4.45,4.10,4.60,'Close','August 3, 2018',1534881600411,217905,4.60,1534881600411,4.65,0.15,-0.01,391987,165541943,-4.89,18.35,4.05,-0.47,NULL,'2018-06-08 15:08:50','2018-08-21 21:46:17',68),('CATS','Catasys Inc.',NULL,'sip',7.02,7.15,7.08,6.82,6.90,'15 minute delayed price','3:03:55 PM',1530299035512,33296,6.90,1530299035512,6.96,-0.06,-0.01,64137,109800880,-8.02,8.88,3.30,0.84,NULL,'2018-06-29 19:29:28','2018-06-29 19:29:28',1),('CDTX','Cidara Therapeutics Inc.',NULL,'tops',3.85,3.80,4.18,3.75,4.43,'Close','August 6, 2018',1534954339551,34509,4.43,1534953840055,4.40,-0.05,0.01,91203,122481748,-1.52,8.80,3.65,-0.46,NULL,'2018-06-19 19:43:47','2018-08-22 16:22:02',340),('CELG','Celgene Corporation',NULL,'close',88.60,86.43,88.93,86.20,86.43,'Close','July 27, 2018',1532721600221,6144674,86.43,1532721600224,88.31,-1.88,-0.02,6495714,61092111278,12.45,147.17,74.13,-0.19,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('CLDX','Celldex Therapeutics Inc.',NULL,'tops',0.50,0.46,0.51,0.46,0.46,'Close','July 27, 2018',1534954874210,1307062,0.45,1534954045557,0.44,-0.03,0.05,2819734,74723473,-0.75,3.26,0.40,-0.89,NULL,'2018-06-11 18:08:47','2018-08-22 16:22:31',17),('CLSN','Celsion Corporation',NULL,'close',2.87,2.75,2.89,2.71,2.75,'Close','July 27, 2018',1532721600486,150246,2.75,1532721600486,2.87,-0.12,-0.04,430992,48543861,-1.92,6.06,1.24,-0.02,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:47',13),('CLVS','Clovis Oncology Inc.',NULL,'tops',45.76,45.65,46.04,44.88,36.44,'IEX real time price','1:45:33 PM',1534869087266,505762,36.49,1534868463526,34.75,-0.57,0.05,920417,1918551096,-6.08,86.26,33.85,-0.32,NULL,'2018-06-08 15:08:50','2018-08-21 16:36:11',108),('CNAT','Conatus Pharmaceuticals Inc.',NULL,'close',4.18,4.05,4.21,3.97,4.05,'Close','July 27, 2018',1532721600368,344474,4.05,1532721600368,4.18,-0.13,-0.03,541985,121757171,-6.33,7.95,3.22,-0.15,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('COG','Cabot Oil & Gas Corporation',NULL,'tops',23.53,23.54,23.75,23.34,24.51,'Close','August 6, 2018',1534954809050,1799779,24.52,1534953993248,24.50,0.09,0.00,6141393,10811051795,42.25,29.57,21.71,-0.18,NULL,'2018-06-20 16:19:04','2018-08-22 16:22:02',331),('CRBP','Corbus Pharmaceuticals Holdings Inc.',NULL,'tops',4.70,4.70,4.75,4.60,5.08,'15 minute delayed price','10:54:50 AM',1534955135798,125065,5.07,1534954348568,5.10,0.00,0.00,435703,290320907,-6.68,9.96,4.50,-0.41,NULL,'2018-06-08 18:25:58','2018-08-22 16:28:29',110),('CRMD','CorMedix Inc',NULL,'close',0.45,0.51,0.53,0.42,0.39,'Close','July 27, 2018',1534881600128,3333333,0.39,1534882200001,0.43,0.08,-0.09,2575888,38482157,-1.01,0.80,0.17,0.00,NULL,'2018-07-22 23:15:20','2018-08-21 21:46:17',14),('DERM','Dermira Inc.',NULL,'sip',9.91,9.91,10.23,9.67,10.19,'15 minute delayed price','11:56:42 AM',1531151802525,417332,10.19,1531151802525,9.91,0.28,0.03,1384802,426430926,-2.09,31.42,6.98,-0.61,NULL,'2018-07-09 16:12:06','2018-07-09 16:12:06',1),('DOVA','Dova Pharmaceuticals Inc.',NULL,'tops',21.87,22.23,22.67,21.70,23.91,'Close','August 6, 2018',1534954917027,57556,23.90,1534953916230,23.12,0.33,0.03,308934,674316180,-12.20,37.00,20.65,-0.19,NULL,'2018-06-20 16:20:26','2018-08-22 16:22:02',323),('DRNA','Dicerna Pharmaceuticals Inc.',NULL,'tops',NULL,NULL,NULL,NULL,15.82,NULL,NULL,1534868761568,147532,15.79,1534868456575,15.52,NULL,0.02,NULL,837663621,-6.59,16.32,2.69,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:18',2),('DVAX','Dynavax Technologies Corporation',NULL,'close',14.05,13.55,14.05,13.06,13.55,'Close','July 27, 2018',1532721600485,1394881,13.55,1532721600485,14.00,-0.45,-0.03,1164981,843814001,-7.32,24.45,8.90,-0.29,NULL,'2018-06-19 19:43:46','2018-07-27 20:29:49',6),('EGLT','Egalet Corporation',NULL,'close',0.33,0.31,0.33,0.30,0.31,'Close','July 27, 2018',1532721600180,581040,0.31,1532721600180,0.34,-0.03,-0.09,331807,16320095,-0.15,1.59,0.31,-0.76,NULL,'2018-07-22 23:11:40','2018-07-27 20:29:46',14),('ELOX','Eloxx Pharmaceuticals Inc.',NULL,'close',14.08,13.15,14.50,12.90,13.17,'15 minute delayed price','11:59:03 AM',1534881600491,154731,13.17,1534881600491,12.52,-0.04,0.05,94706,459075646,NULL,24.60,3.62,0.68,NULL,'2018-07-09 16:10:02','2018-08-21 22:09:15',32),('EQT','EQT Corporation',NULL,'tops',49.35,50.36,51.32,49.35,51.39,'Close','August 3, 2018',1534869253054,1036573,51.35,1534868459735,50.00,0.87,0.03,2883183,13566960000,22.06,66.03,43.70,-0.12,NULL,'2018-08-05 20:49:49','2018-08-21 16:36:18',2),('ETM','Entercom Communications Corp.',NULL,'close',7.75,7.50,7.75,7.45,7.50,'Close','July 27, 2018',1532721724227,1135826,7.50,1532721724227,7.75,-0.25,-0.03,1739660,1038393135,57.69,12.43,6.30,-0.31,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('EXEL','Exelixis Inc.',NULL,'close',21.06,21.17,21.20,20.92,17.95,'IEX real time price','12:20:44 PM',1534881600300,4243062,17.95,1534881600300,17.69,-0.11,0.01,5763141,5349736471,17.43,32.50,17.34,-0.33,NULL,'2018-06-19 20:13:14','2018-08-21 22:09:15',105),('F','Ford Motor Company',NULL,'tops',11.65,11.65,11.67,11.38,11.51,'IEX real time price','3:59:23 PM',1529956763531,33862439,11.49,1529955861840,11.65,-0.15,-0.01,32453901,45846891904,6.36,13.48,10.14,-0.06,NULL,'2018-06-25 19:59:24','2018-06-25 19:59:24',1),('FEYE','FireEye Inc.',NULL,'tops',16.67,16.16,16.70,15.98,14.70,'Close','July 27, 2018',1534869365020,1258363,14.70,1534868461746,14.42,-0.53,0.02,3079280,2866567076,-15.15,19.36,13.40,0.11,NULL,'2018-07-23 21:12:26','2018-08-21 16:36:12',5),('FLDM','Fluidigm Corporation',NULL,'tops',5.79,6.72,6.81,5.50,6.80,'Close','August 3, 2018',1534868479710,253333,6.79,1534868396444,6.74,0.26,0.01,178756,266312018,-7.73,8.38,3.41,0.12,NULL,'2018-08-05 23:23:38','2018-08-21 16:36:18',2),('FLXN','Flexion Therapeutics Inc.',NULL,'tops',25.56,24.01,25.56,22.88,21.29,'Close','July 27, 2018',1534868437116,190916,21.29,1534868437116,21.15,-1.42,0.01,409294,805093613,-4.52,32.25,19.06,-0.09,NULL,'2018-06-19 19:43:47','2018-08-21 16:36:12',7),('FORD','Forward Industries Inc.',NULL,'sip',1.72,1.72,1.72,1.58,1.65,'15 minute delayed price','3:43:00 PM',1529955780371,204167,1.65,1529955780371,1.72,-0.07,-0.04,578108,15702314,NULL,4.45,1.02,0.34,NULL,'2018-06-25 19:59:23','2018-06-25 19:59:23',1),('FRA','Blackrock Floating Rate Income Strategies Fund Inc',NULL,'close',13.92,13.80,13.92,13.79,13.86,'Close','August 7, 2018',1534968122259,165055,13.86,1534968122259,13.95,-0.12,-0.01,121491,516042284,NULL,14.63,13.69,0.02,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',37),('FUN','Cedar Fair L.P.',NULL,'tops',NULL,NULL,NULL,NULL,52.42,NULL,NULL,1534869191148,120523,52.45,1534868405141,52.33,NULL,0.00,NULL,2958592086,14.93,70.82,50.10,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('GBT','Global Blood Therapeutics Inc.',NULL,'tops',48.00,46.55,48.20,45.46,50.23,'IEX real time price','11:09:03 AM',1534954146867,174711,50.20,1534953983678,49.50,-0.80,0.01,1816610,2614376691,-15.45,68.05,26.10,0.10,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:01',96),('GE','General Electric Company',NULL,'close',13.09,13.16,13.25,13.02,12.47,'Close','August 7, 2018',1534968007641,41894588,12.47,1534968007641,12.63,0.06,-0.01,67311549,108377780070,13.70,25.30,11.94,-0.25,NULL,'2018-06-22 20:15:58','2018-08-22 22:41:57',56),('GENE','Genetic Technologies Ltd',NULL,'close',1.24,1.15,1.24,1.15,1.15,'Close','July 27, 2018',1532721600247,74074,1.15,1532721600247,1.25,-0.10,-0.08,962188,18670501,NULL,2.05,0.70,-0.06,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('GERN','Geron Corporation',NULL,'close',3.44,3.34,3.50,3.32,3.34,'Close','July 27, 2018',1532721600311,2642575,3.34,1532721600311,3.44,-0.10,-0.03,4984993,578089381,-19.65,6.68,1.74,0.87,NULL,'2018-06-25 15:11:01','2018-07-27 20:29:48',14),('GNCA','Genocea Biosciences Inc.',NULL,'close',0.65,0.67,0.69,0.65,0.67,'Close','July 27, 2018',1532721600208,250965,0.67,1532721600208,0.68,-0.01,-0.02,736146,57578256,-0.41,6.27,0.65,-0.47,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:48',13),('GPOR','Gulfport Energy Corporation',NULL,'close',11.62,11.70,11.62,11.37,11.84,'IEX real time price','12:19:24 PM',1534881600484,5007896,11.84,1534881600484,11.07,-0.28,0.07,3838478,2051896331,7.13,15.08,8.11,-0.14,NULL,'2018-06-19 19:43:46','2018-08-21 22:09:15',28),('GS','Goldman Sachs Group Inc. (The)',NULL,'close',237.25,237.83,239.46,236.49,239.34,'Close','August 7, 2018',1534968050790,1811300,239.34,1534968050790,238.65,1.90,0.00,3014453,90364307131,10.13,275.31,214.64,-0.06,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',56),('HOLX','Hologic Inc.',NULL,'tops',39.81,39.75,39.93,39.46,38.25,'IEX real time price','12:12:44 PM',1534868944772,941799,38.25,1534868458412,38.26,0.18,0.00,2030089,10408695876,18.39,45.09,35.10,-0.07,NULL,'2018-06-08 18:25:59','2018-08-21 16:36:13',35),('HT','Hersha Hospitality Trust Class A of Beneficial Interest',NULL,'tops',20.85,20.85,21.24,20.85,22.44,'IEX real time price','12:08:56 PM',1534869257450,119715,22.41,1534868327411,22.05,0.39,0.02,364694,883690656,11.16,22.57,16.60,0.25,NULL,'2018-06-08 18:25:58','2018-08-21 16:36:13',33),('IBM','International Business Machines Corporation',NULL,'close',146.65,147.01,147.64,146.35,145.24,'Close','August 7, 2018',1534968013868,2209274,145.24,1534968013868,145.97,0.98,-0.01,4789453,132570451770,10.37,171.13,137.45,-0.03,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',37),('ICPT','Intercept Pharmaceuticals Inc.',NULL,'close',116.42,116.33,118.41,115.54,107.00,'IEX real time price','12:19:12 PM',1534881600168,274883,107.01,1534881600195,103.38,1.17,0.04,670084,3163421188,-8.16,121.92,51.05,1.07,NULL,'2018-06-14 20:49:35','2018-08-21 22:09:15',142),('IDRA','Idera Pharmaceuticals Inc.',NULL,'sip',0.89,0.89,0.91,0.82,0.82,'15 minute delayed price','1:30:03 PM',1532712603681,1343284,0.82,1532712603681,0.89,-0.06,-0.07,2105274,178716559,-1.96,2.87,0.80,-0.67,NULL,'2018-07-27 17:45:40','2018-07-27 17:45:40',1),('IMDZ','Immune Design Corp.',NULL,'sip',4.10,3.75,4.10,3.70,3.30,'Close','July 27, 2018',1534868297112,23296,3.30,1534868297112,3.20,-0.35,0.03,222230,158943932,-2.39,11.25,2.80,-0.09,NULL,'2018-06-08 18:25:59','2018-08-21 16:36:13',36),('INNT','Innovate Biopharmaceuticals Inc.',NULL,'close',4.90,4.84,5.05,4.62,4.84,'Close','August 3, 2018',1533326400176,273956,4.84,1533326400182,4.90,-0.06,-0.01,840626,124366714,NULL,50.50,3.43,-0.20,NULL,'2018-08-05 17:36:16','2018-08-05 19:42:46',2),('INOV','Inovalon Holdings Inc.',NULL,'close',10.20,10.05,10.35,9.90,10.05,'Close','July 27, 2018',1532721600273,246776,10.05,1532721600273,10.20,-0.15,-0.01,413261,1530301782,83.75,17.80,8.90,-0.31,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('IVAC','Intevac Inc.',NULL,'tops',4.80,4.75,4.85,4.70,5.98,'IEX real time price','11:03:12 AM',1534954540011,241985,6.00,1534953984089,5.75,0.05,0.04,231992,134935367,-29.87,9.35,4.50,-0.27,NULL,'2018-06-08 18:25:58','2018-08-22 16:22:01',82),('IVTY','Invuity Inc.',NULL,'close',4.20,4.05,4.20,4.00,4.05,'Close','July 27, 2018',1532721600197,75342,4.05,1532721600197,4.15,-0.10,-0.02,143743,97367415,-1.86,9.55,2.35,-0.34,NULL,'2018-06-20 16:42:41','2018-07-27 20:29:49',5),('JNJ','Johnson & Johnson',NULL,'close',131.88,131.46,132.17,131.30,134.61,'Close','August 7, 2018',1534968091351,4573963,134.61,1534968091351,135.35,-0.56,-0.01,6965419,361125793371,17.26,148.32,118.62,-0.04,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',37),('KALA','Kala Pharmaceuticals Inc.',NULL,'close',12.48,12.48,12.64,12.37,13.87,'15 minute delayed price','12:03:23 PM',1534881600445,651925,13.87,1534881600445,12.73,-0.01,0.09,146651,341094840,-6.67,26.75,11.39,-0.34,NULL,'2018-06-20 23:25:15','2018-08-21 22:09:15',69),('KERX','Keryx Biopharmaceuticals Inc.',NULL,'close',4.09,3.86,4.11,3.82,3.86,'Close','July 27, 2018',1532721600298,954893,3.86,1532721600298,4.11,-0.25,-0.06,1456884,464661620,-4.54,8.07,3.30,-0.22,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('KPTI','Karyopharm Therapeutics Inc.',NULL,'close',18.34,18.38,18.61,18.10,18.00,'15 minute delayed price','12:03:37 PM',1534881600503,270862,18.00,1534881600503,17.36,0.13,0.04,370537,1090142082,-6.36,20.39,8.00,0.86,NULL,'2018-06-08 18:25:59','2018-08-21 22:09:15',132),('LGCY','Legacy Reserves LP',NULL,'close',5.09,5.01,5.23,5.01,5.01,'Close','July 27, 2018',1532721600441,152905,5.01,1532721600441,5.18,-0.17,-0.03,421476,385237733,NULL,10.54,1.07,2.25,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('LPTX','Leap Therapeutics Inc.',NULL,'sip',8.11,7.56,8.02,7.55,6.95,'Close','July 27, 2018',1534864459206,2838,6.95,1534864459206,6.71,-0.58,0.04,41125,102169733,-3.03,10.25,4.90,0.24,NULL,'2018-07-23 21:12:26','2018-08-21 16:36:17',5),('LXRX','Lexicon Pharmaceuticals Inc.',NULL,'tops',12.81,12.35,12.95,11.77,10.38,'Close','July 27, 2018',1534868702831,110654,10.41,1534868378218,10.32,-0.48,0.01,638557,1099020013,-7.80,15.16,7.67,0.23,NULL,'2018-07-23 21:12:27','2018-08-21 16:36:13',5),('MCRB','Seres Therapeutics Inc.',NULL,'tops',7.57,7.43,7.67,7.26,8.17,'Close','August 6, 2018',1534954463510,28461,8.16,1534953907201,8.18,-0.12,0.00,128401,333300567,-3.63,17.42,6.65,-0.30,NULL,'2018-06-08 18:25:58','2018-08-22 16:22:02',366),('MHK','Mohawk Industries Inc.',NULL,'tops',187.58,189.39,188.73,185.86,193.17,'IEX real time price','1:31:36 PM',1534869368876,310047,193.35,1534868393016,190.51,-3.43,0.01,1299635,14411040454,14.11,286.85,177.00,-0.33,NULL,'2018-08-02 17:31:46','2018-08-21 16:36:18',2),('MIC','Macquarie Infrastructure Corporation',NULL,'tops',42.28,42.16,42.83,42.13,42.54,'IEX real time price','2:44:52 PM',1529520292809,633481,42.60,1529519504145,42.16,0.38,0.01,1432851,3619487994,18.74,79.51,36.20,-0.32,NULL,'2018-06-20 18:46:57','2018-06-20 18:46:57',1),('MLNT','Melinta Therapeutics Inc.',NULL,'sip',5.20,5.20,5.46,5.20,4.83,'15 minute delayed price','10:50:42 AM',1534953923905,118531,4.83,1534953923905,4.70,0.20,0.03,323779,270249476,-1.27,18.20,4.00,-0.65,NULL,'2018-06-08 18:25:58','2018-08-22 16:22:02',140),('MRNS','Marinus Pharmaceuticals Inc.',NULL,'close',7.40,7.26,7.40,7.01,7.26,'Close','July 27, 2018',1532721600185,497571,7.26,1532721600185,7.40,-0.14,-0.02,788789,294180318,NULL,9.87,1.73,-0.14,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('MRTX','Mirati Therapeutics Inc.',NULL,'tops',49.65,49.20,50.55,48.55,57.15,'IEX real time price','3:42:46 PM',1534869352269,95580,57.30,1534868375600,56.95,1.23,0.00,595042,1849290218,-20.63,65.35,4.75,1.66,NULL,'2018-06-19 19:43:47','2018-08-21 16:36:11',3),('MSFT','Microsoft Corporation',NULL,'close',108.55,108.88,109.10,108.17,107.06,'Close','August 7, 2018',1534968000343,17862269,107.06,1534968000343,105.98,0.75,0.01,27639075,820959345851,30.50,111.15,72.05,0.28,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',56),('NEOS','Neos Therapeutics Inc.',NULL,'close',5.95,5.75,5.95,5.70,5.50,'Close','July 27, 2018',1534881600446,380916,5.50,1534881600446,5.50,-0.25,0.00,244215,163206505,-2.63,13.15,5.30,-0.46,NULL,'2018-07-23 21:12:27','2018-08-21 21:46:17',5),('NVAX','Novavax Inc.',NULL,'close',1.17,1.19,1.20,1.15,1.31,'Close','August 6, 2018',1534881600166,2925307,1.31,1534881600215,1.23,0.02,0.07,4048507,501195257,-2.30,2.75,0.96,-0.08,NULL,'2018-06-08 18:25:57','2018-08-21 22:09:15',101),('NVTA','Invitae Corporation',NULL,'tops',8.26,8.26,8.26,8.10,11.32,'IEX real time price','11:08:39 AM',1534954427904,527479,11.27,1534954012429,10.85,-0.15,0.04,751669,781622262,-4.56,11.32,4.35,-0.13,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:01',80),('OMER','Omeros Corporation',NULL,'close',22.01,20.64,22.04,20.44,20.64,'Close','July 27, 2018',1532721600218,920019,20.64,1532721600218,22.09,-1.45,-0.07,543317,996759429,-19.11,25.20,8.36,0.03,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('ONTX','Onconova Therapeutics Inc.',NULL,'close',0.46,0.45,0.47,0.44,0.45,'Close','July 27, 2018',1532721600335,134754,0.45,1532721600335,0.46,-0.01,-0.03,1070588,35202976,-0.23,2.83,0.33,-0.73,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('OPK','Opko Health Inc.',NULL,'close',5.08,4.95,5.10,4.70,4.95,'Close','July 27, 2018',1532721600437,7046394,4.95,1532721600437,4.97,-0.02,0.00,7805468,2769395498,-15.47,7.24,2.66,0.00,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('PETQ','PetIQ Inc.',NULL,'sip',27.58,26.85,27.58,26.62,38.53,'Close','August 6, 2018',1534954015064,789229,38.53,1534954015064,36.79,-0.61,0.05,413241,989839600,32.38,38.53,17.03,0.22,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:02',355),('PETX','Aratana Therapeutics Inc.',NULL,'close',4.48,4.38,4.49,4.33,4.38,'Close','July 23, 2018',1532376000226,159452,4.38,1532376000226,4.48,-0.10,-0.02,314446,206563870,-5.15,7.49,3.67,-0.18,NULL,'2018-07-23 21:12:26','2018-07-23 21:12:26',1),('PFNX','Pfenex Inc.',NULL,'tops',5.06,4.90,5.06,4.76,4.66,'Close','August 3, 2018',1534869223698,54932,4.71,1534868213692,4.72,-0.14,-0.01,215504,146286419,-4.56,8.42,2.07,0.74,NULL,'2018-08-05 20:43:44','2018-08-21 16:36:18',2),('PGNX','Progenics Pharmaceuticals Inc.',NULL,'close',7.64,7.66,7.68,7.31,7.91,'Close','July 27, 2018',1534881600195,1138122,7.90,1534881600219,7.67,0.25,0.03,1089969,668000449,-9.65,9.42,5.01,0.24,NULL,'2018-07-22 23:11:40','2018-08-21 21:46:17',15),('PIRS','Pieris Pharmaceuticals Inc.',NULL,'close',5.72,5.28,5.79,5.25,5.28,'Close','July 27, 2018',1532721600375,862151,5.28,1532721600375,5.78,-0.50,-0.09,544401,285016296,-13.54,9.75,4.42,-0.34,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('PRTK','Paratek Pharmaceuticals Inc.',NULL,'close',10.45,10.25,10.45,10.10,10.65,'Close','July 27, 2018',1534881600340,343728,10.65,1534881600340,10.45,-0.20,0.02,540634,337920762,-3.13,29.00,9.38,-0.46,NULL,'2018-07-23 21:12:27','2018-08-21 21:46:17',5),('PTI','Proteostasis Therapeutics Inc.',NULL,'close',2.57,2.40,2.57,2.40,2.40,'Close','July 27, 2018',1532721600455,254665,2.40,1532721600455,2.59,-0.19,-0.07,487805,86594477,-1.16,8.61,1.41,-0.65,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('PTLA','Portola Pharmaceuticals Inc.',NULL,'tops',38.19,37.76,38.53,37.54,26.03,'IEX real time price','10:59:17 AM',1534954893581,491304,26.00,1534954010049,25.32,0.12,0.03,959343,1720206502,-4.56,64.56,24.63,-0.22,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:01',91),('PVAC','Penn Virginia Corporation',NULL,'tops',85.08,84.81,85.44,84.65,82.53,'15 minute delayed price','10:51:54 AM',1534954577861,54526,82.87,1534953938440,81.33,0.63,0.01,388758,1242701062,14.84,96.13,32.49,1.13,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:01',77),('QTNT','Quotient Limited',NULL,'close',7.52,7.60,7.62,7.45,7.60,'Close','August 3, 2018',1533326400161,150210,7.60,1533326400161,7.54,0.06,0.01,512598,379616033,-2.64,9.02,2.78,0.46,NULL,'2018-06-20 16:35:36','2018-08-03 20:17:30',6),('RDHL','Redhill Biopharma Ltd.',NULL,'close',9.83,9.43,9.96,9.20,9.43,'Close','July 27, 2018',1532721600236,151914,9.43,1532721600236,9.78,-0.35,-0.04,163467,201273382,-3.77,11.49,4.30,0.87,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('RDUS','Radius Health Inc.',NULL,'tops',NULL,NULL,NULL,NULL,20.88,NULL,NULL,1534869167228,640328,20.75,1534868453294,19.76,NULL,0.06,NULL,949548380,-3.84,41.16,18.88,NULL,NULL,'2018-08-21 16:36:18','2018-08-21 16:36:18',1),('REPH','Recro Pharma Inc.',NULL,'close',5.43,5.42,5.51,5.31,5.42,'Close','August 3, 2018',1533326400506,39987,5.42,1533326400506,5.42,0.00,0.00,174625,111151279,-2.42,13.05,4.78,-0.40,NULL,'2018-06-19 19:43:47','2018-08-03 20:17:30',7),('RESN','Resonant Inc.',NULL,'tops',4.66,4.65,4.75,4.46,4.54,'15 minute delayed price','12:03:45 PM',1534954607942,96790,4.56,1534953688860,4.55,-0.13,0.00,207690,122498793,-4.13,8.55,3.17,-0.43,NULL,'2018-06-20 16:23:16','2018-08-22 16:22:02',277),('RNN','Rexahn Pharmaceuticals Inc.',NULL,'close',1.37,1.33,1.39,1.23,1.33,'Close','July 27, 2018',1532721600043,221519,1.33,1532722200000,1.37,-0.04,-0.03,133406,42230079,-2.25,3.19,1.25,-0.38,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('RUBI','The Rubicon Project Inc.',NULL,'tops',NULL,NULL,NULL,NULL,3.82,NULL,NULL,1534869285045,102925,3.83,1534868462336,3.90,NULL,-0.02,NULL,193865531,-2.89,4.18,1.48,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('SBBP','Strongbridge Biopharma plc',NULL,'tops',NULL,NULL,NULL,NULL,5.40,NULL,NULL,1534869157600,136429,5.40,1534868459402,5.40,NULL,0.00,NULL,252234259,-2.97,9.25,4.30,NULL,NULL,'2018-08-21 16:36:18','2018-08-21 16:36:18',1),('SCPH','scPharmaceuticals Inc.',NULL,'sip',4.93,4.79,4.93,4.66,5.34,'15 minute delayed price','12:03:30 PM',1534953152127,1471,5.34,1534953152127,5.23,-0.11,0.02,55979,99215711,-2.97,18.17,4.10,-0.63,NULL,'2018-06-14 15:55:34','2018-08-22 16:22:02',212),('SCYX','SCYNEXIS Inc.',NULL,'close',1.74,1.64,1.74,1.62,1.64,'Close','July 27, 2018',1532721600308,416667,1.64,1532721600308,1.71,-0.07,-0.04,910114,76823243,-2.00,2.50,1.05,-0.29,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:48',5),('SELB','Selecta Biosciences Inc.',NULL,'sip',NULL,NULL,NULL,NULL,12.61,NULL,NULL,1534868170495,16625,12.61,1534868170495,12.36,NULL,0.02,NULL,282483056,-4.08,24.02,7.95,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('SGYP','Synergy Pharmaceuticals Inc.',NULL,'close',1.73,1.66,1.73,1.63,1.92,'Close','July 27, 2018',1534881600223,1552679,1.92,1534881600223,1.85,-0.06,0.04,3033019,476138872,-2.87,3.57,1.43,-0.33,NULL,'2018-06-08 18:25:57','2018-08-21 21:46:13',14),('SLNO','Soleno Therapeutics Inc.',NULL,'sip',2.55,2.70,2.74,2.56,2.36,'Close','August 3, 2018',1534866623813,9648,2.36,1534866623813,2.38,0.15,-0.01,420416,50536726,NULL,3.70,1.32,0.53,NULL,'2018-08-05 20:35:35','2018-08-21 16:36:19',2),('SNDX','Syndax Pharmaceuticals Inc.',NULL,'close',6.38,6.33,6.64,6.27,6.33,'Close','August 3, 2018',1533326400184,186718,6.33,1533326400184,6.37,-0.04,-0.01,312371,156387676,-2.13,15.20,6.28,-0.28,NULL,'2018-06-25 15:07:18','2018-08-03 20:17:30',15),('SPHS','Sophiris Bio Inc.',NULL,'close',3.17,3.09,3.18,3.05,3.09,'Close','July 20, 2018',1532116800399,124085,3.09,1532116800399,3.15,-0.06,-0.02,767809,93043463,-7.36,4.05,1.80,0.32,NULL,'2018-07-22 23:11:40','2018-07-22 23:11:40',1),('SRNE','Sorrento Therapeutics Inc.',NULL,'close',5.40,5.00,5.43,4.90,5.55,'Close','August 3, 2018',1534881600304,1106906,5.55,1534881600304,5.25,-0.35,0.06,2289331,647864132,NULL,10.65,1.50,0.09,NULL,'2018-06-19 19:43:47','2018-08-21 21:46:17',18),('SRRA','Sierra Oncology Inc.',NULL,'tops',NULL,NULL,NULL,NULL,1.80,NULL,NULL,1534868444323,229894,1.80,1534868444323,1.87,NULL,-0.04,NULL,133819526,-2.43,4.09,1.45,NULL,NULL,'2018-08-21 16:36:19','2018-08-21 16:36:19',1),('SSI','Stage Stores Inc.',NULL,'tops',2.47,2.45,2.48,2.33,2.34,'IEX real time price','2:46:10 PM',1529693170566,76797,2.34,1529692328361,2.45,-0.11,-0.04,299239,66067403,-2.63,3.25,1.45,0.38,NULL,'2018-06-22 18:54:07','2018-06-22 18:54:07',1),('STNG','Scorpio Tankers Inc.',NULL,'close',2.35,2.23,2.39,2.23,2.23,'Close','July 27, 2018',1532721723515,2027991,2.23,1532721723515,2.36,-0.13,-0.06,3631307,739534882,-4.65,4.18,1.85,-0.30,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('TBPH','Theravance Biopharma Inc.',NULL,'tops',28.44,28.50,29.16,28.44,27.98,'IEX real time price','11:02:49 AM',1534954850338,47431,27.84,1534953870793,27.64,0.67,0.01,255311,1541813473,-5.72,35.90,21.27,0.04,NULL,'2018-06-08 15:08:50','2018-08-22 16:22:02',171),('TCON','TRACON Pharmaceuticals Inc.',NULL,'close',2.60,2.55,2.55,2.50,2.55,'Close','July 27, 2018',1532721600250,110410,2.55,1532721600250,2.55,0.00,0.00,135529,75814894,-2.20,3.95,2.00,-0.27,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('TENX','Tenax Therapeutics Inc.',NULL,'close',6.55,6.33,6.84,6.33,6.33,'Close','July 27, 2018',1532721600194,6754,6.33,1532721600194,6.62,-0.29,-0.04,8826,9201769,NULL,14.00,4.41,-0.30,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('TGTX','TG Therapeutics Inc.',NULL,'close',11.65,11.00,11.65,10.85,11.00,'Close','July 27, 2018',1532721600449,1360373,11.00,1532721600449,11.55,-0.55,-0.05,1158674,858111232,-5.56,17.35,7.25,0.27,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('TRVN','Trevena Inc.',NULL,'close',1.48,1.63,1.65,1.48,1.63,'Close','August 3, 2018',1533326400158,2453350,1.63,1533326400225,1.48,0.15,0.10,1365451,118309183,-1.63,2.88,1.34,-0.08,NULL,'2018-06-19 19:43:47','2018-08-03 20:17:30',7),('TRXC','TransEnterix Inc.',NULL,'close',5.59,5.48,5.59,5.21,5.48,'Close','July 27, 2018',1532721600056,6487730,5.48,1532722200000,5.53,-0.05,-0.01,9039044,1117792804,-8.30,6.04,0.60,1.66,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('TSRO','TESARO Inc.',NULL,'close',31.01,26.97,32.48,26.75,26.97,'Close','August 3, 2018',1533326400267,14342339,26.97,1533326400267,35.28,-8.31,-0.24,2010392,1478591494,-2.80,136.45,26.97,-0.77,NULL,'2018-06-25 16:03:55','2018-08-03 20:17:30',2),('TTOO','T2 Biosystems Inc.',NULL,'close',6.22,5.79,6.37,5.76,5.79,'Close','July 27, 2018',1532721600457,661989,5.79,1532721600457,6.20,-0.41,-0.07,780335,249767486,-4.42,9.98,2.53,0.33,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('TXMD','TherapeuticsMD Inc.',NULL,'close',5.40,5.35,5.40,5.17,5.55,'IEX real time price','12:18:45 PM',1534881600290,2106757,5.55,1534881600290,5.47,-0.16,0.01,2172225,1306539314,-12.91,7.66,4.34,-0.18,NULL,'2018-06-19 20:22:39','2018-08-21 22:09:15',107),('VBLT','Vascular Biogenics Ltd.',NULL,'close',2.00,2.00,2.05,2.00,2.00,'Close','July 27, 2018',1532721600195,49261,2.00,1532721600195,2.00,0.00,0.00,103355,71710922,-4.76,9.05,2.00,-0.72,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('VCYT','Veracyte Inc.',NULL,'tops',11.64,11.16,11.72,11.10,11.87,'Close','August 3, 2018',1534868645535,57502,11.89,1534868405699,11.71,-0.39,0.01,434986,409910295,-13.19,12.21,5.23,0.68,NULL,'2018-06-19 20:19:18','2018-08-21 16:36:12',8),('VECO','Veeco Instruments Inc.',NULL,'tops',NULL,NULL,NULL,NULL,11.03,NULL,NULL,1534869025720,302387,11.00,1534868450542,10.95,NULL,0.01,NULL,537923884,52.50,22.35,10.40,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('VIVE','Viveve Medical Inc.',NULL,'close',2.55,2.49,2.55,2.44,2.49,'Close','July 27, 2018',1532721600415,213938,2.49,1532721600415,2.55,-0.06,-0.02,498219,77860776,-1.21,7.33,1.60,-0.53,NULL,'2018-06-19 20:40:37','2018-07-27 20:29:47',57),('VOD','Vodafone Group Plc',NULL,'close',24.54,24.40,24.56,24.36,23.14,'Close','August 7, 2018',1534968000501,3736140,23.14,1534968000501,23.17,0.06,0.00,4365448,61818649928,NULL,32.75,22.47,-0.21,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',37),('VSTM','Verastem Inc.',NULL,'tops',7.79,7.79,7.80,7.57,8.72,'IEX real time price','11:08:57 AM',1534954801765,1445217,8.68,1534953973213,8.58,-0.20,0.02,2237118,641724533,-4.98,9.14,2.77,1.40,NULL,'2018-06-08 18:25:59','2018-08-22 16:22:01',107),('VYGR','Voyager Therapeutics Inc.',NULL,'sip',19.38,19.36,19.86,19.01,21.01,'15 minute delayed price','10:54:23 AM',1534953974286,174216,21.01,1534953974286,19.81,0.49,0.06,606658,681480549,-7.72,31.91,8.43,0.12,NULL,'2018-06-08 18:25:58','2018-08-22 16:22:01',105),('XLRN','Acceleron Pharma Inc.',NULL,'tops',44.37,43.05,44.37,40.85,48.83,'Close','August 3, 2018',1534869132149,118991,48.86,1534868425711,48.08,-0.60,0.02,627436,2246070451,-19.69,50.00,32.46,0.01,NULL,'2018-08-03 20:17:30','2018-08-21 16:36:12',2),('ZIOP','ZIOPHARM Oncology Inc',NULL,'close',2.65,2.48,2.69,2.43,2.48,'Close','July 27, 2018',1532721600397,1462422,2.48,1532721600397,2.63,-0.15,-0.06,1643893,353149361,-4.59,6.67,2.43,-0.46,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('ZYNE','Zynerba Pharmaceuticals Inc.',NULL,'close',7.21,7.05,7.41,6.97,7.05,'Close','July 27, 2018',1532721600585,623892,7.05,1532721600585,7.20,-0.15,-0.02,521063,95607680,-2.54,17.33,5.42,-0.47,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4);
+INSERT INTO `stock_quote` VALUES ('AAAP','Advanced Accelerator Applications S.A.',NULL,'previousclose',81.63,81.63,82.05,81.50,81.63,'Previous close','February 9, 2018',1518134400000,12119,81.63,1518210000359,81.63,0.00,0.00,177487,3605317762,-62.31,82.74,35.11,0.00,NULL,'2018-06-25 17:45:03','2018-08-03 20:17:07',2),('AAP','Advance Auto Parts Inc W/I',NULL,'close',144.25,144.68,145.66,143.03,144.68,'Close','August 3, 2018',1533326523067,532244,144.68,1533326523067,143.26,1.42,0.01,774128,10710850075,24.61,145.20,78.81,0.36,NULL,'2018-06-25 17:54:32','2018-08-03 20:17:07',2),('AAPL','Apple Inc.',NULL,'tops',209.45,207.11,209.50,206.76,216.26,'Close','August 7, 2018',1535136828241,13678830,216.27,1535135999452,215.49,-1.96,0.00,23922439,1044519796760,20.87,219.18,149.16,0.21,NULL,'2018-06-22 20:15:57','2018-08-24 18:55:05',88),('ACAD','ACADIA Pharmaceuticals Inc.',NULL,'tops',15.61,15.22,15.65,15.08,14.11,'Close','August 3, 2018',1534869300006,698137,14.02,1534868426275,13.57,-0.27,0.04,3401961,1763844862,-6.95,41.20,12.77,-0.51,NULL,'2018-06-19 19:43:47','2018-08-21 16:36:12',9),('ACRX','AcelRx Pharmaceuticals Inc.',NULL,'close',2.80,2.75,2.95,2.70,2.75,'Close','July 27, 2018',1532721600579,997848,2.75,1532721600579,2.83,-0.08,-0.03,848988,141131645,-2.75,5.75,1.55,0.35,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:49',5),('ADMA','ADMA Biologics Inc',NULL,'tops',6.29,6.23,6.36,5.99,5.66,'Close','August 3, 2018',1534868875869,97629,5.67,1534868221581,5.43,-0.02,0.04,380292,262338249,-16.17,6.86,2.01,0.89,NULL,'2018-07-23 21:12:27','2018-08-21 16:36:17',7),('ADMP','Adamis Pharmaceuticals Corporation',NULL,'close',3.75,3.75,3.80,3.60,2.25,'Close','July 27, 2018',1534881600495,1624483,2.25,1534881600495,2.35,0.00,-0.04,843113,106405556,-2.96,5.85,2.25,-0.18,NULL,'2018-07-22 23:11:40','2018-08-21 21:46:17',14),('ADMS','Adamas Pharmaceuticals Inc.',NULL,'close',26.85,26.29,26.85,26.15,26.29,'Close','July 27, 2018',1532721600399,329473,26.29,1532721600399,26.84,-0.55,-0.02,518207,709365245,-5.73,44.00,13.50,-0.27,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('ADVM','Adverum Biotechnologies Inc.',NULL,'close',5.30,4.73,5.30,4.65,4.73,'Close','July 27, 2018',1532721600279,703105,4.73,1532721600279,5.30,-0.58,-0.11,805849,294234732,-3.90,8.59,2.40,0.34,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('AGEN','Agenus Inc.',NULL,'close',1.77,1.74,1.77,1.70,1.74,'Close','August 3, 2018',1533326400314,809953,1.74,1533326400314,1.76,-0.02,-0.01,1383958,180958401,-1.19,6.19,1.74,-0.51,NULL,'2018-06-19 19:43:47','2018-08-03 20:17:24',8),('AGLE','Aeglea BioTherapeutics Inc.',NULL,'tops',9.03,8.98,9.11,8.90,10.27,'15 minute delayed price','11:56:33 AM',1535136602699,77095,10.31,1535135775766,10.22,-0.03,0.00,200160,225888979,-5.67,12.00,2.96,0.67,NULL,'2018-06-20 16:36:51','2018-08-24 18:54:50',74),('AGRX','Agile Therapeutics Inc.',NULL,'close',0.31,0.30,0.33,0.28,0.30,'Close','July 27, 2018',1532721600187,444444,0.30,1532721600187,0.30,0.00,-0.01,507261,10188860,-0.34,5.60,0.27,-0.90,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',5),('AKAO','Achaogen Inc.',NULL,'tops',7.05,6.86,7.10,6.72,5.54,'Close','August 3, 2018',1534869131975,176224,5.52,1534868392178,5.42,-0.09,0.02,1495359,250234156,-1.38,19.74,5.11,-0.40,NULL,'2018-07-23 21:12:26','2018-08-21 16:36:12',7),('ALDR','Alder BioPharmaceuticals Inc.',NULL,'tops',NULL,NULL,NULL,NULL,18.50,NULL,NULL,1534869309095,159158,18.45,1534868345474,18.50,NULL,0.00,NULL,1262373234,-4.12,20.87,8.60,NULL,NULL,'2018-08-21 16:36:12','2018-08-21 16:36:12',1),('ALDX','Aldeyra Therapeutics Inc.',NULL,'tops',8.65,8.65,8.80,8.55,7.20,'IEX real time price','3:39:45 PM',1534869146873,39413,7.15,1534868035193,7.10,-0.03,0.01,90979,151019424,-4.56,11.90,3.90,0.23,NULL,'2018-06-19 19:43:46','2018-08-21 16:36:11',3),('APEN','Apollo Endosurgery Inc.',NULL,'close',8.46,8.55,8.58,8.35,8.55,'Close','August 3, 2018',1533326400438,47906,8.55,1533326400438,8.40,0.15,0.02,106169,186548508,-7.07,9.65,3.55,0.47,NULL,'2018-06-29 19:27:04','2018-08-05 20:50:30',2),('ARLZ','Aralez Pharmaceuticals Inc.',NULL,'close',0.32,0.30,0.33,0.29,0.30,'Close','July 27, 2018',1532721600417,856164,0.30,1532721600417,0.32,-0.02,-0.07,1308408,20158795,-0.21,2.98,0.21,-0.87,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:49',13),('ARQL','ArQule Inc.',NULL,'close',5.53,5.43,5.57,5.32,5.43,'Close','August 3, 2018',1533326400501,942338,5.43,1533326400501,5.50,-0.07,-0.01,2397788,590876229,-27.15,7.21,0.94,2.11,NULL,'2018-08-05 16:18:54','2018-08-05 16:18:54',1),('ARRY','Array BioPharma Inc.',NULL,'close',15.55,15.12,15.61,14.97,15.12,'Close','August 3, 2018',1533326400274,1554927,15.12,1533326400274,15.51,-0.39,-0.03,2544483,3184832861,-19.64,20.21,7.85,0.09,NULL,'2018-06-25 15:53:48','2018-08-05 16:14:40',2),('ATHX','Athersys Inc.',NULL,'close',1.97,1.92,1.99,1.91,1.92,'Close','July 27, 2018',1532721600199,392251,1.92,1532721600199,1.95,-0.03,-0.02,828437,264880406,-6.19,3.09,1.29,0.06,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('AUPH','Aurinia Pharmaceuticals Inc',NULL,'close',5.75,5.59,5.80,5.55,5.59,'Close','July 27, 2018',1532721600580,466443,5.59,1532721600580,5.76,-0.17,-0.03,435007,472232322,-13.63,7.60,4.41,0.16,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('AVEO','AVEO Pharmaceuticals Inc.',NULL,'tops',2.80,2.83,2.82,2.63,2.76,'IEX real time price','11:32:19 AM',1531236739313,2017123,2.67,1531235876827,2.83,-0.07,-0.02,2184914,328074220,-10.62,4.24,1.91,0.01,NULL,'2018-07-10 15:33:03','2018-07-10 15:33:03',1),('AVXL','Anavex Life Sciences Corp.',NULL,'close',3.00,2.88,3.05,2.80,2.88,'Close','July 27, 2018',1532721600261,223907,2.88,1532721600261,2.95,-0.07,-0.02,676352,128620979,-7.02,5.15,1.85,-0.09,NULL,'2018-06-19 20:31:43','2018-07-27 20:29:49',59),('AXDX','Accelerate Diagnostics Inc.',NULL,'tops',21.65,21.40,21.95,21.45,23.35,'IEX real time price','11:08:36 AM',1535136424039,60101,23.50,1535135889847,23.35,0.35,0.00,184929,1263888567,-16.92,30.35,16.75,-0.20,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',111),('AXSM','Axsome Therapeutics Inc.',NULL,'sip',2.65,2.60,2.70,2.55,2.33,'Close','July 27, 2018',1534868234117,14943,2.33,1534868234117,2.30,-0.05,0.01,161901,61037904,-2.19,6.45,2.05,-0.53,NULL,'2018-07-23 21:12:27','2018-08-21 16:36:18',5),('BA','The Boeing Company',NULL,'close',348.29,350.76,352.12,345.50,350.03,'Close','August 7, 2018',1534968026125,2690692,350.03,1534968026125,353.77,4.19,-0.01,3067051,201095145149,24.16,374.48,234.29,0.19,NULL,'2018-06-22 20:15:58','2018-08-22 22:41:57',37),('BCLI','Brainstorm Cell Therapeutics Inc.',NULL,'sip',4.16,4.12,4.20,4.03,4.03,'15 minute delayed price','10:54:46 AM',1529679286446,46948,4.03,1529679286446,4.12,-0.09,-0.02,229530,77018644,-13.90,5.35,2.88,0.11,NULL,'2018-06-22 15:10:27','2018-06-22 15:10:27',1),('BDSI','BioDelivery Sciences International Inc.',NULL,'close',2.80,2.73,2.80,2.70,2.73,'Close','July 27, 2018',1532721600449,153257,2.73,1532721600449,2.80,-0.08,-0.03,405332,161734080,-2.87,3.56,1.70,-0.04,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('BGB','Blackstone / GSO Strategic Credit Fund',NULL,'close',16.06,16.10,16.13,16.06,16.11,'Close','August 7, 2018',1534968120965,40000,16.11,1534968120965,16.10,0.00,0.00,103012,719543194,NULL,16.21,15.51,0.07,NULL,'2018-06-20 22:52:03','2018-08-22 22:41:57',38),('BGX','Blackstone GSO Long Short Credit Income Fund',NULL,'close',16.70,16.70,16.73,16.64,16.88,'Close','August 7, 2018',1534968120966,30563,16.88,1534968120966,16.88,-0.02,0.00,44956,214412461,NULL,17.05,15.60,0.09,NULL,'2018-06-22 20:15:57','2018-08-22 20:41:56',35),('BLRX','BioLineRx Ltd.',NULL,'close',0.88,0.85,0.91,0.85,0.88,'Close','July 27, 2018',1534881600293,261631,0.88,1534881600293,0.89,-0.03,-0.01,317279,95090125,-3.52,1.34,0.78,-0.23,NULL,'2018-06-08 18:25:58','2018-08-21 21:46:17',48),('BLW','Blackrock Limited Duration Income Trust',NULL,'close',14.94,14.97,14.97,14.94,14.98,'Close','August 7, 2018',1534968120098,67227,14.98,1534968120098,14.96,0.02,0.00,91745,553404327,NULL,16.30,14.77,-0.03,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',37),('BRK.A','Berkshire Hathaway Inc.',NULL,'close',313950.00,315600.00,317100.00,313950.00,312400.00,'Close','August 7, 2018',1534968021410,147,312400.00,1534968021410,313725.00,3794.50,0.00,364,242010032000,27.10,326350.00,259040.00,0.07,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',56),('CALA','Calithera Biosciences Inc.',NULL,'close',4.25,4.40,4.45,4.10,4.60,'Close','August 3, 2018',1534881600411,217905,4.60,1534881600411,4.65,0.15,-0.01,391987,165541943,-4.89,18.35,4.05,-0.47,NULL,'2018-06-08 15:08:50','2018-08-21 21:46:17',68),('CATS','Catasys Inc.',NULL,'sip',7.02,7.15,7.08,6.82,6.90,'15 minute delayed price','3:03:55 PM',1530299035512,33296,6.90,1530299035512,6.96,-0.06,-0.01,64137,109800880,-8.02,8.88,3.30,0.84,NULL,'2018-06-29 19:29:28','2018-06-29 19:29:28',1),('CDTX','Cidara Therapeutics Inc.',NULL,'sip',3.85,3.80,4.18,3.75,4.45,'Close','August 6, 2018',1535135962871,89738,4.45,1535135962871,4.45,-0.05,0.00,91203,123173735,-1.53,8.80,3.65,-0.46,NULL,'2018-06-19 19:43:47','2018-08-24 18:54:53',347),('CELG','Celgene Corporation',NULL,'close',88.60,86.43,88.93,86.20,86.43,'Close','July 27, 2018',1532721600221,6144674,86.43,1532721600224,88.31,-1.88,-0.02,6495714,61092111278,12.45,147.17,74.13,-0.19,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('CLDX','Celldex Therapeutics Inc.',NULL,'tops',0.50,0.46,0.51,0.46,0.46,'Close','July 27, 2018',1534954874210,1307062,0.45,1534954045557,0.44,-0.03,0.05,2819734,74723473,-0.75,3.26,0.40,-0.89,NULL,'2018-06-11 18:08:47','2018-08-22 16:22:31',17),('CLSN','Celsion Corporation',NULL,'close',2.87,2.75,2.89,2.71,2.75,'Close','July 27, 2018',1532721600486,150246,2.75,1532721600486,2.87,-0.12,-0.04,430992,48543861,-1.92,6.06,1.24,-0.02,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:47',13),('CLVS','Clovis Oncology Inc.',NULL,'tops',45.76,45.65,46.04,44.88,36.44,'IEX real time price','1:45:33 PM',1534869087266,505762,36.49,1534868463526,34.75,-0.57,0.05,920417,1918551096,-6.08,86.26,33.85,-0.32,NULL,'2018-06-08 15:08:50','2018-08-21 16:36:11',108),('CNAT','Conatus Pharmaceuticals Inc.',NULL,'close',4.18,4.05,4.21,3.97,4.05,'Close','July 27, 2018',1532721600368,344474,4.05,1532721600368,4.18,-0.13,-0.03,541985,121757171,-6.33,7.95,3.22,-0.15,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('COG','Cabot Oil & Gas Corporation',NULL,'tops',23.53,23.54,23.75,23.34,24.13,'Close','August 6, 2018',1535136822384,1641780,24.12,1535135985569,24.25,0.09,-0.01,6141393,10643404389,41.59,29.57,21.71,-0.18,NULL,'2018-06-20 16:19:04','2018-08-24 18:54:54',339),('CRBP','Corbus Pharmaceuticals Holdings Inc.',NULL,'tops',4.70,4.70,4.75,4.60,4.98,'15 minute delayed price','10:54:50 AM',1535136570572,191423,4.98,1535135964596,4.95,0.00,0.01,435703,284600298,-6.55,9.96,4.50,-0.41,NULL,'2018-06-08 18:25:58','2018-08-24 18:54:53',118),('CRMD','CorMedix Inc',NULL,'close',0.45,0.51,0.53,0.42,0.39,'Close','July 27, 2018',1534881600128,3333333,0.39,1534882200001,0.43,0.08,-0.09,2575888,38482157,-1.01,0.80,0.17,0.00,NULL,'2018-07-22 23:15:20','2018-08-21 21:46:17',14),('DERM','Dermira Inc.',NULL,'sip',9.91,9.91,10.23,9.67,10.19,'15 minute delayed price','11:56:42 AM',1531151802525,417332,10.19,1531151802525,9.91,0.28,0.03,1384802,426430926,-2.09,31.42,6.98,-0.61,NULL,'2018-07-09 16:12:06','2018-07-09 16:12:06',1),('DOVA','Dova Pharmaceuticals Inc.',NULL,'sip',21.87,22.23,22.67,21.70,24.99,'Close','August 6, 2018',1535135617590,56146,24.99,1535135617590,24.42,0.33,0.02,308934,704774627,-12.75,37.00,20.65,-0.19,NULL,'2018-06-20 16:20:26','2018-08-24 18:54:54',331),('DRNA','Dicerna Pharmaceuticals Inc.',NULL,'tops',NULL,NULL,NULL,NULL,15.82,NULL,NULL,1534868761568,147532,15.79,1534868456575,15.52,NULL,0.02,NULL,837663621,-6.59,16.32,2.69,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:18',2),('DVAX','Dynavax Technologies Corporation',NULL,'close',14.05,13.55,14.05,13.06,13.55,'Close','July 27, 2018',1532721600485,1394881,13.55,1532721600485,14.00,-0.45,-0.03,1164981,843814001,-7.32,24.45,8.90,-0.29,NULL,'2018-06-19 19:43:46','2018-07-27 20:29:49',6),('EGLT','Egalet Corporation',NULL,'close',0.33,0.31,0.33,0.30,0.31,'Close','July 27, 2018',1532721600180,581040,0.31,1532721600180,0.34,-0.03,-0.09,331807,16320095,-0.15,1.59,0.31,-0.76,NULL,'2018-07-22 23:11:40','2018-07-27 20:29:46',14),('ELOX','Eloxx Pharmaceuticals Inc.',NULL,'sip',14.08,13.15,14.50,12.90,14.63,'15 minute delayed price','11:59:03 AM',1535132702605,9453,14.63,1535132702605,14.23,-0.04,0.03,94706,509967858,NULL,24.60,3.62,0.68,NULL,'2018-07-09 16:10:02','2018-08-24 18:54:50',46),('EQT','EQT Corporation',NULL,'tops',49.35,50.36,51.32,49.35,51.39,'Close','August 3, 2018',1534869253054,1036573,51.35,1534868459735,50.00,0.87,0.03,2883183,13566960000,22.06,66.03,43.70,-0.12,NULL,'2018-08-05 20:49:49','2018-08-21 16:36:18',2),('ETM','Entercom Communications Corp.',NULL,'close',7.75,7.50,7.75,7.45,7.50,'Close','July 27, 2018',1532721724227,1135826,7.50,1532721724227,7.75,-0.25,-0.03,1739660,1038393135,57.69,12.43,6.30,-0.31,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('EXEL','Exelixis Inc.',NULL,'tops',21.06,21.17,21.20,20.92,17.66,'IEX real time price','12:20:44 PM',1535136469406,1304442,17.68,1535135964704,17.94,-0.11,-0.02,5763141,5263306188,17.15,32.50,16.90,-0.33,NULL,'2018-06-19 20:13:14','2018-08-24 18:54:50',125),('F','Ford Motor Company',NULL,'tops',11.65,11.65,11.67,11.38,11.51,'IEX real time price','3:59:23 PM',1529956763531,33862439,11.49,1529955861840,11.65,-0.15,-0.01,32453901,45846891904,6.36,13.48,10.14,-0.06,NULL,'2018-06-25 19:59:24','2018-06-25 19:59:24',1),('FEYE','FireEye Inc.',NULL,'tops',16.67,16.16,16.70,15.98,14.70,'Close','July 27, 2018',1534869365020,1258363,14.70,1534868461746,14.42,-0.53,0.02,3079280,2866567076,-15.15,19.36,13.40,0.11,NULL,'2018-07-23 21:12:26','2018-08-21 16:36:12',5),('FLDM','Fluidigm Corporation',NULL,'tops',5.79,6.72,6.81,5.50,6.80,'Close','August 3, 2018',1534868479710,253333,6.79,1534868396444,6.74,0.26,0.01,178756,266312018,-7.73,8.38,3.41,0.12,NULL,'2018-08-05 23:23:38','2018-08-21 16:36:18',2),('FLXN','Flexion Therapeutics Inc.',NULL,'tops',25.56,24.01,25.56,22.88,21.29,'Close','July 27, 2018',1534868437116,190916,21.29,1534868437116,21.15,-1.42,0.01,409294,805093613,-4.52,32.25,19.06,-0.09,NULL,'2018-06-19 19:43:47','2018-08-21 16:36:12',7),('FORD','Forward Industries Inc.',NULL,'sip',1.72,1.72,1.72,1.58,1.65,'15 minute delayed price','3:43:00 PM',1529955780371,204167,1.65,1529955780371,1.72,-0.07,-0.04,578108,15702314,NULL,4.45,1.02,0.34,NULL,'2018-06-25 19:59:23','2018-06-25 19:59:23',1),('FRA','Blackrock Floating Rate Income Strategies Fund Inc',NULL,'close',13.92,13.80,13.92,13.79,13.86,'Close','August 7, 2018',1534968122259,165055,13.86,1534968122259,13.95,-0.12,-0.01,121491,516042284,NULL,14.63,13.69,0.02,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',37),('FUN','Cedar Fair L.P.',NULL,'tops',NULL,NULL,NULL,NULL,52.42,NULL,NULL,1534869191148,120523,52.45,1534868405141,52.33,NULL,0.00,NULL,2958592086,14.93,70.82,50.10,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('GBT','Global Blood Therapeutics Inc.',NULL,'tops',48.00,46.55,48.20,45.46,48.00,'IEX real time price','11:09:03 AM',1535136657520,461538,48.30,1535135905212,49.40,-0.80,-0.03,1816610,2498558112,-14.77,68.05,26.10,0.10,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',104),('GE','General Electric Company',NULL,'close',13.09,13.16,13.25,13.02,12.47,'Close','August 7, 2018',1534968007641,41894588,12.47,1534968007641,12.63,0.06,-0.01,67311549,108377780070,13.70,25.30,11.94,-0.25,NULL,'2018-06-22 20:15:58','2018-08-22 22:41:57',56),('GENE','Genetic Technologies Ltd',NULL,'close',1.24,1.15,1.24,1.15,1.15,'Close','July 27, 2018',1532721600247,74074,1.15,1532721600247,1.25,-0.10,-0.08,962188,18670501,NULL,2.05,0.70,-0.06,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('GERN','Geron Corporation',NULL,'close',3.44,3.34,3.50,3.32,3.34,'Close','July 27, 2018',1532721600311,2642575,3.34,1532721600311,3.44,-0.10,-0.03,4984993,578089381,-19.65,6.68,1.74,0.87,NULL,'2018-06-25 15:11:01','2018-07-27 20:29:48',14),('GNCA','Genocea Biosciences Inc.',NULL,'close',0.65,0.67,0.69,0.65,0.67,'Close','July 27, 2018',1532721600208,250965,0.67,1532721600208,0.68,-0.01,-0.02,736146,57578256,-0.41,6.27,0.65,-0.47,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:48',13),('GPOR','Gulfport Energy Corporation',NULL,'tops',11.62,11.70,11.62,11.37,11.68,'IEX real time price','12:19:24 PM',1535136637069,1174590,11.67,1535135965459,11.56,-0.28,0.01,3838478,2024168002,7.04,15.08,8.11,-0.14,NULL,'2018-06-19 19:43:46','2018-08-24 18:54:50',48),('GS','Goldman Sachs Group Inc. (The)',NULL,'close',237.25,237.83,239.46,236.49,239.34,'Close','August 7, 2018',1534968050790,1811300,239.34,1534968050790,238.65,1.90,0.00,3014453,90364307131,10.13,275.31,214.64,-0.06,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:57',56),('HOLX','Hologic Inc.',NULL,'tops',39.81,39.75,39.93,39.46,38.25,'IEX real time price','12:12:44 PM',1534868944772,941799,38.25,1534868458412,38.26,0.18,0.00,2030089,10408695876,18.39,45.09,35.10,-0.07,NULL,'2018-06-08 18:25:59','2018-08-21 16:36:13',35),('HT','Hersha Hospitality Trust Class A of Beneficial Interest',NULL,'tops',20.85,20.85,21.24,20.85,22.44,'IEX real time price','12:08:56 PM',1534869257450,119715,22.41,1534868327411,22.05,0.39,0.02,364694,883690656,11.16,22.57,16.60,0.25,NULL,'2018-06-08 18:25:58','2018-08-21 16:36:13',33),('IBM','International Business Machines Corporation',NULL,'close',146.65,147.01,147.64,146.35,145.24,'Close','August 7, 2018',1534968013868,2209274,145.24,1534968013868,145.97,0.98,-0.01,4789453,132570451770,10.37,171.13,137.45,-0.03,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',37),('ICPT','Intercept Pharmaceuticals Inc.',NULL,'tops',116.42,116.33,118.41,115.54,108.08,'IEX real time price','12:19:12 PM',1535136300387,146042,108.08,1535135894469,107.63,1.17,0.00,670084,3195203223,-8.24,121.92,51.05,1.07,NULL,'2018-06-14 20:49:35','2018-08-24 18:54:50',160),('IDRA','Idera Pharmaceuticals Inc.',NULL,'sip',0.89,0.89,0.91,0.82,0.82,'15 minute delayed price','1:30:03 PM',1532712603681,1343284,0.82,1532712603681,0.89,-0.06,-0.07,2105274,178716559,-1.96,2.87,0.80,-0.67,NULL,'2018-07-27 17:45:40','2018-07-27 17:45:40',1),('IMDZ','Immune Design Corp.',NULL,'sip',4.10,3.75,4.10,3.70,3.30,'Close','July 27, 2018',1534868297112,23296,3.30,1534868297112,3.20,-0.35,0.03,222230,158943932,-2.39,11.25,2.80,-0.09,NULL,'2018-06-08 18:25:59','2018-08-21 16:36:13',36),('INNT','Innovate Biopharmaceuticals Inc.',NULL,'close',4.90,4.84,5.05,4.62,4.84,'Close','August 3, 2018',1533326400176,273956,4.84,1533326400182,4.90,-0.06,-0.01,840626,124366714,NULL,50.50,3.43,-0.20,NULL,'2018-08-05 17:36:16','2018-08-05 19:42:46',2),('INOV','Inovalon Holdings Inc.',NULL,'close',10.20,10.05,10.35,9.90,10.05,'Close','July 27, 2018',1532721600273,246776,10.05,1532721600273,10.20,-0.15,-0.01,413261,1530301782,83.75,17.80,8.90,-0.31,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('IVAC','Intevac Inc.',NULL,'sip',4.80,4.75,4.85,4.70,5.60,'IEX real time price','11:03:12 AM',1535135807649,118846,5.60,1535135807649,5.80,0.05,-0.03,231992,126466620,-28.00,9.35,4.50,-0.27,NULL,'2018-06-08 18:25:58','2018-08-24 18:54:53',88),('IVTY','Invuity Inc.',NULL,'close',4.20,4.05,4.20,4.00,4.05,'Close','July 27, 2018',1532721600197,75342,4.05,1532721600197,4.15,-0.10,-0.02,143743,97367415,-1.86,9.55,2.35,-0.34,NULL,'2018-06-20 16:42:41','2018-07-27 20:29:49',5),('JNJ','Johnson & Johnson',NULL,'close',131.88,131.46,132.17,131.30,134.61,'Close','August 7, 2018',1534968091351,4573963,134.61,1534968091351,135.35,-0.56,-0.01,6965419,361125793371,17.26,148.32,118.62,-0.04,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',37),('KALA','Kala Pharmaceuticals Inc.',NULL,'sip',12.48,12.48,12.64,12.37,12.95,'15 minute delayed price','12:03:23 PM',1535135898655,496124,12.95,1535135898655,12.51,-0.01,0.04,146651,318469948,-6.23,26.75,11.39,-0.34,NULL,'2018-06-20 23:25:15','2018-08-24 18:54:49',89),('KERX','Keryx Biopharmaceuticals Inc.',NULL,'close',4.09,3.86,4.11,3.82,3.86,'Close','July 27, 2018',1532721600298,954893,3.86,1532721600298,4.11,-0.25,-0.06,1456884,464661620,-4.54,8.07,3.30,-0.22,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('KPTI','Karyopharm Therapeutics Inc.',NULL,'sip',18.34,18.38,18.61,18.10,18.09,'15 minute delayed price','12:03:37 PM',1535135942611,74162,18.09,1535135942611,18.02,0.13,0.00,370537,1095592792,-6.39,20.39,8.81,0.86,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:50',152),('LGCY','Legacy Reserves LP',NULL,'close',5.09,5.01,5.23,5.01,5.01,'Close','July 27, 2018',1532721600441,152905,5.01,1532721600441,5.18,-0.17,-0.03,421476,385237733,NULL,10.54,1.07,2.25,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('LPTX','Leap Therapeutics Inc.',NULL,'sip',8.11,7.56,8.02,7.55,6.95,'Close','July 27, 2018',1534864459206,2838,6.95,1534864459206,6.71,-0.58,0.04,41125,102169733,-3.03,10.25,4.90,0.24,NULL,'2018-07-23 21:12:26','2018-08-21 16:36:17',5),('LXRX','Lexicon Pharmaceuticals Inc.',NULL,'tops',12.81,12.35,12.95,11.77,10.38,'Close','July 27, 2018',1534868702831,110654,10.41,1534868378218,10.32,-0.48,0.01,638557,1099020013,-7.80,15.16,7.67,0.23,NULL,'2018-07-23 21:12:27','2018-08-21 16:36:13',5),('MCRB','Seres Therapeutics Inc.',NULL,'sip',7.57,7.43,7.67,7.26,8.29,'Close','August 6, 2018',1535135797179,52590,8.29,1535135797179,8.18,-0.12,0.01,128401,338196046,-3.68,17.42,6.65,-0.30,NULL,'2018-06-08 18:25:58','2018-08-24 18:54:53',374),('MHK','Mohawk Industries Inc.',NULL,'tops',187.58,189.39,188.73,185.86,193.17,'IEX real time price','1:31:36 PM',1534869368876,310047,193.35,1534868393016,190.51,-3.43,0.01,1299635,14411040454,14.11,286.85,177.00,-0.33,NULL,'2018-08-02 17:31:46','2018-08-21 16:36:18',2),('MIC','Macquarie Infrastructure Corporation',NULL,'tops',42.28,42.16,42.83,42.13,42.54,'IEX real time price','2:44:52 PM',1529520292809,633481,42.60,1529519504145,42.16,0.38,0.01,1432851,3619487994,18.74,79.51,36.20,-0.32,NULL,'2018-06-20 18:46:57','2018-06-20 18:46:57',1),('MLNT','Melinta Therapeutics Inc.',NULL,'tops',5.20,5.20,5.46,5.20,4.63,'15 minute delayed price','10:50:42 AM',1535136303006,185265,4.60,1535135933000,4.60,0.20,0.01,323779,259047425,-1.21,18.20,4.00,-0.65,NULL,'2018-06-08 18:25:58','2018-08-24 18:54:53',156),('MRNS','Marinus Pharmaceuticals Inc.',NULL,'close',7.40,7.26,7.40,7.01,7.26,'Close','July 27, 2018',1532721600185,497571,7.26,1532721600185,7.40,-0.14,-0.02,788789,294180318,NULL,9.87,1.73,-0.14,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('MRTX','Mirati Therapeutics Inc.',NULL,'tops',49.65,49.20,50.55,48.55,57.15,'IEX real time price','3:42:46 PM',1534869352269,95580,57.30,1534868375600,56.95,1.23,0.00,595042,1849290218,-20.63,65.35,4.75,1.66,NULL,'2018-06-19 19:43:47','2018-08-21 16:36:11',3),('MSFT','Microsoft Corporation',NULL,'close',108.55,108.88,109.10,108.17,107.06,'Close','August 7, 2018',1534968000343,17862269,107.06,1534968000343,105.98,0.75,0.01,27639075,820959345851,30.50,111.15,72.05,0.28,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',56),('NEOS','Neos Therapeutics Inc.',NULL,'close',5.95,5.75,5.95,5.70,5.50,'Close','July 27, 2018',1534881600446,380916,5.50,1534881600446,5.50,-0.25,0.00,244215,163206505,-2.63,13.15,5.30,-0.46,NULL,'2018-07-23 21:12:27','2018-08-21 21:46:17',5),('NVAX','Novavax Inc.',NULL,'tops',1.17,1.19,1.20,1.15,1.31,'Close','August 6, 2018',1535136783190,1627318,1.31,1535135993349,1.31,0.02,0.00,4048507,501195257,-2.30,2.75,0.96,-0.08,NULL,'2018-06-08 18:25:57','2018-08-24 18:55:05',107),('NVTA','Invitae Corporation',NULL,'tops',8.26,8.26,8.26,8.10,12.49,'IEX real time price','11:08:39 AM',1535136090248,1027534,12.49,1535135963090,11.99,-0.15,0.04,751669,862408308,-5.04,12.49,4.35,-0.13,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',86),('OMER','Omeros Corporation',NULL,'close',22.01,20.64,22.04,20.44,20.64,'Close','July 27, 2018',1532721600218,920019,20.64,1532721600218,22.09,-1.45,-0.07,543317,996759429,-19.11,25.20,8.36,0.03,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('ONTX','Onconova Therapeutics Inc.',NULL,'close',0.46,0.45,0.47,0.44,0.45,'Close','July 27, 2018',1532721600335,134754,0.45,1532721600335,0.46,-0.01,-0.03,1070588,35202976,-0.23,2.83,0.33,-0.73,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:46',4),('OPK','Opko Health Inc.',NULL,'close',5.08,4.95,5.10,4.70,4.95,'Close','July 27, 2018',1532721600437,7046394,4.95,1532721600437,4.97,-0.02,0.00,7805468,2769395498,-15.47,7.24,2.66,0.00,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('PETQ','PetIQ Inc.',NULL,'tops',27.58,26.85,27.58,26.62,38.06,'Close','August 6, 2018',1535136256405,612210,38.09,1535135980366,39.94,-0.61,-0.05,413241,977790630,31.98,40.04,17.03,0.22,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',363),('PETX','Aratana Therapeutics Inc.',NULL,'close',4.48,4.38,4.49,4.33,4.38,'Close','July 23, 2018',1532376000226,159452,4.38,1532376000226,4.48,-0.10,-0.02,314446,206563870,-5.15,7.49,3.67,-0.18,NULL,'2018-07-23 21:12:26','2018-07-23 21:12:26',1),('PFNX','Pfenex Inc.',NULL,'tops',5.06,4.90,5.06,4.76,4.66,'Close','August 3, 2018',1534869223698,54932,4.71,1534868213692,4.72,-0.14,-0.01,215504,146286419,-4.56,8.42,2.07,0.74,NULL,'2018-08-05 20:43:44','2018-08-21 16:36:18',2),('PGNX','Progenics Pharmaceuticals Inc.',NULL,'close',7.64,7.66,7.68,7.31,7.91,'Close','July 27, 2018',1534881600195,1138122,7.90,1534881600219,7.67,0.25,0.03,1089969,668000449,-9.65,9.42,5.01,0.24,NULL,'2018-07-22 23:11:40','2018-08-21 21:46:17',15),('PIRS','Pieris Pharmaceuticals Inc.',NULL,'close',5.72,5.28,5.79,5.25,5.28,'Close','July 27, 2018',1532721600375,862151,5.28,1532721600375,5.78,-0.50,-0.09,544401,285016296,-13.54,9.75,4.42,-0.34,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('PRTK','Paratek Pharmaceuticals Inc.',NULL,'close',10.45,10.25,10.45,10.10,10.65,'Close','July 27, 2018',1534881600340,343728,10.65,1534881600340,10.45,-0.20,0.02,540634,337920762,-3.13,29.00,9.38,-0.46,NULL,'2018-07-23 21:12:27','2018-08-21 21:46:17',5),('PTI','Proteostasis Therapeutics Inc.',NULL,'close',2.57,2.40,2.57,2.40,2.40,'Close','July 27, 2018',1532721600455,254665,2.40,1532721600455,2.59,-0.19,-0.07,487805,86594477,-1.16,8.61,1.41,-0.65,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('PTLA','Portola Pharmaceuticals Inc.',NULL,'tops',38.19,37.76,38.53,37.54,28.18,'IEX real time price','10:59:17 AM',1535136814493,2068529,27.96,1535135978966,25.83,0.12,0.09,959343,1862290404,-4.94,64.56,24.63,-0.22,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',99),('PVAC','Penn Virginia Corporation',NULL,'sip',85.08,84.81,85.44,84.65,83.27,'15 minute delayed price','10:51:54 AM',1535135895100,171450,83.27,1535135895100,82.25,0.63,0.01,388758,1253919630,14.98,96.13,32.49,1.13,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',83),('QTNT','Quotient Limited',NULL,'close',7.52,7.60,7.62,7.45,7.60,'Close','August 3, 2018',1533326400161,150210,7.60,1533326400161,7.54,0.06,0.01,512598,379616033,-2.64,9.02,2.78,0.46,NULL,'2018-06-20 16:35:36','2018-08-03 20:17:30',6),('RDHL','Redhill Biopharma Ltd.',NULL,'close',9.83,9.43,9.96,9.20,9.43,'Close','July 27, 2018',1532721600236,151914,9.43,1532721600236,9.78,-0.35,-0.04,163467,201273382,-3.77,11.49,4.30,0.87,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('RDUS','Radius Health Inc.',NULL,'tops',NULL,NULL,NULL,NULL,20.88,NULL,NULL,1534869167228,640328,20.75,1534868453294,19.76,NULL,0.06,NULL,949548380,-3.84,41.16,18.88,NULL,NULL,'2018-08-21 16:36:18','2018-08-21 16:36:18',1),('REPH','Recro Pharma Inc.',NULL,'close',5.43,5.42,5.51,5.31,5.42,'Close','August 3, 2018',1533326400506,39987,5.42,1533326400506,5.42,0.00,0.00,174625,111151279,-2.42,13.05,4.78,-0.40,NULL,'2018-06-19 19:43:47','2018-08-03 20:17:30',7),('RESN','Resonant Inc.',NULL,'sip',4.66,4.65,4.75,4.46,4.67,'15 minute delayed price','12:03:45 PM',1535135945205,90535,4.67,1535135945205,4.67,-0.13,0.00,207690,126006468,-4.25,8.55,3.17,-0.43,NULL,'2018-06-20 16:23:16','2018-08-24 18:54:50',300),('RNN','Rexahn Pharmaceuticals Inc.',NULL,'close',1.37,1.33,1.39,1.23,1.33,'Close','July 27, 2018',1532721600043,221519,1.33,1532722200000,1.37,-0.04,-0.03,133406,42230079,-2.25,3.19,1.25,-0.38,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('RUBI','The Rubicon Project Inc.',NULL,'tops',NULL,NULL,NULL,NULL,3.82,NULL,NULL,1534869285045,102925,3.83,1534868462336,3.90,NULL,-0.02,NULL,193865531,-2.89,4.18,1.48,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('SBBP','Strongbridge Biopharma plc',NULL,'tops',NULL,NULL,NULL,NULL,5.40,NULL,NULL,1534869157600,136429,5.40,1534868459402,5.40,NULL,0.00,NULL,252234259,-2.97,9.25,4.30,NULL,NULL,'2018-08-21 16:36:18','2018-08-21 16:36:18',1),('SCPH','scPharmaceuticals Inc.',NULL,'sip',4.93,4.79,4.93,4.66,5.24,'15 minute delayed price','12:03:30 PM',1535131475212,4978,5.24,1535131475212,5.25,-0.11,0.00,55979,97303074,-2.91,18.17,4.10,-0.63,NULL,'2018-06-14 15:55:34','2018-08-24 18:54:50',235),('SCYX','SCYNEXIS Inc.',NULL,'close',1.74,1.64,1.74,1.62,1.64,'Close','July 27, 2018',1532721600308,416667,1.64,1532721600308,1.71,-0.07,-0.04,910114,76823243,-2.00,2.50,1.05,-0.29,NULL,'2018-07-22 23:15:20','2018-07-27 20:29:48',5),('SELB','Selecta Biosciences Inc.',NULL,'sip',NULL,NULL,NULL,NULL,12.61,NULL,NULL,1534868170495,16625,12.61,1534868170495,12.36,NULL,0.02,NULL,282483056,-4.08,24.02,7.95,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('SGYP','Synergy Pharmaceuticals Inc.',NULL,'close',1.73,1.66,1.73,1.63,1.92,'Close','July 27, 2018',1534881600223,1552679,1.92,1534881600223,1.85,-0.06,0.04,3033019,476138872,-2.87,3.57,1.43,-0.33,NULL,'2018-06-08 18:25:57','2018-08-21 21:46:13',14),('SLNO','Soleno Therapeutics Inc.',NULL,'sip',2.55,2.70,2.74,2.56,2.36,'Close','August 3, 2018',1534866623813,9648,2.36,1534866623813,2.38,0.15,-0.01,420416,50536726,NULL,3.70,1.32,0.53,NULL,'2018-08-05 20:35:35','2018-08-21 16:36:19',2),('SNDX','Syndax Pharmaceuticals Inc.',NULL,'close',6.38,6.33,6.64,6.27,6.33,'Close','August 3, 2018',1533326400184,186718,6.33,1533326400184,6.37,-0.04,-0.01,312371,156387676,-2.13,15.20,6.28,-0.28,NULL,'2018-06-25 15:07:18','2018-08-03 20:17:30',15),('SPHS','Sophiris Bio Inc.',NULL,'close',3.17,3.09,3.18,3.05,3.09,'Close','July 20, 2018',1532116800399,124085,3.09,1532116800399,3.15,-0.06,-0.02,767809,93043463,-7.36,4.05,1.80,0.32,NULL,'2018-07-22 23:11:40','2018-07-22 23:11:40',1),('SRNE','Sorrento Therapeutics Inc.',NULL,'close',5.40,5.00,5.43,4.90,5.55,'Close','August 3, 2018',1534881600304,1106906,5.55,1534881600304,5.25,-0.35,0.06,2289331,647864132,NULL,10.65,1.50,0.09,NULL,'2018-06-19 19:43:47','2018-08-21 21:46:17',18),('SRRA','Sierra Oncology Inc.',NULL,'tops',NULL,NULL,NULL,NULL,1.80,NULL,NULL,1534868444323,229894,1.80,1534868444323,1.87,NULL,-0.04,NULL,133819526,-2.43,4.09,1.45,NULL,NULL,'2018-08-21 16:36:19','2018-08-21 16:36:19',1),('SSI','Stage Stores Inc.',NULL,'tops',2.47,2.45,2.48,2.33,2.34,'IEX real time price','2:46:10 PM',1529693170566,76797,2.34,1529692328361,2.45,-0.11,-0.04,299239,66067403,-2.63,3.25,1.45,0.38,NULL,'2018-06-22 18:54:07','2018-06-22 18:54:07',1),('STNG','Scorpio Tankers Inc.',NULL,'close',2.35,2.23,2.39,2.23,2.23,'Close','July 27, 2018',1532721723515,2027991,2.23,1532721723515,2.36,-0.13,-0.06,3631307,739534882,-4.65,4.18,1.85,-0.30,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('TBPH','Theravance Biopharma Inc.',NULL,'tops',28.44,28.50,29.16,28.44,27.76,'IEX real time price','11:02:49 AM',1535136452272,92520,27.76,1535135964197,27.59,0.67,0.01,255311,1529690566,-5.68,35.90,21.27,0.04,NULL,'2018-06-08 15:08:50','2018-08-24 18:54:54',176),('TCON','TRACON Pharmaceuticals Inc.',NULL,'close',2.60,2.55,2.55,2.50,2.55,'Close','July 27, 2018',1532721600250,110410,2.55,1532721600250,2.55,0.00,0.00,135529,75814894,-2.20,3.95,2.00,-0.27,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('TENX','Tenax Therapeutics Inc.',NULL,'close',6.55,6.33,6.84,6.33,6.33,'Close','July 27, 2018',1532721600194,6754,6.33,1532721600194,6.62,-0.29,-0.04,8826,9201769,NULL,14.00,4.41,-0.30,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('TGTX','TG Therapeutics Inc.',NULL,'close',11.65,11.00,11.65,10.85,11.00,'Close','July 27, 2018',1532721600449,1360373,11.00,1532721600449,11.55,-0.55,-0.05,1158674,858111232,-5.56,17.35,7.25,0.27,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:47',4),('TRVN','Trevena Inc.',NULL,'close',1.48,1.63,1.65,1.48,1.63,'Close','August 3, 2018',1533326400158,2453350,1.63,1533326400225,1.48,0.15,0.10,1365451,118309183,-1.63,2.88,1.34,-0.08,NULL,'2018-06-19 19:43:47','2018-08-03 20:17:30',7),('TRXC','TransEnterix Inc.',NULL,'close',5.59,5.48,5.59,5.21,5.48,'Close','July 27, 2018',1532721600056,6487730,5.48,1532722200000,5.53,-0.05,-0.01,9039044,1117792804,-8.30,6.04,0.60,1.66,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('TSRO','TESARO Inc.',NULL,'close',31.01,26.97,32.48,26.75,26.97,'Close','August 3, 2018',1533326400267,14342339,26.97,1533326400267,35.28,-8.31,-0.24,2010392,1478591494,-2.80,136.45,26.97,-0.77,NULL,'2018-06-25 16:03:55','2018-08-03 20:17:30',2),('TTOO','T2 Biosystems Inc.',NULL,'close',6.22,5.79,6.37,5.76,5.79,'Close','July 27, 2018',1532721600457,661989,5.79,1532721600457,6.20,-0.41,-0.07,780335,249767486,-4.42,9.98,2.53,0.33,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('TXMD','TherapeuticsMD Inc.',NULL,'tops',5.40,5.35,5.40,5.17,6.12,'IEX real time price','12:18:45 PM',1535136665231,3617670,6.08,1535135982933,5.66,-0.16,0.08,2172225,1440724433,-14.23,7.66,4.34,-0.18,NULL,'2018-06-19 20:22:39','2018-08-24 18:54:50',127),('VBLT','Vascular Biogenics Ltd.',NULL,'close',2.00,2.00,2.05,2.00,2.00,'Close','July 27, 2018',1532721600195,49261,2.00,1532721600195,2.00,0.00,0.00,103355,71710922,-4.76,9.05,2.00,-0.72,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4),('VCYT','Veracyte Inc.',NULL,'tops',11.64,11.16,11.72,11.10,11.87,'Close','August 3, 2018',1534868645535,57502,11.89,1534868405699,11.71,-0.39,0.01,434986,409910295,-13.19,12.21,5.23,0.68,NULL,'2018-06-19 20:19:18','2018-08-21 16:36:12',8),('VECO','Veeco Instruments Inc.',NULL,'tops',NULL,NULL,NULL,NULL,11.03,NULL,NULL,1534869025720,302387,11.00,1534868450542,10.95,NULL,0.01,NULL,537923884,52.50,22.35,10.40,NULL,NULL,'2018-08-21 16:36:17','2018-08-21 16:36:17',1),('VIVE','Viveve Medical Inc.',NULL,'close',2.55,2.49,2.55,2.44,2.49,'Close','July 27, 2018',1532721600415,213938,2.49,1532721600415,2.55,-0.06,-0.02,498219,77860776,-1.21,7.33,1.60,-0.53,NULL,'2018-06-19 20:40:37','2018-07-27 20:29:47',57),('VOD','Vodafone Group Plc',NULL,'close',24.54,24.40,24.56,24.36,23.14,'Close','August 7, 2018',1534968000501,3736140,23.14,1534968000501,23.17,0.06,0.00,4365448,61818649928,NULL,32.75,22.47,-0.21,NULL,'2018-06-22 20:15:57','2018-08-22 22:41:58',37),('VSTM','Verastem Inc.',NULL,'tops',7.79,7.79,7.80,7.57,9.23,'IEX real time price','11:08:57 AM',1535136779224,2013370,9.21,1535135974308,9.10,-0.20,0.01,2237118,679256587,-5.27,9.38,2.77,1.40,NULL,'2018-06-08 18:25:59','2018-08-24 18:54:53',115),('VYGR','Voyager Therapeutics Inc.',NULL,'sip',19.38,19.36,19.86,19.01,21.38,'15 minute delayed price','10:54:23 AM',1535135973009,163380,21.38,1535135973009,21.50,0.49,-0.01,606658,693481872,-7.86,31.91,8.50,0.12,NULL,'2018-06-08 18:25:58','2018-08-24 18:54:53',110),('XLRN','Acceleron Pharma Inc.',NULL,'tops',44.37,43.05,44.37,40.85,48.83,'Close','August 3, 2018',1534869132149,118991,48.86,1534868425711,48.08,-0.60,0.02,627436,2246070451,-19.69,50.00,32.46,0.01,NULL,'2018-08-03 20:17:30','2018-08-21 16:36:12',2),('ZIOP','ZIOPHARM Oncology Inc',NULL,'close',2.65,2.48,2.69,2.43,2.48,'Close','July 27, 2018',1532721600397,1462422,2.48,1532721600397,2.63,-0.15,-0.06,1643893,353149361,-4.59,6.67,2.43,-0.46,NULL,'2018-07-23 21:12:27','2018-07-27 20:29:49',4),('ZYNE','Zynerba Pharmaceuticals Inc.',NULL,'close',7.21,7.05,7.41,6.97,7.05,'Close','July 27, 2018',1532721600585,623892,7.05,1532721600585,7.20,-0.15,-0.02,521063,95607680,-2.54,17.33,5.42,-0.47,NULL,'2018-07-23 21:12:26','2018-07-27 20:29:48',4);
 /*!40000 ALTER TABLE `stock_quote` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -803,13 +802,13 @@ DROP TABLE IF EXISTS `stock_tag`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `stock_tag` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
   `reference_type` int(11) NOT NULL,
   `reference_uuid` binary(16) NOT NULL,
-  `reference_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`reference_uuid`)) VIRTUAL,
+  `reference_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`reference_uuid`)) VIRTUAL,
   `customer_tag_uuid` binary(16) DEFAULT NULL,
-  `customer_tag_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_tag_uuid`)) VIRTUAL,
-  `ticker_symbol` varchar(10) NOT NULL,
+  `customer_tag_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_tag_uuid`)) VIRTUAL,
+  `ticker_symbol` varchar(10) CHARACTER SET utf8 NOT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
   `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_date` timestamp NULL DEFAULT NULL,
@@ -817,7 +816,7 @@ CREATE TABLE `stock_tag` (
   UNIQUE KEY `uuid_UNIQUE` (`uuid`),
   KEY `FK_STOCK_TAG_CUSTOMER_TAG_idx` (`customer_tag_uuid`),
   CONSTRAINT `FK_STOCK_TAG_CUSTOMER_TAG` FOREIGN KEY (`customer_tag_uuid`) REFERENCES `customer_tag` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -839,11 +838,11 @@ DROP TABLE IF EXISTS `stock_to_buy`;
 CREATE TABLE `stock_to_buy` (
   `uuid` binary(16) NOT NULL,
   `customer_uuid` binary(16) NOT NULL,
-  `ticker_symbol` varchar(10) NOT NULL,
-  `comments` varchar(4096) DEFAULT NULL,
+  `ticker_symbol` varchar(10) CHARACTER SET utf8 NOT NULL,
+  `comments` varchar(4096) CHARACTER SET utf8 DEFAULT NULL,
   `notes_source_uuid` binary(16) DEFAULT NULL,
   `buy_shares_up_to_price` decimal(10,2) DEFAULT NULL,
-  `completed` varchar(1) NOT NULL DEFAULT 'N',
+  `completed` varchar(1) CHARACTER SET utf8 NOT NULL DEFAULT 'N',
   `stock_price_when_created` decimal(10,2) DEFAULT NULL,
   `buy_after_date` timestamp NULL DEFAULT NULL,
   `version` int(11) NOT NULL DEFAULT '1',
@@ -857,7 +856,7 @@ CREATE TABLE `stock_to_buy` (
   KEY `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE_idx` (`notes_source_uuid`),
   CONSTRAINT `FK_STOCK_TO_BUY_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_STOCK_TO_BUY_STOCK_NOTE_SOURCE` FOREIGN KEY (`notes_source_uuid`) REFERENCES `stock_note_source` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -925,15 +924,15 @@ DROP TABLE IF EXISTS `tradeit_account`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `tradeit_account` (
   `uuid` binary(16) NOT NULL,
-  `uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
-  `name` varchar(20) NOT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `name` varchar(20) CHARACTER SET utf8 NOT NULL,
   `customer_uuid` binary(16) NOT NULL,
-  `customer_uuid_string` varchar(36) GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
-  `user_id` varchar(40) DEFAULT NULL,
-  `user_token` varchar(512) DEFAULT NULL,
-  `brokerage` varchar(15) NOT NULL,
-  `auth_token` varchar(45) DEFAULT NULL,
-  `auth_uuid` varchar(45) DEFAULT NULL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`customer_uuid`)) VIRTUAL,
+  `user_id` varchar(40) CHARACTER SET utf8 DEFAULT NULL,
+  `user_token` varchar(512) CHARACTER SET utf8 DEFAULT NULL,
+  `brokerage` varchar(15) CHARACTER SET utf8 NOT NULL,
+  `auth_token` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
+  `auth_uuid` varchar(45) CHARACTER SET utf8 DEFAULT NULL,
   `auth_timestamp` timestamp NULL DEFAULT NULL,
   `tradeit_account_ind` tinyint(1) NOT NULL DEFAULT '1',
   `token_expired_ind` tinyint(1) NOT NULL DEFAULT '0',
@@ -944,7 +943,7 @@ CREATE TABLE `tradeit_account` (
   UNIQUE KEY `uuid_UNIQUE` (`uuid`),
   KEY `FK_TRADEIT_ACCOUNT_CUSTOMER_UUID_idx` (`customer_uuid`),
   CONSTRAINT `FK_TRADEIT_ACCOUNT_CUSTOMER_UUID` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -978,6 +977,72 @@ SET character_set_client = utf8mb4;
 SET character_set_client = @saved_cs_client;
 
 --
+-- Table structure for table `watch_list`
+--
+
+DROP TABLE IF EXISTS `watch_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `watch_list` (
+  `uuid` binary(16) NOT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `customer_uuid` binary(16) NOT NULL,
+  `customer_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `name` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  `version` int(11) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  UNIQUE KEY `uuid_UNIQUE` (`uuid`) /*!80000 INVISIBLE */,
+  UNIQUE KEY `CUSTOMER_UUID_NAME_UNIQUE` (`customer_uuid`,`name`),
+  CONSTRAINT `FK_WATCH_LIST_CUSTOMER` FOREIGN KEY (`customer_uuid`) REFERENCES `customer` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `watch_list`
+--
+
+LOCK TABLES `watch_list` WRITE;
+/*!40000 ALTER TABLE `watch_list` DISABLE KEYS */;
+/*!40000 ALTER TABLE `watch_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `watch_list_stock`
+--
+
+DROP TABLE IF EXISTS `watch_list_stock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `watch_list_stock` (
+  `uuid` binary(16) NOT NULL,
+  `uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `watch_list_uuid` binary(16) NOT NULL,
+  `watch_list_uuid_string` varchar(36) CHARACTER SET utf8 GENERATED ALWAYS AS (bin_to_uuid(`uuid`)) VIRTUAL,
+  `ticker_symbol` varchar(20) CHARACTER SET utf8 NOT NULL,
+  `notes` varchar(30) CHARACTER SET utf8 DEFAULT NULL,
+  `create_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_date` timestamp NULL DEFAULT NULL,
+  `version` int(11) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  UNIQUE KEY `uuid_UNIQUE` (`uuid`) /*!80000 INVISIBLE */,
+  UNIQUE KEY `WATCH_LIST_CUSTOMER_UUID_TICKER_UNIQUE` (`uuid`,`ticker_symbol`),
+  KEY `FK_WATCH_LIST_STOCK_WATCH_LIST` (`watch_list_uuid`),
+  CONSTRAINT `FK_WATCH_LIST_STOCK_WATCH_LIST` FOREIGN KEY (`watch_list_uuid`) REFERENCES `watch_list` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `watch_list_stock`
+--
+
+LOCK TABLES `watch_list_stock` WRITE;
+/*!40000 ALTER TABLE `watch_list_stock` DISABLE KEYS */;
+/*!40000 ALTER TABLE `watch_list_stock` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Final view structure for view `v_stock_tag`
 --
 
@@ -1004,4 +1069,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-22 15:45:29
+-- Dump completed on 2018-08-24 14:45:06

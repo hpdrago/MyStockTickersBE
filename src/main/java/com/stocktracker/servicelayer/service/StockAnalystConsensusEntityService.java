@@ -23,9 +23,6 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
     @Autowired
     private StockAnalystConsensusRepository stockAnalystConsensusRepository;
 
-    @Autowired
-    private StockQuoteEntityService stockQuoteEntityService;
-
     /**
      * Get the DTO for the stock ticker symbol.
      * @param customerUuid
@@ -114,15 +111,17 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
         return stockAnalystConsensusDTOS;
     }
 
-    @Override
-    public StockAnalystConsensusDTO entityToDTO( final StockAnalystConsensusEntity entity )
+    /**
+     * Convert the entities to DTOs and asynchronously get stock price quotes and stock quotes.
+     * @param entities
+     * @return
+     */
+    public List<StockAnalystConsensusDTO> entitiesToDTOs( final Iterable<StockAnalystConsensusEntity> entities )
     {
-        final StockAnalystConsensusDTO dto = super.entityToDTO( entity );
-        //this.stockQuoteEntityService
-        //    .setStockQuoteInformation( dto );
-        this.stockPriceQuoteService
-            .setStockPriceQuote( dto );
-        return dto;
+        final List<StockAnalystConsensusDTO> dtos = super.entitiesToDTOs( entities );
+        this.stockPriceQuoteService.setStockPriceQuotes( dtos );
+        this.stockQuoteEntityService.setStockQuoteInformation( dtos );
+        return dtos;
     }
 
     @Override
