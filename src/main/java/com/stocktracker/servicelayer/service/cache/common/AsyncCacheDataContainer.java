@@ -1,38 +1,43 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
 
 /**
  * This interface defines the methods for DTO's receiving AsyncCache information.
- * @param <T> Type of cached data.
+ * @param <CD> Type of cached data.
  */
-public interface AsyncCachedDataContainer<K extends Serializable,T>
+public interface AsyncCacheDataContainer<CK,CD,ASK>
 {
     /**
      * Get the key to the cache.
      * @return
      */
-    K getCacheKey();
+    ASK getASyncKey();
+
+    /**
+     * Get the key to the cache.
+     * @return
+     */
+    CK getCacheKey();
 
     /**
      * Set the cache key.
      * @param cacheKey
      */
-    void setCacheKey( K cacheKey );
+    void setCacheKey( CK cacheKey );
 
     /**
      * This method is called to set the cached {@code cachedData}.
      * @param cachedData
      */
-    void setCachedData( final T cachedData );
+    void setCachedData( final CD cachedData );
 
     /**
      * Get the cached data.
      * @return
      */
-    T getCachedData();
+    CD getCachedData();
 
     /**
      * This method is called to set the state of the {@code StockQuoteDTO} received from the stock quote cache.

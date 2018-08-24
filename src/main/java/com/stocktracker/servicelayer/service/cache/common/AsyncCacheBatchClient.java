@@ -1,8 +1,10 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
-import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState.CURRENT;
@@ -25,12 +27,13 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * @param  <C> Cache type.
  * @param <DR> Data Receiver.  The type that will receive the cached data
  */
-public abstract class AsyncCacheBatchClient<CK extends Serializable,
+public abstract class AsyncCacheBatchClient<CK,
                                             CD extends AsyncCacheData,
                                            ASK,
                                            ASD,
                                             CE extends AsyncCacheEntry<CK,CD,ASK,ASD>,
                                             DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
+                                           CDC,
                                             RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                             RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                             RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
@@ -38,13 +41,151 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
                                              C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>>
     extends AsyncCacheClient<CK,CD,ASK,ASD,CE,DR,X,C>
 {
+
+    /**
+     * Set the stock price quotes for the list of dto containers.
+     * @param containers
+     */
+    public void updateContainers( final List<? extends CDC> containers )
+    {
+        final String methodName = "getCachedData";
+        Objects.requireNonNull( containers, "containers argument cannot be null" );
+        logMethodBegin( methodName, containers.size() + " containers" );
+        /*
+         * Create the stock price quote data receivers
+         */
+        final List<DR> receivers = this.createReceivers( containers );
+        /*
+         * Search the cache for existing cached data.
+         */
+        final Map<CK,DR> receiverMap = this.searchCache( receivers );
+        /*
+         * Make asynchronous requests for the receivers where there was no cached data found or the cached data was
+         * not current.
+         */
+        this.makeASyncRequests( receivers );
+        /*
+         * Update the containers with the cache information.
+         */
+        this.updateContainers( containers, receiverMap );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Converts the list of containers into a list of receivers that can receive the cache information from the cache
+     * and then update the receivers.
+     * @param containers
+     * @return
+     */
+    private List<DR> createReceivers( final List<? extends CDC> containers )
+    {
+        return containers.stream()
+                         .map( (CDC container) ->
+                               {
+                                   final DR receiver = this.createDataReceiver();
+                                   receiver.setAsyncKey( this.getASyncKey( container) );
+                                   receiver.setCacheKey( this.getCacheKey( container ) );
+                                   return receiver;
+                               })
+                         .collect( Collectors.toList() );
+    }
+
+    /**
+     * Update the containers with the information from the cache.
+     * @param containers
+     * @param receiverMap
+     */
+    protected void updateContainers( final List<? extends CDC> containers,
+                                     final Map<CK, DR> receiverMap )
+    {
+        final String methodName = "updateContainers";
+        containers.forEach( container ->
+                            {
+                                final DR receiver = receiverMap.get( this.getCacheKey( container ));
+                                if ( receiver == null )
+                                {
+                                    logError( methodName, "Cache failed to provide results for container: " +
+                                                          container );
+                                }
+                                else
+                                {
+                                    this.setCacheKey( container, receiver.getCacheKey() );
+                                    this.setCachedData( container, receiver.getCachedData() );
+                                    this.setCacheError( container, receiver.getCacheError() );
+                                    this.setCacheState( container, receiver.getCacheState() );
+                                }
+                            } );
+    }
+
+    /**
+     * For each receiver, searches the cache for existing entries.
+     * @param receivers
+     * @return
+     */
+    protected Map<CK,DR> searchCache( final List<DR> receivers )
+    {
+        //final String methodName = "searchCache";
+        //logMethodBegin( methodName, receivers );
+        final Map<CK,DR> receiverMap = new HashMap<>();
+        /*
+         * Need to be be aware that there could be multiple receivers with the same cache key so we need to insure
+         * that we just collection the unique keys here.
+         */
+        receivers.forEach( (DR receiver) ->
+                           {
+                               if ( !receiverMap.containsKey( receiver.getCacheKey() ))
+                               {
+                                    receiverMap.put( receiver.getCacheKey(), receiver );
+                               }
+                           });
+
+        /*
+         * Search the cache for each receiver.
+         */
+        receivers.forEach( this::searchCache );
+        return receiverMap;
+    }
+
+    /**
+     * Sets the cached data (if present) and the cache data state on the {@code receiver}.
+     * @param receiver
+     */
+    protected void searchCache( final DR receiver )
+    {
+        Objects.requireNonNull( receiver, "receiver argument cannot be null" );
+        final String methodName = "searchCache";
+        //logMethodBegin( methodName );
+        CE cacheEntry = this.getCache()
+                            .getCacheEntry( receiver.getCacheKey() );
+        if ( cacheEntry == null || cacheEntry.isStale() || cacheEntry.getCacheState() == null )
+        {
+            logDebug( methodName, "No cache entry found for " + receiver.getCacheKey() );
+            receiver.setCacheState( STALE );
+        }
+        else
+        {
+            logDebug( methodName, "Cache entry for {0} found with cache state: {1}",
+                      receiver.getCacheKey(), cacheEntry.getCacheState() );
+            try
+            {
+                updateReceiverWithCacheInformation( cacheEntry, receiver );
+            }
+            catch( Exception e )
+            {
+                receiver.setCacheError( e.getMessage() );
+                receiver.setCacheState( FAILURE );
+                logError( methodName, " error updating receiver with cache key: " + receiver.getCacheKey(), e );
+            }
+        }
+        //logMethodEnd( methodName );
+    }
+
     /**
      * Updates the {@code receivers} with the any current information in the cache and performs an asynchronous fetch
      * for information that is not in the cache or for information that is stale.
      * @param receivers
      */
-    @Override
-    public void asynchronousGetCachedData( final List<? extends DR> receivers )
+    protected void makeASyncRequests( final List<? extends DR> receivers )
     {
         final String methodName = "asynchronousGetCachedData";
         Objects.requireNonNull( receivers, "receivers argument cannot be null" );
@@ -55,7 +196,7 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
          */
         for ( final DR receiver: receivers )
         {
-            this.updateDataReceiver( receiver );
+            this.searchCache( receiver );
         }
         /*
          * Need to go through the updated receivers to find any that need to be fetched (are stale)
@@ -83,48 +224,6 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
                 .asynchronousGet( requestKeys );
         }
         logMethodEnd( methodName );
-    }
-
-    /**
-     * Subclasses must create a new instance of the request key that contains the cache key and the async key.
-     * @param cacheKey
-     * @param asyncKey
-     * @return
-     */
-    protected abstract RK createRequestKey( final CK cacheKey, final ASK asyncKey );
-
-    /**
-     * Sets the cached data (if present) and the cache data state on the {@code receiver}.
-     * @param receiver
-     */
-    protected void updateDataReceiver( final DR receiver )
-    {
-        Objects.requireNonNull( receiver, "receiver argument cannot be null" );
-        final String methodName = "updateDataReceiver";
-        //logMethodBegin( methodName );
-        CE cacheEntry = this.getCache()
-                            .getCacheEntry( receiver.getCacheKey() );
-        if ( cacheEntry == null || cacheEntry.isStale() || cacheEntry.getCacheState() == null )
-        {
-            logDebug( methodName, "No cache entry found for " + receiver.getCacheKey() );
-            receiver.setCacheState( STALE );
-        }
-        else
-        {
-            logDebug( methodName, "Cache entry for {0} found with cache state: {1}",
-                      receiver.getCacheKey(), cacheEntry.getCacheState() );
-            try
-            {
-                updateReceiverWithCacheInformation( cacheEntry, receiver );
-            }
-            catch( Exception e )
-            {
-                receiver.setCacheError( e.getMessage() );
-                receiver.setCacheState( FAILURE );
-                logError( methodName, " error updating receiver with cache key: " + receiver.getCacheKey(), e );
-            }
-        }
-        //logMethodEnd( methodName );
     }
 
     /**
@@ -164,4 +263,61 @@ public abstract class AsyncCacheBatchClient<CK extends Serializable,
         }
         logMethodEnd( methodName, receiver );
     }
+
+    /**
+     * Subclasses must override this method to create a new async data receiver.
+     * @return
+     */
+    public abstract DR createDataReceiver();
+
+    /**
+     * Subclasses must create a new instance of the request key that contains the cache key and the async key.
+     * @param cacheKey
+     * @param asyncKey
+     * @return
+     */
+    protected abstract RK createRequestKey( final CK cacheKey, final ASK asyncKey );
+
+    /**
+     * Extracts the async key from the container.
+     * @param container
+     * @return
+     */
+    protected abstract ASK getASyncKey( final CDC container );
+
+    /**
+     * Extracts the cache key from the container.
+     * @param container
+     * @return
+     */
+    protected abstract CK getCacheKey( final CDC container );
+
+    /**
+     * Sets the cache state on the container.
+     * @param container
+     * @param cacheState
+     */
+    protected abstract void setCacheState( final CDC container, final AsyncCacheEntryState cacheState );
+
+    /**
+     * Sets the cache error on the container.
+     * @param container
+     * @param cacheError
+     */
+    protected abstract void setCacheError( final CDC container, final String cacheError );
+
+    /**
+     * Sets the cache data on the container.
+     * @param container
+     * @param cachedData
+     */
+    protected abstract void setCachedData( final CDC container, final CD cachedData );
+
+    /**
+     * Sets the cache key on the container.
+     * @param container
+     * @param cacheKey
+     */
+    protected abstract void setCacheKey( final CDC container, final CK cacheKey );
+
 }

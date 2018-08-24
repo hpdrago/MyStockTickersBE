@@ -23,7 +23,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  * @param <C> Cache type.
  * @param <DR> Data Receiver.  The type that will receive the cached data
  */
-public abstract class AsyncCacheClient<CK extends Serializable,
+public abstract class AsyncCacheClient<CK,
                                        CD extends AsyncCacheData,
                                       ASK,
                                       ASD,
@@ -38,8 +38,8 @@ public abstract class AsyncCacheClient<CK extends Serializable,
      * Set the cached data on multiple receivers.  See {@code asynchronousGetCachedData} for details.
      * @param receivers
      */
+    /*
     public void asynchronousGetCachedData( final List<? extends DR> receivers )
-        throws AsyncCacheDataRequestException
     {
         final String methodName = "asynchronousGetCachedData";
         logMethodBegin( methodName, receivers.size() );
@@ -49,6 +49,7 @@ public abstract class AsyncCacheClient<CK extends Serializable,
         }
         logMethodEnd( methodName );
     }
+    */
 
     /**
      * This method is called {@code asynchronousGetCachedData} because the receiver is updated (set) with the cached

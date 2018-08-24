@@ -39,8 +39,10 @@ public abstract class AsyncCacheEntry<CK,
     /**
      * This async process is used to synchronize the entire background processing of fetching the external data and
      * whatever additional processing the cache needs to perform before sending the results to the requester.
+     * This is the processor that the client is waiting on.
      */
     private AsyncProcessor<CD> cachedDataSyncProcessor;
+
     /**
      * This async processor is used to synchronize with the retrieval of the async data.  It is only used internally
      * within the cache itself to synchronize the retrieving of the background fetching of of the async data.
@@ -235,11 +237,6 @@ public abstract class AsyncCacheEntry<CK,
         this.asyncKey = asyncKey;
     }
 
-    public void setCachedDataSyncProcessor( final AsyncProcessor<CD> cachedDataSyncProcessor )
-    {
-        this.cachedDataSyncProcessor = cachedDataSyncProcessor;
-    }
-
     /**
      * Get the Asynchronous processor
      * @return
@@ -247,11 +244,6 @@ public abstract class AsyncCacheEntry<CK,
     public AsyncProcessor<ASD> getASyncDataSyncProcessor()
     {
         return asyncDataSyncProcessor;
-    }
-
-    public void setASyncDataSyncProcessor( final AsyncProcessor<ASD> asyncDataSyncProcessor )
-    {
-        this.asyncDataSyncProcessor = asyncDataSyncProcessor;
     }
 
     public ASK getAsyncKey()

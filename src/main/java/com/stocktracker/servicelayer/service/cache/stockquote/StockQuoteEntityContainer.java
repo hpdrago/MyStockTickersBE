@@ -13,11 +13,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class StockQuoteEntityContainer extends BaseAsyncCacheDataContainer<String,StockQuoteEntity>
+public class StockQuoteEntityContainer extends BaseAsyncCacheDataContainer<String,StockQuoteEntity,String>
                                        implements TickerSymbolContainer
 {
     private String tickerSymbol;
     private StockQuoteEntity stockQuoteEntity;
+
+    @Override
+    public String getASyncKey()
+    {
+        return this.tickerSymbol;
+    }
 
     @Override
     public String getCacheKey()

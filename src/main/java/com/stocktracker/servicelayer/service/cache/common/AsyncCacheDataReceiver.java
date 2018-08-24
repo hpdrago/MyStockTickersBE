@@ -15,7 +15,7 @@ import java.sql.Timestamp;
  * <ASK> The async key type used to fetch the async data.
  * <CD> The cached data type.
  */
-public interface AsyncCacheDataReceiver<CK extends Serializable,
+public interface AsyncCacheDataReceiver<CK,
                                         CD,
                                        ASK>
 {

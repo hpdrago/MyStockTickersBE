@@ -15,10 +15,11 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntry
  * @param <CD> Cached data type.
  * @param <ASK> The key to the async key.
  * @param <ASD> The async data.
- * @param <CE> Cache Entry Type.
+ * @param <CE> Cache Entry type.
+ * @param <DR> Data receiver type.
  * @param <RQ> Cache request type.
  * @param <RS> Cache response type.
- * @param  <X> Cache Executor Type
+ * @param  <X> Cache executor type
  * @param  <C> Cache type.
  * @param <DR> Data Receiver.  The type that will receive the cached data
  * @param  <S> The entity service.
@@ -29,13 +30,14 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
                                               ASD,
                                                CE extends AsyncCacheEntry<CK,CD,ASK,ASD>,
                                                DR extends AsyncCacheDataReceiver<CK,CD,ASK>,
+                                              CDC,
                                                RK extends AsyncBatchCacheRequestKey<CK,ASK>,
                                                RQ extends AsyncBatchCacheRequest<CK,CD,ASK>,
                                                RS extends AsyncBatchCacheResponse<CK,ASK,ASD>,
                                                 X extends AsyncCacheBatchServiceExecutor<CK,CD,ASK,ASD,RQ,RS>,
                                                 C extends AsyncBatchCache<CK,CD,ASK,ASD,CE,RK,RQ,RS,X>,
                                                 S extends VersionedEntityService<CK,CD,?,?,?>>
-    extends AsyncCacheBatchClient<CK,CD,ASK,ASD,CE,DR,RK,RQ,RS,X,C>
+    extends AsyncCacheBatchClient<CK,CD,ASK,ASD,CE,DR,CDC,RK,RQ,RS,X,C>
 {
     /**
      * Working with the cache, and the entity service, attempts to retrieve the data from the database.  If it is not
@@ -50,7 +52,7 @@ public abstract class AsyncCacheDBEntityClient<CK extends Serializable,
         logMethodBegin( methodName, receiver );
         Objects.requireNonNull( receiver, "receiver argument cannon be null" );
         Objects.requireNonNull( receiver.getCacheKey(), "receiver's entity key cannot be null" );
-        this.updateDataReceiver( receiver );
+        this.searchCache( receiver );
         /*
          * Check to see if the entity is STALE and needs to be refreshed.
          */

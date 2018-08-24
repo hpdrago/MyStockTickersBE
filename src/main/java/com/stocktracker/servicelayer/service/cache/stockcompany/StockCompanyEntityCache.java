@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 
+import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.KEEP;
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 
 /**
@@ -60,7 +61,7 @@ public class StockCompanyEntityCache extends AsyncBatchCache<String,
     @Override
     protected AsyncCacheStrategy getCacheStrategy()
     {
-        return REMOVE;
+        return KEEP;
     }
 
     @Override

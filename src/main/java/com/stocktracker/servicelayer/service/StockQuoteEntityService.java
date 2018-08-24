@@ -2,7 +2,6 @@ package com.stocktracker.servicelayer.service;
 
 import com.stocktracker.repositorylayer.entity.StockQuoteEntity;
 import com.stocktracker.repositorylayer.repository.StockQuoteRepository;
-import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteCacheBatchProcessor;
 import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockquote.StockQuoteEntityCacheDataReceiver;
 import com.stocktracker.weblayer.dto.StockQuoteDTO;
@@ -27,8 +26,6 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     private StockQuoteRepository stockQuoteRepository;
     @Autowired
     private StockQuoteEntityCacheClient stockQuoteEntityCacheClient;
-    @Autowired
-    private StockQuoteCacheBatchProcessor stockQuoteCacheBatchProcessor;
 
     /**
      * Gets the stock quote information for all of the DTOs in {@code containers}.  The quotes are fetched as a batch
@@ -39,23 +36,8 @@ public class StockQuoteEntityService extends VersionedEntityService<String,
     {
         final String methodName = "setStockQuoteInformation";
         logMethodBegin( methodName, containers.size() );
-        final List<StockQuoteEntityCacheDataReceiver> receivers =
-            containers.stream()
-                      .map( (StockQuoteDTOContainer container) ->
-                            {
-                                StockQuoteEntityCacheDataReceiver receiver = this.context
-                                                                                 .getBean( StockQuoteEntityCacheDataReceiver.class );
-                                receiver.setAsyncKey( container.getTickerSymbol() );
-                                receiver.setCacheKey( container.getTickerSymbol() );
-                                StockQuoteDTO stockQuoteDTO = this.context
-                                                                  .getBean( StockQuoteDTO.class );
-                                container.setStockQuoteDTO( stockQuoteDTO );
-                                stockQuoteDTO.setCacheKey( container.getTickerSymbol() );
-                                return receiver;
-                            })
-                      .collect(Collectors.toList());
-        this.stockQuoteCacheBatchProcessor
-            .getCachedData( receivers );
+        this.stockQuoteEntityCacheClient
+            .updateContainers( containers );
         logMethodEnd( methodName );
     }
 

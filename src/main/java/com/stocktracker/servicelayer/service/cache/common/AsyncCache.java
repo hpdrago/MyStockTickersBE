@@ -36,7 +36,7 @@ import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetch
  * @param <X> - The interface definition of the class that will be performing synchronous and asynchronous work to
  *              get the information of type CD.
  */
-public abstract class AsyncCache<CK extends Serializable,
+public abstract class AsyncCache<CK,
                                  CD,
                                 ASK,
                                 ASD,
@@ -109,7 +109,7 @@ public abstract class AsyncCache<CK extends Serializable,
                     case FETCHING:
                         logTrace( methodName, "{0} already fetching, blocking and waiting now...", cacheKey );
                         returnCacheEntry = cacheEntry;
-                        cacheEntry.getCachedDataSyncProcessor()
+                        cacheEntry.getASyncDataSyncProcessor()
                                   .subscribe();
                         break;
 
@@ -288,7 +288,10 @@ public abstract class AsyncCache<CK extends Serializable,
      * @param cacheEntry
      * @param throwable
      */
-    private void handleASyncFetchError( final CK cacheKey, final ASK asyncKey, final E cacheEntry, final Throwable throwable )
+    private void handleASyncFetchError( final CK cacheKey,
+                                        final ASK asyncKey,
+                                        final E cacheEntry,
+                                        final Throwable throwable )
     {
         final String methodName = "handleAsyncFetchError";
         logMethodBegin( methodName, cacheKey, asyncKey );
@@ -302,10 +305,11 @@ public abstract class AsyncCache<CK extends Serializable,
         }
         else
         {
+            logError( methodName, String.format( "subscribe.onError for search Key: {0}", cacheKey ), throwable );
             cacheEntry.setFetchThrowable( throwable );
             cacheEntry.setCacheState( FAILURE );
-            logError( methodName, String.format( "subscribe.onError for search Key: {0}", cacheKey ), throwable );
-            cacheEntry.getASyncDataSyncProcessor().onError( throwable );
+            cacheEntry.getCachedDataSyncProcessor()
+                      .onError( throwable );
         }
         cacheEntry.setFetchState( NOT_FETCHING );
         logMethodEnd( methodName, cacheEntry );
@@ -318,17 +322,33 @@ public abstract class AsyncCache<CK extends Serializable,
      * @param asyncData
      * @param cacheEntry
      */
-    private void handleASyncFetchSuccess( final CK cacheKey, final ASK asyncKey, final ASD asyncData,  final E cacheEntry )
+    private void handleASyncFetchSuccess( final CK cacheKey,
+                                          final ASK asyncKey,
+                                          final ASD asyncData,
+                                          final E cacheEntry )
         throws AsyncCacheDataRequestException
     {
         final String methodName = "handleASyncFetchSuccess";
         logMethodBegin( methodName, cacheEntry, asyncKey, asyncData );
         logTrace( methodName, "subscribe.onNext fetch of key {0} value {1}",
                   cacheKey, asyncData );
+        /*
+         * Convert the async data to the cached data -- they may be different data types.
+         */
         final CD cacheData = this.convertAsyncData( cacheKey, asyncKey, asyncData );
+        /*
+         * Update the cache entry to be current and set the cache data.
+         */
         cacheEntry.setCachedData( cacheKey, asyncKey, cacheData );
         cacheEntry.setFetchState( NOT_FETCHING );
         cacheEntry.setCacheState( CURRENT );
+        /*
+         * Notify any waiters that the request has been completed.
+         */
+        cacheEntry.getCachedDataSyncProcessor()
+                  .onNext( cacheData );
+        cacheEntry.getCachedDataSyncProcessor()
+                  .onComplete();
         logMethodEnd( methodName, cacheEntry );
     }
 

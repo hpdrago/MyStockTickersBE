@@ -5,7 +5,6 @@ import com.stocktracker.servicelayer.service.BaseService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheFetchMode;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCache;
-import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheBatchProcessor;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheDataReceiver;
 import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuoteCacheEntry;
@@ -19,7 +18,6 @@ import org.springframework.util.Assert;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This class provides services for StockQuote and StockQuoteDTO class.
@@ -31,8 +29,6 @@ public class StockPriceQuoteService extends BaseService
     private StockPriceQuoteCache stockPriceQuoteCache;
     @Autowired
     private StockPriceQuoteCacheClient stockPriceQuoteCacheClient;
-    @Autowired
-    private StockPriceQuoteCacheBatchProcessor stockPriceQuoteCacheBatchProcessor;
 
     /**
      * Set the stock price quotes for the list of dto containers.
@@ -43,36 +39,21 @@ public class StockPriceQuoteService extends BaseService
         final String methodName = "setStockPriceQuotes";
         Objects.requireNonNull( containers, "containers argument cannot be null" );
         logMethodBegin( methodName, containers.size() + " containers" );
-        /*
-         * Create the stock price quote data receivers
-         */
-        final List<StockPriceQuoteCacheDataReceiver> receivers =
-            containers.stream()
-                      .map( (StockPriceQuoteDTOContainer container) ->
-                            {
-                                StockPriceQuoteCacheDataReceiver receiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
-                                receiver.setAsyncKey( container.getTickerSymbol() );
-                                receiver.setCacheKey( container.getTickerSymbol() );
-                                StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
-                                container.setStockPriceQuote( stockPriceQuoteDTO );
-                                stockPriceQuoteDTO.setCacheKey( container.getTickerSymbol() );
-                                return receiver;
-                           })
-                      .collect( Collectors.toList() );
-        this.stockPriceQuoteCacheBatchProcessor
-            .getCachedData( receivers );
+        this.stockPriceQuoteCacheClient
+            .updateContainers( containers );
         logMethodEnd( methodName );
     }
 
     /**
      * Set the stock price quote on all container entries.
      * @param containers
-     * @param asyncCacheFetchMode
      */
-    public void setStockPriceQuote( final List<? extends StockPriceQuoteDTOContainer> containers,
-                                    final AsyncCacheFetchMode asyncCacheFetchMode )
+    public void setStockPriceQuote( final List<? extends StockPriceQuoteDTOContainer> containers )
     {
-        containers.forEach( stockPriceQuoteContainer -> setStockPriceQuote( stockPriceQuoteContainer, asyncCacheFetchMode ) );
+        final String methodName = "setStockPriceQuote - list";
+        logMethodBegin( methodName, "size " + containers.size() );
+        containers.forEach( stockPriceQuoteContainer -> setStockPriceQuote( stockPriceQuoteContainer ));
+        logMethodEnd( methodName );
     }
 
     /**
@@ -80,13 +61,11 @@ public class StockPriceQuoteService extends BaseService
      * last price change, and company name.
      * This information that was retrieved from the cache, is also saved back to the database stock table.
      * @param container
-     * @param asyncCacheFetchMode
      */
-    public void setStockPriceQuote( final StockPriceQuoteDTOContainer container,
-                                    final AsyncCacheFetchMode asyncCacheFetchMode )
+    public void setStockPriceQuote( final StockPriceQuoteDTOContainer container )
     {
         final String methodName = "setStockPriceQuote";
-        logMethodBegin( methodName, container.getTickerSymbol(), asyncCacheFetchMode );
+        logMethodBegin( methodName, container.getTickerSymbol() );
         Objects.requireNonNull( container, "container cannot be null" );
         Objects.requireNonNull( container.getTickerSymbol(), "container.getTickerSymbol() returns null" );
         final StockPriceQuoteCacheDataReceiver stockPriceQuoteCacheDataReceiver = this.context.getBean( StockPriceQuoteCacheDataReceiver.class );
@@ -106,6 +85,8 @@ public class StockPriceQuoteService extends BaseService
     private void setStockPriceQuote( final StockPriceQuoteDTOContainer container,
                                      final StockPriceQuoteCacheDataReceiver stockPriceQuoteCacheDataReceiver )
     {
+        final String methodName = "setStockPriceQuote";
+        logMethodBegin( methodName, container, stockPriceQuoteCacheDataReceiver );
         final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
         if ( stockPriceQuoteCacheDataReceiver.getCachedData() != null )
         {
@@ -114,6 +95,7 @@ public class StockPriceQuoteService extends BaseService
             stockPriceQuoteDTO.setExpirationTime( stockPriceQuoteCacheDataReceiver.getExpirationTime() );
         }
         stockPriceQuoteDTO.setCacheState( stockPriceQuoteCacheDataReceiver.getCacheState() );
+        logMethodEnd( methodName, stockPriceQuoteDTO );
         container.setStockPriceQuote( stockPriceQuoteDTO );
     }
 
@@ -148,7 +130,7 @@ public class StockPriceQuoteService extends BaseService
         logMethodBegin( methodName, tickerSymbol );
         Objects.requireNonNull( tickerSymbol, "tickerSymbol cannot be null" );
         final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry = this.stockPriceQuoteCache
-            .synchronousGet( tickerSymbol, tickerSymbol );
+                                                                        .synchronousGet( tickerSymbol, tickerSymbol );
         BigDecimal stockPrice = stockPriceQuoteCacheEntry.getCachedData().getLastPrice();
         logMethodBegin( methodName, stockPrice );
         return stockPrice;
@@ -199,6 +181,8 @@ public class StockPriceQuoteService extends BaseService
             .synchronousGetCachedData( stockPriceQuoteCacheDataReceiver );
         final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
         BeanUtils.copyProperties( stockPriceQuoteCacheDataReceiver.getCachedData(), stockPriceQuoteDTO );
+        stockPriceQuoteDTO.setCacheError( stockPriceQuoteCacheDataReceiver.getCacheError() );
+        stockPriceQuoteDTO.setCacheState( stockPriceQuoteCacheDataReceiver.getCacheState() );
         logMethodEnd( methodName, stockPriceQuoteDTO );
         return stockPriceQuoteDTO;
     }
@@ -212,6 +196,8 @@ public class StockPriceQuoteService extends BaseService
     private StockPriceQuoteDTO handleStockPriceQuoteCacheEntry( final String tickerSymbol,
                                                                 final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry )
     {
+        final String methodName = "handleStockPriceQuoteCacheEntry";
+        logMethodBegin( methodName, tickerSymbol, stockPriceQuoteCacheEntry );
         StockPriceQuoteDTO stockPriceQuoteDTO = null;
         switch ( stockPriceQuoteCacheEntry.getCacheState() )
         {
@@ -226,6 +212,7 @@ public class StockPriceQuoteService extends BaseService
             case STALE:
                 stockPriceQuoteDTO = stockPriceCacheEntryToStockPriceDTO( tickerSymbol, stockPriceQuoteCacheEntry );
         }
+        logMethodEnd( methodName, stockPriceQuoteDTO );
         return stockPriceQuoteDTO;
     }
 
@@ -238,6 +225,8 @@ public class StockPriceQuoteService extends BaseService
     private StockPriceQuoteDTO stockPriceCacheEntryToStockPriceDTO( final String tickerSymbol,
                                                                     final StockPriceQuoteCacheEntry stockPriceQuoteCacheEntry )
     {
+        final String methodName = "stockPriceCacheEntryToStockPriceDTO";
+        logMethodBegin( methodName, tickerSymbol, stockPriceQuoteCacheEntry );
         final StockPriceQuoteDTO stockPriceQuoteDTO = this.context.getBean( StockPriceQuoteDTO.class );
         stockPriceQuoteDTO.setTickerSymbol( tickerSymbol );
         if ( stockPriceQuoteCacheEntry.getCachedData() != null )

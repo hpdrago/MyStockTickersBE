@@ -18,7 +18,7 @@ import java.util.List;
  * @param <X>  - The interface definition of the class that will be performing synchronous and asynchronous work to
  *              get the information of type ASD.
  */
-public abstract class AsyncBatchCache< CK extends Serializable,
+public abstract class AsyncBatchCache< CK,
                                        CD,
                                        ASK,
                                        ASD,

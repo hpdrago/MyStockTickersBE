@@ -3,6 +3,7 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.StockCompanyEntityService;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDBEntityClient;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
@@ -18,6 +19,7 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
                                                                             Company,
                                                                             StockCompanyEntityCacheEntry,
                                                                             StockCompanyEntityCacheDataReceiver,
+                                                                            StockCompanyEntityContainer,
                                                                             StockCompanyEntityCacheRequestKey,
                                                                             StockCompanyEntityCacheRequest,
                                                                             StockCompanyEntityCacheResponse,
@@ -54,8 +56,55 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
     }
 
     @Override
+    public StockCompanyEntityCacheDataReceiver createDataReceiver()
+    {
+        return this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
+    }
+
+    @Override
     protected StockCompanyEntityCacheRequestKey createRequestKey( final String cacheKey, final String asyncKey )
     {
         return new StockCompanyEntityCacheRequestKey( cacheKey, asyncKey );
     }
+
+    @Override
+    protected String getASyncKey( final StockCompanyEntityContainer container )
+    {
+        return container.getASyncKey();
+    }
+
+    @Override
+    protected String getCacheKey( final StockCompanyEntityContainer container )
+    {
+        return container.getCacheKey();
+    }
+
+    @Override
+    protected void setCacheState( final StockCompanyEntityContainer container, final AsyncCacheEntryState cacheState )
+    {
+        container.setCacheState( cacheState );
+    }
+
+    @Override
+    protected void setCacheError( final StockCompanyEntityContainer container, final String cacheError )
+    {
+        container.setCacheError( cacheError );
+    }
+
+    @Override
+    protected void setCachedData( final StockCompanyEntityContainer container, final StockCompanyEntity cachedData )
+    {
+        if ( cachedData != null )
+        {
+            container.setCachedData( cachedData );
+        }
+    }
+
+    @Override
+    protected void setCacheKey( final StockCompanyEntityContainer container, final String cacheKey )
+    {
+
+    }
+
+
 }

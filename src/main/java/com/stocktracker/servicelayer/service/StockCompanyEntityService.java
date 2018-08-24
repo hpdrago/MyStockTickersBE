@@ -38,66 +38,6 @@ public class StockCompanyEntityService extends VersionedEntityService<String,
     private StockCompanyEntityCacheClient stockCompanyEntityCacheClient;
 
     /**
-     * Set the stock company information for each container.
-     * @param containers
-     */
-    public void setCompanyInformation( final List<StockCompanyDTOContainer> containers )
-    {
-        final String methodName = "setStockCompanyInformation";
-        logMethodBegin( methodName, "containers.size=" + containers.size() );
-        final List<StockCompanyEntityCacheDataReceiver > receivers = new ArrayList<>();
-        for ( final StockCompanyDTOContainer container: containers )
-        {
-            final StockCompanyEntityCacheDataReceiver receiver = this.context
-                                                                     .getBean( StockCompanyEntityCacheDataReceiver.class );
-            receiver.setCacheKey( container.getTickerSymbol() );
-            receiver.setAsyncKey( container.getTickerSymbol() );
-            receivers.add( receiver );
-        }
-        this.stockCompanyEntityCacheClient
-            .asynchronousGetCachedData( receivers );
-        /*
-         * Mark the DTO's as quote is requested.
-         */
-        //containers.forEach( container -> container.setStockCompanyRequested( true ) );
-        logMethodBegin( methodName );
-    }
-
-    /**
-     * Updates the stock company information in {@code container}. It works with the {@code StockCompanyCache} to
-     * retrieve the stock company asynchronously if needed.
-     * @param container The container to set the value.
-     */
-    public void setCompanyInformation( final StockCompanyDTOContainer container )
-        throws AsyncCacheDataRequestException
-    {
-        final String methodName = "setStockCompanyInformation";
-        logMethodBegin( methodName, container.getTickerSymbol() );
-        /*
-         * Create the cached data receiver.
-         */
-        final StockCompanyEntityCacheDataReceiver receiver = this.context.getBean( StockCompanyEntityCacheDataReceiver.class );
-        receiver.setCacheKey( container.getTickerSymbol() );
-        receiver.setAsyncKey( container.getTickerSymbol() );
-        /*
-         * Get the cached data or make an asynchronous request for the data.
-         */
-        this.stockCompanyEntityCacheClient
-            .asynchronousGetCachedData( receiver );
-        /*
-         * Set the cache data and status results.
-         */
-        if ( receiver.getCachedData() != null )
-        {
-            final StockCompanyDTO stockCompanyDTO = this.entityToDTO( receiver.getCachedData() );
-            container.setStockCompanyDTO( stockCompanyDTO );
-        }
-        container.setStockCompanyCacheEntryState( receiver.getCacheState() );
-        container.setStockCompanyCacheError( receiver.getCacheError() );
-        logMethodEnd( methodName, container );
-    }
-
-    /**
      * Checks the stock company cache to see if the stock company is being fetched and if so, will block and wait for
      * the fetch to complete.  If the company is in the cache but not being fetch, the cached version will be returned.
      * Otherwise, database entity will be loaded.

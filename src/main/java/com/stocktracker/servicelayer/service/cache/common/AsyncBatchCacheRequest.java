@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 /**
  * Contains the cache request key and the RxJava async processor information for a batch request.
  * @param <CK> Key to the cache.
- * @param <CD> Cached data taype.
+ * @param <CD> Cached data type.
  * @param <ASK> async key, the key used to retrieve the information from the third part.
  */
 @Component
@@ -24,11 +24,19 @@ public class AsyncBatchCacheRequest<CK,
     private AsyncBatchCacheRequestResult requestResult;
     private Throwable exception;
 
+    /**
+     * Get the cache key.
+     * @return
+     */
     public CK getCacheKey()
     {
         return this.cacheKey;
     }
 
+    /**
+     * Set the cache key.
+     * @param cacheKey
+     */
     public void setCacheKey( final CK cacheKey )
     {
         this.cacheKey = cacheKey;

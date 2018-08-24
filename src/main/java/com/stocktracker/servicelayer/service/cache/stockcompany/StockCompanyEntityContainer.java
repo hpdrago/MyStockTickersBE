@@ -1,14 +1,15 @@
 package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataReceiver;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataContainer;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 
 /**
  * This interface defines the methods for classes that will get Stock Quote information from the StockQuoteEntityCache
  */
 public interface StockCompanyEntityContainer extends TickerSymbolContainer,
-                                                     AsyncCacheDataReceiver<String,String,StockCompanyEntity>
+                                                     AsyncCacheDataContainer<String,StockCompanyEntity,String>
+                                                     //AsyncCacheDataReceiver<String,String,StockCompanyEntity>
 {
 
     /**

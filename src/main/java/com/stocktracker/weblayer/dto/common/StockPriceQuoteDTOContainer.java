@@ -1,5 +1,7 @@
 package com.stocktracker.weblayer.dto.common;
 
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataContainer;
+import com.stocktracker.servicelayer.service.cache.stockpricequote.StockPriceQuote;
 import com.stocktracker.servicelayer.service.stocks.TickerSymbolContainer;
 import com.stocktracker.weblayer.dto.StockPriceQuoteDTO;
 

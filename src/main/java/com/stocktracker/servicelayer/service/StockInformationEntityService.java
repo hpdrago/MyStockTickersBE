@@ -308,7 +308,7 @@ public abstract class StockInformationEntityService<E extends UUIDEntity &
         logMethodBegin( methodName, dto );
         Objects.requireNonNull( dto, "dto argument cannot be null" );
         this.stockPriceQuoteService
-            .setStockPriceQuote( (StockPriceQuoteDTOContainer) dto, ASYNCHRONOUS );
+            .setStockPriceQuote( (StockPriceQuoteDTOContainer) dto );
         logMethodEnd( methodName );
     }
 

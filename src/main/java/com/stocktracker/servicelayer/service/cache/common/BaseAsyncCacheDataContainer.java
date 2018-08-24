@@ -1,15 +1,14 @@
 package com.stocktracker.servicelayer.service.cache.common;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
  * Base class for cache data containers.  It contains the cache state, error, and expiration time values.  Subclasses
  * must implement the remaining methods.
- * @param <K> - Key type.
- * @param <T> - Cached data type.
+ * @param <CK> - Key type.
+ * @param <CD> - Cached data type.
  */
-public abstract class BaseAsyncCacheDataContainer<K extends Serializable,T> implements AsyncCachedDataContainer<K,T>
+public abstract class BaseAsyncCacheDataContainer<CK,CD,ASK> implements AsyncCacheDataContainer<CK,CD,ASK>
 {
     private AsyncCacheEntryState cacheState;
     private String cacheError;

@@ -36,15 +36,6 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
     implements AsyncCacheServiceExecutor<String,BigDecimal>
 {
     @Autowired
-    private StockPriceServiceExecutor stockPriceServiceExecutor;
-
-    @Autowired
-    private StockPriceQuoteCache stockPriceQuoteCache;
-
-    @Autowired
-    private StockCompanyEntityService stockCompanyEntityService;
-
-    @Autowired
     private IEXTradingStockService iexTradingStockService;
 
     /**
@@ -171,7 +162,7 @@ public class StockPriceQuoteServiceExecutor extends BaseAsyncCacheBatchServiceEx
      * @param tickerSymbol
      * @param subject Behaviour subject to use to notify the caller that the request has been completed.
      */
-    @Async( AppConfig.STOCK_QUOTE_THREAD_POOL )
+    @Async( AppConfig.STOCK_PRICE_QUOTE_THREAD_POOL )
     @Override
     public void asynchronousFetch( final String tickerSymbol,
                                    final AsyncProcessor<BigDecimal> subject )

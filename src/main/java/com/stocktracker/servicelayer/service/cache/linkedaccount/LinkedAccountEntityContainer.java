@@ -14,10 +14,19 @@ import java.util.UUID;
  */
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
-public class LinkedAccountEntityContainer extends BaseAsyncCacheDataContainer<UUID,LinkedAccountEntity>
+public class LinkedAccountEntityContainer extends BaseAsyncCacheDataContainer<UUID,
+                                                                              LinkedAccountEntity,
+                                                                              GetAccountOverviewAsyncCacheKey>
 {
     private UUID cacheKey;
     private LinkedAccountEntity linkedAccountEntity;
+    private GetAccountOverviewAsyncCacheKey getAccountOverviewAsyncCacheKey;
+
+    @Override
+    public GetAccountOverviewAsyncCacheKey getASyncKey()
+    {
+        return this.getAccountOverviewAsyncCacheKey;
+    }
 
     @Override
     public UUID getCacheKey()
@@ -49,6 +58,7 @@ public class LinkedAccountEntityContainer extends BaseAsyncCacheDataContainer<UU
         final StringBuilder sb = new StringBuilder( "LinkedAccountEntityContainer{" );
         sb.append( "uuid='" ) .append( cacheKey ) .append( '\'' );
         sb.append( ", linkedAccountEntity=" ) .append( linkedAccountEntity );
+        sb.append( ", getAccountOverviewAsyncCacheKey=" ) .append( getAccountOverviewAsyncCacheKey );
         sb.append( ", super=" ) .append( super.toString() );
         sb.append( '}' );
         return sb.toString();

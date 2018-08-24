@@ -118,10 +118,10 @@ public class StockAnalystConsensusEntityService extends StockInformationEntitySe
     public StockAnalystConsensusDTO entityToDTO( final StockAnalystConsensusEntity entity )
     {
         final StockAnalystConsensusDTO dto = super.entityToDTO( entity );
-        this.stockQuoteEntityService
-            .setStockQuoteInformation( dto );
+        //this.stockQuoteEntityService
+        //    .setStockQuoteInformation( dto );
         this.stockPriceQuoteService
-            .setStockPriceQuote( dto, ASYNCHRONOUS );
+            .setStockPriceQuote( dto );
         return dto;
     }
 

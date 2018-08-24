@@ -41,8 +41,9 @@ public class StockTrackerApplication implements CommandLineRunner
         }
         catch( IOException e )
         {
-            e.printStackTrace();
-            System.exit( 1 );
+            // don't care if this fails.
+            //e.printStackTrace();
+            //System.exit( 1 );
         }
         SpringApplication.run( StockTrackerApplication.class, args );
     }

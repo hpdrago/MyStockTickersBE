@@ -2,7 +2,7 @@ package com.stocktracker.servicelayer.service.cache.stockpricequote;
 
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheData;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheEntryState;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCachedDataContainer;
+import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class StockPriceQuote implements AsyncCacheData,
-                                        AsyncCachedDataContainer<String,StockPriceQuote>
+                                        AsyncCacheDataContainer<String,StockPriceQuote,String>
 {
     private String tickerSymbol;
     private BigDecimal lastPrice;
@@ -82,6 +82,12 @@ public class StockPriceQuote implements AsyncCacheData,
         this.cacheError = cacheError;
     }
 
+
+    @Override
+    public String getASyncKey()
+    {
+        return this.tickerSymbol;
+    }
 
     @Override
     public String getCacheKey()
