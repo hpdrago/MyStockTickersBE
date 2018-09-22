@@ -32,22 +32,7 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity,UUID>
     @Override
     @Transactional
     @Modifying
-    <S extends CustomerEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends CustomerEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( Iterable<? extends CustomerEntity> iterable );
 
     @Override
     @Transactional

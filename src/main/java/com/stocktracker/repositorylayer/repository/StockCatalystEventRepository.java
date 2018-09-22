@@ -42,17 +42,7 @@ public interface StockCatalystEventRepository extends JpaRepository<StockCatalys
     @Override
     @Transactional
     @Modifying
-    <S extends StockCatalystEventEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockCatalystEventEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

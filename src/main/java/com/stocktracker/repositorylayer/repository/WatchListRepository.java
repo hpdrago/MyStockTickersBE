@@ -32,11 +32,6 @@ public interface WatchListRepository extends JpaRepository<WatchListEntity,UUID>
     @Override
     @Transactional
     @Modifying
-    <S extends WatchListEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends WatchListEntity> S saveAndFlush( S s );
 
     @Override
@@ -48,9 +43,4 @@ public interface WatchListRepository extends JpaRepository<WatchListEntity,UUID>
     @Transactional
     @Modifying
     void deleteInBatch( Iterable<WatchListEntity> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 }

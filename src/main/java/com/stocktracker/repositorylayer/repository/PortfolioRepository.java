@@ -31,17 +31,7 @@ public interface PortfolioRepository extends JpaRepository<PortfolioEntity,UUID>
     @Override
     @Transactional
     @Modifying
-    <S extends PortfolioEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends PortfolioEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( UUID uuid );
 
     @Override
     @Transactional

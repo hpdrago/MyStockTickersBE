@@ -57,17 +57,7 @@ public interface StockAnalystConsensusRepository extends JpaRepository<StockAnal
     @Override
     @Transactional
     @Modifying
-    <S extends StockAnalystConsensusEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockAnalystConsensusEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

@@ -44,17 +44,7 @@ public interface PortfolioStockRepository extends JpaRepository<PortfolioStockEn
     @Override
     @Transactional
     @Modifying
-    <S extends PortfolioStockEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends PortfolioStockEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( UUID uuid );
 
     @Override
     @Transactional

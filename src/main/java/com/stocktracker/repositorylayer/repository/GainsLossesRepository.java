@@ -67,17 +67,7 @@ public interface GainsLossesRepository extends JpaRepository<GainsLossesEntity,U
     @Override
     @Transactional
     @Modifying
-    <S extends GainsLossesEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends GainsLossesEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional
@@ -88,5 +78,4 @@ public interface GainsLossesRepository extends JpaRepository<GainsLossesEntity,U
     @Transactional
     @Modifying
     void deleteInBatch( Iterable<GainsLossesEntity> iterable );
-
 }

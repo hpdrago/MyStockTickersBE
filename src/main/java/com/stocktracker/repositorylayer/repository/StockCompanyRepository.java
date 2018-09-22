@@ -29,17 +29,7 @@ public interface StockCompanyRepository extends JpaRepository<StockCompanyEntity
     @Override
     @Transactional
     @Modifying
-    <S extends StockCompanyEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockCompanyEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( String s );
 
     @Override
     @Transactional

@@ -56,11 +56,6 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
     @Override
     @Transactional
     @Modifying
-    <S extends LinkedAccountEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends LinkedAccountEntity> S saveAndFlush( S s );
 
     @Override
@@ -73,8 +68,4 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccountEnti
     @Modifying
     void deleteInBatch( Iterable<LinkedAccountEntity> iterable );
 
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 }

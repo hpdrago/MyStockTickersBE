@@ -21,17 +21,7 @@ public interface CustomerTagRepository extends JpaRepository<CustomerTagEntity, 
     @Override
     @Transactional
     @Modifying
-    <S extends CustomerTagEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends CustomerTagEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( Integer integer );
 
     @Override
     @Transactional

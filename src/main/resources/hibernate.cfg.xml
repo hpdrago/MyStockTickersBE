@@ -5,13 +5,11 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.url">jdbc:mysql://localhost:3306/stocktracker</property>
-        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="hbm2ddl.auto">create</property>
         <mapping class="com.stocktracker.repositorylayer.entity.CustomerEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.PortfolioEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.PortfolioStockEntity"/>
-        <mapping class="com.stocktracker.repositorylayer.entity.StockSectorEntity"/>
-        <mapping class="com.stocktracker.repositorylayer.entity.StockSubSectorEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.ExceptionEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockNoteEntity"/>
         <mapping class="com.stocktracker.repositorylayer.entity.StockNoteSourceEntity"/>

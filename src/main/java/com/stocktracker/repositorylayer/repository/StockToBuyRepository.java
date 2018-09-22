@@ -48,17 +48,7 @@ public interface StockToBuyRepository extends JpaRepository<StockToBuyEntity,UUI
     @Override
     @Transactional
     @Modifying
-    <S extends StockToBuyEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockToBuyEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

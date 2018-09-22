@@ -39,17 +39,7 @@ public interface TradeItAccountRepository extends JpaRepository<TradeItAccountEn
     @Override
     @Transactional
     @Modifying
-    <S extends TradeItAccountEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends TradeItAccountEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

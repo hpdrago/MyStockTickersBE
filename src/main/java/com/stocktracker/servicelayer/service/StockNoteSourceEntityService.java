@@ -121,7 +121,7 @@ public class StockNoteSourceEntityService extends UuidEntityService<StockNoteSou
         final String methodName = "getStockNoteSource";
         logMethodBegin( methodName, stockNoteSourceUuid );
         Objects.requireNonNull( stockNoteSourceUuid, "stockNotesSourceUuid cannot be null" );
-        StockNoteSourceEntity stockNoteSourceEntity = this.stockNoteSourceRepository.findOne( stockNoteSourceUuid );
+        StockNoteSourceEntity stockNoteSourceEntity = this.getEntity( stockNoteSourceUuid );
         if ( stockNoteSourceEntity == null )
         {
             throw new StockNoteSourceNotFoundException( stockNoteSourceUuid );

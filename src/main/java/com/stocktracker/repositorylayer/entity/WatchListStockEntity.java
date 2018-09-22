@@ -21,7 +21,7 @@ public class WatchListStockEntity extends UUIDEntity
     private WatchListEntity watchListByWatchListUuid;
 
     @Basic
-    @Column( name = "watch_list_uuid" )
+    @Column( name = "watch_list_uuid", insertable = false, updatable = false)
     public UUID getWatchListUuid()
     {
         return watchListUuid;

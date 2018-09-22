@@ -24,11 +24,6 @@ public interface WatchListStockRepository extends JpaRepository<WatchListStockEn
     @Override
     @Transactional
     @Modifying
-    <S extends WatchListStockEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends WatchListStockEntity> S saveAndFlush( S s );
 
     @Override
@@ -40,9 +35,4 @@ public interface WatchListStockRepository extends JpaRepository<WatchListStockEn
     @Transactional
     @Modifying
     void deleteInBatch( Iterable<WatchListStockEntity> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 }

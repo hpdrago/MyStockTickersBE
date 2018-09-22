@@ -39,17 +39,7 @@ public interface StockNoteSourceRepository extends JpaRepository<StockNoteSource
     @Override
     @Transactional
     @Modifying
-    <S extends StockNoteSourceEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockNoteSourceEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

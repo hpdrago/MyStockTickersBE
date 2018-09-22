@@ -47,17 +47,7 @@ public interface StockPositionRepository extends JpaRepository<StockPositionEnti
     @Override
     @Transactional
     @Modifying
-    <S extends StockPositionEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockPositionEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

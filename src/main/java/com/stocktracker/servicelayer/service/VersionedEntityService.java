@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
@@ -158,9 +159,13 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final String methodName = "getEntity";
         logMethodBegin( methodName, EK );
         Objects.requireNonNull( EK, "EK cannot be null" );
-        final E entity = this.getRepository()
-                             .findOne( EK );
-        if ( entity == null )
+        E entity = null;
+        try
+        {
+            entity = this.getRepository()
+                         .getOne( EK );
+        }
+        catch( EntityNotFoundException e )
         {
             throw new VersionedEntityNotFoundException( EK );
         }
@@ -189,36 +194,32 @@ public abstract class VersionedEntityService<EK extends Serializable,
 
     /**
      * Delete the entity.
+     * @param entityKey
+     * @throws VersionedEntityNotFoundException
+     */
+    public void deleteEntity( final EK entityKey )
+        throws VersionedEntityNotFoundException
+    {
+        final String methodName = "deleteEntity";
+        logMethodBegin( methodName, entityKey );
+        Objects.requireNonNull( entityKey, "entityKey cannot be null" );
+        final E entity = this.getEntity( entityKey );
+        this.deleteEntity( entity );
+        logMethodEnd( methodName );
+    }
+
+    /**
+     * Delete the entity.
      * @param entity
      * @throws VersionedEntityNotFoundException
      */
     public void deleteEntity( final E entity )
         throws VersionedEntityNotFoundException
     {
+        final String methodName = "deleteEntity";
+        logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
         this.deleteEntity( entity.getId() );
-    }
-
-    /**
-     * Delete the entity.
-     * @param EK
-     * @throws VersionedEntityNotFoundException
-     */
-    public void deleteEntity( final EK EK )
-        throws VersionedEntityNotFoundException
-    {
-        final String methodName = "deleteEntity";
-        logMethodBegin( methodName, EK );
-        Objects.requireNonNull( EK, "EK cannot be null" );
-        if ( this.getRepository().exists( EK ))
-        {
-            this.getRepository()
-                .delete( EK );
-        }
-        else
-        {
-            throw new VersionedEntityNotFoundException( EK );
-        }
         logMethodEnd( methodName );
     }
 
@@ -285,8 +286,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         Objects.requireNonNull( entity, "entity cannot be null" );
         if ( entity.getId() != null && isExists( entity ) )
         {
-            final E currentEntity = this.getRepository()
-                                        .findOne( entity.getId() );
+            final E currentEntity = this.getEntity( entity.getId() );
             throw new DuplicateEntityException( currentEntity );
         }
         this.preAddEntity( entity );
@@ -379,8 +379,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
         catch( javax.persistence.OptimisticLockException |
                org.springframework.orm.ObjectOptimisticLockingFailureException e )
         {
-            E currentEntity = this.getRepository()
-                                  .findOne( entity.getId() );
+            E currentEntity = this.getEntity( entity.getId() );
             throw new EntityVersionMismatchException( currentEntity, e );
         }
         catch( org.springframework.dao.DataIntegrityViolationException e )
@@ -408,7 +407,15 @@ public abstract class VersionedEntityService<EK extends Serializable,
      */
     public boolean isExists( final EK key )
     {
-        return this.getRepository().exists( key );
+        try
+        {
+            this.getRepository().getOne( key );
+            return true;
+        }
+        catch( EntityNotFoundException e )
+        {
+            return false;
+        }
     }
 
 

@@ -18,17 +18,7 @@ public interface VStockTagRepository extends JpaRepository<VStockTagEntity, Inte
     @Override
     @Transactional
     @Modifying
-    <S extends VStockTagEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends VStockTagEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( Integer integer );
 
     @Override
     @Transactional

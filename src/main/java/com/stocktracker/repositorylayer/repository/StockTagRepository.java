@@ -22,17 +22,7 @@ public interface StockTagRepository extends JpaRepository<StockTagEntity, UUID>
     @Override
     @Transactional
     @Modifying
-    <S extends StockTagEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockTagEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

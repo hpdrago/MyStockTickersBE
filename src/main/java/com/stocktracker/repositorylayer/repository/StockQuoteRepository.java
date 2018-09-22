@@ -18,17 +18,7 @@ public interface StockQuoteRepository extends JpaRepository<StockQuoteEntity, St
     @Override
     @Transactional
     @Modifying
-    <S extends StockQuoteEntity> List<S> save( Iterable<S> iterable );
-
-    @Override
-    @Transactional
-    @Modifying
     <S extends StockQuoteEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( String s );
 
     @Override
     @Transactional

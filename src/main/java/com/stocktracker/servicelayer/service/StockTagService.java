@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -81,8 +82,8 @@ public class StockTagService implements MyLogger
                     customerTagEntity.setCustomerUuid( customerUuid );
                     customerTagEntity.setTagName( tag );
                     Example<CustomerTagEntity> customerTagEntityExample = Example.of( customerTagEntity );
-                    customerTagEntity = this.customerTagRepository.findOne( customerTagEntityExample );
-                    if ( customerTagEntity == null )
+                    Optional<CustomerTagEntity> result = this.customerTagRepository.findOne( customerTagEntityExample );
+                    if ( !result.isPresent() )
                     {
                         customerTagEntity = new CustomerTagEntity();
                         customerTagEntity.setCustomerUuid( customerUuid );

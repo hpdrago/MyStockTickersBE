@@ -27,21 +27,10 @@ public interface VStockNoteCountRepository extends JpaRepository<VStockNoteCount
     @Modifying
     VStockNoteCountEntity save( VStockNoteCountEntity vStockNoteCountEntity );
 
-
-    @Override
-    @Transactional
-    @Modifying
-    <S extends VStockNoteCountEntity> List<S> save( Iterable<S> iterable );
-
     @Override
     @Transactional
     @Modifying
     <S extends VStockNoteCountEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( final UUID uuid );
 
     @Override
     @Transactional

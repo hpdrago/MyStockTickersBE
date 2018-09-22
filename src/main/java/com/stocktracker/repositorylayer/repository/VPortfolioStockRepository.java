@@ -20,21 +20,10 @@ public interface VPortfolioStockRepository extends JpaRepository<VPortfolioStock
     @Modifying
     VPortfolioStockEntity save( VPortfolioStockEntity vPortfolioStockEntity );
 
-
-    @Override
-    @Transactional
-    @Modifying
-    <S extends VPortfolioStockEntity> List<S> save( Iterable<S> iterable );
-
     @Override
     @Transactional
     @Modifying
     <S extends VPortfolioStockEntity> S saveAndFlush( S s );
-
-    @Override
-    @Transactional
-    @Modifying
-    void delete( Integer integer );
 
     @Override
     @Transactional
