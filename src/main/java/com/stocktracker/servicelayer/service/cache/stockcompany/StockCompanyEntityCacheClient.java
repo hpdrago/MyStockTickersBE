@@ -103,8 +103,6 @@ public class StockCompanyEntityCacheClient extends AsyncCacheDBEntityClient<Stri
     @Override
     protected void setCacheKey( final StockCompanyEntityContainer container, final String cacheKey )
     {
-
+        container.setCacheKey( cacheKey );
     }
-
-
 }

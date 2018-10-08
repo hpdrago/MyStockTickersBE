@@ -1,5 +1,6 @@
 package com.stocktracker.repositorylayer.entity;
 
+import com.stocktracker.repositorylayer.common.CustomerUuidContainer;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -20,13 +22,14 @@ import java.util.UUID;
 @Component
 @Scope( BeanDefinition.SCOPE_PROTOTYPE )
 public class WatchListEntity extends UUIDEntity
+                             implements CustomerUuidContainer
 {
-    private UUID customerUuid;
     private String name;
+    private UUID customerUuid;
     private Collection<WatchListStockEntity> watchListStocksByUuid;
 
     @Basic
-    @Column( name = "customer_uuid" )
+    @Column( name = "customer_uuid", nullable = false )
     public UUID getCustomerUuid()
     {
         return customerUuid;
@@ -38,7 +41,7 @@ public class WatchListEntity extends UUIDEntity
     }
 
     @Basic
-    @Column( name = "name" )
+    @Column( name = "name", nullable = false, length = 30 )
     public String getName()
     {
         return name;
@@ -66,8 +69,9 @@ public class WatchListEntity extends UUIDEntity
         final StringBuilder sb = new StringBuilder( "WatchListEntity{" );
         sb.append( "customerUuid=" ).append( customerUuid );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", stocks=" ).append( watchListStocksByUuid );
-        sb.append( "}, super=" ).append( super.toString() );
+        sb.append( ", super=" ).append( super.toString() );
+        sb.append( ", watchListStocksByUuid=" ).append( watchListStocksByUuid );
+        sb.append( '}' );
         return sb.toString();
     }
 }

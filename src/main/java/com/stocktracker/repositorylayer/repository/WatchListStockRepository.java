@@ -16,6 +16,13 @@ import java.util.UUID;
 @Transactional( readOnly = true )
 public interface WatchListStockRepository extends JpaRepository<WatchListStockEntity,UUID>
 {
+    /**
+     * Get all of the stocks for a watch list.
+     * @param watchListUUID
+     * @return
+     */
+    List<WatchListStockEntity> getAllByWatchListUuid( final UUID watchListUUID );
+
     @Override
     @Transactional
     @Modifying

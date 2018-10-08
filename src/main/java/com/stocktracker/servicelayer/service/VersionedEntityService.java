@@ -6,13 +6,18 @@ import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.common.VersionedEntity;
 import com.stocktracker.weblayer.dto.common.VersionedDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Base Service class for managing database entities.
@@ -73,6 +78,27 @@ public abstract class VersionedEntityService<EK extends Serializable,
      */
     protected void postSaveDTO( final D dto )
     {
+    }
+
+    /**
+     * Add a list of DTOs
+     * @param dtos
+     * @throws DuplicateEntityException
+     */
+    public List<D> addDTOs( final List <D> dtos )
+        throws DuplicateEntityException
+    {
+        final String methodName = "addDTO";
+        logMethodBegin( methodName, dtos );
+        Objects.requireNonNull( dtos, "dtos cannot be null" );
+        final List<D> returnDTOs = new ArrayList<>();
+        for ( D dto : dtos )
+        {
+            final D newDTO = addDTO( dto );
+            returnDTOs.add( newDTO );
+        }
+        logMethodEnd( methodName );
+        return returnDTOs;
     }
 
     /**
@@ -149,28 +175,24 @@ public abstract class VersionedEntityService<EK extends Serializable,
 
     /**
      * Get a single entity.
-     * @param EK The primary key.
+     * @param entityKey The primary key.
      * @return The entity.
      * @throws VersionedEntityNotFoundException If the entity is not found by EK
      */
-    public E getEntity( final EK EK )
+    public E getEntity( final EK entityKey )
         throws VersionedEntityNotFoundException
     {
         final String methodName = "getEntity";
-        logMethodBegin( methodName, EK );
-        Objects.requireNonNull( EK, "EK cannot be null" );
-        E entity = null;
-        try
+        logMethodBegin( methodName, entityKey );
+        Objects.requireNonNull( entityKey, "EK cannot be null" );
+        final Optional<E> entity = this.getRepository()
+                                       .findById( entityKey );
+        if ( !entity.isPresent() )
         {
-            entity = this.getRepository()
-                         .getOne( EK );
+            throw new VersionedEntityNotFoundException( entityKey );
         }
-        catch( EntityNotFoundException e )
-        {
-            throw new VersionedEntityNotFoundException( EK );
-        }
-        logMethodEnd( methodName, entity );
-        return entity;
+        logMethodEnd( methodName, entity.get() );
+        return entity.get();
     }
 
     /**
@@ -219,7 +241,8 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final String methodName = "deleteEntity";
         logMethodBegin( methodName, entity );
         Objects.requireNonNull( entity, "entity cannot be null" );
-        this.deleteEntity( entity.getId() );
+        this.getRepository()
+            .delete( entity );
         logMethodEnd( methodName );
     }
 
@@ -252,7 +275,7 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @throws DuplicateEntityException
      * @throws VersionedEntityNotFoundException
      */
-    public void addEntities( final Collection<E> entities )
+    public List<E> addEntities( final Collection<E> entities )
         throws EntityVersionMismatchException,
                DuplicateEntityException,
                VersionedEntityNotFoundException
@@ -260,12 +283,15 @@ public abstract class VersionedEntityService<EK extends Serializable,
         final String methodName = "addEntities";
         Objects.requireNonNull( entities, "entities cannot be null" );
         logMethodBegin( methodName, "Adding {0} entities", entities.size() );
+        final List<E> returnEntities = new ArrayList<>();
         for ( final E entity: entities )
         {
             logDebug( methodName, "Adding entity (0}", entity );
-            this.addEntity( entity );
+            final E newEntity = this.addEntity( entity );
+            returnEntities.add(  newEntity );
         }
         logMethodEnd( methodName );
+        return returnEntities;
     }
 
     /**
@@ -365,6 +391,12 @@ public abstract class VersionedEntityService<EK extends Serializable,
      * @return
      * @throws DuplicateEntityException
      */
+    @Retryable
+    (
+        value = {CannotAcquireLockException.class},
+        maxAttempts = 3,
+        backoff = @Backoff( delay = 1000)
+    )
     private E save( final E entity )
         throws DuplicateEntityException
     {
@@ -407,15 +439,9 @@ public abstract class VersionedEntityService<EK extends Serializable,
      */
     public boolean isExists( final EK key )
     {
-        try
-        {
-            this.getRepository().getOne( key );
-            return true;
-        }
-        catch( EntityNotFoundException e )
-        {
-            return false;
-        }
+        return this.getRepository()
+                   .findById( key )
+                   .isPresent();
     }
 
 

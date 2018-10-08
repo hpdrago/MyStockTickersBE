@@ -86,4 +86,14 @@ public abstract class UUIDEntity extends BaseEntity<UUID>
     {
         return Objects.hash( uuid );
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "UUIDEntity{" );
+        sb.append( "uuid=" ).append( uuid );
+        sb.append( ", super=" ).append( super.toString() );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }

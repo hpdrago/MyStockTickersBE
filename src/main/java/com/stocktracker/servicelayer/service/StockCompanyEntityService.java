@@ -6,19 +6,15 @@ import com.stocktracker.common.exceptions.StockNotFoundException;
 import com.stocktracker.common.exceptions.VersionedEntityNotFoundException;
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.repositorylayer.repository.StockCompanyRepository;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheClient;
 import com.stocktracker.servicelayer.service.cache.stockcompany.StockCompanyEntityCacheDataReceiver;
 import com.stocktracker.weblayer.dto.StockCompanyDTO;
-import com.stocktracker.weblayer.dto.common.StockCompanyDTOContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**

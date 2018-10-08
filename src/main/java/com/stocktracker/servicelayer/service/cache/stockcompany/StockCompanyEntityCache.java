@@ -2,14 +2,12 @@ package com.stocktracker.servicelayer.service.cache.stockcompany;
 
 import com.stocktracker.repositorylayer.entity.StockCompanyEntity;
 import com.stocktracker.servicelayer.service.cache.common.AsyncBatchCache;
-import com.stocktracker.servicelayer.service.cache.common.AsyncCacheDataRequestException;
 import com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.zankowski.iextrading4j.api.stocks.Company;
 
 import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.KEEP;
-import static com.stocktracker.servicelayer.service.cache.common.AsyncCacheStrategy.REMOVE;
 
 /**
  * This is the cache for IEXTrading Stock Company. See https://iextrading.com/developer/docs/#company for information
@@ -31,7 +29,6 @@ public class StockCompanyEntityCache extends AsyncBatchCache<String,
 
     @Override
     protected StockCompanyEntity convertAsyncData( final String tickerSymbol, final String notUsed, final Company asyncData )
-        throws AsyncCacheDataRequestException
     {
         final StockCompanyEntity stockCompanyEntity = this.context.getBean( StockCompanyEntity.class );
         stockCompanyEntity.copyCompany( asyncData );

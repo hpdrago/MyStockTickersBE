@@ -4,9 +4,6 @@ import com.stocktracker.servicelayer.service.StorageService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -15,9 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SpringBootApplication
-@EnableTransactionManagement
-@EnableSpringDataWebSupport
-@EnableScheduling
 /*
  * This is to avoid issues with DI of a Service that is transactional.
  * https://stackoverflow.com/questions/39483059/transactional-annotation-error
